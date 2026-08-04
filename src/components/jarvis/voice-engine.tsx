@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -133,7 +132,7 @@ export const VoiceEngine = () => {
         {/* Status Display Text */}
         <div className="text-center space-y-2">
           <h1 className="font-headline text-5xl font-bold tracking-tighter text-primary">
-            JARVIS
+            J.A.R.V.I.S
           </h1>
           <p className="text-muted-foreground font-medium uppercase tracking-widest text-sm flex items-center justify-center gap-2">
             <span className={cn(

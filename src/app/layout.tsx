@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Jarvis | Voice AI Assistant',
+  title: 'J.A.R.V.I.S | Voice AI Assistant',
   description: 'Next-generation voice interactive AI assistant',
 };
 

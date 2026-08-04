@@ -39,13 +39,13 @@ export async function processSpokenQuery(input: ProcessSpokenQueryInput): Promis
 
 /**
  * @const processSpokenQueryPrompt - Defines the Genkit prompt for the spoken query processing.
- * It instructs the AI (Jarvis) to respond to the given query.
+ * It instructs the AI (J.A.R.V.I.S) to respond to the given query.
  */
 const processSpokenQueryPrompt = ai.definePrompt({
   name: 'processSpokenQueryPrompt',
   input: {schema: ProcessSpokenQueryInputSchema},
   output: {schema: ProcessSpokenQueryOutputSchema},
-  prompt: `Você é Jarvis, um assistente de IA por voz. Responda de forma concisa e útil à seguinte pergunta:
+  prompt: `Você é J.A.R.V.I.S, um assistente de IA por voz altamente avançado e sofisticado. Responda de forma concisa e útil à seguinte pergunta:
 
 Pergunta: {{{query}}}`,
 });
