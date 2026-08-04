@@ -13,10 +13,6 @@ export default function Home() {
       <div className="relative z-10 w-full flex justify-center">
         <VoiceEngine />
       </div>
-
-      <footer className="fixed bottom-8 text-center text-[10px] font-mono uppercase tracking-[0.3em] opacity-30">
-        Protocol JARVIS-V2 | Secured AI Neural Link
-      </footer>
     </main>
   );
 }
