@@ -56,7 +56,6 @@ const speakGenAIResponseFlow = ai.defineFlow(
     }
 
     // The media.url from TTS is 'data:audio/pcm;base64,...'
-    // Extract base64 part and convert to Buffer
     const base64Audio = media.url.substring(media.url.indexOf(',') + 1);
     const audioBuffer = Buffer.from(base64Audio, 'base64');
 

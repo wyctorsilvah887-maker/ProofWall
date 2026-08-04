@@ -43,6 +43,7 @@ export async function processSpokenQuery(input: ProcessSpokenQueryInput): Promis
  */
 const processSpokenQueryPrompt = ai.definePrompt({
   name: 'processSpokenQueryPrompt',
+  model: 'googleai/gemini-1.5-flash',
   input: {schema: ProcessSpokenQueryInputSchema},
   output: {schema: ProcessSpokenQueryOutputSchema},
   prompt: `Você é J.A.R.V.I.S, um assistente de IA por voz altamente avançado e sofisticado. Responda de forma concisa e útil à seguinte pergunta:
