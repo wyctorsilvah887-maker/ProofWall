@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -16,15 +17,19 @@ export const VoiceEngine = () => {
   
   const recognitionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isManuallyStopping = useRef(false);
 
   // Initialize Speech Recognition
   useEffect(() => {
     if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'pt-BR';
+      
+      if (!recognitionRef.current) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'pt-BR';
+      }
 
       recognitionRef.current.onresult = async (event: any) => {
         const text = event.results[0][0].transcript;
@@ -34,13 +39,17 @@ export const VoiceEngine = () => {
       };
 
       recognitionRef.current.onend = () => {
-        if (status === 'listening') {
+        if (status === 'listening' && !isManuallyStopping.current) {
           setStatus('processing');
+        } else if (isManuallyStopping.current) {
+          isManuallyStopping.current = false;
         }
       };
 
       recognitionRef.current.onerror = (event: any) => {
-        console.error('Speech recognition error', event);
+        if (event.error !== 'aborted') {
+          console.error('Speech recognition error', event);
+        }
         setStatus('idle');
       };
     }
@@ -79,11 +88,31 @@ export const VoiceEngine = () => {
     if (status === 'off') return;
     stopAll();
     setStatus('listening');
-    recognitionRef.current?.start();
+    isManuallyStopping.current = false;
+    try {
+      recognitionRef.current?.start();
+    } catch (e) {
+      console.error("Failed to start recognition", e);
+      setStatus('idle');
+    }
+  };
+
+  const stopListening = () => {
+    isManuallyStopping.current = true;
+    try {
+      recognitionRef.current?.stop();
+    } catch (e) {
+      // Ignore
+    }
+    setStatus('idle');
   };
 
   const stopAll = () => {
-    recognitionRef.current?.stop();
+    try {
+      recognitionRef.current?.abort();
+    } catch (e) {
+      // Ignore
+    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -118,7 +147,7 @@ export const VoiceEngine = () => {
         {/* Central Circle */}
         <div 
           className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
-          onClick={status === 'off' ? togglePower : startListening}
+          onClick={status === 'off' ? togglePower : (status === 'listening' ? stopListening : startListening)}
         >
           <StatusCircle status={status} />
         </div>
@@ -183,7 +212,7 @@ export const VoiceEngine = () => {
               "rounded-full h-16 px-8 font-headline font-bold text-lg tracking-wide glow-primary transition-all duration-300",
               status === 'listening' ? "bg-accent hover:bg-accent/90 animate-pulse" : "bg-primary hover:bg-primary/90"
             )}
-            onClick={startListening}
+            onClick={status === 'listening' ? stopListening : startListening}
           >
             {status === 'listening' ? (
               <><VolumeX className="mr-2" /> Stop Listening</>
