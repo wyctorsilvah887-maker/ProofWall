@@ -1,12 +1,54 @@
 
+'use client';
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star } from "lucide-react";
+import { Star, CheckCircle2 } from "lucide-react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
+import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
+  const db = useFirestore();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !db) return;
+
+    setLoading(true);
+    const emailsRef = collection(db, "emails");
+
+    addDoc(emailsRef, {
+      email,
+      createdAt: serverTimestamp(),
+    })
+      .then(() => {
+        toast({
+          title: "Acesso Garantido!",
+          description: "Entraremos em contato em breve.",
+        });
+        setEmail("");
+      })
+      .catch(async (error) => {
+        const permissionError = new FirestorePermissionError({
+          path: emailsRef.path,
+          operation: 'create',
+          requestResourceData: { email },
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -44,15 +86,29 @@ export default function Home() {
                 </div>
                 
                 {/* Form de Captura de Lead */}
-                <div className="flex flex-col gap-3 sm:flex-row max-w-lg">
-                  <Input 
-                    type="email" 
-                    placeholder="Seu e-mail corporativo" 
-                    className="h-12 rounded-full px-6 bg-card"
-                  />
-                  <Button size="lg" className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105">
-                    Garantir Acesso Antecipado
-                  </Button>
+                <div className="space-y-4">
+                  <form onSubmit={handleSignUp} className="flex flex-col gap-3 sm:flex-row max-w-lg">
+                    <Input 
+                      type="email" 
+                      placeholder="Seu e-mail corporativo" 
+                      className="h-12 rounded-full px-6 bg-card"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                    <Button 
+                      type="submit" 
+                      size="lg" 
+                      className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105"
+                      disabled={loading}
+                    >
+                      {loading ? "Salvando..." : "Garantir Acesso Antecipado"}
+                    </Button>
+                  </form>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5 ml-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                    Grátis para os primeiros 50 inscritos. Sem necessidade de cartão de crédito.
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
