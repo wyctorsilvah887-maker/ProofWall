@@ -1,9 +1,8 @@
-
 {
   "entities": {
     "User": {
       "title": "User",
-      "description": "Usuários registrados para acesso antecipado.",
+      "description": "Usuários registrados para acesso antecipado (Leads).",
       "type": "object",
       "properties": {
         "name": {
@@ -26,6 +25,32 @@
         "email",
         "createdAt"
       ]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Perfil administrativo do sistema.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome do administrador."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "E-mail do administrador."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data de registro do admin."
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -36,7 +61,11 @@
   "firestore": {
     "/users/{userId}": {
       "schema": "User",
-      "description": "Coleção global de usuários inscritos."
+      "description": "Coleção global de leads/usuários interessados."
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Perfis de administradores do sistema."
     }
   }
 }

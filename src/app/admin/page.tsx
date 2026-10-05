@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -9,8 +8,10 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -20,11 +21,12 @@ export default function AdminPage() {
   const [accessCode, setAccessCode] = useState('');
   const [isCodeCorrect, setIsCodeCorrect] = useState(false);
   
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Consulta de usuários registrados na coleção 'users'
   const usersQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users'), orderBy('createdAt', 'desc'));
@@ -44,9 +46,28 @@ export default function AdminPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsAuthLoading(true);
     try {
       if (isAdminRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        if (!name.trim()) throw new Error("O nome é obrigatório para o registro.");
+        
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const newUser = userCredential.user;
+
+        // Salva os dados do admin na coleção 'admins'
+        setDoc(doc(db, 'admins', newUser.uid), {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          createdAt: serverTimestamp(),
+        }).catch(async (err) => {
+          const permissionError = new FirestorePermissionError({
+            path: `admins/${newUser.uid}`,
+            operation: 'create',
+            requestResourceData: { name, email },
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        });
+
         toast({ title: "Conta Criada", description: "Administrador registrado com sucesso." });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
@@ -54,6 +75,8 @@ export default function AdminPage() {
       }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro de Autenticação", description: error.message });
+    } finally {
+      setIsAuthLoading(false);
     }
   };
 
@@ -99,9 +122,21 @@ export default function AdminPage() {
             <CardTitle className="text-2xl font-headline">
               {isAdminRegistering ? 'Criar Admin' : 'Login Admin'}
             </CardTitle>
+            <CardDescription>
+              {isAdminRegistering ? 'Cadastre seu perfil administrativo.' : 'Acesse o painel de controle.'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAuth} className="space-y-4">
+              {isAdminRegistering && (
+                <Input
+                  type="text"
+                  placeholder="Nome Completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              )}
               <Input
                 type="email"
                 placeholder="E-mail admin"
@@ -116,10 +151,11 @@ export default function AdminPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <Button type="submit" className="w-full">
-                {isAdminRegistering ? 'Registrar' : 'Entrar'}
+              <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
               </Button>
               <Button 
+                type="button"
                 variant="link" 
                 className="w-full text-xs" 
                 onClick={() => setIsAdminRegistering(!isAdminRegistering)}
@@ -141,6 +177,9 @@ export default function AdminPage() {
           <span className="font-headline">ProofWall Panel</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
+          <span className="text-sm text-muted-foreground hidden sm:inline-block">
+            Logado como: <span className="font-bold text-foreground">{user.email}</span>
+          </span>
           <Button variant="ghost" size="sm" onClick={() => signOut(auth)}>
             <LogOut className="w-4 h-4 mr-2" /> Sair
           </Button>
@@ -166,7 +205,7 @@ export default function AdminPage() {
             <CardTitle className="font-headline text-xl flex items-center gap-2">
               <UserCheck className="w-5 h-5" /> Lista de Inscritos VIP
             </CardTitle>
-            <CardDescription>Exportar ou gerenciar a lista de contatos para acesso antecipado.</CardDescription>
+            <CardDescription>Gerencie a lista de contatos capturados na ProofWall.</CardDescription>
           </CardHeader>
           <CardContent>
             {usersLoading ? (

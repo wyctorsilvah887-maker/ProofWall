@@ -1,13 +1,16 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permite que qualquer pessoa crie um usuário (lead) na coleção users
+    // Leads: Qualquer um pode se inscrever, apenas admins logados podem ver a lista
     match /users/{userId} {
       allow create: if true;
-      // Permite que administradores autenticados leiam a lista
       allow read: if request.auth != null;
+    }
+    
+    // Admins: Apenas o próprio admin pode ler/escrever seu perfil
+    match /admins/{adminId} {
+      allow read, write: if request.auth != null && request.auth.uid == adminId;
     }
     
     // Regra padrão: nega tudo o mais
