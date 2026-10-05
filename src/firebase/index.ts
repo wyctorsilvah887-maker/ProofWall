@@ -1,3 +1,4 @@
+
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
@@ -16,13 +17,13 @@ export function initializeFirebase(): {
   
   let firestore: Firestore;
   try {
-    // initializeFirestore deve ser chamado apenas uma vez por app instance
+    // Tenta inicializar com configurações específicas de rede para evitar erros de 'fetch'
     firestore = initializeFirestore(app, {
       experimentalForceLongPolling: true,
       experimentalAutoDetectLongPolling: false,
     });
   } catch (e) {
-    // Se já estiver inicializado, pegamos a instância existente
+    // Se já estiver inicializado (Singleton), pegamos a instância existente
     firestore = getFirestore(app);
   }
   

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -15,7 +16,6 @@ import { FirestorePermissionError } from "@/firebase/errors";
 export default function Home() {
   const db = useFirestore();
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
 
   const handleSignUp = (e: React.FormEvent) => {
@@ -24,28 +24,17 @@ export default function Home() {
     
     if (!trimmedEmail || !db) return;
 
-    setLoading(true);
-
     const emailsRef = collection(db, "emails");
     const leadData = {
       email: trimmedEmail,
       createdAt: serverTimestamp(),
     };
 
-    // Padrão otimista: Limpamos o estado e mostramos toast imediatamente
-    // O Firestore cuidará da gravação em segundo plano ou reportará erro via catch
+    // Mutação não bloqueante (padrão Firebase Studio)
+    // Não usamos 'await' aqui. O Firestore gerencia a fila de gravação offline/online.
     addDoc(emailsRef, leadData)
-      .then(() => {
-        setLoading(false);
-        setEmail("");
-        toast({
-          title: "Acesso Garantido!",
-          description: "Seu e-mail foi registrado em nossa lista VIP.",
-        });
-      })
       .catch(async (error) => {
-        setLoading(false);
-        // Emite erro contextual para o listener global
+        // Se houver erro de permissão (ex: regras não publicadas), emitimos o erro contextual
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
@@ -53,6 +42,13 @@ export default function Home() {
         });
         errorEmitter.emit('permission-error', permissionError);
       });
+
+    // Feedback imediato para o usuário (Otimista)
+    setEmail("");
+    toast({
+      title: "Acesso Garantido!",
+      description: "Seu e-mail foi registrado em nossa lista VIP.",
+    });
   };
 
   return (
@@ -97,15 +93,13 @@ export default function Home() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      disabled={loading}
                     />
                     <Button 
                       type="submit" 
                       size="lg" 
                       className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105"
-                      disabled={loading}
                     >
-                      {loading ? "Processando..." : "Garantir Acesso Antecipado"}
+                      Garantir Acesso Antecipado
                     </Button>
                   </form>
                   <div className="space-y-1">
