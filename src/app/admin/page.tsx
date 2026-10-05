@@ -8,10 +8,8 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2 } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, query, orderBy, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
+import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 import { Badge } from '@/components/ui/badge';
 
 export default function AdminPage() {
@@ -19,16 +17,13 @@ export default function AdminPage() {
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
   
-  // Referência para o documento do usuário atual
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
   
-  // Estado local para garantir que a permissão de admin está estável
   const [isAdminVerified, setIsAdminVerified] = useState(false);
 
   useEffect(() => {
     if (userData?.isAdmin === true) {
-      // Pequeno delay para garantir que as regras do Firestore no servidor propagaram
       const timer = setTimeout(() => setIsAdminVerified(true), 500);
       return () => clearTimeout(timer);
     } else {
@@ -45,17 +40,26 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Consulta de leads: só é ativada se for admin verificado
+  // Consulta simplificada sem orderBy para evitar erro de índice
   const leadsQuery = useMemo(() => {
     if (!db || !user || !isAdminVerified) return null;
     return query(
       collection(db, 'users'), 
-      where('isAdmin', '==', false),
-      orderBy('createdAt', 'desc')
+      where('isAdmin', '==', false)
     );
   }, [db, user, isAdminVerified]);
 
   const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
+
+  // Ordenação em memória no cliente
+  const sortedLeads = useMemo(() => {
+    if (!leadsList) return [];
+    return [...leadsList].sort((a: any, b: any) => {
+      const dateA = a.createdAt?.toDate?.() || new Date(0);
+      const dateB = b.createdAt?.toDate?.() || new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [leadsList]);
 
   const handleAccessCodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +88,6 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         };
 
-        // Salvamento crítico do documento de admin
         await setDoc(doc(db, 'users', newUser.uid), adminData);
         toast({ title: "Conta Admin Criada", description: "Configurando seu acesso..." });
       } else {
@@ -260,7 +263,7 @@ export default function AdminPage() {
                 <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
                 <p className="text-muted-foreground">Carregando leads...</p>
               </div>
-            ) : leadsList && leadsList.length > 0 ? (
+            ) : sortedLeads.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -270,7 +273,7 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {leadsList.map((usr: any) => (
+                  {sortedLeads.map((usr: any) => (
                     <TableRow key={usr.id}>
                       <TableCell className="font-bold flex items-center gap-2">
                         <User className="w-4 h-4 text-primary/60" />
