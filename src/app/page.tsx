@@ -30,25 +30,25 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    // Operação de mutação seguindo as diretrizes: sem await, com .catch() para erros contextuais
+    // Iniciamos a escrita no Firestore sem usar 'await' para manter a UI responsiva
     addDoc(emailsRef, leadData)
-      .then(() => {
-        toast({
-          title: "Acesso Garantido!",
-          description: "Entraremos em contato em breve.",
-        });
-        setEmail("");
-        setLoading(false);
-      })
       .catch(async (serverError) => {
+        // Caso ocorra um erro de permissão, emitimos para o listener global
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
           requestResourceData: leadData,
         });
         errorEmitter.emit('permission-error', permissionError);
-        setLoading(false);
       });
+
+    // Atualização otimista da UI: limpamos o estado e mostramos sucesso imediatamente
+    toast({
+      title: "Acesso Garantido!",
+      description: "Entraremos em contato em breve.",
+    });
+    setEmail("");
+    setLoading(false);
   };
 
   return (
