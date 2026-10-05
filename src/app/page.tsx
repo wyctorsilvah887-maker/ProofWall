@@ -9,13 +9,38 @@ import { Star, CheckCircle2, Layout, Palette, Zap } from "lucide-react";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
-  const designImage = PlaceHolderImages.find(img => img.id === 'brand-design');
+  const avatars = [
+    PlaceHolderImages.find(img => img.id === 'avatar-1'),
+    PlaceHolderImages.find(img => img.id === 'avatar-2'),
+    PlaceHolderImages.find(img => img.id === 'avatar-3'),
+  ];
+
+  const testimonials = [
+    {
+      name: "Alice M.",
+      company: "TechFlow Solutions",
+      text: "A facilidade de instalar o widget no meu site foi impressionante. O visual combinou direto!",
+      avatar: avatars[0]
+    },
+    {
+      name: "Bruno R.",
+      company: "Creative Labs",
+      text: "Nossos clientes adoram gravar depoimentos em vídeo. A conversão subiu drasticamente.",
+      avatar: avatars[1]
+    },
+    {
+      name: "Carla S.",
+      company: "Global E-commerce",
+      text: "O ProofWall é a melhor ferramenta de prova social que já utilizei. Simples e poderosa.",
+      avatar: avatars[2]
+    }
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-center border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <span className="font-headline">ProofWall</span>
+          <span className="font-headline text-2xl">ProofWall</span>
         </div>
       </header>
 
@@ -103,10 +128,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Feature Section: Adaptability */}
+        {/* Feature Section: Adaptability & Mockup */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/30">
           <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
                   Personalização sem esforço
@@ -117,47 +142,88 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="grid gap-10 lg:grid-cols-2 items-center">
-              <div className="relative aspect-video overflow-hidden rounded-xl border bg-card shadow-lg">
-                {designImage && (
-                  <Image
-                    src={designImage.imageUrl}
-                    alt={designImage.description}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={designImage.imageHint}
-                  />
-                )}
+            <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr] items-center">
+              {/* Mockup Widget */}
+              <div className="relative p-8 bg-card rounded-3xl border shadow-2xl overflow-hidden min-h-[400px]">
+                <div className="absolute top-0 right-0 p-4">
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400/50" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-400/50" />
+                    <div className="w-3 h-3 rounded-full bg-green-400/50" />
+                  </div>
+                </div>
+                
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                  {testimonials.map((t, idx) => (
+                    <div 
+                      key={idx} 
+                      className="bg-background border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
+                    >
+                      <div className="space-y-4">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
+                        <p className="text-sm text-muted-foreground italic leading-relaxed">"{t.text}"</p>
+                      </div>
+                      <div className="flex items-center gap-3 mt-6 border-t pt-4">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
+                          {t.avatar && (
+                            <Image 
+                              src={t.avatar.imageUrl} 
+                              alt={t.avatar.description} 
+                              fill 
+                              className="object-cover" 
+                              data-ai-hint={t.avatar.imageHint}
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold">{t.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{t.company}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Decorative Elements */}
+                <div className="mt-8 flex justify-center">
+                  <div className="px-4 py-2 bg-primary/5 rounded-full border border-primary/10 text-[10px] font-mono text-primary/60">
+                    &lt;script src="https://proofwall.io/widget.js"&gt;&lt;/script&gt;
+                  </div>
+                </div>
               </div>
               
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-2 rounded-lg text-primary">
+              <div className="space-y-8">
+                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
+                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
                     <Palette className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-headline">Cores Customizáveis</h3>
-                    <p className="text-muted-foreground">Combine as cores dos widgets com a paleta da sua identidade visual em segundos.</p>
+                    <h3 className="text-xl font-bold font-headline mb-1">Cores Customizáveis</h3>
+                    <p className="text-muted-foreground text-sm">Combine as cores dos widgets com a paleta da sua identidade visual em segundos.</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-2 rounded-lg text-primary">
+                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
+                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
                     <Layout className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-headline">Layouts Flexíveis</h3>
-                    <p className="text-muted-foreground">Escolha entre carrosséis, grades ou murais. O widget se ajusta a qualquer espaço do seu site.</p>
+                    <h3 className="text-xl font-bold font-headline mb-1">Layouts Flexíveis</h3>
+                    <p className="text-muted-foreground text-sm">Escolha entre carrosséis, grades ou murais. O widget se ajusta a qualquer espaço do seu site.</p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-2 rounded-lg text-primary">
+                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
+                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
                     <Zap className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-headline">Performance Nativa</h3>
-                    <p className="text-muted-foreground">Carregamento ultra-rápido que não interfere no SEO ou na experiência do usuário.</p>
+                    <h3 className="text-xl font-bold font-headline mb-1">Performance Nativa</h3>
+                    <p className="text-muted-foreground text-sm">Carregamento ultra-rápido que não interfere no SEO ou na experiência do usuário.</p>
                   </div>
                 </div>
               </div>
@@ -166,12 +232,12 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-6 border-t">
+      <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">© 2024 ProofWall. Todos os direitos reservados.</p>
-          <div className="flex gap-4 text-sm text-muted-foreground">
-            <a href="#" className="hover:underline">Privacidade</a>
-            <a href="#" className="hover:underline">Termos</a>
+          <div className="flex gap-6 text-sm text-muted-foreground">
+            <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
+            <a href="#" className="hover:text-primary transition-colors">Termos</a>
           </div>
         </div>
       </footer>
