@@ -1,10 +1,11 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star, CheckCircle2 } from "lucide-react";
+import { Star, CheckCircle2, Link2, ShieldCheck, Zap } from "lucide-react";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
@@ -198,6 +199,46 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Benefits Section: Benefícios Chaves */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
+                Benefícios Chaves
+              </h2>
+            </div>
+            <div className="grid gap-8 md:grid-cols-3">
+              <div className="flex flex-col items-center text-center space-y-4 p-8 rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-4 rounded-2xl bg-primary/5 text-primary">
+                  <Link2 className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold font-headline">Coleta sem atrito</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Envie um link direto para o seu cliente. Ele envia o depoimento em segundos, sem precisar criar conta.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-4 p-8 rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-4 rounded-2xl bg-primary/5 text-primary">
+                  <ShieldCheck className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold font-headline">Moderação em um clique</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Escolha exatamente o que vai para o ar no seu painel centralizado antes de publicar.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-4 p-8 rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-4 rounded-2xl bg-primary/5 text-primary">
+                  <Zap className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold font-headline">Widget ultra leve</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Um snippet de linha única que carrega instantaneamente sem prejudicar seu SEO ou tempo de carregamento.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section: Membro Fundador */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground">
           <div className="container px-4 md:px-6 mx-auto">
@@ -237,3 +278,4 @@ export default function Home() {
     </div>
   );
 }
+
