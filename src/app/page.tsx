@@ -1,11 +1,10 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star, CheckCircle2, Layout, Palette, Zap } from "lucide-react";
+import { Star, CheckCircle2 } from "lucide-react";
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
@@ -142,9 +141,9 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="grid gap-12 lg:grid-cols-[1.5fr_1fr] items-center">
+            <div className="flex flex-col items-center justify-center">
               {/* Mockup Widget */}
-              <div className="relative p-8 bg-card rounded-3xl border shadow-2xl overflow-hidden min-h-[400px]">
+              <div className="relative w-full max-w-5xl p-8 bg-card rounded-3xl border shadow-2xl overflow-hidden min-h-[400px]">
                 <div className="absolute top-0 right-0 p-4">
                   <div className="flex gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-400/50" />
@@ -192,38 +191,6 @@ export default function Home() {
                 <div className="mt-8 flex justify-center">
                   <div className="px-4 py-2 bg-primary/5 rounded-full border border-primary/10 text-[10px] font-mono text-primary/60">
                     &lt;script src="https://proofwall.io/widget.js"&gt;&lt;/script&gt;
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-8">
-                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
-                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
-                    <Palette className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-headline mb-1">Cores Customizáveis</h3>
-                    <p className="text-muted-foreground text-sm">Combine as cores dos widgets com a paleta da sua identidade visual em segundos.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
-                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
-                    <Layout className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-headline mb-1">Layouts Flexíveis</h3>
-                    <p className="text-muted-foreground text-sm">Escolha entre carrosséis, grades ou murais. O widget se ajusta a qualquer espaço do seu site.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4 p-4 rounded-2xl hover:bg-background transition-colors">
-                  <div className="bg-primary/10 p-3 rounded-xl text-primary">
-                    <Zap className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold font-headline mb-1">Performance Nativa</h3>
-                    <p className="text-muted-foreground text-sm">Carregamento ultra-rápido que não interfere no SEO ou na experiência do usuário.</p>
                   </div>
                 </div>
               </div>
