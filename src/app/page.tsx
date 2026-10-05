@@ -79,22 +79,6 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-center lg:justify-start gap-4 text-sm text-muted-foreground">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted flex items-center justify-center overflow-hidden">
-                        <Image 
-                          src={`https://picsum.photos/seed/user${i}/32/32`} 
-                          width={32} 
-                          height={32} 
-                          alt="User avatar" 
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <p>Junte-se a +2.000 empresas que confiam na ProofWall</p>
-                </div>
               </div>
               
               <div className="relative group lg:mt-0 mt-12 mx-auto lg:mx-0 w-full max-w-[500px] lg:max-w-none">
@@ -199,7 +183,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Benefits Section: Benefícios Chaves */}
+        {/* Benefits Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
@@ -239,7 +223,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section: Membro Fundador */}
+        {/* CTA Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
@@ -278,4 +262,3 @@ export default function Home() {
     </div>
   );
 }
-
