@@ -22,7 +22,9 @@ export default function Home() {
     e.preventDefault();
     const trimmedEmail = email.trim();
     
-    if (!trimmedEmail || !db) {
+    if (!trimmedEmail) return;
+    if (!db) {
+      console.error("Firestore não inicializado");
       return;
     }
 
@@ -34,11 +36,15 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    // Realiza a mutação no Firestore. 
-    // Não usamos 'await' para manter a UI responsiva e seguir as diretrizes de mutação otimista.
+    console.log("Tentando salvar lead:", leadData);
+
+    // Realiza a mutação no Firestore de forma otimista.
     addDoc(emailsRef, leadData)
+      .then((docRef) => {
+        console.log("Documento salvo com ID:", docRef.id);
+      })
       .catch(async (serverError) => {
-        // Se houver erro de permissão (ex: regras de segurança), o listener global tratará
+        console.error("Erro ao salvar no Firestore:", serverError);
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
@@ -47,13 +53,12 @@ export default function Home() {
         errorEmitter.emit('permission-error', permissionError);
       });
 
-    // Feedback imediato ao usuário (Optimistic UI)
+    // Feedback imediato (Optimistic UI)
     toast({
-      title: "Acesso Garantido!",
-      description: "Entraremos em contato em breve.",
+      title: "Solicitação enviada!",
+      description: "Seu e-mail foi registrado com sucesso.",
     });
 
-    // Limpa o formulário e encerra o estado de carregamento
     setEmail("");
     setLoading(false);
   };
@@ -113,10 +118,12 @@ export default function Home() {
                       {loading ? "Salvando..." : "Garantir Acesso Antecipado"}
                     </Button>
                   </form>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5 ml-2">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                    Grátis para os primeiros 50 inscritos. Sem necessidade de cartão de crédito.
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 ml-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                      Grátis para os primeiros 50 inscritos. Sem necessidade de cartão de crédito.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
