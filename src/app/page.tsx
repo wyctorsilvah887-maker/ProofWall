@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -23,14 +24,7 @@ export default function Home() {
     const trimmedEmail = email.trim();
     
     if (!trimmedEmail) return;
-    if (!db) {
-      toast({
-        variant: "destructive",
-        title: "Erro de Conexão",
-        description: "O banco de dados ainda não está pronto. Tente novamente.",
-      });
-      return;
-    }
+    if (!db) return;
 
     setLoading(true);
 
@@ -40,6 +34,7 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
+    // Padrão não-bloqueante: disparar a gravação e tratar o erro contextual
     addDoc(emailsRef, leadData)
       .then(() => {
         toast({
@@ -51,19 +46,12 @@ export default function Home() {
       })
       .catch(async (error) => {
         setLoading(false);
-        
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
           requestResourceData: leadData,
         });
         errorEmitter.emit('permission-error', permissionError);
-
-        toast({
-          variant: "destructive",
-          title: "Erro ao salvar",
-          description: "Verifique sua conexão ou as regras do banco de dados.",
-        });
       });
   };
 
