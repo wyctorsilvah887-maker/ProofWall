@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from "react";
@@ -55,7 +54,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-12">
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors">
         <ArrowLeft className="w-4 h-4" /> Voltar para o início
       </Link>
 
@@ -65,7 +64,7 @@ export default function SignupPage() {
             <Star className="w-8 h-8 fill-current" />
           </div>
           <h1 className="text-3xl font-bold font-headline tracking-tighter">Garanta seu lugar</h1>
-          <p className="text-muted-foreground">Preencha seus dados para entrar na lista VIP do ProofWall.</p>
+          <p className="text-gray-700">Preencha seus dados para entrar na lista VIP do ProofWall.</p>
         </div>
 
         <Card className="border-none shadow-2xl">
@@ -77,7 +76,7 @@ export default function SignupPage() {
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
                 <div className="relative">
-                  <User className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                  <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-700" />
                   <Input
                     placeholder="Seu Nome Completo"
                     value={name}
@@ -89,7 +88,7 @@ export default function SignupPage() {
               </div>
               <div className="space-y-2">
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-700" />
                   <Input
                     type="email"
                     placeholder="Seu Melhor E-mail"

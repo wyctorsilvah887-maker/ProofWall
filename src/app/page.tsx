@@ -50,13 +50,13 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
               <div className="flex flex-col justify-center space-y-8 text-center lg:text-left">
                 <div className="space-y-4">
-                  <div className="inline-block rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border mx-auto lg:mx-0 w-fit">
+                  <div className="inline-block rounded-full bg-muted px-3 py-1 text-sm font-medium text-gray-700 border mx-auto lg:mx-0 w-fit">
                     🚀 Novo: Suporte a depoimentos em vídeo 4K
                   </div>
                   <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none font-headline max-w-[800px]">
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto lg:mx-0">
+                  <p className="max-w-[600px] text-gray-700 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto lg:mx-0">
                     Colete, modere e exiba depoimentos em texto ou vídeos em minutos. 
                     Sem código complexo, sem impacto na velocidade do seu site.
                   </p>
@@ -72,7 +72,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground flex items-center justify-center lg:justify-start gap-1.5 ml-0 lg:ml-2">
+                    <p className="text-xs text-gray-700 flex items-center justify-center lg:justify-start gap-1.5 ml-0 lg:ml-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                       Grátis para os primeiros 50 inscritos. Crie sua conta em segundos.
                     </p>
@@ -119,7 +119,7 @@ export default function Home() {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
                   Personalização sem esforço
                 </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                <p className="max-w-[900px] text-gray-700 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Veja como o ProofWall se adapta perfeitamente ao design da sua marca.
                 </p>
               </div>
@@ -148,7 +148,7 @@ export default function Home() {
                             <Star key={s} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                           ))}
                         </div>
-                        <p className="text-sm text-muted-foreground italic leading-relaxed">"{t.text}"</p>
+                        <p className="text-sm text-gray-700 italic leading-relaxed">"{t.text}"</p>
                       </div>
                       <div className="flex items-center gap-3 mt-6 border-t pt-4">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10">
@@ -164,7 +164,7 @@ export default function Home() {
                         </div>
                         <div>
                           <p className="text-xs font-bold">{t.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{t.company}</p>
+                          <p className="text-[10px] text-gray-700">{t.company}</p>
                         </div>
                       </div>
                     </div>
@@ -196,7 +196,7 @@ export default function Home() {
                   <Link2 className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold font-headline">Coleta sem atrito</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   Envie um link direto para o seu cliente. Ele envia o depoimento em segundos, sem precisar criar conta.
                 </p>
               </div>
@@ -205,7 +205,7 @@ export default function Home() {
                   <ShieldCheck className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold font-headline">Moderação em um clique</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   Escolha exatamente o que vai para o ar no seu painel centralizado antes de publicar.
                 </p>
               </div>
@@ -214,7 +214,7 @@ export default function Home() {
                   <Zap className="w-8 h-8" />
                 </div>
                 <h3 className="text-2xl font-bold font-headline">Widget ultra leve</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-gray-700 leading-relaxed">
                   Um snippet de linha única que carrega instantaneamente sem prejudicar seu SEO ou tempo de carregamento.
                 </p>
               </div>
@@ -234,7 +234,7 @@ export default function Home() {
                   Inscreva-se hoje para garantir 50% de desconto perpétuo no lançamento oficial e acesso prioritário aos novos recursos de video.
                 </p>
               </div>
-              <div className="w-full max-w-sm space-y-3">
+              <div className="w-full max-sm:px-4 space-y-3">
                 <Link href="/signup">
                   <Button size="lg" variant="secondary" className="w-full h-14 text-lg font-bold shadow-2xl hover:scale-105 transition-transform">
                     Garantir Meu Lugar VIP
@@ -251,7 +251,7 @@ export default function Home() {
 
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">© 2026 ProofWall. Todos os direitos reservados.</p>
+          <p className="text-sm text-gray-700">© 2026 ProofWall. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
