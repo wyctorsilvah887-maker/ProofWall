@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-saas",
+      "description": "Dashboard de depoimentos e feedback de clientes",
+      "imageUrl": "https://picsum.photos/seed/saas1/800/600",
+      "imageHint": "saas dashboard testimonials"
+    }
+  ]
 }

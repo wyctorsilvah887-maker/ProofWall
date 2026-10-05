@@ -1,23 +1,114 @@
+
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Star } from "lucide-react";
 
 export default function Home() {
+  const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <h1 className="text-4xl font-bold tracking-tight">Projeto Resetado</h1>
-        <p className="text-lg text-muted-foreground">O ambiente está pronto para um novo começo.</p>
-        
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://nextjs.org/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentação Next.js
-          </a>
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      {/* Navegação Simples */}
+      <header className="px-4 lg:px-6 h-16 flex items-center border-b">
+        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
+          <div className="bg-primary text-primary-foreground p-1 rounded">
+            <Star className="w-5 h-5 fill-current" />
+          </div>
+          <span>TrustFlow</span>
         </div>
+        <nav className="ml-auto flex gap-4 sm:gap-6">
+          <Button variant="ghost" className="text-sm font-medium">Entrar</Button>
+          <Button className="text-sm font-medium">Começar Grátis</Button>
+        </nav>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 flex items-center justify-center">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
+              <div className="flex flex-col justify-center space-y-8">
+                <div className="space-y-4">
+                  <div className="inline-block rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border">
+                    🚀 Novo: Suporte a depoimentos em vídeo 4K
+                  </div>
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none font-headline max-w-[800px]">
+                    Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
+                  </h1>
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-body">
+                    Colete, modere e exiba depoimentos em texto ou videos em minutos. 
+                    Sem código complexo, sem impacto na velocidade do seu site.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 min-[400px]:flex-row">
+                  <Button size="lg" className="h-12 px-8 text-lg rounded-full shadow-lg glow-primary">
+                    Começar Agora
+                  </Button>
+                  <Button size="lg" variant="outline" className="h-12 px-8 text-lg rounded-full">
+                    Ver Demonstração
+                  </Button>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-muted flex items-center justify-center overflow-hidden">
+                        <Image 
+                          src={`https://picsum.photos/seed/user${i}/32/32`} 
+                          width={32} 
+                          height={32} 
+                          alt="User avatar" 
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p>Junte-se a +2.000 empresas que confiam na TrustFlow</p>
+                </div>
+              </div>
+              
+              {/* Visual da Hero */}
+              <div className="relative group lg:mt-0 mt-12">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border bg-card shadow-2xl">
+                  {heroImage && (
+                    <Image
+                      src={heroImage.imageUrl}
+                      alt={heroImage.description}
+                      fill
+                      priority
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                      data-ai-hint={heroImage.imageHint}
+                    />
+                  )}
+                  {/* Overlay decorativo de depoimento */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-background/90 backdrop-blur-sm p-4 rounded-xl border shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <div className="flex gap-1 mb-2">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-sm italic mb-2">"Aumentamos nossa conversão em 25% na primeira semana usando a TrustFlow!"</p>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">JD</div>
+                      <span className="text-xs font-semibold">João D., CEO da TechNova</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <footer className="py-6 border-t">
+        <div className="container px-4 md:px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-muted-foreground">© 2024 TrustFlow. Todos os direitos reservados.</p>
+          <div className="flex gap-4 text-sm text-muted-foreground">
+            <a href="#" className="hover:underline">Privacidade</a>
+            <a href="#" className="hover:underline">Termos</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
