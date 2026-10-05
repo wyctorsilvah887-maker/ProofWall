@@ -217,7 +217,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <p className="text-xs text-primary-foreground/60">
-                  Oferta limitada para as primeiras 100 empresas inscritas.
+                  Oferta limitada para as primeiras 50 empresas inscritas.
                 </p>
               </div>
             </div>
