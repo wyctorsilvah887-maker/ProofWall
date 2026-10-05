@@ -5,13 +5,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { UserPlus, Star, ArrowLeft, Mail, User } from "lucide-react";
+import { Star, ArrowLeft, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { toast } from "@/hooks/use-toast";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
@@ -21,36 +19,46 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !db) return;
+    if (!name.trim() || !email.trim() || !db) {
+      console.error("Firestore não inicializado ou campos vazios");
+      return;
+    }
 
     setIsSubmitting(true);
-    const usersRef = collection(db, "users");
-    const userData = {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      createdAt: serverTimestamp(),
-    };
+    
+    try {
+      const userData = {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        createdAt: serverTimestamp(),
+      };
 
-    // Mutação não bloqueante otimista
-    addDoc(usersRef, userData)
-      .then(() => {
-        toast({
-          title: "Inscrição Realizada!",
-          description: "Obrigado pelo interesse. Entraremos em contato em breve.",
-        });
-        router.push('/');
-      })
-      .catch(async (error) => {
-        const permissionError = new FirestorePermissionError({
-          path: usersRef.path,
-          operation: 'create',
-          requestResourceData: userData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        setIsSubmitting(false);
+      console.log("Tentando salvar lead em 'users':", userData);
+
+      // Usando await para garantir que o erro seja capturado pelo catch
+      const docRef = await addDoc(collection(db, "users"), userData);
+      
+      console.log("Lead salvo com sucesso! ID:", docRef.id);
+      
+      toast({
+        title: "Inscrição Realizada!",
+        description: "Você entrou para a lista VIP com sucesso.",
       });
+      
+      router.push('/');
+    } catch (error: any) {
+      console.error("Erro técnico ao salvar no Firestore:", error);
+      
+      toast({
+        variant: "destructive",
+        title: "Falha na Gravação",
+        description: error.message || "Erro de conexão com o banco de dados.",
+      });
+      
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -71,7 +79,7 @@ export default function SignupPage() {
         <Card className="border-none shadow-2xl">
           <CardHeader>
             <CardTitle className="text-xl">Dados de Contato</CardTitle>
-            <CardDescription>Sem senhas complicadas, apenas seu nome e e-mail.</CardDescription>
+            <CardDescription>Sem senhas, apenas seu nome e e-mail.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSignup} className="space-y-4">
@@ -112,7 +120,7 @@ export default function SignupPage() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground px-8">
-          Ao confirmar, você concorda em receber atualizações sobre o lançamento e novidades do ProofWall.
+          Ao confirmar, você concorda em receber atualizações sobre o lançamento do ProofWall.
         </p>
       </div>
     </div>

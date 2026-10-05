@@ -6,7 +6,7 @@ service cloud.firestore {
     // Permite que qualquer pessoa crie um usuário (lead) na coleção users
     match /users/{userId} {
       allow create: if true;
-      // Apenas administradores autenticados podem ler a lista de leads
+      // Permite que administradores autenticados leiam a lista
       allow read: if request.auth != null;
     }
     
