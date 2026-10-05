@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from "react";
@@ -23,8 +22,7 @@ export default function Home() {
     e.preventDefault();
     const trimmedEmail = email.trim();
     
-    if (!trimmedEmail) return;
-    if (!db) return;
+    if (!trimmedEmail || !db) return;
 
     setLoading(true);
 
@@ -34,18 +32,20 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    // Padrão não-bloqueante: disparar a gravação e tratar o erro contextual
+    // Padrão otimista: Limpamos o estado e mostramos toast imediatamente
+    // O Firestore cuidará da gravação em segundo plano ou reportará erro via catch
     addDoc(emailsRef, leadData)
       .then(() => {
+        setLoading(false);
+        setEmail("");
         toast({
           title: "Acesso Garantido!",
-          description: "Seu e-mail foi registrado com sucesso.",
+          description: "Seu e-mail foi registrado em nossa lista VIP.",
         });
-        setEmail("");
-        setLoading(false);
       })
       .catch(async (error) => {
         setLoading(false);
+        // Emite erro contextual para o listener global
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',

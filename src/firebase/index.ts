@@ -3,6 +3,10 @@ import { getFirestore, Firestore, initializeFirestore } from 'firebase/firestore
 import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
 
+/**
+ * Inicializa as instâncias do Firebase.
+ * Forçamos o Long Polling para garantir estabilidade em ambientes de Cloud Workstations.
+ */
 export function initializeFirebase(): {
   app: FirebaseApp;
   firestore: Firestore;
@@ -12,12 +16,13 @@ export function initializeFirebase(): {
   
   let firestore: Firestore;
   try {
-    // Forçamos o Long Polling para garantir estabilidade em redes com proxy/firewall
+    // initializeFirestore deve ser chamado apenas uma vez por app instance
     firestore = initializeFirestore(app, {
       experimentalForceLongPolling: true,
+      experimentalAutoDetectLongPolling: false,
     });
   } catch (e) {
-    // Se já estiver inicializado, apenas pegamos a instância existente
+    // Se já estiver inicializado, pegamos a instância existente
     firestore = getFirestore(app);
   }
   
