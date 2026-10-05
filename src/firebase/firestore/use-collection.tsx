@@ -30,15 +30,17 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T)));
         setLoading(false);
       },
-      async (error: any) => {
-        // Tenta extrair um caminho legível da query para o erro
-        const path = (query as any)._query?.path?.segments?.join('/') || 'coleção desconhecida';
+      async (serverError: any) => {
+        // Tenta extrair um caminho amigável da query para o log de erro
+        const pathSegments = (query as any)._query?.path?.segments || [];
+        const path = pathSegments.length > 0 ? pathSegments.join('/') : 'unknown_collection';
         
         const permissionError = new FirestorePermissionError({
           path: `/${path}`,
           operation: 'list',
         } satisfies SecurityRuleContext);
         
+        // Emite o erro contextual para o listener central
         errorEmitter.emit('permission-error', permissionError);
         setLoading(false);
       }

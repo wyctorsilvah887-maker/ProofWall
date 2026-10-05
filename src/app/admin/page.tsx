@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -19,9 +19,11 @@ export default function AdminPage() {
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
   
-  // Verifica se o usuário logado é realmente um admin no Firestore
+  // Referência para o documento do usuário atual para verificar se é admin
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+  
+  // Flag definitiva de admin baseada no Firestore
   const isUserAdmin = userData?.isAdmin === true;
 
   const [accessCode, setAccessCode] = useState('');
@@ -33,7 +35,7 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Só tentamos buscar leads se o usuário estiver logado e for confirmado como admin
+  // Consulta de leads: só é ativada se o banco, o usuário e a flag de admin estiverem prontos
   const leadsQuery = useMemo(() => {
     if (!db || !user || !isUserAdmin) return null;
     return query(
@@ -72,6 +74,7 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         };
 
+        // Escrita do perfil admin na coleção central
         setDoc(doc(db, 'users', newUser.uid), adminData)
           .catch(async (err) => {
             const permissionError = new FirestorePermissionError({
@@ -95,9 +98,17 @@ export default function AdminPage() {
   };
 
   if (authLoading || (user && userDataLoading)) {
-    return <div className="flex h-screen items-center justify-center">Verificando credenciais...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground font-medium">Validando credenciais de acesso...</p>
+        </div>
+      </div>
+    );
   }
 
+  // Se não inseriu o código nem está logado
   if (!isCodeCorrect && !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
@@ -127,7 +138,8 @@ export default function AdminPage() {
     );
   }
 
-  if (!user || (user && !isUserAdmin && !userDataLoading)) {
+  // Tela de Login/Registro se não estiver logado
+  if (!user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
         <Card className="w-full max-w-md shadow-xl">
@@ -139,57 +151,71 @@ export default function AdminPage() {
               {isAdminRegistering ? 'Criar Admin' : 'Login Admin'}
             </CardTitle>
             <CardDescription>
-              {!user && isAdminRegistering ? 'Cadastre seu perfil administrativo.' : 'Acesse o painel de controle.'}
-              {user && !isUserAdmin && 'Esta conta não tem privilégios de administrador.'}
+              {isAdminRegistering ? 'Cadastre seu perfil administrativo.' : 'Acesse o painel de controle.'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {!user ? (
-              <form onSubmit={handleAuth} className="space-y-4">
-                {isAdminRegistering && (
-                  <Input
-                    type="text"
-                    placeholder="Nome Completo"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                )}
+            <form onSubmit={handleAuth} className="space-y-4">
+              {isAdminRegistering && (
                 <Input
-                  type="email"
-                  placeholder="E-mail admin"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="Nome Completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
-                <Input
-                  type="password"
-                  placeholder="Senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <Button type="submit" className="w-full" disabled={isAuthLoading}>
-                  {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
-                </Button>
-                <Button 
-                  type="button"
-                  variant="link" 
-                  className="w-full text-xs" 
-                  onClick={() => setIsAdminRegistering(!isAdminRegistering)}
-                >
-                  {isAdminRegistering ? 'Já tem conta? Login' : 'Novo admin? Registrar'}
-                </Button>
-              </form>
-            ) : (
-              <Button onClick={() => signOut(auth)} className="w-full">Sair e tentar outra conta</Button>
-            )}
+              )}
+              <Input
+                type="email"
+                placeholder="E-mail admin"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
+              </Button>
+              <Button 
+                type="button"
+                variant="link" 
+                className="w-full text-xs" 
+                onClick={() => setIsAdminRegistering(!isAdminRegistering)}
+              >
+                {isAdminRegistering ? 'Já tem conta? Login' : 'Novo admin? Registrar'}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  // Caso esteja logado mas não tenha permissão de admin no Firestore
+  if (!isUserAdmin) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
+        <Card className="w-full max-w-md shadow-xl text-center">
+          <CardHeader>
+            <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <CardTitle>Acesso Negado</CardTitle>
+            <CardDescription>Sua conta não possui privilégios administrativos.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => signOut(auth)} className="w-full">Sair e tentar outra conta</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Painel Administrativo Principal
   return (
     <div className="min-h-screen bg-muted/30 font-body">
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-10 shadow-sm">
@@ -233,7 +259,13 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent>
             {leadsLoading ? (
-              <div className="py-10 text-center">Carregando dados...</div>
+              <div className="py-20 text-center">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
+                  <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
+                  <div className="h-4 bg-muted rounded w-5/6 mx-auto"></div>
+                </div>
+              </div>
             ) : leadsList && leadsList.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -259,7 +291,7 @@ export default function AdminPage() {
                       <TableCell className="text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-3.5 h-3.5" />
-                          {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Agora'}
+                          {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Recentemente'}
                         </div>
                       </TableCell>
                     </TableRow>

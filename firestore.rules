@@ -3,23 +3,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper para verificar se o usuário logado é um administrador
-    function isAdmin() {
-      return request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-
     match /users/{userId} {
-      // Permite que qualquer um (leads) se registre
-      // Permite que admins criem outros admins
+      // Permite que qualquer um se registre (leads e primeiro passo do admin)
       allow create: if true;
       
-      // O próprio usuário pode ler seu perfil. 
-      // Administradores podem ler e listar todos os usuários (necessário para o painel).
-      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // 1. O próprio usuário pode ler e editar seu próprio perfil
+      allow read, write: if request.auth != null && request.auth.uid == userId;
       
-      // Apenas o próprio usuário ou um admin pode editar o perfil
-      allow update, delete: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // 2. Administradores podem ler e editar qualquer perfil e listar a coleção
+      // Usamos get() de forma segura para verificar a flag no documento do solicitante
+      allow read, write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
     match /{document=**} {
