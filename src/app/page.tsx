@@ -40,7 +40,6 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    // Chamada ao Firestore seguindo o padrão de mutação otimista
     addDoc(emailsRef, leadData)
       .then(() => {
         toast({
@@ -51,10 +50,8 @@ export default function Home() {
         setLoading(false);
       })
       .catch(async (error) => {
-        console.error("Erro ao salvar lead:", error);
         setLoading(false);
         
-        // Emite erro contextual para o listener global
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
@@ -77,7 +74,7 @@ export default function Home() {
           <div className="bg-primary text-primary-foreground p-1 rounded">
             <Star className="w-5 h-5 fill-current" />
           </div>
-          <span className="font-headline">TrustFlow</span>
+          <span className="font-headline">ProofWall</span>
         </div>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Button variant="ghost" className="text-sm font-medium">Entrar</Button>
@@ -144,7 +141,7 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <p>Junte-se a +2.000 empresas que confiam na TrustFlow</p>
+                  <p>Junte-se a +2.000 empresas que confiam na ProofWall</p>
                 </div>
               </div>
               
@@ -167,7 +164,7 @@ export default function Home() {
                         <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-sm italic mb-2">"Aumentamos nossa conversão em 25% na primeira semana usando a TrustFlow!"</p>
+                    <p className="text-sm italic mb-2">"Aumentamos nossa conversão em 25% na primeira semana usando a ProofWall!"</p>
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold">JD</div>
                       <span className="text-xs font-semibold">João D., CEO da TechNova</span>
@@ -182,7 +179,7 @@ export default function Home() {
 
       <footer className="py-6 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">© 2024 TrustFlow. Todos os direitos reservados.</p>
+          <p className="text-sm text-muted-foreground">© 2024 ProofWall. Todos os direitos reservados.</p>
           <div className="flex gap-4 text-sm text-muted-foreground">
             <a href="#" className="hover:underline">Privacidade</a>
             <a href="#" className="hover:underline">Termos</a>
