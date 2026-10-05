@@ -24,7 +24,11 @@ export default function Home() {
     
     if (!trimmedEmail) return;
     if (!db) {
-      console.error("Firestore não inicializado");
+      toast({
+        variant: "destructive",
+        title: "Erro de Conexão",
+        description: "O banco de dados ainda não está pronto. Tente novamente em instantes.",
+      });
       return;
     }
 
@@ -36,15 +40,20 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    console.log("Tentando salvar lead:", leadData);
-
-    // Realiza a mutação no Firestore de forma otimista.
+    // Chamada ao Firestore sem await para seguir o padrão de mutação otimista
     addDoc(emailsRef, leadData)
       .then((docRef) => {
-        console.log("Documento salvo com ID:", docRef.id);
+        console.log("Lead salvo com sucesso! ID:", docRef.id);
+        toast({
+          title: "Acesso Garantido!",
+          description: "Seu e-mail foi registrado. Entraremos em contato em breve.",
+        });
+        setEmail("");
+        setLoading(false);
       })
       .catch(async (serverError) => {
-        console.error("Erro ao salvar no Firestore:", serverError);
+        console.error("Erro crítico ao salvar:", serverError);
+        setLoading(false);
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
@@ -52,20 +61,10 @@ export default function Home() {
         });
         errorEmitter.emit('permission-error', permissionError);
       });
-
-    // Feedback imediato (Optimistic UI)
-    toast({
-      title: "Solicitação enviada!",
-      description: "Seu e-mail foi registrado com sucesso.",
-    });
-
-    setEmail("");
-    setLoading(false);
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
-      {/* Navegação */}
       <header className="px-4 lg:px-6 h-16 flex items-center border-b">
         <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
           <div className="bg-primary text-primary-foreground p-1 rounded">
@@ -80,7 +79,6 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 flex items-center justify-center">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
@@ -98,7 +96,6 @@ export default function Home() {
                   </p>
                 </div>
                 
-                {/* Form de Captura de Lead */}
                 <div className="space-y-4">
                   <form onSubmit={handleSignUp} className="flex flex-col gap-3 sm:flex-row max-w-lg">
                     <Input 
@@ -108,6 +105,7 @@ export default function Home() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      disabled={loading}
                     />
                     <Button 
                       type="submit" 
@@ -115,7 +113,7 @@ export default function Home() {
                       className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105"
                       disabled={loading}
                     >
-                      {loading ? "Salvando..." : "Garantir Acesso Antecipado"}
+                      {loading ? "Processando..." : "Garantir Acesso Antecipado"}
                     </Button>
                   </form>
                   <div className="space-y-1">
@@ -143,7 +141,6 @@ export default function Home() {
                 </div>
               </div>
               
-              {/* Visual da Hero */}
               <div className="relative group lg:mt-0 mt-12">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border bg-card shadow-2xl">
