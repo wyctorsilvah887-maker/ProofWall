@@ -1,24 +1,28 @@
 
 {
   "entities": {
-    "Lead": {
-      "title": "Lead",
-      "description": "Informações capturadas de potenciais clientes interessados no acesso antecipado.",
+    "User": {
+      "title": "User",
+      "description": "Usuários registrados para acesso antecipado.",
       "type": "object",
       "properties": {
-        "email": {
+        "username": {
           "type": "string",
-          "format": "email",
-          "description": "O e-mail corporativo fornecido pelo lead."
+          "description": "Nome de usuário escolhido."
+        },
+        "password": {
+          "type": "string",
+          "description": "Senha da conta."
         },
         "createdAt": {
           "type": "string",
           "format": "date-time",
-          "description": "Data e hora em que o e-mail foi registrado."
+          "description": "Data de criação do registro."
         }
       },
       "required": [
-        "email",
+        "username",
+        "password",
         "createdAt"
       ]
     }
@@ -29,9 +33,9 @@
     ]
   },
   "firestore": {
-    "/emails/{emailId}": {
-      "schema": "Lead",
-      "description": "Coleção global para armazenar e-mails capturados na landing page."
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Coleção global de usuários inscritos."
     }
   }
 }

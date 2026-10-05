@@ -1,55 +1,14 @@
 
 'use client';
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2 } from "lucide-react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
-import { toast } from "@/hooks/use-toast";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function Home() {
-  const db = useFirestore();
-  const [email, setEmail] = useState("");
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
-
-  const handleSignUp = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedEmail = email.trim();
-    
-    if (!trimmedEmail || !db) return;
-
-    const emailsRef = collection(db, "emails");
-    const leadData = {
-      email: trimmedEmail,
-      createdAt: serverTimestamp(),
-    };
-
-    // Mutação não bloqueante (padrão Firebase Studio)
-    // Não usamos 'await' aqui. O Firestore gerencia a fila de gravação offline/online.
-    addDoc(emailsRef, leadData)
-      .catch(async (error) => {
-        // Se houver erro de permissão (ex: regras não publicadas), emitimos o erro contextual
-        const permissionError = new FirestorePermissionError({
-          path: emailsRef.path,
-          operation: 'create',
-          requestResourceData: leadData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-      });
-
-    // Feedback imediato para o usuário (Otimista)
-    setEmail("");
-    toast({
-      title: "Acesso Garantido!",
-      description: "Seu e-mail foi registrado em nossa lista VIP.",
-    });
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
@@ -61,8 +20,12 @@ export default function Home() {
           <span className="font-headline">ProofWall</span>
         </div>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Button variant="ghost" className="text-sm font-medium">Entrar</Button>
-          <Button className="text-sm font-medium">Testar Grátis</Button>
+          <Link href="/admin">
+            <Button variant="ghost" className="text-sm font-medium">Admin</Button>
+          </Link>
+          <Link href="/signup">
+            <Button className="text-sm font-medium">Testar Grátis</Button>
+          </Link>
         </nav>
       </header>
 
@@ -85,27 +48,18 @@ export default function Home() {
                 </div>
                 
                 <div className="space-y-4">
-                  <form onSubmit={handleSignUp} className="flex flex-col gap-3 sm:flex-row max-w-lg">
-                    <Input 
-                      type="email" 
-                      placeholder="Seu e-mail corporativo" 
-                      className="h-12 rounded-full px-6 bg-card"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
+                  <Link href="/signup">
                     <Button 
-                      type="submit" 
                       size="lg" 
-                      className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105"
+                      className="h-14 px-10 rounded-full text-lg shadow-xl transition-all hover:scale-105"
                     >
-                      Garantir Acesso Antecipado
+                      Garantir Acesso Antecipado Agora
                     </Button>
-                  </form>
+                  </Link>
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground flex items-center gap-1.5 ml-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                      Grátis para os primeiros 50 inscritos. Sem necessidade de cartão de crédito.
+                      Grátis para os primeiros 50 inscritos. Crie sua conta em segundos.
                     </p>
                   </div>
                 </div>
