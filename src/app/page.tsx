@@ -1,51 +1,63 @@
-
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2 } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
+import { signInAnonymously } from "firebase/auth";
+import { useFirestore, useAuth } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const db = useFirestore();
+  const auth = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  // Garante que o usuário esteja autenticado anonimamente para realizar operações no Firestore
+  useEffect(() => {
+    if (auth && !auth.currentUser) {
+      signInAnonymously(auth).catch((err) => {
+        // Erros de autenticação inicial podem ser ignorados ou tratados silenciosamente
+      });
+    }
+  }, [auth]);
+
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !db) return;
 
     setLoading(true);
     const emailsRef = collection(db, "emails");
 
-    addDoc(emailsRef, {
+    const leadData = {
       email,
       createdAt: serverTimestamp(),
-    })
+    };
+
+    // Operação de mutação seguindo as diretrizes: sem await, com .catch() para erros contextuais
+    addDoc(emailsRef, leadData)
       .then(() => {
         toast({
           title: "Acesso Garantido!",
           description: "Entraremos em contato em breve.",
         });
         setEmail("");
+        setLoading(false);
       })
-      .catch(async (error) => {
+      .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
-          requestResourceData: { email },
+          requestResourceData: leadData,
         });
         errorEmitter.emit('permission-error', permissionError);
-      })
-      .finally(() => {
         setLoading(false);
       });
   };
