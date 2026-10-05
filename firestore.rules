@@ -1,14 +1,17 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permite que qualquer pessoa envie seu e-mail (criação de lead) na coleção 'emails'
+    // Permite que qualquer pessoa envie seu e-mail (criação de lead)
     match /emails/{emailId} {
       allow create: if true;
-      allow read, update, delete: if false;
+      // Apenas usuários autenticados (admins) podem ler a lista de leads
+      allow read: if request.auth != null;
+      allow update, delete: if false;
     }
     
-    // Nega acesso a qualquer outra coleção por padrão para segurança
+    // Nega acesso a qualquer outra coleção por padrão
     match /{document=**} {
       allow read, write: if false;
     }
