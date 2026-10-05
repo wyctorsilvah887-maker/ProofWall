@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star } from "lucide-react";
@@ -8,18 +9,18 @@ export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       {/* Navegação Simples */}
       <header className="px-4 lg:px-6 h-16 flex items-center border-b">
         <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
           <div className="bg-primary text-primary-foreground p-1 rounded">
             <Star className="w-5 h-5 fill-current" />
           </div>
-          <span>TrustFlow</span>
+          <span className="font-headline">TrustFlow</span>
         </div>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Button variant="ghost" className="text-sm font-medium">Entrar</Button>
-          <Button className="text-sm font-medium">Começar Grátis</Button>
+          <Button className="text-sm font-medium">Testar Grátis</Button>
         </nav>
       </header>
 
@@ -36,19 +37,24 @@ export default function Home() {
                   <h1 className="text-4xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none font-headline max-w-[800px]">
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed font-body">
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                     Colete, modere e exiba depoimentos em texto ou videos em minutos. 
                     Sem código complexo, sem impacto na velocidade do seu site.
                   </p>
                 </div>
-                <div className="flex flex-col gap-3 min-[400px]:flex-row">
-                  <Button size="lg" className="h-12 px-8 text-lg rounded-full shadow-lg glow-primary">
-                    Começar Agora
-                  </Button>
-                  <Button size="lg" variant="outline" className="h-12 px-8 text-lg rounded-full">
-                    Ver Demonstração
+                
+                {/* Form de Captura de Lead */}
+                <div className="flex flex-col gap-3 sm:flex-row max-w-lg">
+                  <Input 
+                    type="email" 
+                    placeholder="Seu e-mail corporativo" 
+                    className="h-12 rounded-full px-6 bg-card"
+                  />
+                  <Button size="lg" className="h-12 px-8 rounded-full whitespace-nowrap shadow-lg transition-all hover:scale-105">
+                    Garantir Acesso Antecipado
                   </Button>
                 </div>
+
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
@@ -68,7 +74,7 @@ export default function Home() {
               
               {/* Visual da Hero */}
               <div className="relative group lg:mt-0 mt-12">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border bg-card shadow-2xl">
                   {heroImage && (
                     <Image
