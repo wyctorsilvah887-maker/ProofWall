@@ -10,8 +10,16 @@ export function initializeFirebase(): {
 } {
   const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   
-  // Usamos initializeFirestore com experimentalForceLongPolling para garantir estabilidade em ambientes de rede restritos
-  const firestore = getFirestore(app);
+  let firestore: Firestore;
+  try {
+    // Forçamos o Long Polling para garantir estabilidade em redes com proxy/firewall
+    firestore = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    });
+  } catch (e) {
+    // Se já estiver inicializado, apenas pegamos a instância existente
+    firestore = getFirestore(app);
+  }
   
   const auth = getAuth(app);
   return { app, firestore, auth };

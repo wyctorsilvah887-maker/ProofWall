@@ -8,9 +8,9 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2 } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
+import { toast } from "@/hooks/use-toast";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const db = useFirestore();
@@ -27,7 +27,7 @@ export default function Home() {
       toast({
         variant: "destructive",
         title: "Erro de Conexão",
-        description: "O banco de dados ainda não está pronto. Tente novamente em instantes.",
+        description: "O banco de dados ainda não está pronto. Tente novamente.",
       });
       return;
     }
@@ -40,26 +40,33 @@ export default function Home() {
       createdAt: serverTimestamp(),
     };
 
-    // Chamada ao Firestore sem await para seguir o padrão de mutação otimista
+    // Chamada ao Firestore seguindo o padrão de mutação otimista
     addDoc(emailsRef, leadData)
-      .then((docRef) => {
-        console.log("Lead salvo com sucesso! ID:", docRef.id);
+      .then(() => {
         toast({
           title: "Acesso Garantido!",
-          description: "Seu e-mail foi registrado. Entraremos em contato em breve.",
+          description: "Seu e-mail foi registrado com sucesso.",
         });
         setEmail("");
         setLoading(false);
       })
-      .catch(async (serverError) => {
-        console.error("Erro crítico ao salvar:", serverError);
+      .catch(async (error) => {
+        console.error("Erro ao salvar lead:", error);
         setLoading(false);
+        
+        // Emite erro contextual para o listener global
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
           requestResourceData: leadData,
         });
         errorEmitter.emit('permission-error', permissionError);
+
+        toast({
+          variant: "destructive",
+          title: "Erro ao salvar",
+          description: "Verifique sua conexão ou as regras do banco de dados.",
+        });
       });
   };
 
