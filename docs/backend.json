@@ -6,13 +6,14 @@
       "description": "Usuários registrados para acesso antecipado.",
       "type": "object",
       "properties": {
-        "username": {
+        "name": {
           "type": "string",
-          "description": "Nome de usuário escolhido."
+          "description": "Nome completo do usuário."
         },
-        "password": {
+        "email": {
           "type": "string",
-          "description": "Senha da conta."
+          "format": "email",
+          "description": "Endereço de e-mail."
         },
         "createdAt": {
           "type": "string",
@@ -21,8 +22,8 @@
         }
       },
       "required": [
-        "username",
-        "password",
+        "name",
+        "email",
         "createdAt"
       ]
     }

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { UserPlus, Star, ArrowLeft } from "lucide-react";
+import { UserPlus, Star, ArrowLeft, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
@@ -17,19 +17,19 @@ import { useRouter } from "next/navigation";
 export default function SignupPage() {
   const db = useFirestore();
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password.trim() || !db) return;
+    if (!name.trim() || !email.trim() || !db) return;
 
     setIsSubmitting(true);
     const usersRef = collection(db, "users");
     const userData = {
-      username: username.trim(),
-      password: password.trim(), // Nota: Em produção, senhas nunca devem ser salvas em texto puro.
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
       createdAt: serverTimestamp(),
     };
 
@@ -37,8 +37,8 @@ export default function SignupPage() {
     addDoc(usersRef, userData)
       .then(() => {
         toast({
-          title: "Bem-vindo à ProofWall!",
-          description: "Sua conta de acesso antecipado foi criada com sucesso.",
+          title: "Inscrição Realizada!",
+          description: "Obrigado pelo interesse. Entraremos em contato em breve.",
         });
         router.push('/');
       })
@@ -64,49 +64,55 @@ export default function SignupPage() {
           <div className="bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg mb-4">
             <Star className="w-8 h-8 fill-current" />
           </div>
-          <h1 className="text-3xl font-bold font-headline tracking-tighter">Crie sua conta VIP</h1>
-          <p className="text-muted-foreground">Defina suas credenciais para garantir seu lugar.</p>
+          <h1 className="text-3xl font-bold font-headline tracking-tighter">Garanta seu lugar</h1>
+          <p className="text-muted-foreground">Preencha seus dados para entrar na lista VIP do ProofWall.</p>
         </div>
 
         <Card className="border-none shadow-2xl">
           <CardHeader>
-            <CardTitle className="text-xl">Informações de Acesso</CardTitle>
-            <CardDescription>Não solicitamos e-mail, apenas um nome único.</CardDescription>
+            <CardTitle className="text-xl">Dados de Contato</CardTitle>
+            <CardDescription>Sem senhas complicadas, apenas seu nome e e-mail.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSignup} className="space-y-4">
               <div className="space-y-2">
-                <Input
-                  placeholder="Nome de Usuário"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <div className="relative">
+                  <User className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Seu Nome Completo"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 pl-10"
+                    required
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Input
-                  type="password"
-                  placeholder="Senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12"
-                  required
-                />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    placeholder="Seu Melhor E-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 pl-10"
+                    required
+                  />
+                </div>
               </div>
               <Button 
                 type="submit" 
                 className="w-full h-12 text-lg font-semibold"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Criando..." : "Confirmar Acesso"}
+                {isSubmitting ? "Enviando..." : "Confirmar Acesso VIP"}
               </Button>
             </form>
           </CardContent>
         </Card>
 
         <p className="text-center text-xs text-muted-foreground px-8">
-          Ao clicar em confirmar, você concorda com nossos termos de uso e política de privacidade para o beta fechado.
+          Ao confirmar, você concorda em receber atualizações sobre o lançamento e novidades do ProofWall.
         </p>
       </div>
     </div>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, orderBy } from 'firebase/firestore';
@@ -24,7 +24,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
 
-  // Consulta de usuários registrados (novo backend)
+  // Consulta de usuários registrados na coleção 'users'
   const usersQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users'), orderBy('createdAt', 'desc'));
@@ -151,12 +151,12 @@ export default function AdminPage() {
         <div className="grid gap-6 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Usuários Registrados</CardTitle>
+              <CardTitle className="text-sm font-medium">Total de Leads</CardTitle>
               <Users className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{usersList?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">Novas contas de acesso antecipado</p>
+              <p className="text-xs text-muted-foreground">Novos cadastros interessados</p>
             </CardContent>
           </Card>
         </div>
@@ -164,9 +164,9 @@ export default function AdminPage() {
         <Card className="shadow-lg border-none">
           <CardHeader>
             <CardTitle className="font-headline text-xl flex items-center gap-2">
-              <UserCheck className="w-5 h-5" /> Lista de Credenciais VIP
+              <UserCheck className="w-5 h-5" /> Lista de Inscritos VIP
             </CardTitle>
-            <CardDescription>Gerencie quem já garantiu o nome de usuário.</CardDescription>
+            <CardDescription>Exportar ou gerenciar a lista de contatos para acesso antecipado.</CardDescription>
           </CardHeader>
           <CardContent>
             {usersLoading ? (
@@ -175,19 +175,29 @@ export default function AdminPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Senha (Beta)</TableHead>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>E-mail</TableHead>
                     <TableHead>Data de Registro</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {usersList.map((usr: any) => (
                     <TableRow key={usr.id}>
-                      <TableCell className="font-bold text-primary">{usr.username}</TableCell>
-                      <TableCell className="font-mono text-xs opacity-50">{usr.password}</TableCell>
-                      <TableCell className="text-muted-foreground flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Agora'}
+                      <TableCell className="font-bold flex items-center gap-2">
+                        <User className="w-4 h-4 text-primary/60" />
+                        {usr.name}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 text-primary">
+                          <Mail className="w-4 h-4 text-primary/60" />
+                          {usr.email}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Agora'}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -195,7 +205,7 @@ export default function AdminPage() {
               </Table>
             ) : (
               <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
-                <p className="text-muted-foreground">Nenhum usuário registrado ainda.</p>
+                <p className="text-muted-foreground">Nenhum lead registrado ainda.</p>
               </div>
             )}
           </CardContent>
