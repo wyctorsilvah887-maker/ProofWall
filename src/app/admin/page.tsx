@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -35,7 +35,7 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Consulta de leads: só é ativada se o banco, o usuário e a flag de admin estiverem prontos
+  // Consulta de leads: só é ativada se o banco, o usuário e a flag de admin estiverem confirmados no servidor
   const leadsQuery = useMemo(() => {
     if (!db || !user || !isUserAdmin) return null;
     return query(
@@ -74,7 +74,6 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         };
 
-        // Escrita do perfil admin na coleção central
         setDoc(doc(db, 'users', newUser.uid), adminData)
           .catch(async (err) => {
             const permissionError = new FirestorePermissionError({
@@ -108,7 +107,6 @@ export default function AdminPage() {
     );
   }
 
-  // Se não inseriu o código nem está logado
   if (!isCodeCorrect && !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
@@ -138,7 +136,6 @@ export default function AdminPage() {
     );
   }
 
-  // Tela de Login/Registro se não estiver logado
   if (!user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
@@ -197,7 +194,6 @@ export default function AdminPage() {
     );
   }
 
-  // Caso esteja logado mas não tenha permissão de admin no Firestore
   if (!isUserAdmin) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
@@ -205,7 +201,7 @@ export default function AdminPage() {
           <CardHeader>
             <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
             <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>Sua conta não possui privilégios administrativos.</CardDescription>
+            <CardDescription>Sua conta não possui privilégios administrativos no banco de dados.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => signOut(auth)} className="w-full">Sair e tentar outra conta</Button>
@@ -215,7 +211,6 @@ export default function AdminPage() {
     );
   }
 
-  // Painel Administrativo Principal
   return (
     <div className="min-h-screen bg-muted/30 font-body">
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-10 shadow-sm">

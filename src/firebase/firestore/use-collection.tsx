@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { 
   onSnapshot, 
   Query, 
-  QuerySnapshot, 
   DocumentData,
-  collection,
-  query as firestoreQuery
 } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '../errors';
@@ -32,15 +29,14 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
       },
       async (serverError: any) => {
         // Tenta extrair um caminho amigável da query para o log de erro
-        const pathSegments = (query as any)._query?.path?.segments || [];
-        const path = pathSegments.length > 0 ? pathSegments.join('/') : 'unknown_collection';
+        // Usamos uma verificação segura para evitar o erro de runtime reportado
+        const path = (query as any)._query?.path?.segments?.join('/') || 'users';
         
         const permissionError = new FirestorePermissionError({
           path: `/${path}`,
           operation: 'list',
         } satisfies SecurityRuleContext);
         
-        // Emite o erro contextual para o listener central
         errorEmitter.emit('permission-error', permissionError);
         setLoading(false);
       }
