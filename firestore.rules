@@ -1,0 +1,16 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permite que qualquer pessoa envie seu e-mail (criação de lead) na landing page
+    match /emails/{emailId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+    
+    // Nega acesso a qualquer outra coleção ou operação por padrão
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
