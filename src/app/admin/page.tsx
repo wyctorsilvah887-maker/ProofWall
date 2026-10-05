@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -7,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck } from 'lucide-react';
-import { useAuth, useFirestore, useUser, useCollection } from '@/firebase';
+import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, orderBy, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
@@ -20,6 +19,11 @@ export default function AdminPage() {
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
   
+  // Verifica se o usuário logado é realmente um admin no Firestore
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+  const isUserAdmin = userData?.isAdmin === true;
+
   const [accessCode, setAccessCode] = useState('');
   const [isCodeCorrect, setIsCodeCorrect] = useState(false);
   
@@ -29,15 +33,15 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Filtramos para mostrar apenas os leads (isAdmin == false) na tabela principal
+  // Só tentamos buscar leads se o usuário estiver logado e for confirmado como admin
   const leadsQuery = useMemo(() => {
-    if (!db || !user) return null;
+    if (!db || !user || !isUserAdmin) return null;
     return query(
       collection(db, 'users'), 
       where('isAdmin', '==', false),
       orderBy('createdAt', 'desc')
     );
-  }, [db, user]);
+  }, [db, user, isUserAdmin]);
 
   const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
 
@@ -68,7 +72,6 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         };
 
-        // Salva os dados do admin na coleção 'users' com isAdmin = true
         setDoc(doc(db, 'users', newUser.uid), adminData)
           .catch(async (err) => {
             const permissionError = new FirestorePermissionError({
@@ -91,7 +94,9 @@ export default function AdminPage() {
     }
   };
 
-  if (authLoading) return <div className="flex h-screen items-center justify-center">Carregando sistema...</div>;
+  if (authLoading || (user && userDataLoading)) {
+    return <div className="flex h-screen items-center justify-center">Verificando credenciais...</div>;
+  }
 
   if (!isCodeCorrect && !user) {
     return (
@@ -122,7 +127,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!user) {
+  if (!user || (user && !isUserAdmin && !userDataLoading)) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
         <Card className="w-full max-w-md shadow-xl">
@@ -134,46 +139,51 @@ export default function AdminPage() {
               {isAdminRegistering ? 'Criar Admin' : 'Login Admin'}
             </CardTitle>
             <CardDescription>
-              {isAdminRegistering ? 'Cadastre seu perfil administrativo.' : 'Acesse o painel de controle.'}
+              {!user && isAdminRegistering ? 'Cadastre seu perfil administrativo.' : 'Acesse o painel de controle.'}
+              {user && !isUserAdmin && 'Esta conta não tem privilégios de administrador.'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
-              {isAdminRegistering && (
+            {!user ? (
+              <form onSubmit={handleAuth} className="space-y-4">
+                {isAdminRegistering && (
+                  <Input
+                    type="text"
+                    placeholder="Nome Completo"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                )}
                 <Input
-                  type="text"
-                  placeholder="Nome Completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  type="email"
+                  placeholder="E-mail admin"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-              )}
-              <Input
-                type="email"
-                placeholder="E-mail admin"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <Button type="submit" className="w-full" disabled={isAuthLoading}>
-                {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
-              </Button>
-              <Button 
-                type="button"
-                variant="link" 
-                className="w-full text-xs" 
-                onClick={() => setIsAdminRegistering(!isAdminRegistering)}
-              >
-                {isAdminRegistering ? 'Já tem conta? Login' : 'Novo admin? Registrar'}
-              </Button>
-            </form>
+                <Input
+                  type="password"
+                  placeholder="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <Button type="submit" className="w-full" disabled={isAuthLoading}>
+                  {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="link" 
+                  className="w-full text-xs" 
+                  onClick={() => setIsAdminRegistering(!isAdminRegistering)}
+                >
+                  {isAdminRegistering ? 'Já tem conta? Login' : 'Novo admin? Registrar'}
+                </Button>
+              </form>
+            ) : (
+              <Button onClick={() => signOut(auth)} className="w-full">Sair e tentar outra conta</Button>
+            )}
           </CardContent>
         </Card>
       </div>

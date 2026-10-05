@@ -5,10 +5,12 @@ import {
   onSnapshot, 
   Query, 
   QuerySnapshot, 
-  DocumentData 
+  DocumentData,
+  collection,
+  query as firestoreQuery
 } from 'firebase/firestore';
 import { errorEmitter } from '../error-emitter';
-import { FirestorePermissionError } from '../errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '../errors';
 
 export function useCollection<T = DocumentData>(query: Query<T> | null) {
   const [data, setData] = useState<T[] | null>(null);
@@ -28,11 +30,15 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T)));
         setLoading(false);
       },
-      (error) => {
+      async (error: any) => {
+        // Tenta extrair um caminho legível da query para o erro
+        const path = (query as any)._query?.path?.segments?.join('/') || 'coleção desconhecida';
+        
         const permissionError = new FirestorePermissionError({
-          path: query.toString(), // Simplificado para o exemplo
+          path: `/${path}`,
           operation: 'list',
-        });
+        } satisfies SecurityRuleContext);
+        
         errorEmitter.emit('permission-error', permissionError);
         setLoading(false);
       }

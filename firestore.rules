@@ -1,17 +1,25 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permite que qualquer um se registre (leads) ou que admins criem seus perfis
+    
+    // Helper para verificar se o usuário logado é um administrador
+    function isAdmin() {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
     match /users/{userId} {
+      // Permite que qualquer um (leads) se registre
+      // Permite que admins criem outros admins
       allow create: if true;
       
-      // Apenas usuários logados podem ler a lista (segurança básica para o painel)
-      allow read: if request.auth != null;
+      // O próprio usuário pode ler seu perfil. 
+      // Administradores podem ler e listar todos os usuários (necessário para o painel).
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
       
       // Apenas o próprio usuário ou um admin pode editar o perfil
-      allow update, delete: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+      allow update, delete: if request.auth != null && (request.auth.uid == userId || isAdmin());
     }
     
     match /{document=**} {
