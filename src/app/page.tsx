@@ -1,18 +1,23 @@
-import { VoiceEngine } from '@/components/jarvis/voice-engine';
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#141110] selection:bg-primary selection:text-primary-foreground flex flex-col items-center justify-center">
-      {/* Background Grid Pattern */}
-      <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" 
-           style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #FF8000 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-      
-      {/* Dynamic Scanline Effect */}
-      <div className="fixed inset-0 z-0 opacity-[0.01] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
-
-      <div className="relative z-10 w-full flex justify-center">
-        <VoiceEngine />
-      </div>
-    </main>
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <h1 className="text-4xl font-bold tracking-tight">Projeto Resetado</h1>
+        <p className="text-lg text-muted-foreground">O ambiente está pronto para um novo começo.</p>
+        
+        <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <a
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+            href="https://nextjs.org/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Documentação Next.js
+          </a>
+        </div>
+      </main>
+    </div>
   );
 }
