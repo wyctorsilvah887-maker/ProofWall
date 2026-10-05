@@ -1,54 +1,34 @@
+
 {
   "entities": {
     "User": {
       "title": "User",
-      "description": "Usuários registrados para acesso antecipado (Leads).",
+      "description": "Perfil de usuário unificado (Lead ou Admin).",
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
-          "description": "Nome completo do usuário."
+          "description": "Nome completo."
         },
         "email": {
           "type": "string",
           "format": "email",
           "description": "Endereço de e-mail."
         },
+        "isAdmin": {
+          "type": "boolean",
+          "description": "Define se o usuário tem privilégios administrativos."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
-          "description": "Data de criação do registro."
+          "description": "Data de criação."
         }
       },
       "required": [
         "name",
         "email",
-        "createdAt"
-      ]
-    },
-    "Admin": {
-      "title": "Admin",
-      "description": "Perfil administrativo do sistema.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Nome do administrador."
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "description": "E-mail do administrador."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Data de registro do admin."
-        }
-      },
-      "required": [
-        "name",
-        "email",
+        "isAdmin",
         "createdAt"
       ]
     }
@@ -61,11 +41,7 @@
   "firestore": {
     "/users/{userId}": {
       "schema": "User",
-      "description": "Coleção global de leads/usuários interessados."
-    },
-    "/admins/{adminId}": {
-      "schema": "Admin",
-      "description": "Perfis de administradores do sistema."
+      "description": "Coleção central de todos os usuários e leads do sistema."
     }
   }
 }

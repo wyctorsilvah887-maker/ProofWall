@@ -11,6 +11,8 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { errorEmitter } from "@/firebase/error-emitter";
+import { FirestorePermissionError } from "@/firebase/errors";
 
 export default function SignupPage() {
   const db = useFirestore();
@@ -21,44 +23,34 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !db) {
-      console.error("Firestore não inicializado ou campos vazios");
-      return;
-    }
+    if (!name.trim() || !email.trim() || !db) return;
 
     setIsSubmitting(true);
     
-    try {
-      const userData = {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        createdAt: serverTimestamp(),
-      };
+    const userData = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      isAdmin: false,
+      createdAt: serverTimestamp(),
+    };
 
-      console.log("Tentando salvar lead em 'users':", userData);
-
-      // Usando await para garantir que o erro seja capturado pelo catch
-      const docRef = await addDoc(collection(db, "users"), userData);
-      
-      console.log("Lead salvo com sucesso! ID:", docRef.id);
-      
-      toast({
-        title: "Inscrição Realizada!",
-        description: "Você entrou para a lista VIP com sucesso.",
+    addDoc(collection(db, "users"), userData)
+      .then(() => {
+        toast({
+          title: "Inscrição Realizada!",
+          description: "Você entrou para a lista VIP com sucesso.",
+        });
+        router.push('/');
+      })
+      .catch(async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: "users",
+          operation: 'create',
+          requestResourceData: userData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setIsSubmitting(false);
       });
-      
-      router.push('/');
-    } catch (error: any) {
-      console.error("Erro técnico ao salvar no Firestore:", error);
-      
-      toast({
-        variant: "destructive",
-        title: "Falha na Gravação",
-        description: error.message || "Erro de conexão com o banco de dados.",
-      });
-      
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -118,10 +110,6 @@ export default function SignupPage() {
             </form>
           </CardContent>
         </Card>
-
-        <p className="text-center text-xs text-muted-foreground px-8">
-          Ao confirmar, você concorda em receber atualizações sobre o lançamento do ProofWall.
-        </p>
       </div>
     </div>
   );

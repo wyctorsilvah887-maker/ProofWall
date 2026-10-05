@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -5,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, query, orderBy, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -27,12 +29,17 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  const usersQuery = useMemo(() => {
+  // Filtramos para mostrar apenas os leads (isAdmin == false) na tabela principal
+  const leadsQuery = useMemo(() => {
     if (!db || !user) return null;
-    return query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    return query(
+      collection(db, 'users'), 
+      where('isAdmin', '==', false),
+      orderBy('createdAt', 'desc')
+    );
   }, [db, user]);
 
-  const { data: usersList, loading: usersLoading } = useCollection(usersQuery);
+  const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
 
   const handleAccessCodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,21 +61,25 @@ export default function AdminPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const newUser = userCredential.user;
 
-        // Salva os dados do admin na coleção 'admins'
-        setDoc(doc(db, 'admins', newUser.uid), {
+        const adminData = {
           name: name.trim(),
           email: email.trim().toLowerCase(),
+          isAdmin: true,
           createdAt: serverTimestamp(),
-        }).catch(async (err) => {
-          const permissionError = new FirestorePermissionError({
-            path: `admins/${newUser.uid}`,
-            operation: 'create',
-            requestResourceData: { name, email },
-          });
-          errorEmitter.emit('permission-error', permissionError);
-        });
+        };
 
-        toast({ title: "Conta Criada", description: "Administrador registrado com sucesso." });
+        // Salva os dados do admin na coleção 'users' com isAdmin = true
+        setDoc(doc(db, 'users', newUser.uid), adminData)
+          .catch(async (err) => {
+            const permissionError = new FirestorePermissionError({
+              path: `users/${newUser.uid}`,
+              operation: 'create',
+              requestResourceData: adminData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+          });
+
+        toast({ title: "Conta Admin Criada", description: "Bem-vindo ao ProofWall." });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: "Bem-vindo", description: "Login administrativo realizado." });
@@ -177,8 +188,11 @@ export default function AdminPage() {
           <span className="font-headline">ProofWall Panel</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
+          <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">
+            <BadgeCheck className="w-3 h-3" /> Administrador
+          </Badge>
           <span className="text-sm text-muted-foreground hidden sm:inline-block">
-            Logado como: <span className="font-bold text-foreground">{user.email}</span>
+            <span className="font-bold text-foreground">{user.email}</span>
           </span>
           <Button variant="ghost" size="sm" onClick={() => signOut(auth)}>
             <LogOut className="w-4 h-4 mr-2" /> Sair
@@ -194,7 +208,7 @@ export default function AdminPage() {
               <Users className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{usersList?.length || 0}</div>
+              <div className="text-2xl font-bold">{leadsList?.length || 0}</div>
               <p className="text-xs text-muted-foreground">Novos cadastros interessados</p>
             </CardContent>
           </Card>
@@ -208,9 +222,9 @@ export default function AdminPage() {
             <CardDescription>Gerencie a lista de contatos capturados na ProofWall.</CardDescription>
           </CardHeader>
           <CardContent>
-            {usersLoading ? (
+            {leadsLoading ? (
               <div className="py-10 text-center">Carregando dados...</div>
-            ) : usersList && usersList.length > 0 ? (
+            ) : leadsList && leadsList.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -220,7 +234,7 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {usersList.map((usr: any) => (
+                  {leadsList.map((usr: any) => (
                     <TableRow key={usr.id}>
                       <TableCell className="font-bold flex items-center gap-2">
                         <User className="w-4 h-4 text-primary/60" />
