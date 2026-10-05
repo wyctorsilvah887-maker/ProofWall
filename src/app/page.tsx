@@ -20,20 +20,25 @@ export default function Home() {
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !db) return;
+    const trimmedEmail = email.trim();
+    
+    if (!trimmedEmail || !db) {
+      return;
+    }
 
     setLoading(true);
-    const emailsRef = collection(db, "emails");
 
+    const emailsRef = collection(db, "emails");
     const leadData = {
-      email,
+      email: trimmedEmail,
       createdAt: serverTimestamp(),
     };
 
-    // Iniciamos a escrita no Firestore sem usar 'await' para manter a UI responsiva
+    // Realiza a mutação no Firestore. 
+    // Não usamos 'await' para manter a UI responsiva e seguir as diretrizes de mutação otimista.
     addDoc(emailsRef, leadData)
       .catch(async (serverError) => {
-        // Caso ocorra um erro de permissão, emitimos para o listener global
+        // Se houver erro de permissão (ex: regras de segurança), o listener global tratará
         const permissionError = new FirestorePermissionError({
           path: emailsRef.path,
           operation: 'create',
@@ -42,18 +47,20 @@ export default function Home() {
         errorEmitter.emit('permission-error', permissionError);
       });
 
-    // Atualização otimista da UI: limpamos o estado e mostramos sucesso imediatamente
+    // Feedback imediato ao usuário (Optimistic UI)
     toast({
       title: "Acesso Garantido!",
       description: "Entraremos em contato em breve.",
     });
+
+    // Limpa o formulário e encerra o estado de carregamento
     setEmail("");
     setLoading(false);
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
-      {/* Navegação Simples */}
+      {/* Navegação */}
       <header className="px-4 lg:px-6 h-16 flex items-center border-b">
         <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
           <div className="bg-primary text-primary-foreground p-1 rounded">
@@ -81,7 +88,7 @@ export default function Home() {
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                    Colete, modere e exiba depoimentos em texto ou videos em minutos. 
+                    Colete, modere e exiba depoimentos em texto ou vídeos em minutos. 
                     Sem código complexo, sem impacto na velocidade do seu site.
                   </p>
                 </div>
@@ -143,8 +150,7 @@ export default function Home() {
                       data-ai-hint={heroImage.imageHint}
                     />
                   )}
-                  {/* Overlay decorativo de depoimento */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-background/90 backdrop-blur-sm p-4 rounded-xl border shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                  <div className="absolute bottom-4 left-4 right-4 bg-background/90 backdrop-blur-sm p-4 rounded-xl border shadow-lg">
                     <div className="flex gap-1 mb-2">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
