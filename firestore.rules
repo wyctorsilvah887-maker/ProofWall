@@ -4,16 +4,21 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     match /users/{userId} {
-      // Permite que qualquer um se registre (leads e primeiro passo do admin)
+      // Permite a criação inicial (leads e admins)
       allow create: if true;
       
-      // 1. O próprio usuário pode ler (get) e editar seu próprio perfil
-      // Nota: Não permite listagem aqui para usuários comuns
+      // Permissões de dono do documento
       allow get, update, delete: if request.auth != null && request.auth.uid == userId;
       
-      // 2. Administradores podem ler (get + list) e editar qualquer perfil
-      // A listagem da coleção global só é permitida se o campo isAdmin no documento do solicitante for true
-      allow read, write: if request.auth != null && 
+      // Permissões de Administrador baseadas na flag isAdmin
+      // Nota: Separamos get e list para garantir que o motor do Firestore valide a query corretamente
+      allow get: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+        
+      allow list: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+        
+      allow update, delete: if request.auth != null && 
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     

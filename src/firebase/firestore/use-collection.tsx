@@ -28,9 +28,16 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         setLoading(false);
       },
       async (serverError: any) => {
-        // Tenta extrair um caminho amigável da query para o log de erro
-        // Usamos uma verificação segura para evitar o erro de runtime reportado
-        const path = (query as any)._query?.path?.segments?.join('/') || 'users';
+        // Tenta extrair o caminho de forma ultra-segura para evitar crash no reporte do erro
+        let path = 'users';
+        try {
+          const internalQuery = (query as any)._query || query;
+          if (internalQuery.path) {
+            path = internalQuery.path.segments.join('/');
+          }
+        } catch (e) {
+          path = 'users';
+        }
         
         const permissionError = new FirestorePermissionError({
           path: `/${path}`,
