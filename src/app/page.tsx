@@ -19,14 +19,6 @@ export default function Home() {
           </div>
           <span className="font-headline">ProofWall</span>
         </div>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="/admin">
-            <Button variant="ghost" className="text-sm font-medium">Admin</Button>
-          </Link>
-          <Link href="/signup">
-            <Button className="text-sm font-medium">Testar Grátis</Button>
-          </Link>
-        </nav>
       </header>
 
       <main className="flex-1">
