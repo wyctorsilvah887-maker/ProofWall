@@ -127,7 +127,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Feature Section: Adaptability & Mockup */}
+        {/* Feature Section: Mockup */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/30">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
@@ -193,6 +193,32 @@ export default function Home() {
                     &lt;script src="https://proofwall.io/widget.js"&gt;&lt;/script&gt;
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section: Membro Fundador */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-primary text-primary-foreground">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="flex flex-col items-center justify-center space-y-6 text-center">
+              <div className="space-y-3">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">
+                  Seja um membro fundador.
+                </h2>
+                <p className="max-w-[700px] text-primary-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mx-auto">
+                  Inscreva-se hoje para garantir 50% de desconto perpétuo no lançamento oficial e acesso prioritário aos novos recursos de video.
+                </p>
+              </div>
+              <div className="w-full max-w-sm space-y-3">
+                <Link href="/signup">
+                  <Button size="lg" variant="secondary" className="w-full h-14 text-lg font-bold shadow-2xl hover:scale-105 transition-transform">
+                    Garantir Meu Lugar VIP
+                  </Button>
+                </Link>
+                <p className="text-xs text-primary-foreground/60">
+                  Oferta limitada para as primeiras 100 empresas inscritas.
+                </p>
               </div>
             </div>
           </div>
