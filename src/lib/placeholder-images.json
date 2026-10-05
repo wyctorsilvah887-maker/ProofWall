@@ -5,6 +5,12 @@
       "description": "Dashboard de depoimentos e feedback de clientes",
       "imageUrl": "https://picsum.photos/seed/saas1/800/600",
       "imageHint": "saas dashboard testimonials"
+    },
+    {
+      "id": "brand-design",
+      "description": "Exemplo de customização de marca e design",
+      "imageUrl": "https://picsum.photos/seed/design1/800/600",
+      "imageHint": "brand design customization"
     }
   ]
 }
