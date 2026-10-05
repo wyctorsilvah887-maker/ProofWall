@@ -1,20 +1,19 @@
-
 {
   "entities": {
     "Lead": {
       "title": "Lead",
-      "description": "Information captured from potential customers.",
+      "description": "Informações capturadas de potenciais clientes interessados no acesso antecipado.",
       "type": "object",
       "properties": {
         "email": {
           "type": "string",
           "format": "email",
-          "description": "The corporate email of the lead."
+          "description": "O e-mail corporativo fornecido pelo lead."
         },
         "createdAt": {
           "type": "string",
           "format": "date-time",
-          "description": "When the lead was captured."
+          "description": "Data e hora em que o e-mail foi registrado."
         }
       },
       "required": [
@@ -31,7 +30,7 @@
   "firestore": {
     "/emails/{emailId}": {
       "schema": "Lead",
-      "description": "Collection of captured emails from the landing page."
+      "description": "Coleção global para armazenar e-mails capturados na landing page."
     }
   }
 }
