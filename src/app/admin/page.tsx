@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2 } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, orderBy, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
@@ -19,12 +19,22 @@ export default function AdminPage() {
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
   
-  // Referência para o documento do usuário atual para verificar se é admin
+  // Referência para o documento do usuário atual
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
   
-  // Flag definitiva de admin baseada no Firestore
-  const isUserAdmin = userData?.isAdmin === true;
+  // Estado local para garantir que a permissão de admin está estável
+  const [isAdminVerified, setIsAdminVerified] = useState(false);
+
+  useEffect(() => {
+    if (userData?.isAdmin === true) {
+      // Pequeno delay para garantir que as regras do Firestore no servidor propagaram
+      const timer = setTimeout(() => setIsAdminVerified(true), 500);
+      return () => clearTimeout(timer);
+    } else {
+      setIsAdminVerified(false);
+    }
+  }, [userData]);
 
   const [accessCode, setAccessCode] = useState('');
   const [isCodeCorrect, setIsCodeCorrect] = useState(false);
@@ -35,15 +45,15 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Consulta de leads: só é ativada se o banco, o usuário e a flag de admin estiverem confirmados no servidor
+  // Consulta de leads: só é ativada se for admin verificado
   const leadsQuery = useMemo(() => {
-    if (!db || !user || !isUserAdmin) return null;
+    if (!db || !user || !isAdminVerified) return null;
     return query(
       collection(db, 'users'), 
       where('isAdmin', '==', false),
       orderBy('createdAt', 'desc')
     );
-  }, [db, user, isUserAdmin]);
+  }, [db, user, isAdminVerified]);
 
   const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
 
@@ -74,24 +84,15 @@ export default function AdminPage() {
           createdAt: serverTimestamp(),
         };
 
-        setDoc(doc(db, 'users', newUser.uid), adminData)
-          .catch(async (err) => {
-            const permissionError = new FirestorePermissionError({
-              path: `users/${newUser.uid}`,
-              operation: 'create',
-              requestResourceData: adminData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-          });
-
-        toast({ title: "Conta Admin Criada", description: "Bem-vindo ao ProofWall." });
+        // Salvamento crítico do documento de admin
+        await setDoc(doc(db, 'users', newUser.uid), adminData);
+        toast({ title: "Conta Admin Criada", description: "Configurando seu acesso..." });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         toast({ title: "Bem-vindo", description: "Login administrativo realizado." });
       }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro de Autenticação", description: error.message });
-    } finally {
       setIsAuthLoading(false);
     }
   };
@@ -100,8 +101,8 @@ export default function AdminPage() {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground font-medium">Validando credenciais de acesso...</p>
+          <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto" />
+          <p className="text-muted-foreground font-medium">Sincronizando privilégios...</p>
         </div>
       </div>
     );
@@ -177,7 +178,8 @@ export default function AdminPage() {
                 required
               />
               <Button type="submit" className="w-full" disabled={isAuthLoading}>
-                {isAuthLoading ? 'Processando...' : (isAdminRegistering ? 'Registrar' : 'Entrar')}
+                {isAuthLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
+                {isAdminRegistering ? 'Registrar' : 'Entrar'}
               </Button>
               <Button 
                 type="button"
@@ -194,14 +196,14 @@ export default function AdminPage() {
     );
   }
 
-  if (!isUserAdmin) {
+  if (!userDataLoading && userData && !userData.isAdmin) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
         <Card className="w-full max-w-md shadow-xl text-center">
           <CardHeader>
             <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
             <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>Sua conta não possui privilégios administrativos no banco de dados.</CardDescription>
+            <CardDescription>Sua conta não possui privilégios administrativos.</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => signOut(auth)} className="w-full">Sair e tentar outra conta</Button>
@@ -240,7 +242,7 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{leadsList?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">Novos cadastros interessados</p>
+              <p className="text-xs text-muted-foreground">Inscrições capturadas</p>
             </CardContent>
           </Card>
         </div>
@@ -250,16 +252,13 @@ export default function AdminPage() {
             <CardTitle className="font-headline text-xl flex items-center gap-2">
               <UserCheck className="w-5 h-5" /> Lista de Inscritos VIP
             </CardTitle>
-            <CardDescription>Gerencie a lista de contatos capturados na ProofWall.</CardDescription>
+            <CardDescription>Visualização em tempo real dos novos leads.</CardDescription>
           </CardHeader>
           <CardContent>
             {leadsLoading ? (
               <div className="py-20 text-center">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-                  <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
-                  <div className="h-4 bg-muted rounded w-5/6 mx-auto"></div>
-                </div>
+                <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+                <p className="text-muted-foreground">Carregando leads...</p>
               </div>
             ) : leadsList && leadsList.length > 0 ? (
               <Table>

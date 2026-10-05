@@ -3,25 +3,23 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Regras para a coleção de usuários (leads e admins)
     match /users/{userId} {
-      // Permite a criação inicial (leads e admins)
+      // Permite a criação inicial (leads se cadastrando e admins se registrando)
       allow create: if true;
       
-      // Permissões de dono do documento
+      // O próprio usuário sempre pode ler e editar seu perfil
       allow get, update, delete: if request.auth != null && request.auth.uid == userId;
       
-      // Permissões de Administrador baseadas na flag isAdmin
-      // Nota: Separamos get e list para garantir que o motor do Firestore valide a query corretamente
-      allow get: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-        
-      allow list: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-        
-      allow update, delete: if request.auth != null && 
+      // Regra de Administrador:
+      // Permite listar a coleção (list) e ler qualquer documento (get)
+      // se o documento do usuário solicitante tiver isAdmin == true
+      allow read, write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
+    // Bloqueio padrão para qualquer outra coleção
     match /{document=**} {
       allow read, write: if false;
     }
