@@ -1,33 +1,22 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2 } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { signInAnonymously } from "firebase/auth";
-import { useFirestore, useAuth } from "@/firebase";
+import { useFirestore } from "@/firebase";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { toast } from "@/hooks/use-toast";
 
 export default function Home() {
   const db = useFirestore();
-  const auth = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
-
-  // Garante que o usuário esteja autenticado anonimamente para realizar operações no Firestore
-  useEffect(() => {
-    if (auth && !auth.currentUser) {
-      signInAnonymously(auth).catch((err) => {
-        // Erros de autenticação inicial podem ser ignorados ou tratados silenciosamente
-      });
-    }
-  }, [auth]);
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
