@@ -53,18 +53,20 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-12">
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Voltar para o início
+    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-16 sm:py-24 relative">
+      <Link href="/" className="fixed top-6 left-4 sm:top-8 sm:left-8 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-primary transition-colors bg-background/50 backdrop-blur-sm p-2 rounded-full sm:bg-transparent sm:p-0 z-50">
+        <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Voltar para o início</span>
       </Link>
 
-      <div className="w-full max-w-md space-y-8">
-        <div className="flex flex-col items-center text-center space-y-2">
-          <div className="bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg mb-4">
+      <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <div className="bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg">
             <Star className="w-8 h-8 fill-current" />
           </div>
-          <h1 className="text-3xl font-bold font-headline tracking-tighter">Garanta seu lugar</h1>
-          <p className="text-gray-700">Preencha seus dados para entrar na lista VIP do ProofWall.</p>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold font-headline tracking-tighter">Garanta seu lugar</h1>
+            <p className="text-gray-700 text-sm md:text-base">Preencha seus dados para entrar na lista VIP do ProofWall.</p>
+          </div>
         </div>
 
         <Card className="border-none shadow-2xl">
@@ -81,7 +83,7 @@ export default function SignupPage() {
                     placeholder="Seu Nome Completo"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-12 pl-10"
+                    className="h-12 pl-10 focus:ring-primary/20"
                     required
                   />
                 </div>
@@ -94,18 +96,21 @@ export default function SignupPage() {
                     placeholder="Seu Melhor E-mail"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 pl-10"
+                    className="h-12 pl-10 focus:ring-primary/20"
                     required
                   />
                 </div>
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-12 text-lg font-semibold"
+                className="w-full h-12 text-lg font-semibold shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Enviando..." : "Confirmar Acesso VIP"}
               </Button>
+              <p className="text-[10px] text-center text-gray-500 uppercase tracking-widest mt-4">
+                🔒 Acesso exclusivo para os primeiros 50
+              </p>
             </form>
           </CardContent>
         </Card>
@@ -113,3 +118,4 @@ export default function SignupPage() {
     </div>
   );
 }
+
