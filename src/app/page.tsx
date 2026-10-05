@@ -227,7 +227,7 @@ export default function Home() {
 
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">© 2024 ProofWall. Todos os direitos reservados.</p>
+          <p className="text-sm text-muted-foreground">© 2026 ProofWall. Todos os direitos reservados.</p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
             <a href="#" className="hover:text-primary transition-colors">Termos</a>
