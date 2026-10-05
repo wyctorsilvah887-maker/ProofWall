@@ -12,11 +12,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-          <div className="bg-primary text-primary-foreground p-1 rounded">
-            <Star className="w-5 h-5 fill-current" />
-          </div>
+      <header className="px-4 lg:px-6 h-16 flex items-center justify-center border-b">
+        <div className="flex items-center font-bold text-xl tracking-tight">
           <span className="font-headline">ProofWall</span>
         </div>
       </header>
