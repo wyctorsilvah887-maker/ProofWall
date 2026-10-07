@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2 } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2 } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
@@ -35,6 +36,7 @@ export default function AdminPage() {
   const [isCodeCorrect, setIsCodeCorrect] = useState(false);
   
   const [name, setName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
@@ -76,13 +78,15 @@ export default function AdminPage() {
     setIsAuthLoading(true);
     try {
       if (isAdminRegistering) {
-        if (!name.trim()) throw new Error("O nome é obrigatório para o registro.");
+        if (!name.trim()) throw new Error("O nome é obrigatório.");
+        if (!companyName.trim()) throw new Error("O nome da empresa é obrigatório.");
         
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const newUser = userCredential.user;
 
         const adminData = {
           name: name.trim(),
+          companyName: companyName.trim(),
           email: email.trim().toLowerCase(),
           isAdmin: true,
           createdAt: serverTimestamp(),
@@ -158,28 +162,53 @@ export default function AdminPage() {
           <CardContent>
             <form onSubmit={handleAuth} className="space-y-4">
               {isAdminRegistering && (
+                <>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Nome Completo"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="pl-9"
+                      required
+                    />
+                  </div>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Nome da Empresa"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      className="pl-9"
+                      required
+                    />
+                  </div>
+                </>
+              )}
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  type="text"
-                  placeholder="Nome Completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  type="email"
+                  placeholder="E-mail admin"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-9"
                   required
                 />
-              )}
-              <Input
-                type="email"
-                placeholder="E-mail admin"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="password"
+                  placeholder="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-9"
+                  required
+                />
+              </div>
               <Button type="submit" className="w-full" disabled={isAuthLoading}>
                 {isAuthLoading ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : null}
                 {isAdminRegistering ? 'Registrar' : 'Entrar'}
