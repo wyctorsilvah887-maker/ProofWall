@@ -25,22 +25,33 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
 
-  const companyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  // Formata o nome da empresa para exibição visual baseada no slug
+  const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   useEffect(() => {
     async function findCompany() {
       if (!db || !slug) return;
       
       try {
+        setIsLoadingCompany(true);
         const usersRef = collection(db, 'users');
+        // Buscamos o documento do usuário que possui o slug correspondente
         const q = query(usersRef, where('companySlug', '==', slug), limit(1));
         const snapshot = await getDocs(q);
         
         if (!snapshot.empty) {
           setTargetUserId(snapshot.docs[0].id);
+        } else {
+          // Fallback: Tenta buscar sem hifens caso o slug tenha sido salvo de forma diferente (segurança extra)
+          const slugAlt = slug.replace(/-/g, ' ');
+          const qAlt = query(usersRef, where('companyName', '==', slugAlt), limit(1));
+          const snapshotAlt = await getDocs(qAlt);
+          if (!snapshotAlt.empty) {
+            setTargetUserId(snapshotAlt.docs[0].id);
+          }
         }
       } catch (err) {
-        console.error("Error finding company:", err);
+        console.error("Erro ao localizar empresa:", err);
       } finally {
         setIsLoadingCompany(false);
       }
@@ -105,7 +116,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             <Search className="w-12 h-12 text-muted-foreground mx-auto" />
             <div className="space-y-2">
               <h2 className="text-2xl font-bold font-headline">Empresa Não Encontrada</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada.</p>
+              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada no sistema.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>
@@ -124,7 +135,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
-              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para a <strong>{companyName}</strong>.</p>
+              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso.</p>
             </div>
           </CardContent>
         </Card>
@@ -136,7 +147,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4 font-body">
       <div className="w-full max-w-xl space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold font-headline tracking-tight">{companyName}</h1>
+          <h1 className="text-3xl font-bold font-headline tracking-tight">{displayCompanyName}</h1>
           <p className="text-muted-foreground">Gostaríamos de ouvir sua opinião sobre nossos serviços.</p>
         </div>
 
