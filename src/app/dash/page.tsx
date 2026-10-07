@@ -165,12 +165,12 @@ export default function DashPage() {
 
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
+              <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Em produção</p>
+              <div className="text-2xl font-bold">85</div>
+              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google</p>
             </CardContent>
           </Card>
 
