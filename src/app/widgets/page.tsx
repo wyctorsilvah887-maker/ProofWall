@@ -14,7 +14,10 @@ import {
   User,
   LogOut,
   Shield,
-  Clock
+  Clock,
+  Copy,
+  Terminal,
+  CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +30,13 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useUser, useFirestore, useCollection, useAuth, useDoc } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
@@ -43,6 +53,9 @@ export default function WidgetsPage() {
   
   const [newWidgetName, setNewWidgetName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedWidget, setSelectedWidget] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [baseUrl, setBaseUrl] = useState('');
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -53,6 +66,12 @@ export default function WidgetsPage() {
   }, [db, user]);
 
   const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -92,6 +111,18 @@ export default function WidgetsPage() {
       });
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copiado!",
+      description: "Código de instalação copiado para a área de transferência.",
+    });
+  };
+
+  const getWidgetCode = (widgetId: string) => {
+    return `<script src="${baseUrl}/widget.js?id=${widgetId}" defer></script>`;
+  };
+
   if (authLoading || userDataLoading || (user && !userData)) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
@@ -103,7 +134,6 @@ export default function WidgetsPage() {
     );
   }
 
-  // Se não houver widgets, forçamos a criação do primeiro
   if (!widgetsLoading && (!widgetsList || widgetsList.length === 0)) {
     return (
       <div className="min-h-screen bg-muted/20 flex items-center justify-center p-4">
@@ -218,7 +248,15 @@ export default function WidgetsPage() {
                   </div>
                   
                   <div className="flex items-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0">
-                    <Button variant="secondary" size="sm" className="flex-1 sm:flex-none">
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      className="flex-1 sm:flex-none"
+                      onClick={() => {
+                        setSelectedWidget(w);
+                        setIsDialogOpen(true);
+                      }}
+                    >
                       <Code className="w-4 h-4 mr-2" /> Código
                     </Button>
                     <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
@@ -247,6 +285,54 @@ export default function WidgetsPage() {
           <Button variant="link" className="text-primary font-bold">Falar com Suporte VIP</Button>
         </div>
       </main>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Terminal className="w-5 h-5 text-primary" />
+              Código de Instalação
+            </DialogTitle>
+            <DialogDescription>
+              Copie o snippet abaixo e cole antes da tag <code className="bg-muted px-1.5 py-0.5 rounded text-xs">&lt;/body&gt;</code> do seu site.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+              <div className="relative bg-muted/50 rounded-lg p-4 border border-primary/20">
+                <pre className="text-[10px] md:text-xs font-mono text-gray-800 break-all whitespace-pre-wrap">
+                  {selectedWidget ? getWidgetCode(selectedWidget.id) : ''}
+                </pre>
+                <Button 
+                  size="icon" 
+                  variant="secondary" 
+                  className="absolute top-2 right-2 h-8 w-8 shadow-sm"
+                  onClick={() => selectedWidget && copyToClipboard(getWidgetCode(selectedWidget.id))}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-500" /> O que este código faz?
+              </h4>
+              <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
+                <li>Carrega dinamicamente seus depoimentos aprovados.</li>
+                <li>Exibe o mural flutuante no canto inferior do seu site.</li>
+                <li>Otimizado para não afetar a velocidade de carregamento (Core Web Vitals).</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="flex justify-end">
+            <Button onClick={() => setIsDialogOpen(false)}>Concluído</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
