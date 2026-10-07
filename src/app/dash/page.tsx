@@ -19,8 +19,7 @@ import {
   Loader2,
   ArrowLeft,
   ArrowRight,
-  ArrowDown,
-  Layout
+  ArrowDown
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -123,7 +122,7 @@ export default function DashPage() {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 relative">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
@@ -157,17 +156,6 @@ export default function DashPage() {
             <CardContent>
               <div className="text-2xl font-bold">85</div>
               <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-none shadow-sm sm:col-span-2 lg:col-span-1">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
-              <Layout className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Widgets configurados no site</p>
             </CardContent>
           </Card>
         </div>
