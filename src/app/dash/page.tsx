@@ -100,7 +100,7 @@ export default function DashPage() {
       {/* Top Navigation Header */}
       <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <span className="font-headline">ProofWall</span>
+          <span className="font-headline text-primary">ProofWall</span>
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
@@ -142,24 +142,26 @@ export default function DashPage() {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-none shadow-sm group cursor-default relative overflow-hidden">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 relative">
+          <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas 128</div>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
-                    <span className="text-green-500 font-medium">+12%</span> este mês
-                  </p>
-                </div>
-                <ArrowRight className="h-5 w-5 text-muted-foreground/40 transition-transform group-hover:translate-x-1" />
+              <div>
+                <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas 128</div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
+                  <span className="text-green-500 font-medium">+12%</span> este mês
+                </p>
               </div>
             </CardContent>
+            {/* Seta indicativa externa apontando para o próximo card */}
+            <div className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-sm p-1.5 z-20 group-hover:scale-110 transition-transform">
+              <ArrowRight className="h-4 w-4 text-primary" />
+            </div>
           </Card>
+
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
@@ -170,6 +172,7 @@ export default function DashPage() {
               <p className="text-xs text-muted-foreground text-gray-700 mt-1">Em produção</p>
             </CardContent>
           </Card>
+
           <Card className="border-none shadow-sm sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Avaliação Média</CardTitle>
