@@ -22,7 +22,9 @@ import {
   Copy,
   Link2,
   Star,
-  Clock
+  Clock,
+  Eye,
+  Layout
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -40,6 +42,7 @@ import { doc, collection, query, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -47,6 +50,7 @@ export default function DashPage() {
   const auth = useAuth();
   const router = useRouter();
   const [baseUrl, setBaseUrl] = useState('');
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -85,9 +89,20 @@ export default function DashPage() {
         const dateA = a.createdAt?.toDate?.() || new Date(0);
         const dateB = b.createdAt?.toDate?.() || new Date(0);
         return dateB.getTime() - dateA.getTime();
-      })
-      .slice(0, 5);
+      });
   }, [testimonialsData]);
+
+  const displayTestimonials = useMemo(() => sortedTestimonials.slice(0, 5), [sortedTestimonials]);
+
+  // Efeito para alternar o widget de preview
+  useEffect(() => {
+    if (displayTestimonials.length > 1) {
+      const interval = setInterval(() => {
+        setPreviewIndex((prev) => (prev + 1) % displayTestimonials.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [displayTestimonials]);
 
   const copyToClipboard = (text: string, description: string) => {
     navigator.clipboard.writeText(text);
@@ -262,58 +277,131 @@ export default function DashPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
-          </div>
-          
-          <div className="grid gap-4">
-            {testimonialsLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
-              </div>
-            ) : sortedTestimonials.length > 0 ? (
-              sortedTestimonials.map((t: any) => (
-                <Card key={t.id} className="border-none shadow-sm overflow-hidden">
-                  <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
-                        <User className="w-5 h-5 text-primary" />
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* Lista de Depoimentos */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+            </div>
+            
+            <div className="grid gap-4">
+              {testimonialsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
+                </div>
+              ) : displayTestimonials.length > 0 ? (
+                displayTestimonials.map((t: any) => (
+                  <Card key={t.id} className="border-none shadow-sm overflow-hidden">
+                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
+                          <User className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm md:text-base">{t.userName}</span>
+                            <div className="flex gap-0.5">
+                              {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                                <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-700 italic line-clamp-2 md:line-clamp-none">
+                            "{t.text}"
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm md:text-base">{t.userName}</span>
+                      <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
+                        </div>
+                        <Badge variant={t.status === 'approved' ? 'default' : 'secondary'} className="capitalize text-[10px]">
+                          {t.status === 'approved' ? 'Aprovado' : 'Pendente'}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
+                  <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">Nenhum depoimento recebido ainda.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest">Compartilhe seu link de coleta acima</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Widget Preview / Demonstração */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold font-headline tracking-tight">Visualização ao Vivo</h2>
+            </div>
+            
+            <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
+              <div className="absolute top-4 left-4">
+                <Layout className="w-4 h-4 text-primary/40" />
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <h3 className="text-lg font-bold font-headline">Simulação do Widget</h3>
+                <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
+                  Assim é como seus visitantes verão os depoimentos no canto do seu site.
+                </p>
+              </div>
+
+              {/* Demo Area */}
+              <div className="relative w-full h-full flex items-center justify-center">
+                {displayTestimonials.length > 0 ? (
+                  <div 
+                    key={displayTestimonials[previewIndex].id}
+                    className="absolute bottom-4 right-0 left-0 animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
+                  >
+                    <div className="bg-background rounded-2xl p-4 shadow-2xl border-2 border-primary/20 text-left max-w-[280px] mx-auto">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="bg-primary/10 p-1.5 rounded-full">
+                          <User className="w-3 h-3 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold leading-tight">{displayTestimonials[previewIndex].userName}</p>
                           <div className="flex gap-0.5">
-                            {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+                            {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
+                              <Star key={i} className="w-2 h-2 fill-primary text-primary" />
                             ))}
                           </div>
                         </div>
-                        <p className="text-sm text-gray-700 italic line-clamp-2 md:line-clamp-none">
-                          "{t.text}"
-                        </p>
+                        <Badge className="ml-auto text-[8px] h-4 px-1 bg-green-500/10 text-green-600 hover:bg-green-500/10 border-none">
+                          Verificado
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
+                        "{displayTestimonials[previewIndex].text}"
+                      </p>
+                      <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
+                        <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
+                          ProofWall Social Proof
+                        </span>
+                        <Zap className="w-2.5 h-2.5 text-primary animate-pulse" />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
-                      </div>
-                      <Badge variant={t.status === 'approved' ? 'default' : 'secondary'} className="capitalize text-[10px]">
-                        {t.status === 'approved' ? 'Aprovado' : 'Pendente'}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
-                <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Nenhum depoimento recebido ainda.</p>
-                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest">Compartilhe seu link de coleta acima</p>
+                  </div>
+                ) : (
+                  <div className="bg-muted/20 border-2 border-dashed rounded-2xl p-8 text-muted-foreground flex flex-col items-center gap-3">
+                    <MessageSquare className="w-8 h-8 opacity-20" />
+                    <p className="text-[10px] uppercase font-bold tracking-widest">Aguardando Dados</p>
+                  </div>
+                )}
               </div>
-            )}
+
+              <div className="mt-auto pt-6 w-full">
+                <Button variant="outline" className="w-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5">
+                  Personalizar Design
+                </Button>
+              </div>
+            </Card>
           </div>
         </div>
       </main>
