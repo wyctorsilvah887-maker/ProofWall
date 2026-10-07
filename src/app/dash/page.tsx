@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect } from 'react';
@@ -156,8 +157,8 @@ export default function DashPage() {
                 </p>
               </div>
             </CardContent>
-            {/* Seta indicativa externa apontando para o próximo card */}
-            <div className="hidden lg:flex absolute -right-6 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-sm p-1.5 z-20 group-hover:scale-110 transition-transform">
+            {/* Seta indicativa externa apontando para o próximo card - Visível a partir de md */}
+            <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 group-hover:scale-110 transition-transform ring-4 ring-muted/20">
               <ArrowRight className="h-4 w-4 text-primary" />
             </div>
           </Card>
