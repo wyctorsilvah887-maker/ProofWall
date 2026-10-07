@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -195,7 +194,7 @@ export default function WidgetsPage() {
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
-          <Link href="/dash" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
+          <Link href="/dash" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Dash</Link>
           <Link href="/widgets" className="text-sm font-medium text-primary transition-colors">Widgets</Link>
           {userData?.isAdmin && (
             <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
@@ -214,7 +213,7 @@ export default function WidgetsPage() {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer">
                 <Layout className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
+                <span>Dash</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
