@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -173,7 +172,7 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
+      <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
           <span className="font-headline text-primary">Proova</span>
         </div>
@@ -198,29 +197,29 @@ export default function DashPage() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/20">
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/40 bg-background/50 backdrop-blur-sm">
                 <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl">
+              <DropdownMenuLabel className="font-headline">Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer md:hidden">
-                <TrendingUp className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer md:hidden font-medium">
+                <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/widgets')} className="cursor-pointer">
-                <Layout className="mr-2 h-4 w-4" />
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="cursor-pointer font-medium">
+                <Layout className="mr-2 h-4 w-4 text-primary" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
               {userData?.isAdmin && (
-                <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer md:hidden">
-                  <Shield className="mr-2 h-4 w-4" />
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer md:hidden font-medium">
+                  <Shield className="mr-2 h-4 w-4 text-primary" />
                   <span>Administração</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
+              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer font-medium">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>
