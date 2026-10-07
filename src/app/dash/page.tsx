@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Card, 
@@ -46,9 +45,16 @@ export default function DashPage() {
   const db = useFirestore();
   const auth = useAuth();
   const router = useRouter();
+  const [baseUrl, setBaseUrl] = useState('');
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -75,8 +81,9 @@ export default function DashPage() {
     );
   }
 
-  const collectionLink = `https://proofwall.io/c/${userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6)}`;
-  const widgetScript = '<script src="https://proofwall.io/widget.js" defer></script>';
+  const companySlug = userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6);
+  const collectionLink = `${baseUrl}/c/${companySlug}`;
+  const widgetScript = `<script src="${baseUrl}/widget.js" defer></script>`;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
@@ -125,7 +132,7 @@ export default function DashPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
-            <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social vinculada a <strong>proofwall.io</strong></p>
+            <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <Link href="/" className="flex-1 md:flex-none">
@@ -138,7 +145,7 @@ export default function DashPage() {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 relative">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
@@ -187,12 +194,12 @@ export default function DashPage() {
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
-                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta Oficial
+                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Envie este link direto para seus clientes via WhatsApp para coletar novos depoimentos reais.
+                  Envie este link direto para seus clientes via WhatsApp para coletar novos depoimentos.
                 </p>
                 <div className="flex gap-2">
                   <Input 
@@ -221,7 +228,7 @@ export default function DashPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Copie o snippet oficial de <strong>proofwall.io</strong> e cole no seu site para exibir o mural.
+                  Copie o snippet oficial da sua conta e cole no seu site para exibir o mural.
                 </p>
                 <div className="flex gap-2">
                   <Input 
@@ -253,7 +260,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="space-y-4 relative z-10">
               <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed max-w-[90%]">
-                Seu widget está rodando com segurança em produção. Novos depoimentos passam por moderação automática.
+                Seu widget está rodando com segurança. Novos depoimentos passam por moderação antes da publicação.
               </p>
               <Button variant="secondary" size="sm" className="w-fit gap-2 text-xs md:text-sm">
                 Revisar Regras <ArrowUpRight className="h-4 w-4" />
