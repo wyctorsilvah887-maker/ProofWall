@@ -101,12 +101,10 @@ export default function DashPage() {
       {/* Top Navigation Header */}
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
-          <Zap className="w-6 h-6 text-primary" />
           <span className="font-headline hidden sm:inline">ProofWall</span>
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
-          <Link href="/dash" className="text-sm font-medium text-primary">Dash</Link>
           {userData?.isAdmin && (
             <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
           )}
