@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/card';
 import { 
   Users, 
-  TrendingUp, 
   Zap, 
   CheckCircle2, 
   MessageSquare,
@@ -126,7 +125,7 @@ export default function DashPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
-            <p className="text-muted-foreground text-gray-700">Bem-vindo de volta ao seu painel.</p>
+            <p className="text-muted-foreground text-gray-700">Bem-vindo de volta ao seu painel</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/">
@@ -139,7 +138,7 @@ export default function DashPage() {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
@@ -149,18 +148,6 @@ export default function DashPage() {
               <div className="text-xl font-bold">Avaliações Recebidas 128</div>
               <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
                 <span className="text-green-500 font-medium">+12%</span>
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="border-none shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Taxa de Conversão</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">24.8%</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700">
-                <span className="text-green-500 font-medium">+2.1%</span>
               </p>
             </CardContent>
           </Card>
