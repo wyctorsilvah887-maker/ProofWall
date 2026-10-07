@@ -50,7 +50,7 @@ export default function SignupPage() {
         .then(() => {
           toast({
             title: "Conta Criada!",
-            description: "Bem-vindo ao ProofWall. Sua conta foi configurada com sucesso.",
+            description: "Bem-vindo ao Proova. Sua conta foi configurada com sucesso.",
           });
           router.push('/dash');
         })

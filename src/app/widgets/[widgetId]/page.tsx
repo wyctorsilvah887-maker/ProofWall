@@ -216,7 +216,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   </p>
                   <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
                     <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
-                      ProofWall Social Proof
+                      Proova Social Proof
                     </span>
                     <Zap className="w-2.5 h-2.5 text-primary animate-pulse" />
                   </div>
@@ -253,7 +253,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   <p className="text-sm text-muted-foreground">Compartilhe seu link de coleta para receber os primeiros feedbacks.</p>
                 </div>
                 <Link href="/dash">
-                  <Button variant="outline">Ir para Dashboard</Button>
+                  <Button variant="outline">Ir para Dash</Button>
                 </Link>
               </CardContent>
             </Card>

@@ -128,7 +128,7 @@ export default function DashPage() {
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
       <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <span className="font-headline text-primary">ProofWall</span>
+          <span className="font-headline text-primary">Proova</span>
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
@@ -389,7 +389,7 @@ export default function DashPage() {
                       </p>
                       <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
                         <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
-                          ProofWall Social Proof
+                          Proova Social Proof
                         </span>
                         <Zap className="w-2.5 h-2.5 text-primary animate-pulse" />
                       </div>

@@ -190,7 +190,7 @@ export default function WidgetsPage() {
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
       <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <span className="font-headline text-primary">ProofWall</span>
+          <span className="font-headline text-primary">Proova</span>
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">

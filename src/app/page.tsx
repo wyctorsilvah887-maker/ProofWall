@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,7 @@ export default function Home() {
     {
       name: "Carla S.",
       company: "Global E-commerce",
-      text: "O ProofWall é a melhor ferramenta de prova social que já utilizei. Simples e poderosa.",
+      text: "O Proova é a melhor ferramenta de prova social que já utilizei. Simples e poderosa.",
       avatar: avatars[2]
     }
   ];
@@ -42,7 +41,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <span className="font-headline text-2xl">ProofWall</span>
+          <span className="font-headline text-2xl">Proova</span>
         </div>
         <div className="flex items-center gap-4">
           {user ? (
@@ -76,7 +75,7 @@ export default function Home() {
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
                   <p className="max-w-[600px] text-gray-700 text-base md:text-lg lg:text-xl/relaxed mx-auto lg:mx-0">
-                    Colete, modere e exiba depoimentos em texto ou vídeos em minutos com o domínio <strong>proofwall.io</strong>.
+                    Colete, modere e exiba depoimentos em texto ou vídeos em minutos com o domínio <strong>proova.io</strong>.
                   </p>
                 </div>
                 
@@ -117,7 +116,7 @@ export default function Home() {
                         <Star key={s} className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-xs md:text-sm italic mb-1.5 md:mb-2 line-clamp-2">"Aumentamos nossa conversão em 25% na primeira semana usando a ProofWall!"</p>
+                    <p className="text-xs md:text-sm italic mb-1.5 md:mb-2 line-clamp-2">"Aumentamos nossa conversão em 25% na primeira semana usando a Proova!"</p>
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary/20 flex items-center justify-center text-[8px] md:text-[10px] font-bold">JD</div>
                       <span className="text-[10px] md:text-xs font-semibold">João D., CEO da TechNova</span>
@@ -138,7 +137,7 @@ export default function Home() {
                   Personalização sem esforço
                 </h2>
                 <p className="max-w-[900px] text-gray-700 text-sm md:text-lg lg:text-xl/relaxed">
-                  Veja como o ProofWall se adapta perfeitamente ao design da sua marca.
+                  Veja como o Proova se adapta perfeitamente ao design da sua marca.
                 </p>
               </div>
             </div>
@@ -192,7 +191,7 @@ export default function Home() {
                 {/* Decorative Elements */}
                 <div className="mt-8 flex justify-center">
                   <div className="px-3 py-1.5 bg-primary/5 rounded-full border border-primary/10 text-[9px] md:text-[10px] font-mono text-primary/60 text-center">
-                    &lt;script src="https://proofwall.io/widget.js"&gt;&lt;/script&gt;
+                    &lt;script src="https://proova.io/widget.js"&gt;&lt;/script&gt;
                   </div>
                 </div>
               </div>
@@ -215,7 +214,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Coleta sem atrito</h3>
                 <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                  Envie um link <strong>proofwall.io</strong> direto para o seu cliente. Ele envia o depoimento em segundos.
+                  Envie um link <strong>proova.io</strong> direto para o seu cliente. Ele envia o depoimento em segundos.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 p-6 md:p-8 rounded-2xl md:rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
@@ -246,10 +245,10 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
               <div className="space-y-3">
                 <h2 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline leading-tight">
-                  Seja um membro fundador da ProofWall.
+                  Seja um membro fundador da Proova.
                 </h2>
                 <p className="max-w-[700px] text-primary-foreground/80 text-sm md:text-lg lg:text-xl/relaxed mx-auto">
-                  Inscreva-se hoje em <strong>proofwall.io</strong> para garantir 50% de desconto perpétuo no lançamento oficial.
+                  Inscreva-se hoje em <strong>proova.io</strong> para garantir 50% de desconto perpétuo no lançamento oficial.
                 </p>
               </div>
               <div className="w-full max-w-sm mx-auto space-y-3 px-4">
@@ -269,7 +268,7 @@ export default function Home() {
 
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-gray-700">© 2026 ProofWall - Prova Social de Verdade.</p>
+          <p className="text-xs md:text-sm text-gray-700">© 2026 Proova - Prova Social de Verdade.</p>
         </div>
       </footer>
     </div>

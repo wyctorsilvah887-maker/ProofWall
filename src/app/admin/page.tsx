@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2 } from 'lucide-react';
 import { 
@@ -258,7 +258,7 @@ export default function AdminPage() {
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
           <Shield className="w-6 h-6 text-primary" />
-          <span className="font-headline">ProofWall Panel</span>
+          <span className="font-headline">Proova Panel</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">

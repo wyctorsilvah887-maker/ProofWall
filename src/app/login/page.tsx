@@ -48,7 +48,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-3xl font-headline font-bold">Acesse sua conta</CardTitle>
           <CardDescription>
-            Entre no seu painel ProofWall para gerenciar seus widgets.
+            Entre no seu painel Proova para gerenciar seus widgets.
           </CardDescription>
         </CardHeader>
         <CardContent>

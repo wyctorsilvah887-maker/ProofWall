@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ProofWall - Transforme Elogios em Vendas",
+  title: "Proova - Transforme Elogios em Vendas",
   description: "Colete e exiba depoimentos de clientes em minutos.",
 };
 
