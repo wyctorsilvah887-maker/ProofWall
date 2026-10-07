@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, use } from 'react';
@@ -12,7 +11,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
-import Link from 'next/link';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -78,9 +76,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para a <strong>{companyName}</strong>.</p>
             </div>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/">Conhecer o ProofWall</Link>
-            </Button>
           </CardContent>
         </Card>
       </div>
