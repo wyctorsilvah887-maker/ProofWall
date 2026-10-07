@@ -88,7 +88,7 @@ export default function LoginPage() {
               <p className="text-sm text-muted-foreground">
                 Não tem uma conta?{' '}
                 <Link href="/signup" className="text-primary font-bold hover:underline">
-                  Inscreva-se na lista VIP
+                  Cadastre-se gratuitamente
                 </Link>
               </p>
             </div>
