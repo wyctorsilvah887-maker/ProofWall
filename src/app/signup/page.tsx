@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Mail, User, Building2, Lock, Loader2 } from "lucide-react";
-import Link from "next/link";
+import Link from "link";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useFirestore, useAuth } from "@/firebase";
@@ -49,7 +49,7 @@ export default function SignupPage() {
         .then(() => {
           toast({
             title: "Conta Criada!",
-            description: "Bem-vindo ao ProofWall. Seu acesso VIP está garantido.",
+            description: "Bem-vindo ao ProofWall. Sua conta foi configurada com sucesso.",
           });
           router.push('/dash');
         })
@@ -82,8 +82,8 @@ export default function SignupPage() {
       <div className="w-full max-w-lg space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="space-y-2">
-            <h1 className="text-4xl font-bold font-headline tracking-tighter">Torne-se Membro VIP</h1>
-            <p className="text-gray-700 text-lg">Crie sua conta e comece a converter leads hoje mesmo.</p>
+            <h1 className="text-4xl font-bold font-headline tracking-tighter">Crie sua Conta</h1>
+            <p className="text-gray-700 text-lg">Comece a converter elogios em vendas hoje mesmo.</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function SignupPage() {
           <div className="h-2 bg-primary w-full" />
           <CardHeader className="pt-8 text-center">
             <CardTitle className="text-2xl font-headline">Dados da Sua Conta</CardTitle>
-            <CardDescription>Acesso exclusivo para os primeiros 50 inscritos.</CardDescription>
+            <CardDescription>Junte-se a centenas de empresas que já utilizam o ProofWall.</CardDescription>
           </CardHeader>
           <CardContent className="px-8 pb-10">
             <form onSubmit={handleSignup} className="space-y-5">
@@ -157,7 +157,7 @@ export default function SignupPage() {
               >
                 {isSubmitting ? (
                   <><Loader2 className="animate-spin mr-2 h-5 w-5" /> Criando Conta...</>
-                ) : "Confirmar Acesso VIP"}
+                ) : "Confirmar Cadastro"}
               </Button>
 
               <div className="text-center pt-4">
