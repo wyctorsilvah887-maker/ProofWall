@@ -10,6 +10,10 @@
           "type": "string",
           "description": "Nome completo."
         },
+        "companyName": {
+          "type": "string",
+          "description": "Nome da empresa ou marca."
+        },
         "email": {
           "type": "string",
           "format": "email",
@@ -27,6 +31,7 @@
       },
       "required": [
         "name",
+        "companyName",
         "email",
         "isAdmin",
         "createdAt"
