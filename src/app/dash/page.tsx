@@ -12,7 +12,6 @@ import {
   Zap, 
   CheckCircle2, 
   MessageSquare,
-  ArrowUpRight,
   LogOut,
   User,
   Loader2,
@@ -43,7 +42,6 @@ import { doc, collection, query, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -134,6 +132,8 @@ export default function DashPage() {
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
+          <Link href="/dash" className="text-sm font-medium text-primary transition-colors">Dashboard</Link>
+          <Link href="/widgets" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Widgets</Link>
           {userData?.isAdmin && (
             <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
           )}
@@ -158,6 +158,11 @@ export default function DashPage() {
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="cursor-pointer">
+                <Layout className="mr-2 h-4 w-4" />
+                <span>Meus Widgets</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
@@ -173,9 +178,11 @@ export default function DashPage() {
             <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
             <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
           </div>
-          <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
-            <Plus className="w-5 h-5 mr-2" /> Novo Widget
-          </Button>
+          <Link href="/widgets" className="w-full md:w-auto">
+            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
+              <Plus className="w-5 h-5 mr-2" /> Novo Widget
+            </Button>
+          </Link>
         </header>
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
@@ -397,7 +404,7 @@ export default function DashPage() {
               </div>
 
               <div className="mt-auto pt-6 w-full">
-                <Button variant="outline" className="w-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5">
+                <Button variant="outline" className="w-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/widgets')}>
                   Personalizar Design
                 </Button>
               </div>

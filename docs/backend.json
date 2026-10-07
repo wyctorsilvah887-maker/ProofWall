@@ -75,6 +75,23 @@
         }
       },
       "required": ["userName", "rating", "text", "status", "createdAt"]
+    },
+    "Widget": {
+      "title": "Widget",
+      "description": "Configuração de um widget de prova social.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nome identificador do widget."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data de criação."
+        }
+      },
+      "required": ["name", "createdAt"]
     }
   },
   "auth": {
@@ -90,6 +107,10 @@
     "/users/{userId}/testimonials/{testimonialId}": {
       "schema": "Testimonial",
       "description": "Depoimentos coletados dos clientes, organizados por empresa."
+    },
+    "/users/{userId}/widgets/{widgetId}": {
+      "schema": "Widget",
+      "description": "Configurações de widgets de cada usuário."
     }
   }
 }

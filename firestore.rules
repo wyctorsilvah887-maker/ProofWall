@@ -28,6 +28,12 @@ service cloud.firestore {
         allow read, update, delete: if (request.auth != null && request.auth.uid == userId) || 
           (request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
       }
+
+      // Regras para a SUB-COLEÇÃO de widgets
+      match /widgets/{widgetId} {
+        // APENAS O DONO pode gerenciar seus widgets
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
     
     // Bloqueio padrão

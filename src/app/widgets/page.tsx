@@ -1,0 +1,251 @@
+'use client';
+
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { 
+  Plus, 
+  Layout, 
+  Loader2, 
+  Settings2, 
+  Code, 
+  Trash2, 
+  ChevronRight,
+  ArrowLeft,
+  User,
+  LogOut,
+  Shield
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { useUser, useFirestore, useCollection, useAuth, useDoc } from '@/firebase';
+import { collection, addDoc, serverTimestamp, doc } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
+import { signOut } from 'firebase/auth';
+import Link from 'next/link';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+
+export default function WidgetsPage() {
+  const { user, loading: authLoading } = useUser();
+  const db = useFirestore();
+  const auth = useAuth();
+  const router = useRouter();
+  
+  const [newWidgetName, setNewWidgetName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
+  const widgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+
+  const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, authLoading, router]);
+
+  const handleCreateWidget = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!newWidgetName.trim() || !db || !user) return;
+
+    setIsCreating(true);
+    const widgetData = {
+      name: newWidgetName.trim(),
+      createdAt: serverTimestamp(),
+    };
+
+    const widgetsRef = collection(db, 'users', user.uid, 'widgets');
+
+    addDoc(widgetsRef, widgetData)
+      .then(() => {
+        setNewWidgetName('');
+        setIsCreating(false);
+        toast({
+          title: "Widget Criado!",
+          description: "Seu novo widget já está na lista.",
+        });
+      })
+      .catch(async (err) => {
+        const permissionError = new FirestorePermissionError({
+          path: widgetsRef.path,
+          operation: 'create',
+          requestResourceData: widgetData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        setIsCreating(false);
+      });
+  };
+
+  if (authLoading || userDataLoading || (user && !userData)) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
+          <p className="text-muted-foreground font-medium">Carregando seus widgets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Se não houver widgets, forçamos a criação do primeiro
+  if (!widgetsLoading && (!widgetsList || widgetsList.length === 0)) {
+    return (
+      <div className="min-h-screen bg-muted/20 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden">
+          <div className="h-2 bg-primary w-full" />
+          <CardHeader className="text-center pt-8">
+            <Layout className="w-12 h-12 text-primary mx-auto mb-4" />
+            <CardTitle className="text-2xl font-headline">Crie seu Primeiro Widget</CardTitle>
+            <CardDescription>Dê um nome ao seu mural de prova social para começar.</CardDescription>
+          </CardHeader>
+          <CardContent className="pb-8">
+            <form onSubmit={handleCreateWidget} className="space-y-4">
+              <Input 
+                placeholder="Ex: Mural da Home, Widget de Vendas..."
+                value={newWidgetName}
+                onChange={(e) => setNewWidgetName(e.target.value)}
+                required
+                className="h-12 text-lg"
+              />
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-lg font-bold"
+                disabled={isCreating}
+              >
+                {isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
+                Criar Widget e Acessar
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
+      <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
+          <span className="font-headline text-primary">ProofWall</span>
+        </div>
+        
+        <nav className="ml-8 hidden md:flex items-center gap-6">
+          <Link href="/dash" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Dashboard</Link>
+          <Link href="/widgets" className="text-sm font-medium text-primary transition-colors">Widgets</Link>
+          {userData?.isAdmin && (
+            <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
+          )}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/20">
+                <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer">
+                <Layout className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+
+      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link href="/dash">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-2xl font-bold font-headline tracking-tight">Meus Widgets</h1>
+              <p className="text-sm text-muted-foreground">Gerencie a exibição da sua prova social.</p>
+            </div>
+          </div>
+          
+          <Button onClick={() => setNewWidgetName('Novo Widget ' + (widgetsList?.length + 1))} className="shadow-md">
+            <Plus className="w-4 h-4 mr-2" /> Novo Widget
+          </Button>
+        </div>
+
+        <div className="grid gap-4">
+          {widgetsLoading ? (
+            <div className="py-20 text-center">
+              <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" />
+            </div>
+          ) : (
+            widgetsList?.map((w: any) => (
+              <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 p-3 rounded-xl">
+                      <Layout className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg">{w.name}</h3>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Criado em {w.createdAt?.toDate ? w.createdAt.toDate().toLocaleDateString('pt-BR') : 'Agora'}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0">
+                    <Button variant="secondary" size="sm" className="flex-1 sm:flex-none">
+                      <Code className="w-4 h-4 mr-2" /> Código
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                      <Settings2 className="w-4 h-4 mr-2" /> Configurar
+                    </Button>
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
+        </div>
+
+        <div className="bg-primary/5 border border-primary/10 rounded-2xl p-8 text-center space-y-4">
+          <div className="bg-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+            <Shield className="w-6 h-6 text-primary" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-bold text-lg">Precisa de ajuda com o Design?</h3>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Nossa equipe pode ajudar você a customizar o widget para que ele combine perfeitamente com a identidade visual do seu site.
+            </p>
+          </div>
+          <Button variant="link" className="text-primary font-bold">Falar com Suporte VIP</Button>
+        </div>
+      </main>
+    </div>
+  );
+}
