@@ -135,11 +135,6 @@ export default function DashPage() {
             <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <Link href="/" className="flex-1 md:flex-none">
-              <Button variant="outline" size="sm" className="w-full gap-2 text-xs md:text-sm">
-                <ArrowLeft className="w-4 h-4" /> <span className="hidden sm:inline">Ver Site</span><span className="sm:hidden">Site</span>
-              </Button>
-            </Link>
             <Button size="sm" className="flex-1 md:flex-none shadow-lg text-xs md:text-sm">Novo Widget</Button>
           </div>
         </header>
