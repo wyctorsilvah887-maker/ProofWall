@@ -1,13 +1,8 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
 import { 
   Zap, 
   CheckCircle2, 
@@ -24,7 +19,10 @@ import {
   Clock,
   Eye,
   Layout,
-  Plus
+  Plus,
+  QrCode,
+  Download,
+  Printer
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -37,11 +35,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
 import { doc, collection, query, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -50,6 +56,7 @@ export default function DashPage() {
   const router = useRouter();
   const [baseUrl, setBaseUrl] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -108,6 +115,41 @@ export default function DashPage() {
       title: "Copiado!",
       description: `${description} copiado para a área de transferência.`,
     });
+  };
+
+  const handlePrintQr = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const svgElement = document.getElementById('qr-code-svg');
+    if (!svgElement) return;
+
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Imprimir QR Code - Proova</title>
+          <style>
+            body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+            h1 { margin-bottom: 20px; color: #f97316; }
+            .container { text-align: center; border: 2px solid #eee; padding: 40px; borderRadius: 20px; }
+            p { margin-top: 20px; color: #666; font-size: 1.2rem; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>${userData?.companyName || 'Sua Empresa'}</h1>
+            ${svgData}
+            <p>Escaneie para deixar seu depoimento</p>
+          </div>
+          <script>
+            window.onload = () => { window.print(); window.close(); };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   if (authLoading || userDataLoading || (user && !userData)) {
@@ -235,7 +277,7 @@ export default function DashPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Envie este link direto para seus clientes via WhatsApp para coletar novos depoimentos.
+                  Envie este link direto para seus clientes via WhatsApp ou use o QR Code para coletar novos depoimentos.
                 </p>
                 <div className="flex gap-2">
                   <Input 
@@ -243,14 +285,26 @@ export default function DashPage() {
                     value={collectionLink} 
                     className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
-                  <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className="shrink-0 h-9 w-9"
-                    onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
+                  <div className="flex gap-1.5 shrink-0">
+                    <Button 
+                      variant="secondary" 
+                      size="icon" 
+                      className="h-9 w-9"
+                      onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
+                      title="Copiar Link"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="h-9 w-9 border-primary/20 text-primary hover:bg-primary/5"
+                      onClick={() => setIsQrDialogOpen(true)}
+                      title="Gerar QR Code"
+                    >
+                      <QrCode className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -382,6 +436,67 @@ export default function DashPage() {
           </div>
         </div>
       </main>
+
+      <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-primary" />
+              QR Code de Coleta
+            </DialogTitle>
+            <DialogDescription>
+              Seus clientes podem escanear este código com a câmera do celular para deixar um depoimento rapidamente.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex flex-col items-center justify-center py-6 space-y-6">
+            <div className="p-4 bg-white rounded-2xl shadow-inner border">
+              <QRCodeSVG 
+                id="qr-code-svg"
+                value={collectionLink} 
+                size={220} 
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+            
+            <div className="flex gap-3 w-full">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={handlePrintQr}
+              >
+                <Printer className="w-4 h-4 mr-2" /> Imprimir
+              </Button>
+              <Button 
+                className="flex-1"
+                onClick={() => {
+                  const svg = document.getElementById('qr-code-svg');
+                  if (!svg) return;
+                  const svgData = new XMLSerializer().serializeToString(svg);
+                  const canvas = document.createElement('canvas');
+                  const ctx = canvas.getContext('2d');
+                  const img = new Image();
+                  img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx?.drawImage(img, 0, 0);
+                    const pngUrl = canvas.toDataURL('image/png');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = pngUrl;
+                    downloadLink.download = `qrcode-proova-${companySlug}.png`;
+                    downloadLink.click();
+                  };
+                  img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+                  toast({ title: "Download Iniciado", description: "O arquivo PNG está sendo baixado." });
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" /> Download PNG
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
