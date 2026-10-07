@@ -256,7 +256,12 @@ export default function DashPage() {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-bold">--</div>
+                <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
+                  Em breve
+                </Badge>
+              </div>
               <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google Maps</p>
             </CardContent>
           </Card>
