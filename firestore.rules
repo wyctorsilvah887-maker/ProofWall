@@ -1,34 +1,34 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Regras para a coleção de usuários
+    // Regras para a coleção de usuários (leads e admins)
     match /users/{userId} {
+      // Permite a criação inicial (leads se cadastrando e admins se registrando)
       allow create: if true;
+      
+      // O próprio usuário sempre pode ler e editar seu perfil
       allow get, update, delete: if request.auth != null && request.auth.uid == userId;
       
-      // Admin pode ler tudo
+      // Regra de Administrador:
       allow read, write: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
-    // Regras para Depoimentos (Testimonials)
-    // Atualizado: Garantindo permissão de criação pública para coleta de leads
+    // Regras para a coleção de depoimentos (Testimonials)
     match /testimonials/{testimonialId} {
-      // Qualquer um pode enviar (criar) um depoimento sem estar logado
-      // Esta regra permite a coleta pública de prova social
+      // QUALQUER UM pode enviar um depoimento (essencial para coleta de leads)
       allow create: if true;
       
-      // Apenas Admins podem ler, moderar (update) ou excluir depoimentos
+      // APENAS ADIMINS podem ler ou gerenciar depoimentos
       allow read, update, delete: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
-
-    // Bloqueio padrão para qualquer outra rota não especificada
+    
+    // Bloqueio padrão para qualquer outra coleção
     match /{document=**} {
       allow read, write: if false;
     }
