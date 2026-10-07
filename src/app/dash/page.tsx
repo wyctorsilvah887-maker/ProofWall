@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -23,7 +24,8 @@ import {
   Download,
   Printer,
   MapPin,
-  TrendingUp
+  TrendingUp,
+  Shield
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -200,13 +202,23 @@ export default function DashPage() {
                 <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer md:hidden">
+                <TrendingUp className="mr-2 h-4 w-4" />
+                <span>Dash</span>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/widgets')} className="cursor-pointer">
                 <Layout className="mr-2 h-4 w-4" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
+              {userData?.isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer md:hidden">
+                  <Shield className="mr-2 h-4 w-4" />
+                  <span>Administração</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -293,30 +305,29 @@ export default function DashPage() {
                 <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
                   Envie este link direto para seus clientes via WhatsApp ou gere o <strong>QR Code de Balcão</strong> para coletar depoimentos no seu estabelecimento físico.
                 </p>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Input 
                     readOnly 
                     value={collectionLink} 
-                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1"
                   />
-                  <div className="flex gap-1.5 shrink-0">
+                  <div className="flex gap-2">
                     <Button 
                       variant="secondary" 
-                      size="icon" 
-                      className="h-9 w-9"
+                      className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0"
                       onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                       title="Copiar Link"
                     >
-                      <Copy className="h-3.5 w-3.5" />
+                      <Copy className="h-4 w-4 sm:mr-0 mr-2" />
+                      <span className="sm:hidden font-bold">Copiar Link</span>
                     </Button>
                     <Button 
                       variant="outline" 
-                      size="default" 
-                      className="h-9 border-primary/20 text-primary hover:bg-primary/5 flex gap-2 font-bold"
+                      className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4"
                       onClick={() => setIsQrDialogOpen(true)}
                     >
                       <QrCode className="h-4 w-4" />
-                      <span className="hidden sm:inline">QR Code de Balcão</span>
+                      <span>QR de Balcão</span>
                     </Button>
                   </div>
                 </div>
@@ -475,7 +486,7 @@ export default function DashPage() {
             </div>
             
             <div className="flex flex-col gap-3 w-full">
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="outline" 
                   className="flex-1 h-12 border-primary text-primary hover:bg-primary/5"
@@ -509,7 +520,7 @@ export default function DashPage() {
                   <Download className="w-5 h-5 mr-2" /> Baixar PNG
                 </Button>
               </div>
-              <p className="text-[10px] text-center text-muted-foreground uppercase font-bold tracking-widest pt-2">
+              <p className="text-[10px] text-center text-muted-foreground uppercase font-bold tracking-widest pt-2 px-4">
                 Dica: Imprima em papel fotográfico para melhor durabilidade no seu balcão.
               </p>
             </div>
