@@ -36,6 +36,45 @@
         "isAdmin",
         "createdAt"
       ]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Depoimento enviado por um cliente.",
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "description": "Nome do cliente."
+        },
+        "userEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "E-mail do cliente."
+        },
+        "rating": {
+          "type": "number",
+          "description": "Avaliação de 1 a 5 estrelas."
+        },
+        "text": {
+          "type": "string",
+          "description": "Conteúdo do depoimento."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "archived"],
+          "description": "Status de moderação."
+        },
+        "companySlug": {
+          "type": "string",
+          "description": "Slug da empresa destino."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data de envio."
+        }
+      },
+      "required": ["userName", "rating", "text", "status", "companySlug", "createdAt"]
     }
   },
   "auth": {
@@ -47,6 +86,10 @@
     "/users/{userId}": {
       "schema": "User",
       "description": "Coleção central de todos os usuários e leads do sistema."
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Depoimentos coletados dos clientes."
     }
   }
 }

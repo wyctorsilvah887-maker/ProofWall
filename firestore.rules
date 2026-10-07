@@ -1,25 +1,32 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Regras para a coleção de usuários (leads e admins)
+    // Regras para a coleção de usuários
     match /users/{userId} {
-      // Permite a criação inicial (leads se cadastrando e admins se registrando)
       allow create: if true;
-      
-      // O próprio usuário sempre pode ler e editar seu perfil
       allow get, update, delete: if request.auth != null && request.auth.uid == userId;
       
-      // Regra de Administrador:
-      // Permite listar a coleção (list) e ler qualquer documento (get)
-      // se o documento do usuário solicitante tiver isAdmin == true
+      // Admin pode ler tudo
       allow read, write: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
-    // Bloqueio padrão para qualquer outra coleção
+    // Regras para Depoimentos
+    match /testimonials/{testimonialId} {
+      // Qualquer um pode enviar (criar) um depoimento
+      allow create: if true;
+      
+      // Apenas o Admin da empresa ou o Admin do sistema pode ler/editar
+      // Nota: Para este MVP, permitimos que Admins leiam todos os depoimentos
+      allow read, update, delete: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
