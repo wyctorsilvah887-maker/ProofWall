@@ -1,7 +1,7 @@
-
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Card, 
   CardContent, 
@@ -20,7 +20,8 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
-  User
+  User,
+  Loader2
 } from 'lucide-react';
 import { 
   Bar, 
@@ -63,24 +64,31 @@ export default function DashPage() {
   const { user, loading: authLoading } = useUser();
   const db = useFirestore();
   const auth = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, authLoading, router]);
 
   const leadsQuery = useMemo(() => {
-    if (!db) return null;
+    if (!db || !user) return null;
     return query(
       collection(db, 'users'),
       where('isAdmin', '==', false),
       limit(5)
     );
-  }, [db]);
+  }, [db, user]);
 
   const { data: recentLeads, loading: leadsLoading } = useCollection(leadsQuery);
 
-  if (authLoading) {
+  if (authLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
-        <div className="animate-pulse flex flex-col items-center gap-4">
-          <div className="h-12 w-12 bg-primary/20 rounded-full" />
-          <div className="h-4 w-32 bg-muted rounded" />
+        <div className="text-center space-y-4">
+          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
+          <p className="text-muted-foreground font-medium">Autenticando...</p>
         </div>
       </div>
     );
@@ -121,7 +129,7 @@ export default function DashPage() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{user?.email}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Admin</p>
+              <p className="text-[10px] text-muted-foreground uppercase">Membro</p>
             </div>
           </div>
           <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => signOut(auth)}>
@@ -135,7 +143,7 @@ export default function DashPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold font-headline tracking-tight">Dash Geral</h1>
-            <p className="text-muted-foreground">Bem-vindo ao seu painel administrativo, {user?.email}.</p>
+            <p className="text-muted-foreground">Bem-vindo ao seu painel, {user?.email}.</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/signup">

@@ -5,8 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2, Link2, ShieldCheck, Zap } from "lucide-react";
+import { useUser } from "@/firebase";
 
 export default function Home() {
+  const { user } = useUser();
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
   const avatars = [
     PlaceHolderImages.find(img => img.id === 'avatar-1'),
@@ -37,9 +39,25 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
-      <header className="px-4 lg:px-6 h-16 flex items-center justify-center border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
+      <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center font-bold text-xl tracking-tight">
           <span className="font-headline text-2xl">ProofWall</span>
+        </div>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <Link href="/dash">
+              <Button variant="ghost" size="sm">Acessar Dash</Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" size="sm">Entrar</Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="sm">Cadastro</Button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -257,4 +275,3 @@ export default function Home() {
     </div>
   );
 }
-
