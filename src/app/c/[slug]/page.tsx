@@ -25,7 +25,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
 
-  // Formata o nome da empresa para exibição visual baseada no slug
   const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   useEffect(() => {
@@ -35,14 +34,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       try {
         setIsLoadingCompany(true);
         const usersRef = collection(db, 'users');
-        // Buscamos o documento do usuário que possui o slug correspondente
         const q = query(usersRef, where('companySlug', '==', slug), limit(1));
         const snapshot = await getDocs(q);
         
         if (!snapshot.empty) {
           setTargetUserId(snapshot.docs[0].id);
         } else {
-          // Fallback: Tenta buscar sem hifens caso o slug tenha sido salvo de forma diferente (segurança extra)
           const slugAlt = slug.replace(/-/g, ' ');
           const qAlt = query(usersRef, where('companyName', '==', slugAlt), limit(1));
           const snapshotAlt = await getDocs(qAlt);
@@ -71,7 +68,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       userEmail: userEmail.trim().toLowerCase(),
       rating,
       text: text.trim(),
-      status: 'pending',
+      status: 'approved', // Aprovação automática
       createdAt: serverTimestamp(),
     };
 
@@ -82,7 +79,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         setSubmitted(true);
         toast({
           title: "Depoimento Enviado!",
-          description: "Obrigado por compartilhar sua experiência.",
+          description: "Obrigado por compartilhar sua experiência. Seu feedback já está disponível!",
         });
       })
       .catch(async (err) => {
@@ -135,7 +132,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
-              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso.</p>
+              <p className="text-muted-foreground">Sua avaliação foi enviada e aprovada automaticamente.</p>
             </div>
           </CardContent>
         </Card>
