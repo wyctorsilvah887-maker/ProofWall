@@ -17,12 +17,11 @@ import {
   MessageSquare,
   ArrowUpRight,
   Shield,
-  LayoutDashboard,
-  Settings,
   LogOut,
   User,
   Loader2,
-  Lock
+  Lock,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   Bar, 
@@ -66,7 +65,6 @@ export default function DashPage() {
   const auth = useAuth();
   const router = useRouter();
 
-  // Busca os dados do perfil do usuário para verificar se é admin
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
@@ -76,7 +74,6 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  // Só executa a query de leads se o banco estiver pronto, o usuário logado e for confirmado como admin
   const leadsQuery = useMemo(() => {
     if (!db || !user || !userData?.isAdmin) return null;
     return query(
@@ -100,61 +97,44 @@ export default function DashPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col md:flex-row font-body">
-      {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex w-64 flex-col border-r bg-card h-screen sticky top-0">
-        <div className="p-6 border-b">
-          <div className="flex items-center gap-2 font-bold text-xl">
-            <Zap className="w-6 h-6 text-primary" />
-            <span className="font-headline">ProofWall</span>
-          </div>
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
+      {/* Top Navigation Header */}
+      <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-2 font-bold text-xl">
+          <Zap className="w-6 h-6 text-primary" />
+          <span className="font-headline hidden sm:inline">ProofWall</span>
         </div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/dash">
-            <Button variant="secondary" className="w-full justify-start gap-3">
-              <LayoutDashboard className="w-4 h-4" /> Dash
-            </Button>
-          </Link>
+        
+        <nav className="ml-8 hidden md:flex items-center gap-6">
+          <Link href="/dash" className="text-sm font-medium text-primary">Dash</Link>
           {userData?.isAdmin && (
-            <Link href="/admin">
-              <Button variant="ghost" className="w-full justify-start gap-3">
-                <Users className="w-4 h-4" /> Gerenciar Leads
-              </Button>
-            </Link>
+            <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
           )}
-          <Button variant="ghost" className="w-full justify-start gap-3 opacity-50 cursor-not-allowed">
-            <MessageSquare className="w-4 h-4" /> Widgets
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 opacity-50 cursor-not-allowed">
-            <Settings className="w-4 h-4" /> Configurações
-          </Button>
         </nav>
-        <div className="p-4 border-t space-y-4">
-          <div className="flex items-center gap-3 px-2 py-1">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-              {user?.email?.[0].toUpperCase() || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{userData?.name || user?.email}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">{userData?.isAdmin ? 'Admin' : 'Membro'}</p>
-            </div>
+
+        <div className="ml-auto flex items-center gap-4">
+          <div className="hidden sm:flex flex-col items-end mr-2">
+            <span className="text-sm font-semibold">{userData?.name || 'Usuário'}</span>
+            <span className="text-[10px] uppercase text-muted-foreground">{userData?.isAdmin ? 'Admin' : 'Membro'}</span>
           </div>
-          <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => signOut(auth)}>
-            <LogOut className="w-4 h-4" /> Sair
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={() => signOut(auth)}>
+            <LogOut className="w-4 h-4" />
           </Button>
         </div>
-      </aside>
+      </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 space-y-8 overflow-y-auto">
+      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold font-headline tracking-tight">Dash Geral</h1>
-            <p className="text-muted-foreground text-gray-700">Bem-vindo, {userData?.name || user?.email}.</p>
+            <h1 className="text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
+            <p className="text-muted-foreground text-gray-700">Bem-vindo de volta ao seu dashboard.</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/">
-              <Button variant="outline" size="sm">Ver Site</Button>
+              <Button variant="outline" size="sm" className="gap-2">
+                <ArrowLeft className="w-4 h-4" /> Ver Site
+              </Button>
             </Link>
             <Button size="sm" className="shadow-lg">Criar Novo Widget</Button>
           </div>
@@ -170,7 +150,7 @@ export default function DashPage() {
             <CardContent>
               <div className="text-2xl font-bold">128</div>
               <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700">
-                <span className="text-green-500 font-medium">+12%</span> em relação ao mês anterior
+                <span className="text-green-500 font-medium">+12%</span>
               </p>
             </CardContent>
           </Card>
@@ -182,7 +162,7 @@ export default function DashPage() {
             <CardContent>
               <div className="text-2xl font-bold">24.8%</div>
               <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700">
-                <span className="text-green-500 font-medium">+2.1%</span> nas últimas 24h
+                <span className="text-green-500 font-medium">+2.1%</span>
               </p>
             </CardContent>
           </Card>
@@ -203,7 +183,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">4.9/5</div>
-              <p className="text-xs text-muted-foreground text-gray-700">Baseado em 84 depoimentos</p>
+              <p className="text-xs text-muted-foreground text-gray-700">Baseado em depoimentos</p>
             </CardContent>
           </Card>
         </div>
@@ -217,7 +197,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="pl-2">
               <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <BarChart data={chartData}>
+                < BarChart data={chartData}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
                   <XAxis 
                     dataKey="name" 
