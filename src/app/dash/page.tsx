@@ -21,7 +21,9 @@ import {
   ArrowDown,
   Share2,
   Copy,
-  Link2
+  Link2,
+  Star,
+  Clock
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -34,8 +36,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore, useDoc, useAuth } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
+import { doc, collection, query, where, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -62,6 +64,34 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
+  const companySlug = useMemo(() => {
+    if (!userData && !user) return '';
+    return userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6) || '';
+  }, [userData, user]);
+
+  // Busca os últimos depoimentos (buscamos 10 para garantir e filtramos os 5 mais recentes no cliente para evitar erros de índice)
+  const testimonialsQuery = useMemo(() => {
+    if (!db || !companySlug) return null;
+    return query(
+      collection(db, 'testimonials'),
+      where('companySlug', '==', companySlug),
+      limit(10)
+    );
+  }, [db, companySlug]);
+
+  const { data: testimonialsData, loading: testimonialsLoading } = useCollection(testimonialsQuery);
+
+  const sortedTestimonials = useMemo(() => {
+    if (!testimonialsData) return [];
+    return [...testimonialsData]
+      .sort((a: any, b: any) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      })
+      .slice(0, 5);
+  }, [testimonialsData]);
+
   const copyToClipboard = (text: string, description: string) => {
     navigator.clipboard.writeText(text);
     toast({
@@ -81,7 +111,6 @@ export default function DashPage() {
     );
   }
 
-  const companySlug = userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6);
   const collectionLink = `${baseUrl}/c/${companySlug}`;
   const widgetScript = `<script src="${baseUrl}/widget.js" defer></script>`;
 
@@ -148,19 +177,17 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div>
-                <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas 128</div>
+                <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas {testimonialsData?.length || 0}</div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
-                  <span className="text-green-500 font-medium">+12%</span> este mês
+                  Total de depoimentos coletados
                 </p>
               </div>
             </CardContent>
             
-            {/* Seta indicativa Desktop (Direita) */}
             <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 group-hover:scale-110 transition-transform ring-4 ring-muted/20">
               <ArrowRight className="h-4 w-4 text-primary" />
             </div>
 
-            {/* Seta indicativa Mobile (Baixo) */}
             <div className="flex md:hidden absolute -bottom-5 left-1/2 -translate-x-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 transition-transform ring-4 ring-muted/20">
               <ArrowDown className="h-4 w-4 text-primary" />
             </div>
@@ -172,7 +199,7 @@ export default function DashPage() {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">85</div>
+              <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google Maps</p>
             </CardContent>
           </Card>
@@ -242,6 +269,62 @@ export default function DashPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+
+        {/* Section: Últimos Depoimentos */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+          </div>
+          
+          <div className="grid gap-4">
+            {testimonialsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
+              </div>
+            ) : sortedTestimonials.length > 0 ? (
+              sortedTestimonials.map((t: any) => (
+                <Card key={t.id} className="border-none shadow-sm overflow-hidden">
+                  <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
+                        <User className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sm md:text-base">{t.userName}</span>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                              <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-700 italic line-clamp-2 md:line-clamp-none">
+                          "{t.text}"
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
+                      </div>
+                      <Badge variant={t.status === 'approved' ? 'default' : 'secondary'} className="capitalize text-[10px]">
+                        {t.status === 'approved' ? 'Aprovado' : 'Pendente'}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
+                <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Nenhum depoimento recebido ainda.</p>
+                <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest">Compartilhe seu link de coleta acima</p>
+              </div>
+            )}
           </div>
         </div>
 
