@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -132,19 +131,21 @@ export default function DashPage() {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Imprimir QR Code - Proova</title>
+          <title>Imprimir QR Code de Balcão - Proova</title>
           <style>
             body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-            h1 { margin-bottom: 20px; color: #f97316; }
-            .container { text-align: center; border: 2px solid #eee; padding: 40px; borderRadius: 20px; }
-            p { margin-top: 20px; color: #666; font-size: 1.2rem; }
+            h1 { margin-bottom: 20px; color: #f97316; font-size: 2.5rem; }
+            .container { text-align: center; border: 4px solid #f97316; padding: 60px; border-radius: 40px; }
+            p { margin-top: 30px; color: #333; font-size: 1.8rem; font-weight: bold; }
+            .logo { margin-bottom: 20px; color: #f97316; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.2em; }
           </style>
         </head>
         <body>
           <div class="container">
+            <div class="logo">Proova</div>
             <h1>${userData?.companyName || 'Sua Empresa'}</h1>
             ${svgData}
-            <p>Escaneie para deixar seu depoimento</p>
+            <p>Escaneie e deixe seu depoimento!</p>
           </div>
           <script>
             window.onload = () => { window.print(); window.close(); };
@@ -285,12 +286,12 @@ export default function DashPage() {
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
-                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta
+                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Envie este link direto para seus clientes via WhatsApp ou use o QR Code para coletar novos depoimentos.
+                  Envie este link direto para seus clientes via WhatsApp ou gere o <strong>QR Code de Balcão</strong> para coletar depoimentos no seu estabelecimento físico.
                 </p>
                 <div className="flex gap-2">
                   <Input 
@@ -310,12 +311,12 @@ export default function DashPage() {
                     </Button>
                     <Button 
                       variant="outline" 
-                      size="icon" 
-                      className="h-9 w-9 border-primary/20 text-primary hover:bg-primary/5"
+                      size="default" 
+                      className="h-9 border-primary/20 text-primary hover:bg-primary/5 flex gap-2 font-bold"
                       onClick={() => setIsQrDialogOpen(true)}
-                      title="Gerar QR Code"
                     >
                       <QrCode className="h-4 w-4" />
+                      <span className="hidden sm:inline">QR Code de Balcão</span>
                     </Button>
                   </div>
                 </div>
@@ -453,59 +454,64 @@ export default function DashPage() {
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <QrCode className="w-5 h-5 text-primary" />
-              QR Code de Coleta
+            <DialogTitle className="flex items-center gap-2 text-2xl">
+              <QrCode className="w-6 h-6 text-primary" />
+              QR Code de Balcão
             </DialogTitle>
-            <DialogDescription>
-              Seus clientes podem escanear este código com a câmera do celular para deixar um depoimento rapidamente.
+            <DialogDescription className="text-base">
+              Perfeito para imprimir e deixar no seu balcão ou mesas. Seus clientes podem escanear este código para deixar um depoimento rapidamente.
             </DialogDescription>
           </DialogHeader>
           
           <div className="flex flex-col items-center justify-center py-6 space-y-6">
-            <div className="p-4 bg-white rounded-2xl shadow-inner border">
+            <div className="p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/20">
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={220} 
+                size={240} 
                 level="H"
                 includeMargin={true}
               />
             </div>
             
-            <div className="flex gap-3 w-full">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={handlePrintQr}
-              >
-                <Printer className="w-4 h-4 mr-2" /> Imprimir
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={() => {
-                  const svg = document.getElementById('qr-code-svg');
-                  if (!svg) return;
-                  const svgData = new XMLSerializer().serializeToString(svg);
-                  const canvas = document.createElement('canvas');
-                  const ctx = canvas.getContext('2d');
-                  const img = new Image();
-                  img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx?.drawImage(img, 0, 0);
-                    const pngUrl = canvas.toDataURL('image/png');
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = pngUrl;
-                    downloadLink.download = `qrcode-proova-${companySlug}.png`;
-                    downloadLink.click();
-                  };
-                  img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
-                  toast({ title: "Download Iniciado", description: "O arquivo PNG está sendo baixado." });
-                }}
-              >
-                <Download className="w-4 h-4 mr-2" /> Download PNG
-              </Button>
+            <div className="flex flex-col gap-3 w-full">
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  className="flex-1 h-12 border-primary text-primary hover:bg-primary/5"
+                  onClick={handlePrintQr}
+                >
+                  <Printer className="w-5 h-5 mr-2" /> Imprimir p/ Balcão
+                </Button>
+                <Button 
+                  className="flex-1 h-12 shadow-lg"
+                  onClick={() => {
+                    const svg = document.getElementById('qr-code-svg');
+                    if (!svg) return;
+                    const svgData = new XMLSerializer().serializeToString(svg);
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    img.onload = () => {
+                      canvas.width = img.width;
+                      canvas.height = img.height;
+                      ctx?.drawImage(img, 0, 0);
+                      const pngUrl = canvas.toDataURL('image/png');
+                      const downloadLink = document.createElement('a');
+                      downloadLink.href = pngUrl;
+                      downloadLink.download = `qrcode-balcao-proova-${companySlug}.png`;
+                      downloadLink.click();
+                    };
+                    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+                    toast({ title: "Download Iniciado", description: "O arquivo PNG do QR Code está sendo baixado." });
+                  }}
+                >
+                  <Download className="w-5 h-5 mr-2" /> Baixar PNG
+                </Button>
+              </div>
+              <p className="text-[10px] text-center text-muted-foreground uppercase font-bold tracking-widest pt-2">
+                Dica: Imprima em papel fotográfico para melhor durabilidade no seu balcão.
+              </p>
             </div>
           </div>
         </DialogContent>
