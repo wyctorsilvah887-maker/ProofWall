@@ -91,7 +91,7 @@ export default function SignupPage() {
           <div className="h-2 bg-primary w-full" />
           <CardHeader className="pt-8 text-center">
             <CardTitle className="text-2xl font-headline">Dados da Sua Conta</CardTitle>
-            <CardDescription>Junte-se a centenas de empresas que já utilizam o ProofWall.</CardDescription>
+            <CardDescription>Comece a transformar a satisfação de seus clientes em prova social.</CardDescription>
           </CardHeader>
           <CardContent className="px-8 pb-10">
             <form onSubmit={handleSignup} className="space-y-5">
