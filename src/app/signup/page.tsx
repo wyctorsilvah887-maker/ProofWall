@@ -32,14 +32,15 @@ export default function SignupPage() {
     setIsSubmitting(true);
     
     try {
-      // 1. Criar usuário no Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      
+      const slug = company.trim().toLowerCase().replace(/\s+/g, '-');
 
-      // 2. Criar perfil no Firestore
       const userData = {
         name: name.trim(),
         companyName: company.trim(),
+        companySlug: slug,
         email: email.trim().toLowerCase(),
         isAdmin: false,
         createdAt: serverTimestamp(),

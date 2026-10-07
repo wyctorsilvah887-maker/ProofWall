@@ -3,32 +3,35 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Regras para a coleção de usuários (leads e admins)
+    // Regras para a coleção de usuários
     match /users/{userId} {
-      // Permite a criação inicial (leads se cadastrando e admins se registrando)
+      // Permite a criação inicial
       allow create: if true;
       
-      // O próprio usuário sempre pode ler e editar seu perfil
-      allow get, update, delete: if request.auth != null && request.auth.uid == userId;
+      // Qualquer um pode ler dados básicos de um usuário (necessário para a página de coleta /c/slug)
+      allow get: if true;
+      allow list: if true;
       
-      // Regra de Administrador:
+      // O próprio usuário sempre pode editar seu perfil
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+      
+      // Regra de Administrador global
       allow read, write: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+
+      // Regras para a SUB-COLEÇÃO de depoimentos
+      match /testimonials/{testimonialId} {
+        // QUALQUER UM pode enviar um depoimento para um usuário/empresa
+        allow create: if true;
+        
+        // APENAS O DONO (userId) ou um ADMIN global pode gerenciar os depoimentos
+        allow read, update, delete: if (request.auth != null && request.auth.uid == userId) || 
+          (request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+      }
     }
     
-    // Regras para a coleção de depoimentos (Testimonials)
-    match /testimonials/{testimonialId} {
-      // QUALQUER UM pode enviar um depoimento (essencial para coleta de leads)
-      allow create: if true;
-      
-      // APENAS ADIMINS podem ler ou gerenciar depoimentos
-      allow read, update, delete: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-    }
-    
-    // Bloqueio padrão para qualquer outra coleção
+    // Bloqueio padrão
     match /{document=**} {
       allow read, write: if false;
     }

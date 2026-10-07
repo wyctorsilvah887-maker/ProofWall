@@ -16,7 +16,6 @@ import {
   LogOut,
   User,
   Loader2,
-  ArrowLeft,
   ArrowRight,
   ArrowDown,
   Share2,
@@ -37,7 +36,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, where, limit } from 'firebase/firestore';
+import { doc, collection, query, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -65,19 +64,17 @@ export default function DashPage() {
   }, [user, authLoading, router]);
 
   const companySlug = useMemo(() => {
-    if (!userData && !user) return '';
-    return userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6) || '';
-  }, [userData, user]);
+    if (!userData) return '';
+    return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
+  }, [userData]);
 
-  // Busca os últimos depoimentos (buscamos 10 para garantir e filtramos os 5 mais recentes no cliente para evitar erros de índice)
   const testimonialsQuery = useMemo(() => {
-    if (!db || !companySlug) return null;
+    if (!db || !user) return null;
     return query(
-      collection(db, 'testimonials'),
-      where('companySlug', '==', companySlug),
+      collection(db, 'users', user.uid, 'testimonials'),
       limit(10)
     );
-  }, [db, companySlug]);
+  }, [db, user]);
 
   const { data: testimonialsData, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
@@ -116,7 +113,6 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      {/* Top Navigation Header */}
       <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
           <span className="font-headline text-primary">ProofWall</span>
@@ -156,19 +152,14 @@ export default function DashPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
             <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <Button size="sm" className="flex-1 md:flex-none shadow-lg text-xs md:text-sm">Novo Widget</Button>
-          </div>
         </header>
 
-        {/* Stats Grid */}
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -205,7 +196,6 @@ export default function DashPage() {
           </Card>
         </div>
 
-        {/* Section: Compartilhar / Coletar */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Share2 className="w-5 h-5 text-primary" />
@@ -272,7 +262,6 @@ export default function DashPage() {
           </div>
         </div>
 
-        {/* Section: Últimos Depoimentos */}
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-primary" />
@@ -326,37 +315,6 @@ export default function DashPage() {
               </div>
             )}
           </div>
-        </div>
-
-        {/* Footer Area */}
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-          <Card className="border-none shadow-sm bg-primary text-primary-foreground overflow-hidden relative">
-            <CardHeader>
-              <CardTitle className="font-headline text-lg md:text-xl flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5" /> Proteção Ativada
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 relative z-10">
-              <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed max-w-[90%]">
-                Seu widget está rodando com segurança. Novos depoimentos passam por moderação antes da publicação.
-              </p>
-              <Button variant="secondary" size="sm" className="w-fit gap-2 text-xs md:text-sm">
-                Revisar Regras <ArrowUpRight className="h-4 w-4" />
-              </Button>
-            </CardContent>
-            <Zap className="absolute -bottom-6 -right-6 h-24 w-24 md:h-32 md:w-32 opacity-10 rotate-12" />
-          </Card>
-
-          <Card className="border-none shadow-sm border-2 border-dashed bg-transparent">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-muted-foreground/60 font-headline text-lg md:text-xl">Novidades</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center py-6 md:py-8 text-center space-y-2">
-              <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground/30 mb-1" />
-              <p className="text-xs md:text-sm text-muted-foreground text-gray-700 max-w-[200px] md:max-w-none">Depoimentos em vídeo 4K chegando para sua conta em breve.</p>
-              <Badge variant="secondary" className="text-[10px]">Q4 2026</Badge>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

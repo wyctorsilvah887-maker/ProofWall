@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/Card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2 } from 'lucide-react';
 import { 
@@ -50,7 +49,6 @@ export default function AdminPage() {
   const [isAdminRegistering, setIsAdminRegistering] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
-  // Consulta simplificada sem orderBy para evitar erro de índice
   const leadsQuery = useMemo(() => {
     if (!db || !user || !isAdminVerified) return null;
     return query(
@@ -61,7 +59,6 @@ export default function AdminPage() {
 
   const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
 
-  // Ordenação em memória no cliente
   const sortedLeads = useMemo(() => {
     if (!leadsList) return [];
     return [...leadsList].sort((a: any, b: any) => {
@@ -91,10 +88,13 @@ export default function AdminPage() {
         
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const newUser = userCredential.user;
+        
+        const slug = companyName.trim().toLowerCase().replace(/\s+/g, '-');
 
         const adminData = {
           name: name.trim(),
           companyName: companyName.trim(),
+          companySlug: slug,
           email: email.trim().toLowerCase(),
           isAdmin: true,
           createdAt: serverTimestamp(),
