@@ -15,7 +15,8 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
     
-    // Regras para Depoimentos
+    // Regras para Depoimentos (Testimonials)
+    // Atualizado: Garantindo permissão de criação pública para coleta de leads
     match /testimonials/{testimonialId} {
       // Qualquer um pode enviar (criar) um depoimento sem estar logado
       // Esta regra permite a coleta pública de prova social

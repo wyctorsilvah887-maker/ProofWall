@@ -11,7 +11,7 @@ import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import Link from 'next/link';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -59,7 +59,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           path: testimonialsRef.path,
           operation: 'create',
           requestResourceData: testimonialData,
-        });
+        } satisfies SecurityRuleContext);
         
         errorEmitter.emit('permission-error', permissionError);
         setIsSubmitting(false);
