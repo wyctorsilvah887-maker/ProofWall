@@ -7,6 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2 } from 'lucide-react';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
@@ -257,11 +265,24 @@ export default function AdminPage() {
             <BadgeCheck className="w-3 h-3" /> Administrador
           </Badge>
           <span className="text-sm text-muted-foreground hidden sm:inline-block">
-            <span className="font-bold text-foreground">{user.email}</span>
+            <span className="font-bold text-foreground">{userData?.companyName || user.email}</span>
           </span>
-          <Button variant="ghost" size="sm" onClick={() => signOut(auth)}>
-            <LogOut className="w-4 h-4 mr-2" /> Sair
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 border border-primary/20">
+                <User className="w-5 h-5 text-primary" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

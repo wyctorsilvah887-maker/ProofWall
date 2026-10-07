@@ -36,6 +36,14 @@ import {
   ChartTooltip, 
   ChartTooltipContent 
 } from '@/components/ui/chart';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useCollection, useDoc, useAuth } from '@/firebase';
@@ -120,9 +128,22 @@ export default function DashPage() {
               {userData?.isAdmin ? 'Admin' : 'Membro'}
             </span>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10" onClick={() => signOut(auth)}>
-            <LogOut className="w-4 h-4" />
-          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/20">
+                <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -158,7 +179,7 @@ export default function DashPage() {
                 </p>
               </div>
             </CardContent>
-            {/* Seta indicativa externa apontando para o próximo card - Visível a partir de md */}
+            {/* Seta indicativa externa apontando para o próximo card */}
             <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 group-hover:scale-110 transition-transform ring-4 ring-muted/20">
               <ArrowRight className="h-4 w-4 text-primary" />
             </div>
