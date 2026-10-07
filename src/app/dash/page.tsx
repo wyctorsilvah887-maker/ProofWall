@@ -6,12 +6,10 @@ import { useRouter } from 'next/navigation';
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
 import { 
-  Users, 
   Zap, 
   CheckCircle2, 
   MessageSquare,
@@ -19,24 +17,11 @@ import {
   LogOut,
   User,
   Loader2,
-  Lock,
   ArrowLeft,
   ArrowRight,
   ArrowDown,
   Layout
 } from 'lucide-react';
-import { 
-  Bar, 
-  BarChart, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid
-} from 'recharts';
-import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent 
-} from '@/components/ui/chart';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -47,27 +32,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore, useCollection, useDoc, useAuth } from '@/firebase';
-import { collection, query, where, limit, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, useAuth } from '@/firebase';
+import { doc } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
-
-const chartData = [
-  { name: 'Seg', leads: 4 },
-  { name: 'Ter', leads: 7 },
-  { name: 'Qua', leads: 5 },
-  { name: 'Qui', leads: 12 },
-  { name: 'Sex', leads: 8 },
-  { name: 'Sáb', leads: 15 },
-  { name: 'Dom', leads: 10 },
-];
-
-const chartConfig = {
-  leads: {
-    label: 'Novos Leads',
-    color: 'hsl(var(--primary))',
-  },
-};
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -83,17 +51,6 @@ export default function DashPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
-
-  const leadsQuery = useMemo(() => {
-    if (!db || !user || !userData?.isAdmin) return null;
-    return query(
-      collection(db, 'users'),
-      where('isAdmin', '==', false),
-      limit(5)
-    );
-  }, [db, user, userData]);
-
-  const { data: recentLeads, loading: leadsLoading } = useCollection(leadsQuery);
 
   if (authLoading || userDataLoading || (user && !userData)) {
     return (
@@ -205,124 +162,14 @@ export default function DashPage() {
 
           <Card className="border-none shadow-sm sm:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Avaliação Média</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
+              <Layout className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">4.9/5</div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Baseado em depoimentos</p>
+              <div className="text-2xl font-bold">3</div>
+              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Widgets configurados no site</p>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Middle Section: Chart and Recent Leads */}
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-7">
-          <Card className="lg:col-span-4 border-none shadow-sm">
-            <CardHeader>
-              <CardTitle className="font-headline text-lg md:text-xl">Crescimento de Leads</CardTitle>
-              <CardDescription className="text-xs md:text-sm text-gray-700">Inscritos nos últimos 7 dias.</CardDescription>
-            </CardHeader>
-            <CardContent className="px-2 pb-4">
-              <ChartContainer config={chartConfig} className="h-[250px] md:h-[300px] w-full">
-                <BarChart data={chartData}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#888888" 
-                    fontSize={10} 
-                    tickLine={false} 
-                    axisLine={false} 
-                  />
-                  <YAxis 
-                    stroke="#888888" 
-                    fontSize={10} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tickFormatter={(value) => `${value}`}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar 
-                    dataKey="leads" 
-                    fill="var(--color-leads)" 
-                    radius={[4, 4, 0, 0]} 
-                    barSize={20}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          <div className="lg:col-span-3 space-y-6">
-            <Card className="border-none shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <div>
-                  <CardTitle className="font-headline text-lg md:text-xl">Leads Recentes</CardTitle>
-                  <CardDescription className="text-xs text-gray-700">
-                    {userData?.isAdmin ? 'Últimos inscritos.' : 'Visualização restrita.'}
-                  </CardDescription>
-                </div>
-                {userData?.isAdmin && (
-                  <Link href="/admin">
-                    <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">Ver todos</Button>
-                  </Link>
-                )}
-              </CardHeader>
-              <CardContent className="pt-2">
-                <div className="space-y-4">
-                  {!userData?.isAdmin ? (
-                    <div className="py-12 text-center space-y-3">
-                      <Lock className="h-8 w-8 text-muted-foreground mx-auto opacity-20" />
-                      <p className="text-xs text-muted-foreground text-gray-700">Restrito para administradores.</p>
-                    </div>
-                  ) : leadsLoading ? (
-                    <div className="space-y-3">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-                          <div className="space-y-1 flex-1">
-                            <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
-                            <div className="h-2 w-3/4 bg-muted animate-pulse rounded" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : recentLeads && recentLeads.length > 0 ? (
-                    recentLeads.map((lead: any) => (
-                      <div key={lead.id} className="flex items-center justify-between group gap-2">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10 shrink-0">
-                            <User className="h-4 w-4" />
-                          </div>
-                          <div className="min-w-0 overflow-hidden">
-                            <p className="text-xs md:text-sm font-medium truncate">{lead.name}</p>
-                            <p className="text-[10px] md:text-xs text-muted-foreground truncate">{lead.email}</p>
-                          </div>
-                        </div>
-                        <Badge variant="outline" className="text-[8px] md:text-[10px] uppercase font-bold shrink-0 group-hover:text-primary transition-colors">
-                          Novo
-                        </Badge>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-10 text-center text-muted-foreground text-gray-700 text-sm">
-                      Nenhum lead encontrado.
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
-                <Layout className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">3</div>
-                <p className="text-xs text-muted-foreground text-gray-700 mt-1">Widgets configurados no site</p>
-              </CardContent>
-            </Card>
-          </div>
         </div>
 
         {/* Footer Area */}
