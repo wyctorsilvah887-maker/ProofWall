@@ -126,7 +126,7 @@ export default function DashPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
-            <p className="text-muted-foreground text-gray-700">Bem-vindo de volta ao seu dashboard.</p>
+            <p className="text-muted-foreground text-gray-700">Bem-vindo de volta ao seu painel.</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/">
