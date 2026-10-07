@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -75,8 +76,7 @@ export default function Home() {
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
                   <p className="max-w-[600px] text-gray-700 text-base md:text-lg lg:text-xl/relaxed mx-auto lg:mx-0">
-                    Colete, modere e exiba depoimentos em texto ou vídeos em minutos. 
-                    Sem código complexo, sem impacto na velocidade do seu site.
+                    Colete, modere e exiba depoimentos em texto ou vídeos em minutos com o domínio <strong>proofwall.io</strong>.
                   </p>
                 </div>
                 
@@ -215,7 +215,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Coleta sem atrito</h3>
                 <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                  Envie um link direto para o seu cliente. Ele envia o depoimento em segundos, sem precisar criar conta.
+                  Envie um link <strong>proofwall.io</strong> direto para o seu cliente. Ele envia o depoimento em segundos.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 p-6 md:p-8 rounded-2xl md:rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
@@ -224,7 +224,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Moderação em um clique</h3>
                 <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                  Escolha exatamente o que vai para o ar no seu painel centralizado antes de publicar.
+                  Escolha exatamente o que vai para o ar no seu painel centralizado antes de publicar no seu site.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center space-y-4 p-6 md:p-8 rounded-2xl md:rounded-3xl border bg-card shadow-sm hover:shadow-md transition-shadow">
@@ -233,7 +233,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Widget ultra leve</h3>
                 <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                  Um snippet de linha única que carrega instantaneamente sem prejudicar seu SEO ou tempo de carregamento.
+                  Snippet otimizado servido via CDN própria para garantir carregamento instantâneo.
                 </p>
               </div>
             </div>
@@ -246,10 +246,10 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
               <div className="space-y-3">
                 <h2 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline leading-tight">
-                  Seja um membro fundador.
+                  Seja um membro fundador da ProofWall.
                 </h2>
                 <p className="max-w-[700px] text-primary-foreground/80 text-sm md:text-lg lg:text-xl/relaxed mx-auto">
-                  Inscreva-se hoje para garantir 50% de desconto perpétuo no lançamento oficial e acesso prioritário aos novos recursos de video.
+                  Inscreva-se hoje em <strong>proofwall.io</strong> para garantir 50% de desconto perpétuo no lançamento oficial.
                 </p>
               </div>
               <div className="w-full max-w-sm mx-auto space-y-3 px-4">
@@ -269,7 +269,7 @@ export default function Home() {
 
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-gray-700">© 2026 ProofWall. Todos os direitos reservados.</p>
+          <p className="text-xs md:text-sm text-gray-700">© 2026 ProofWall - Prova Social de Verdade.</p>
         </div>
       </footer>
     </div>

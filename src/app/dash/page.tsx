@@ -39,6 +39,7 @@ import { useUser, useFirestore, useDoc, useAuth } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
+import { toast } from '@/hooks/use-toast';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -55,6 +56,14 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
+  const copyToClipboard = (text: string, description: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copiado!",
+      description: `${description} copiado para a área de transferência.`,
+    });
+  };
+
   if (authLoading || userDataLoading || (user && !userData)) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
@@ -65,6 +74,9 @@ export default function DashPage() {
       </div>
     );
   }
+
+  const collectionLink = `https://proofwall.io/c/${userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6)}`;
+  const widgetScript = '<script src="https://proofwall.io/widget.js" defer></script>';
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
@@ -112,8 +124,8 @@ export default function DashPage() {
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
-            <p className="text-sm md:text-base text-muted-foreground text-gray-700">Bem-vindo de volta ao seu painel</p>
+            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
+            <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social vinculada a <strong>proofwall.io</strong></p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <Link href="/" className="flex-1 md:flex-none">
@@ -159,7 +171,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">85</div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google</p>
+              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google Maps</p>
             </CardContent>
           </Card>
         </div>
@@ -174,21 +186,26 @@ export default function DashPage() {
             <Card className="border-none shadow-sm overflow-hidden group">
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
+                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta Oficial
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground text-gray-700 leading-relaxed">
-                  Envie este link direto para seus clientes via WhatsApp ou e-mail para coletar novos depoimentos.
+                <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
+                  Envie este link direto para seus clientes via WhatsApp para coletar novos depoimentos reais.
                 </p>
                 <div className="flex gap-2">
                   <Input 
                     readOnly 
-                    value={`https://proofwall.io/c/${userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6)}`} 
+                    value={collectionLink} 
                     className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
-                  <Button variant="secondary" size="icon" className="shrink-0 h-9 w-9">
+                  <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className="shrink-0 h-9 w-9"
+                    onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
+                  >
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -198,21 +215,26 @@ export default function DashPage() {
             <Card className="border-none shadow-sm overflow-hidden group">
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
                   <Zap className="w-4 h-4 text-primary" /> Instalação no Site
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground text-gray-700 leading-relaxed">
-                  Copie o código abaixo e cole no seu site para exibir o mural de prova social automaticamente.
+                <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
+                  Copie o snippet oficial de <strong>proofwall.io</strong> e cole no seu site para exibir o mural.
                 </p>
                 <div className="flex gap-2">
                   <Input 
                     readOnly 
-                    value='<script src="https://proofwall.io/widget.js" defer></script>' 
+                    value={widgetScript} 
                     className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
                   />
-                  <Button variant="secondary" size="icon" className="shrink-0 h-9 w-9">
+                  <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className="shrink-0 h-9 w-9"
+                    onClick={() => copyToClipboard(widgetScript, "Código do widget")}
+                  >
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -231,7 +253,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="space-y-4 relative z-10">
               <p className="text-xs md:text-sm text-primary-foreground/80 leading-relaxed max-w-[90%]">
-                Seu widget está rodando com segurança. Novos depoimentos passam por moderação automática.
+                Seu widget está rodando com segurança em produção. Novos depoimentos passam por moderação automática.
               </p>
               <Button variant="secondary" size="sm" className="w-fit gap-2 text-xs md:text-sm">
                 Revisar Regras <ArrowUpRight className="h-4 w-4" />
@@ -246,7 +268,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center py-6 md:py-8 text-center space-y-2">
               <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground/30 mb-1" />
-              <p className="text-xs md:text-sm text-muted-foreground text-gray-700 max-w-[200px] md:max-w-none">Depoimentos em vídeo chegando para sua conta em breve.</p>
+              <p className="text-xs md:text-sm text-muted-foreground text-gray-700 max-w-[200px] md:max-w-none">Depoimentos em vídeo 4K chegando para sua conta em breve.</p>
               <Badge variant="secondary" className="text-[10px]">Q4 2026</Badge>
             </CardContent>
           </Card>
