@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -21,7 +22,8 @@ import {
   Plus,
   QrCode,
   Download,
-  Printer
+  Printer,
+  MapPin
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -253,7 +255,7 @@ export default function DashPage() {
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
-              <Zap className="h-4 w-4 text-muted-foreground" />
+              <MapPin className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
