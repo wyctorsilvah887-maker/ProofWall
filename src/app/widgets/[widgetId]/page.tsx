@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -7,18 +6,17 @@ import {
   ArrowLeft, 
   Save, 
   Loader2, 
-  CheckCircle2, 
   Star, 
-  Layout,
   Eye,
   Settings,
   MessageSquare,
-  Check
+  Check,
+  User,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
@@ -27,6 +25,7 @@ import Link from 'next/link';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 export default function WidgetEditPage({ params }: { params: Promise<{ widgetId: string }> }) {
   const { widgetId } = use(params);
@@ -50,6 +49,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [widgetName, setWidgetName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   useEffect(() => {
     if (widgetData) {
@@ -63,6 +63,24 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  // Filtra os depoimentos aprovados que foram selecionados para este widget
+  const selectedTestimonials = useMemo(() => {
+    if (!approvedTestimonials) return [];
+    return approvedTestimonials.filter((t: any) => selectedIds.includes(t.id));
+  }, [approvedTestimonials, selectedIds]);
+
+  // Efeito para alternar depoimentos no Preview
+  useEffect(() => {
+    if (selectedTestimonials.length > 1) {
+      const interval = setInterval(() => {
+        setPreviewIndex((prev) => (prev + 1) % selectedTestimonials.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    } else {
+      setPreviewIndex(0);
+    }
+  }, [selectedTestimonials]);
 
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
@@ -117,6 +135,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   }
 
+  const currentPreview = selectedTestimonials[previewIndex];
+
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-50 shadow-sm">
@@ -141,7 +161,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       </header>
 
       <main className="container mx-auto p-4 md:p-8 grid gap-8 lg:grid-cols-3 max-w-7xl">
-        {/* Settings Column */}
         <div className="lg:col-span-1 space-y-6">
           <Card className="border-none shadow-sm">
             <CardHeader>
@@ -161,39 +180,59 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm bg-primary/5 border border-primary/10">
+          <Card className="border-none shadow-sm bg-primary/5 border border-primary/10 overflow-hidden">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Eye className="w-4 h-4 text-primary" /> Preview do Mural
+                <Eye className="w-4 h-4 text-primary" /> Visualização Dinâmica
               </CardTitle>
               <CardDescription>
-                Assim o widget aparecerá no seu site (exibindo {selectedIds.length} depoimentos).
+                Simulação real dos {selectedIds.length} depoimentos selecionados.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex justify-center py-6">
-              <div className="bg-background rounded-2xl p-4 shadow-2xl border-2 border-primary/20 text-left w-full max-w-[280px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="bg-primary/10 p-1.5 rounded-full">
-                    <Star className="w-3 h-3 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold leading-tight">Cliente Exemplo</p>
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((_, i) => (
-                        <Star key={i} className="w-2 h-2 fill-primary text-primary" />
-                      ))}
+            <CardContent className="flex justify-center py-10 min-h-[220px] items-center">
+              {currentPreview ? (
+                <div 
+                  key={currentPreview.id}
+                  className="bg-background rounded-2xl p-4 shadow-2xl border-2 border-primary/20 text-left w-full max-w-[280px] animate-in fade-in zoom-in-95 duration-300"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-primary/10 p-1.5 rounded-full">
+                      <User className="w-3 h-3 text-primary" />
                     </div>
+                    <div>
+                      <p className="text-[10px] font-bold leading-tight">{currentPreview.userName}</p>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: currentPreview.rating || 5 }).map((_, i) => (
+                          <Star key={i} className="w-2 h-2 fill-primary text-primary" />
+                        ))}
+                      </div>
+                    </div>
+                    <Badge className="ml-auto text-[8px] h-4 px-1 bg-green-500/10 text-green-600 hover:bg-green-500/10 border-none">
+                      Verificado
+                    </Badge>
+                  </div>
+                  <p className="text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
+                    "{currentPreview.text}"
+                  </p>
+                  <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
+                    <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
+                      ProofWall Social Proof
+                    </span>
+                    <Zap className="w-2.5 h-2.5 text-primary animate-pulse" />
                   </div>
                 </div>
-                <p className="text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
-                  "Sua prova social será exibida aqui de forma elegante..."
-                </p>
-              </div>
+              ) : (
+                <div className="bg-muted/20 border-2 border-dashed rounded-2xl p-8 text-muted-foreground flex flex-col items-center gap-3 text-center w-full max-w-[280px]">
+                  <MessageSquare className="w-8 h-8 opacity-20" />
+                  <p className="text-[10px] uppercase font-bold tracking-widest leading-tight">
+                    Selecione depoimentos para ver a prévia
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Testimonials Selection Column */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -210,8 +249,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
               <CardContent className="py-20 text-center space-y-4">
                 <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto" />
                 <div className="space-y-1">
-                  <p className="font-bold text-muted-foreground">Nenhum depoimento aprovado</p>
-                  <p className="text-sm text-muted-foreground">Aprove depoimentos no seu Dashboard para que eles apareçam aqui.</p>
+                  <p className="font-bold text-muted-foreground">Nenhum depoimento encontrado</p>
+                  <p className="text-sm text-muted-foreground">Compartilhe seu link de coleta para receber os primeiros feedbacks.</p>
                 </div>
                 <Link href="/dash">
                   <Button variant="outline">Ir para Dashboard</Button>
