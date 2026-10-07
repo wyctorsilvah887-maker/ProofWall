@@ -23,7 +23,8 @@ import {
   QrCode,
   Download,
   Printer,
-  MapPin
+  MapPin,
+  TrendingUp
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -232,14 +233,19 @@ export default function DashPage() {
           <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div>
-                <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas {testimonialsData?.length || 0}</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
-                  Total de depoimentos coletados
-                </p>
+              <div className="space-y-1">
+                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                  {testimonialsData?.length || 0} <span className="text-lg font-medium text-muted-foreground">avaliações recebidas</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-none text-[10px] h-5 px-1.5">
+                    +100%
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
+                </div>
               </div>
             </CardContent>
             
