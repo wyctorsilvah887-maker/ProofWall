@@ -112,7 +112,7 @@ export default function DashPage() {
 
         <div className="ml-auto flex items-center gap-4">
           <div className="hidden sm:flex flex-col items-end mr-2">
-            <span className="text-sm font-semibold">{userData?.name || 'Usuário'}</span>
+            <span className="text-sm font-semibold">{userData?.companyName || 'Empresa'}</span>
             <span className="text-[10px] uppercase text-muted-foreground">{userData?.isAdmin ? 'Admin' : 'Membro'}</span>
           </div>
           <Button variant="ghost" size="icon" className="rounded-full" onClick={() => signOut(auth)}>
