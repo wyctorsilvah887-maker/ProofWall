@@ -19,7 +19,10 @@ import {
   Loader2,
   ArrowLeft,
   ArrowRight,
-  ArrowDown
+  ArrowDown,
+  Share2,
+  Copy,
+  Link2
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -30,6 +33,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useDoc, useAuth } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -105,7 +109,7 @@ export default function DashPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
@@ -158,6 +162,63 @@ export default function DashPage() {
               <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Section: Compartilhar / Coletar */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Share2 className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="border-none shadow-sm overflow-hidden group">
+              <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground text-gray-700 leading-relaxed">
+                  Envie este link direto para seus clientes via WhatsApp ou e-mail para coletar novos depoimentos.
+                </p>
+                <div className="flex gap-2">
+                  <Input 
+                    readOnly 
+                    value={`https://proofwall.io/c/${userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || user?.uid.substring(0, 6)}`} 
+                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                  />
+                  <Button variant="secondary" size="icon" className="shrink-0 h-9 w-9">
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-sm overflow-hidden group">
+              <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-primary" /> Instalação no Site
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground text-gray-700 leading-relaxed">
+                  Copie o código abaixo e cole no seu site para exibir o mural de prova social automaticamente.
+                </p>
+                <div className="flex gap-2">
+                  <Input 
+                    readOnly 
+                    value='<script src="https://proofwall.io/widget.js" defer></script>' 
+                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                  />
+                  <Button variant="secondary" size="icon" className="shrink-0 h-9 w-9">
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Footer Area */}
