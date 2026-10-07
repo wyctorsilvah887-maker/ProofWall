@@ -19,7 +19,8 @@ import {
   User,
   Loader2,
   Lock,
-  ArrowLeft
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import { 
   Bar, 
@@ -142,16 +143,21 @@ export default function DashPage() {
 
         {/* Stats Grid */}
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm group cursor-default relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas 128</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
-                <span className="text-green-500 font-medium">+12%</span> este mês
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xl md:text-2xl font-bold">Avaliações Recebidas 128</div>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700 mt-1">
+                    <span className="text-green-500 font-medium">+12%</span> este mês
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground/40 transition-transform group-hover:translate-x-1" />
+              </div>
             </CardContent>
           </Card>
           <Card className="border-none shadow-sm">
