@@ -21,7 +21,8 @@ import {
   Settings,
   LogOut,
   User,
-  Loader2
+  Loader2,
+  Lock
 } from 'lucide-react';
 import { 
   Bar, 
@@ -37,11 +38,10 @@ import {
 } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where, limit } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useDoc, useAuth } from '@/firebase';
+import { collection, query, where, limit, doc } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
-import { useAuth } from '@/firebase';
 
 const chartData = [
   { name: 'Seg', leads: 4 },
@@ -66,36 +66,41 @@ export default function DashPage() {
   const auth = useAuth();
   const router = useRouter();
 
+  // Busca os dados do perfil do usuário para verificar se é admin
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
 
+  // Só executa a query de leads se o banco estiver pronto, o usuário logado e for confirmado como admin
   const leadsQuery = useMemo(() => {
-    if (!db || !user) return null;
+    if (!db || !user || !userData?.isAdmin) return null;
     return query(
       collection(db, 'users'),
       where('isAdmin', '==', false),
       limit(5)
     );
-  }, [db, user]);
+  }, [db, user, userData]);
 
   const { data: recentLeads, loading: leadsLoading } = useCollection(leadsQuery);
 
-  if (authLoading || !user) {
+  if (authLoading || userDataLoading || (user && !userData)) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
         <div className="text-center space-y-4">
           <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
-          <p className="text-muted-foreground font-medium">Autenticando...</p>
+          <p className="text-muted-foreground font-medium text-gray-700">Autenticando perfil...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-muted/20 flex flex-col md:flex-row font-body">
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex w-64 flex-col border-r bg-card h-screen sticky top-0">
         <div className="p-6 border-b">
@@ -110,11 +115,13 @@ export default function DashPage() {
               <LayoutDashboard className="w-4 h-4" /> Dash
             </Button>
           </Link>
-          <Link href="/admin">
-            <Button variant="ghost" className="w-full justify-start gap-3">
-              <Users className="w-4 h-4" /> Gerenciar Leads
-            </Button>
-          </Link>
+          {userData?.isAdmin && (
+            <Link href="/admin">
+              <Button variant="ghost" className="w-full justify-start gap-3">
+                <Users className="w-4 h-4" /> Gerenciar Leads
+              </Button>
+            </Link>
+          )}
           <Button variant="ghost" className="w-full justify-start gap-3 opacity-50 cursor-not-allowed">
             <MessageSquare className="w-4 h-4" /> Widgets
           </Button>
@@ -128,8 +135,8 @@ export default function DashPage() {
               {user?.email?.[0].toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.email}</p>
-              <p className="text-[10px] text-muted-foreground uppercase">Membro</p>
+              <p className="text-sm font-medium truncate">{userData?.name || user?.email}</p>
+              <p className="text-[10px] text-muted-foreground uppercase">{userData?.isAdmin ? 'Admin' : 'Membro'}</p>
             </div>
           </div>
           <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => signOut(auth)}>
@@ -143,11 +150,11 @@ export default function DashPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold font-headline tracking-tight">Dash Geral</h1>
-            <p className="text-muted-foreground">Bem-vindo ao seu painel, {user?.email}.</p>
+            <p className="text-muted-foreground text-gray-700">Bem-vindo, {userData?.name || user?.email}.</p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/signup">
-              <Button variant="outline" size="sm">Ver Página de Cadastro</Button>
+            <Link href="/">
+              <Button variant="outline" size="sm">Ver Site</Button>
             </Link>
             <Button size="sm" className="shadow-lg">Criar Novo Widget</Button>
           </div>
@@ -162,7 +169,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">128</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700">
                 <span className="text-green-500 font-medium">+12%</span> em relação ao mês anterior
               </p>
             </CardContent>
@@ -174,7 +181,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">24.8%</div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1 text-gray-700">
                 <span className="text-green-500 font-medium">+2.1%</span> nas últimas 24h
               </p>
             </CardContent>
@@ -186,7 +193,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground">Em produção</p>
+              <p className="text-xs text-muted-foreground text-gray-700">Em produção</p>
             </CardContent>
           </Card>
           <Card className="border-none shadow-sm">
@@ -196,7 +203,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">4.9/5</div>
-              <p className="text-xs text-muted-foreground">Baseado em 84 depoimentos</p>
+              <p className="text-xs text-muted-foreground text-gray-700">Baseado em 84 depoimentos</p>
             </CardContent>
           </Card>
         </div>
@@ -206,7 +213,7 @@ export default function DashPage() {
           <Card className="md:col-span-4 border-none shadow-sm">
             <CardHeader>
               <CardTitle className="font-headline">Crescimento de Leads</CardTitle>
-              <CardDescription>Número de novos inscritos nos últimos 7 dias.</CardDescription>
+              <CardDescription className="text-gray-700">Número de novos inscritos nos últimos 7 dias.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
               <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -242,15 +249,24 @@ export default function DashPage() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="font-headline">Leads Recentes</CardTitle>
-                <CardDescription>Últimos inscritos na lista VIP.</CardDescription>
+                <CardDescription className="text-gray-700">
+                  {userData?.isAdmin ? 'Últimos inscritos na lista.' : 'Visualização restrita.'}
+                </CardDescription>
               </div>
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="h-8 px-2">Ver todos</Button>
-              </Link>
+              {userData?.isAdmin && (
+                <Link href="/admin">
+                  <Button variant="ghost" size="sm" className="h-8 px-2">Ver todos</Button>
+                </Link>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {leadsLoading ? (
+                {!userData?.isAdmin ? (
+                  <div className="py-10 text-center space-y-3">
+                    <Lock className="h-8 w-8 text-muted-foreground mx-auto opacity-20" />
+                    <p className="text-sm text-muted-foreground text-gray-700">Somente administradores podem ver a lista de leads.</p>
+                  </div>
+                ) : leadsLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map(i => (
                       <div key={i} className="flex items-center gap-3">
@@ -280,7 +296,7 @@ export default function DashPage() {
                     </div>
                   ))
                 ) : (
-                  <div className="py-10 text-center text-muted-foreground">
+                  <div className="py-10 text-center text-muted-foreground text-gray-700">
                     Nenhum lead encontrado.
                   </div>
                 )}
@@ -314,7 +330,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center py-8 text-center space-y-2">
               <MessageSquare className="h-8 w-8 text-muted-foreground/30 mb-2" />
-              <p className="text-sm text-muted-foreground">O módulo de depoimentos em vídeo está sendo preparado para sua conta VIP.</p>
+              <p className="text-sm text-muted-foreground text-gray-700">O módulo de depoimentos em vídeo está sendo preparado para sua conta VIP.</p>
               <Badge variant="secondary">Q4 2026</Badge>
             </CardContent>
           </Card>
