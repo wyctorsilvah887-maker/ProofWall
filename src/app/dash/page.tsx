@@ -22,6 +22,7 @@ import {
   Lock,
   ArrowLeft,
   ArrowRight,
+  ArrowDown,
   Layout
 } from 'lucide-react';
 import { 
@@ -179,9 +180,15 @@ export default function DashPage() {
                 </p>
               </div>
             </CardContent>
-            {/* Seta indicativa externa apontando para o próximo card */}
+            
+            {/* Seta indicativa Desktop (Direita) */}
             <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 group-hover:scale-110 transition-transform ring-4 ring-muted/20">
               <ArrowRight className="h-4 w-4 text-primary" />
+            </div>
+
+            {/* Seta indicativa Mobile (Baixo) */}
+            <div className="flex md:hidden absolute -bottom-5 left-1/2 -translate-x-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 transition-transform ring-4 ring-muted/20">
+              <ArrowDown className="h-4 w-4 text-primary" />
             </div>
           </Card>
 
