@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -84,6 +85,15 @@
         "name": {
           "type": "string",
           "description": "Nome identificador do widget."
+        },
+        "selectedTestimonialIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Lista de IDs de depoimentos selecionados para este widget."
+        },
+        "themeColor": {
+          "type": "string",
+          "description": "Cor principal do widget."
         },
         "createdAt": {
           "type": "string",

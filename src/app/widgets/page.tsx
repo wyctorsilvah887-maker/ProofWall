@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -9,7 +10,6 @@ import {
   Settings2, 
   Code, 
   Trash2, 
-  ChevronRight,
   ArrowLeft,
   User,
   LogOut,
@@ -38,7 +38,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useUser, useFirestore, useCollection, useAuth, useDoc } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
@@ -86,19 +86,21 @@ export default function WidgetsPage() {
     setIsCreating(true);
     const widgetData = {
       name: newWidgetName.trim(),
+      selectedTestimonialIds: [],
       createdAt: serverTimestamp(),
     };
 
     const widgetsRef = collection(db, 'users', user.uid, 'widgets');
 
     addDoc(widgetsRef, widgetData)
-      .then(() => {
+      .then((docRef) => {
         setNewWidgetName('');
         setIsCreating(false);
         toast({
           title: "Widget Criado!",
-          description: "Seu novo widget já está na lista.",
+          description: "Redirecionando para as configurações...",
         });
+        router.push(`/widgets/${docRef.id}`);
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
@@ -108,6 +110,23 @@ export default function WidgetsPage() {
         });
         errorEmitter.emit('permission-error', permissionError);
         setIsCreating(false);
+      });
+  };
+
+  const handleDeleteWidget = async (widgetId: string) => {
+    if (!db || !user) return;
+    const widgetRef = doc(db, 'users', user.uid, 'widgets', widgetId);
+    
+    deleteDoc(widgetRef)
+      .then(() => {
+        toast({ title: "Widget Removido", description: "O widget foi excluído com sucesso." });
+      })
+      .catch(async () => {
+        const permissionError = new FirestorePermissionError({
+          path: widgetRef.path,
+          operation: 'delete',
+        });
+        errorEmitter.emit('permission-error', permissionError);
       });
   };
 
@@ -221,7 +240,7 @@ export default function WidgetsPage() {
             </div>
           </div>
           
-          <Button onClick={() => setNewWidgetName('Novo Widget ' + (widgetsList?.length + 1))} className="shadow-md">
+          <Button onClick={() => handleCreateWidget()} className="shadow-md">
             <Plus className="w-4 h-4 mr-2" /> Novo Widget
           </Button>
         </div>
@@ -259,10 +278,20 @@ export default function WidgetsPage() {
                     >
                       <Code className="w-4 h-4 mr-2" /> Código
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 sm:flex-none"
+                      onClick={() => router.push(`/widgets/${w.id}`)}
+                    >
                       <Settings2 className="w-4 h-4 mr-2" /> Configurar
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDeleteWidget(w.id)}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
