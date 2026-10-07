@@ -24,7 +24,8 @@ import {
   Star,
   Clock,
   Eye,
-  Layout
+  Layout,
+  Plus
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -94,7 +95,6 @@ export default function DashPage() {
 
   const displayTestimonials = useMemo(() => sortedTestimonials.slice(0, 5), [sortedTestimonials]);
 
-  // Efeito para alternar o widget de preview
   useEffect(() => {
     if (displayTestimonials.length > 1) {
       const interval = setInterval(() => {
@@ -173,6 +173,9 @@ export default function DashPage() {
             <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
             <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
           </div>
+          <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
+            <Plus className="w-5 h-5 mr-2" /> Novo Widget
+          </Button>
         </header>
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
@@ -278,7 +281,6 @@ export default function DashPage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Lista de Depoimentos */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-primary" />
@@ -334,7 +336,6 @@ export default function DashPage() {
             </div>
           </div>
 
-          {/* Widget Preview / Demonstração */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Eye className="w-5 h-5 text-primary" />
@@ -353,7 +354,6 @@ export default function DashPage() {
                 </p>
               </div>
 
-              {/* Demo Area */}
               <div className="relative w-full h-full flex items-center justify-center">
                 {displayTestimonials.length > 0 ? (
                   <div 
