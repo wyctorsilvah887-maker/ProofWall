@@ -21,7 +21,8 @@ import {
   Loader2,
   Lock,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+  Layout
 } from 'lucide-react';
 import { 
   Bar, 
@@ -223,64 +224,77 @@ export default function DashPage() {
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-3 border-none shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <div>
-                <CardTitle className="font-headline text-lg md:text-xl">Leads Recentes</CardTitle>
-                <CardDescription className="text-xs text-gray-700">
-                  {userData?.isAdmin ? 'Últimos inscritos.' : 'Visualização restrita.'}
-                </CardDescription>
-              </div>
-              {userData?.isAdmin && (
-                <Link href="/admin">
-                  <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">Ver todos</Button>
-                </Link>
-              )}
-            </CardHeader>
-            <CardContent className="pt-2">
-              <div className="space-y-4">
-                {!userData?.isAdmin ? (
-                  <div className="py-12 text-center space-y-3">
-                    <Lock className="h-8 w-8 text-muted-foreground mx-auto opacity-20" />
-                    <p className="text-xs text-muted-foreground text-gray-700">Restrito para administradores.</p>
-                  </div>
-                ) : leadsLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
-                        <div className="space-y-1 flex-1">
-                          <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
-                          <div className="h-2 w-3/4 bg-muted animate-pulse rounded" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : recentLeads && recentLeads.length > 0 ? (
-                  recentLeads.map((lead: any) => (
-                    <div key={lead.id} className="flex items-center justify-between group gap-2">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10 shrink-0">
-                          <User className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0 overflow-hidden">
-                          <p className="text-xs md:text-sm font-medium truncate">{lead.name}</p>
-                          <p className="text-[10px] md:text-xs text-muted-foreground truncate">{lead.email}</p>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="text-[8px] md:text-[10px] uppercase font-bold shrink-0 group-hover:text-primary transition-colors">
-                        Novo
-                      </Badge>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-10 text-center text-muted-foreground text-gray-700 text-sm">
-                    Nenhum lead encontrado.
-                  </div>
+          <div className="lg:col-span-3 space-y-6">
+            <Card className="border-none shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <div>
+                  <CardTitle className="font-headline text-lg md:text-xl">Leads Recentes</CardTitle>
+                  <CardDescription className="text-xs text-gray-700">
+                    {userData?.isAdmin ? 'Últimos inscritos.' : 'Visualização restrita.'}
+                  </CardDescription>
+                </div>
+                {userData?.isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">Ver todos</Button>
+                  </Link>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className="space-y-4">
+                  {!userData?.isAdmin ? (
+                    <div className="py-12 text-center space-y-3">
+                      <Lock className="h-8 w-8 text-muted-foreground mx-auto opacity-20" />
+                      <p className="text-xs text-muted-foreground text-gray-700">Restrito para administradores.</p>
+                    </div>
+                  ) : leadsLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+                          <div className="space-y-1 flex-1">
+                            <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
+                            <div className="h-2 w-3/4 bg-muted animate-pulse rounded" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : recentLeads && recentLeads.length > 0 ? (
+                    recentLeads.map((lead: any) => (
+                      <div key={lead.id} className="flex items-center justify-between group gap-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-primary/5 flex items-center justify-center text-primary border border-primary/10 shrink-0">
+                            <User className="h-4 w-4" />
+                          </div>
+                          <div className="min-w-0 overflow-hidden">
+                            <p className="text-xs md:text-sm font-medium truncate">{lead.name}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground truncate">{lead.email}</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-[8px] md:text-[10px] uppercase font-bold shrink-0 group-hover:text-primary transition-colors">
+                          Novo
+                        </Badge>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-10 text-center text-muted-foreground text-gray-700 text-sm">
+                      Nenhum lead encontrado.
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Widgets Ativos</CardTitle>
+                <Layout className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">3</div>
+                <p className="text-xs text-muted-foreground text-gray-700 mt-1">Widgets configurados no site</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Footer Area */}
