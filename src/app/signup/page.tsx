@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Star, ArrowLeft, Mail, User, Building2, Lock, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, User, Building2, Lock, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -82,9 +81,6 @@ export default function SignupPage() {
 
       <div className="w-full max-w-lg space-y-8">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="bg-primary text-primary-foreground p-4 rounded-3xl shadow-xl rotate-3">
-            <Star className="w-10 h-10 fill-current" />
-          </div>
           <div className="space-y-2">
             <h1 className="text-4xl font-bold font-headline tracking-tighter">Torne-se Membro VIP</h1>
             <p className="text-gray-700 text-lg">Crie sua conta e comece a converter leads hoje mesmo.</p>
