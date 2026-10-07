@@ -43,7 +43,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       createdAt: serverTimestamp(),
     };
 
-    addDoc(collection(db, 'testimonials'), testimonialData)
+    const testimonialsRef = collection(db, 'testimonials');
+
+    addDoc(testimonialsRef, testimonialData)
       .then(() => {
         setSubmitted(true);
         toast({
@@ -52,11 +54,13 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         });
       })
       .catch(async (err) => {
+        // Criamos o erro contextual para depuração facilitada no overlay do Next.js (apenas dev)
         const permissionError = new FirestorePermissionError({
-          path: 'testimonials',
+          path: testimonialsRef.path,
           operation: 'create',
           requestResourceData: testimonialData,
         });
+        
         errorEmitter.emit('permission-error', permissionError);
         setIsSubmitting(false);
       });
@@ -129,7 +133,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     required
-                    className="h-11"
+                    className="h-11 border-muted-foreground/20 focus:border-primary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -139,7 +143,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     placeholder="Ex: joao@email.com" 
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    className="h-11"
+                    className="h-11 border-muted-foreground/20 focus:border-primary"
                   />
                 </div>
               </div>
@@ -149,7 +153,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                 <label className="text-sm font-medium">Sua Mensagem</label>
                 <Textarea 
                   placeholder="Conte-nos o que achou da nossa empresa..."
-                  className="min-h-[120px] resize-none"
+                  className="min-h-[120px] resize-none border-muted-foreground/20 focus:border-primary"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   required
@@ -157,15 +161,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               </div>
 
               {/* Video Option Placeholder */}
-              <div className="p-4 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 text-center space-y-2 cursor-pointer hover:bg-primary/10 transition-colors">
-                <Video className="w-6 h-6 text-primary mx-auto" />
+              <div className="p-4 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 text-center space-y-2 cursor-pointer hover:bg-primary/10 transition-colors group">
+                <Video className="w-6 h-6 text-primary mx-auto group-hover:scale-110 transition-transform" />
                 <p className="text-xs font-semibold text-primary">Gravar Depoimento em Vídeo</p>
                 <p className="text-[10px] text-muted-foreground">(Funcionalidade VIP - Em breve)</p>
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full h-14 text-lg font-bold shadow-xl"
+                className="w-full h-14 text-lg font-bold shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-0"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

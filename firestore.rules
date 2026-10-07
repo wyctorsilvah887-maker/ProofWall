@@ -17,16 +17,17 @@ service cloud.firestore {
     
     // Regras para Depoimentos
     match /testimonials/{testimonialId} {
-      // Qualquer um pode enviar (criar) um depoimento
+      // Qualquer um pode enviar (criar) um depoimento sem estar logado
+      // Esta regra permite a coleta pública de prova social
       allow create: if true;
       
-      // Apenas o Admin da empresa ou o Admin do sistema pode ler/editar
-      // Nota: Para este MVP, permitimos que Admins leiam todos os depoimentos
+      // Apenas Admins podem ler, moderar (update) ou excluir depoimentos
       allow read, update, delete: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // Bloqueio padrão para qualquer outra rota não especificada
     match /{document=**} {
       allow read, write: if false;
     }
