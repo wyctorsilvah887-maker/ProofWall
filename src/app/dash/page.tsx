@@ -122,7 +122,6 @@ export default function DashPage() {
   }
 
   const collectionLink = `${baseUrl}/c/${companySlug}`;
-  const widgetScript = `<script src="${baseUrl}/widget.js" defer></script>`;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
@@ -226,7 +225,7 @@ export default function DashPage() {
             <Share2 className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-1">
             <Card className="border-none shadow-sm overflow-hidden group">
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
@@ -249,35 +248,6 @@ export default function DashPage() {
                     size="icon" 
                     className="shrink-0 h-9 w-9"
                     onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-sm overflow-hidden group">
-              <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
-                  <Zap className="w-4 h-4 text-primary" /> Instalação no Site
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Copie o snippet oficial da sua conta e cole no seu site para exibir o mural.
-                </p>
-                <div className="flex gap-2">
-                  <Input 
-                    readOnly 
-                    value={widgetScript} 
-                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-9 border-none focus-visible:ring-1 focus-visible:ring-primary/20"
-                  />
-                  <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className="shrink-0 h-9 w-9"
-                    onClick={() => copyToClipboard(widgetScript, "Código do widget")}
                   >
                     <Copy className="h-3.5 w-3.5" />
                   </Button>
