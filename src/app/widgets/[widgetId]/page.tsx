@@ -370,20 +370,20 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       return () => clearInterval(interval);
     }
 
-    if (layout === 'mural' && selectedTestimonials.length > 4) {
+    if (layout === 'mural' && selectedTestimonials.length > 0) {
       const interval = setInterval(() => {
-        setMuralIndex(prev => (prev + 4) % selectedTestimonials.length);
+        setMuralIndex(prev => (prev + 1) % selectedTestimonials.length);
       }, 6000);
       return () => clearInterval(interval);
     }
   }, [layout, selectedTestimonials]);
 
   const visibleMuralTestimonials = useMemo(() => {
-    if (layout !== 'mural') return selectedTestimonials;
-    if (selectedTestimonials.length <= 4) return selectedTestimonials;
+    if (layout !== 'mural' || selectedTestimonials.length === 0) return [];
     
     const slice = [];
-    for (let i = 0; i < 4; i++) {
+    const countToShow = Math.min(4, selectedTestimonials.length);
+    for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % selectedTestimonials.length;
       slice.push(selectedTestimonials[idx]);
     }

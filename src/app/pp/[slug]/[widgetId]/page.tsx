@@ -99,20 +99,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       return () => clearInterval(intervalId);
     }
     
-    if (layout === 'mural' && filteredTestimonials.length > 4) {
+    if (layout === 'mural' && filteredTestimonials.length > 0) {
       const intervalId = setInterval(() => {
-        setMuralIndex(prev => (prev + 4) % filteredTestimonials.length);
+        setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
       }, 6000);
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
 
   const visibleMuralTestimonials = useMemo(() => {
-    if (layout !== 'mural') return filteredTestimonials;
-    if (filteredTestimonials.length <= 4) return filteredTestimonials;
+    if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
     const slice = [];
-    for (let i = 0; i < 4; i++) {
+    const countToShow = Math.min(4, filteredTestimonials.length);
+    for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
     }
