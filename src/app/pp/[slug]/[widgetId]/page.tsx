@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -98,6 +99,36 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
+        <div className="text-center space-y-4">
+          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
+          <p className="text-muted-foreground">Carregando prova social...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!companyData || !widgetData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
+        <Card className="w-full max-w-md text-center shadow-xl border-none">
+          <CardContent className="pt-10 pb-10 space-y-6">
+            <div className="mx-auto bg-muted p-4 rounded-full w-fit">
+              <MessageSquare className="w-12 h-12 text-muted-foreground" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
+              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada no sistema.</p>
+            </div>
+            <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => (
     <Card 
