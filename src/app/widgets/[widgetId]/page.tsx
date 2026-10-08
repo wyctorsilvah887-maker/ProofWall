@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -203,7 +204,7 @@ const WidgetSettings = ({
                     />
                   </div>
                   <p className="text-[9px] text-muted-foreground leading-tight italic">
-                    * Insira DDI + DDD + Número (ex: 551199887766). Apenas números.
+                    * Insira o DDD e o número. A máscara será aplicada automaticamente.
                   </p>
                 </div>
               )}
