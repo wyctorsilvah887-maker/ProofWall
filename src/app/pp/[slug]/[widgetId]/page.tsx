@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -154,7 +155,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       className={cn(
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
-        isPopup ? "max-w-[calc(100vw-2rem)] sm:max-w-md border-l-4" : "border-t-4 mb-6",
+        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4 mb-6",
         "animate-in fade-in zoom-in-95 slide-in-from-right-12"
       )} 
       style={{ 
@@ -172,9 +173,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     >
       <CardContent className="p-4 md:p-6 space-y-4">
         <div className="flex flex-col space-y-3">
-          <div className="flex items-start justify-between w-full">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/5 p-1.5 md:p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
+          <div className="flex items-start justify-between w-full gap-2">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="bg-primary/5 p-1.5 md:p-2 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
                 <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
               </div>
               <div className="flex flex-col min-w-0">
@@ -186,12 +187,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 </div>
               </div>
             </div>
-            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0">
+            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0 whitespace-nowrap">
               <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
             </Badge>
           </div>
 
-          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-2">
+          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-2 overflow-hidden break-words">
             "{t.text}"
           </blockquote>
 
@@ -206,50 +207,50 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   );
 
   return (
-    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative">
+    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
       <header className={cn(
         "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all",
         coverImageUrl ? "pt-0 pb-12 md:pb-20" : "py-12 md:py-24 px-4"
       )}>
         {coverImageUrl && (
-          <div className="w-full h-48 md:h-80 relative mb-8 md:mb-12">
+          <div className="w-full h-40 md:h-80 relative mb-8 md:mb-12">
             <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa da Empresa" />
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
           </div>
         )}
 
         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-          <Zap className="w-32 h-32 md:w-48 md:h-48" style={{ color: themeColor }} />
+          <Zap className="w-24 h-24 md:w-48 md:h-48" style={{ color: themeColor }} />
         </div>
         <div className="absolute -bottom-24 -left-24 p-4 opacity-[0.03] pointer-events-none">
-          <MessageSquare className="w-64 h-64 md:w-96 md:h-96" style={{ color: themeColor }} />
+          <MessageSquare className="w-48 h-48 md:w-96 md:h-96" style={{ color: themeColor }} />
         </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4">
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.9]">
+          <h1 className="text-2xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1.1] md:leading-[0.9]">
             O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
           </h1>
-          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
+          <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
             {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
           </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-16">
+      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-16 overflow-hidden">
         {filteredTestimonials.length === 0 ? (
           <div className="text-center py-20 md:py-32 bg-background rounded-2xl md:rounded-[2rem] border-2 md:border-4 border-dashed border-muted px-4">
             <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto mb-4 md:mb-6" />
             <p className="text-muted-foreground text-base md:text-lg font-bold">Aguardando a seleção de depoimentos para este mural.</p>
           </div>
         ) : (
-          <>
+          <div className="w-full">
             {layout === 'mural' && (
               <div 
                 key={muralIndex}
-                className="columns-1 sm:columns-2 lg:columns-2 gap-4 md:gap-8 max-w-5xl mx-auto"
+                className="columns-1 sm:columns-2 gap-4 md:gap-8 max-w-5xl mx-auto px-1"
               >
                 {visibleMuralTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id + i} t={t} index={i} />
@@ -266,8 +267,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'carousel' && (
-              <div className="flex flex-col items-center gap-8 md:gap-12 py-8 md:py-16">
-                <div className="relative w-full max-w-3xl flex items-center justify-center gap-2 md:gap-6">
+              <div className="flex flex-col items-center gap-8 md:gap-12 py-8 md:py-16 overflow-hidden px-1">
+                <div className="relative w-full max-w-3xl flex items-center justify-center">
                   <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
                     <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
@@ -289,16 +290,16 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-20 relative px-4">
+              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-20 relative px-4 overflow-hidden">
                 <div 
                   key={filteredTestimonials[currentIndex].id}
-                  className="animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out"
+                  className="w-full max-w-md animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out"
                 >
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </main>
 
@@ -315,19 +316,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </a>
       )}
 
-      <footer className="mt-16 md:mt-32 py-12 md:py-20 border-t bg-background text-center px-4">
+      <footer className="mt-16 md:mt-32 py-12 md:py-20 border-t bg-background text-center px-4 overflow-hidden">
         <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="flex flex-col items-center gap-4 md:gap-6">
             <div className="flex items-center gap-2 md:gap-3">
-              <span className="text-muted-foreground text-base md:text-lg font-medium">Conheça a</span>
+              <span className="text-muted-foreground text-sm md:text-lg font-medium">Conheça a</span>
               <span className="font-headline font-black text-3xl md:text-4xl tracking-tighter text-primary">Proova</span>
             </div>
-            <p className="text-muted-foreground text-xs md:text-sm max-w-sm">
+            <p className="text-muted-foreground text-[10px] md:text-sm max-w-sm">
               Transforme a satisfação dos seus clientes em sua ferramenta de vendas mais poderosa.
             </p>
             <Link 
               href="/" 
-              className="inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-3 md:py-4 rounded-full text-primary-foreground text-base md:text-lg font-black hover:scale-105 transition-all shadow-xl"
+              className="inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-3 md:py-4 rounded-full text-primary-foreground text-sm md:text-lg font-black hover:scale-105 transition-all shadow-xl"
               style={{ backgroundColor: themeColor }}
             >
               Conhecer a Proova <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
