@@ -188,7 +188,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </p>
         <div className="flex items-center justify-center gap-2">
           <span className="font-headline font-bold text-xl tracking-tighter">Proova</span>
-          <Badge className="bg-gray-100 text-gray-500 hover:bg-gray-100 border-none font-mono text-[10px]">proova.io</Badge>
         </div>
       </footer>
     </div>
