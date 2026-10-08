@@ -50,6 +50,14 @@ import {
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
+const formatWhatsAppDisplay = (value: string) => {
+  const clean = value.replace(/\D/g, '');
+  if (clean.length <= 2) return clean;
+  if (clean.length <= 6) return `(${clean.slice(0, 2)}) ${clean.slice(2)}`;
+  if (clean.length <= 10) return `(${clean.slice(0, 2)}) ${clean.slice(2, 6)}-${clean.slice(6)}`;
+  return `(${clean.slice(0, 2)}) ${clean.slice(2, 7)}-${clean.slice(7, 11)}`;
+};
+
 const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeColor }: { t: any, small?: boolean, isPopup?: boolean, index?: number, themeColor: string }) => (
   <Card 
     className={cn(
@@ -184,12 +192,12 @@ const WidgetSettings = ({
                   <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número de Atendimento</Label>
                   <div className="relative">
                     <Input 
-                      value={whatsappNumber}
+                      value={formatWhatsAppDisplay(whatsappNumber)}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        setWhatsappNumber(val);
+                        const raw = e.target.value.replace(/\D/g, '');
+                        setWhatsappNumber(raw);
                       }}
-                      placeholder="Ex: 5511999999999"
+                      placeholder="(99) 99999-9999"
                       className="h-10 border-primary/20 focus:border-primary text-sm pl-4"
                       maxLength={15}
                     />
@@ -432,7 +440,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             <SheetContent side="left" className="p-0 w-80">
               <SheetHeader className="p-6 pb-2 border-b">
                 <SheetTitle className="font-headline text-primary flex items-center gap-2">
-                  <Settings2 className="w-5 h-5" /> Painel de Edição
+                  <Settings2 className="w-5 s-5" /> Painel de Edição
                 </SheetTitle>
               </SheetHeader>
               <WidgetSettings {...settingsProps} />
@@ -525,9 +533,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
                     {layout === 'popup' && (
                       <div className="lg:absolute lg:bottom-10 lg:left-10 flex flex-col items-center lg:items-start gap-3 md:gap-4 w-full lg:w-auto">
-                        <div className="bg-primary text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
-                          Novo Feedback Real
-                        </div>
                         <div 
                           key={selectedTestimonials[carouselIndex % selectedTestimonials.length].id}
                           className="animate-in slide-in-from-bottom-12 lg:slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
