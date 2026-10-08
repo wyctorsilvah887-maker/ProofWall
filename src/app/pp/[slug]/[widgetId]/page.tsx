@@ -100,8 +100,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <Loader2 className="animate-spin h-12 w-12 text-primary mx-auto" />
+        <div className="text-center space-y-4 px-4">
+          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
           <p className="text-muted-foreground font-medium animate-pulse">Sincronizando Provas Sociais...</p>
         </div>
       </div>
@@ -112,9 +112,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
         <Card className="max-w-md w-full text-center p-8 border-none shadow-xl">
-          <MessageSquare className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold font-headline mb-2">Página não encontrada</h1>
-          <p className="text-muted-foreground">O link acessado é inválido ou o mural não está mais disponível.</p>
+          <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto mb-4" />
+          <h1 className="text-xl md:text-2xl font-bold font-headline mb-2">Página não encontrada</h1>
+          <p className="text-sm text-muted-foreground">O link acessado é inválido ou o mural não está mais disponível.</p>
         </Card>
       </div>
     );
@@ -125,7 +125,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       className={cn(
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
-        isPopup ? "max-w-md border-l-4" : "border-t-4 mb-6",
+        isPopup ? "max-w-[calc(100vw-2rem)] sm:max-w-md border-l-4" : "border-t-4 mb-6",
         "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
       )} 
       style={{ 
@@ -141,27 +141,27 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         "--tw-ring-color": `${themeColor}20`
       }}
     >
-      <CardContent className="p-6 space-y-4">
+      <CardContent className="p-4 md:p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-4 h-4 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+              <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
             ))}
           </div>
-          <Badge variant="outline" className="text-[9px] bg-green-50 text-green-600 border-green-200">
+          <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2">
             <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
           </Badge>
         </div>
-        <blockquote className="text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors">
+        <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors">
           "{t.text}"
         </blockquote>
-        <div className="flex items-center gap-3 pt-4 border-t border-muted/50">
-          <div className="bg-primary/5 p-2 rounded-full group-hover:rotate-12 transition-transform" style={{ backgroundColor: `${themeColor}10` }}>
-            <User className="w-5 h-5" style={{ color: themeColor }} />
+        <div className="flex items-center gap-3 pt-3 md:pt-4 border-t border-muted/50">
+          <div className="bg-primary/5 p-1.5 md:p-2 rounded-full group-hover:rotate-12 transition-transform" style={{ backgroundColor: `${themeColor}10` }}>
+            <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
           </div>
           <div>
-            <p className="font-bold text-sm text-gray-900">{t.userName}</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+            <p className="font-bold text-xs md:text-sm text-gray-900">{t.userName}</p>
+            <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
               {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
             </p>
           </div>
@@ -171,38 +171,38 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   );
 
   return (
-    <div className="min-h-screen bg-muted/10 font-body pb-20">
-      <header className="bg-background border-b py-16 md:py-24 px-4 shadow-sm relative overflow-hidden text-center">
-        <div className="absolute top-0 right-0 p-4 opacity-5">
-          <Zap className="w-48 h-48" style={{ color: themeColor }} />
+    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20">
+      <header className="bg-background border-b py-12 md:py-24 px-4 shadow-sm relative overflow-hidden text-center">
+        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+          <Zap className="w-32 h-32 md:w-48 md:h-48" style={{ color: themeColor }} />
         </div>
-        <div className="absolute -bottom-24 -left-24 p-4 opacity-[0.03]">
-          <MessageSquare className="w-96 h-96" style={{ color: themeColor }} />
+        <div className="absolute -bottom-24 -left-24 p-4 opacity-[0.03] pointer-events-none">
+          <MessageSquare className="w-64 h-64 md:w-96 md:h-96" style={{ color: themeColor }} />
         </div>
         
-        <div className="max-w-5xl mx-auto space-y-6 relative z-10">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 py-1.5 text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
+        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
-          <h1 className="text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[0.9]">
-            O que dizem sobre <br/> <span className="underline decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData.companyName}</span>
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.9]">
+            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData.companyName}</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
             {widgetData.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
           </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 mt-16">
+      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-16">
         {filteredTestimonials.length === 0 ? (
-          <div className="text-center py-32 bg-background rounded-[2rem] border-4 border-dashed border-muted">
-            <MessageSquare className="w-16 h-16 text-muted-foreground/20 mx-auto mb-6" />
-            <p className="text-muted-foreground text-lg font-bold">Aguardando a seleção de depoimentos para este mural.</p>
+          <div className="text-center py-20 md:py-32 bg-background rounded-2xl md:rounded-[2rem] border-2 md:border-4 border-dashed border-muted px-4">
+            <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto mb-4 md:mb-6" />
+            <p className="text-muted-foreground text-base md:text-lg font-bold">Aguardando a seleção de depoimentos para este mural.</p>
           </div>
         ) : (
           <>
             {layout === 'mural' && (
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-8">
                 {filteredTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id} t={t} index={i} />
                 ))}
@@ -210,7 +210,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'grid' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                 {filteredTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id} t={t} index={i} />
                 ))}
@@ -218,18 +218,18 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'carousel' && (
-              <div className="flex flex-col items-center gap-12 py-16">
-                <div className="relative w-full max-w-3xl flex items-center justify-center gap-6">
+              <div className="flex flex-col items-center gap-8 md:gap-12 py-8 md:py-16">
+                <div className="relative w-full max-w-3xl flex items-center justify-center gap-2 md:gap-6">
                    <Button 
                     variant="outline" 
                     size="icon" 
                     onClick={() => setCurrentIndex(prev => (prev - 1 + filteredTestimonials.length) % filteredTestimonials.length)}
-                    className="rounded-full shadow-xl bg-background h-14 w-14 border-none hover:scale-110 transition-transform"
+                    className="rounded-full shadow-lg bg-background h-10 w-10 md:h-14 md:w-14 border-none hover:scale-110 transition-transform shrink-0"
                   >
-                    <ChevronLeft className="h-8 w-8" />
+                    <ChevronLeft className="h-5 w-5 md:h-8 md:h-8" />
                   </Button>
                   
-                  <div className="w-full" key={filteredTestimonials[currentIndex].id}>
+                  <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
                     <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
 
@@ -237,19 +237,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                     variant="outline" 
                     size="icon" 
                     onClick={() => setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length)}
-                    className="rounded-full shadow-xl bg-background h-14 w-14 border-none hover:scale-110 transition-transform"
+                    className="rounded-full shadow-lg bg-background h-10 w-10 md:h-14 md:w-14 border-none hover:scale-110 transition-transform shrink-0"
                   >
-                    <ChevronRight className="h-8 w-8" />
+                    <ChevronRight className="h-5 w-5 md:h-8 md:h-8" />
                   </Button>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 md:gap-3">
                   {filteredTestimonials.map((_, i) => (
                     <button 
                       key={i} 
                       onClick={() => setCurrentIndex(i)}
                       className={cn(
-                        "h-2 rounded-full transition-all duration-500",
-                        i === currentIndex ? "w-10" : "w-2 bg-gray-300 hover:bg-gray-400"
+                        "h-1.5 md:h-2 rounded-full transition-all duration-500",
+                        i === currentIndex ? "w-6 md:w-10" : "w-1.5 md:w-2 bg-gray-300 hover:bg-gray-400"
                       )}
                       style={{ backgroundColor: i === currentIndex ? themeColor : undefined }}
                     />
@@ -259,10 +259,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[500px] py-20 relative">
-                <div className="text-center mb-16 space-y-4">
-                  <Badge variant="outline" className="px-6 py-1 text-sm font-bold tracking-widest" style={{ color: themeColor, borderColor: `${themeColor}40` }}>EXIBIÇÃO EM POPUP VIP</Badge>
-                  <p className="text-muted-foreground italic font-medium">Os feedbacks aparecerão como notificações dinâmicas para seus usuários.</p>
+              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-20 relative px-4">
+                <div className="text-center mb-8 md:mb-16 space-y-3 md:space-y-4">
+                  <Badge variant="outline" className="px-4 md:px-6 py-0.5 md:py-1 text-xs font-bold tracking-widest" style={{ color: themeColor, borderColor: `${themeColor}40` }}>EXIBIÇÃO EM POPUP VIP</Badge>
+                  <p className="text-xs md:text-sm text-muted-foreground italic font-medium">Os feedbacks aparecerão como notificações dinâmicas para seus usuários.</p>
                 </div>
                 
                 <div 
@@ -272,8 +272,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
                 </div>
                 
-                <div className="mt-12 flex items-center gap-3 text-sm font-black uppercase tracking-[0.3em] animate-pulse" style={{ color: themeColor }}>
-                  <Zap className="w-5 h-5 fill-current" /> Sincronizando próximo feedback...
+                <div className="mt-8 md:mt-12 flex items-center gap-2 md:gap-3 text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.3em] animate-pulse" style={{ color: themeColor }}>
+                  <Zap className="w-4 h-4 md:w-5 md:h-5 fill-current" /> Sincronizando próximo feedback...
                 </div>
               </div>
             )}
@@ -281,22 +281,22 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         )}
       </main>
 
-      <footer className="mt-32 py-20 border-t bg-background text-center">
-        <div className="max-w-4xl mx-auto px-4 space-y-8">
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex items-center gap-3">
-              <span className="text-muted-foreground text-lg font-medium">Conheça a</span>
-              <span className="font-headline font-black text-4xl tracking-tighter text-primary">Proova</span>
+      <footer className="mt-16 md:mt-32 py-12 md:py-20 border-t bg-background text-center px-4">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
+          <div className="flex flex-col items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-2 md:gap-3">
+              <span className="text-muted-foreground text-base md:text-lg font-medium">Conheça a</span>
+              <span className="font-headline font-black text-3xl md:text-4xl tracking-tighter text-primary">Proova</span>
             </div>
-            <p className="text-muted-foreground text-sm max-w-sm">
+            <p className="text-muted-foreground text-xs md:text-sm max-w-sm">
               Transforme a satisfação dos seus clientes em sua ferramenta de vendas mais poderosa.
             </p>
             <Link 
               href="/" 
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full text-primary-foreground text-lg font-black hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(0,0,0,0.2)]"
+              className="inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-3 md:py-4 rounded-full text-primary-foreground text-base md:text-lg font-black hover:scale-105 transition-all shadow-xl"
               style={{ backgroundColor: themeColor }}
             >
-              Conhecer a Proova <ArrowRight className="w-5 h-5" />
+              Conhecer a Proova <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </Link>
           </div>
         </div>
@@ -304,3 +304,4 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     </div>
   );
 }
+
