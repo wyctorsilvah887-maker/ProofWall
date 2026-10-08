@@ -47,7 +47,6 @@ import {
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-// Componente estável para o Card de Depoimento
 const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeColor }: { t: any, small?: boolean, isPopup?: boolean, index?: number, themeColor: string }) => (
   <Card 
     className={cn(
@@ -91,7 +90,6 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
   </Card>
 );
 
-// Componente para o painel de configurações para evitar remounting
 const WidgetSettings = ({ 
   widgetName, setWidgetName, 
   whatsappEnabled, setWhatsappEnabled, 
@@ -99,150 +97,163 @@ const WidgetSettings = ({
   layout, setLayout, 
   themeColor, setThemeColor 
 }: any) => (
-  <Tabs defaultValue="geral" className="w-full">
-    <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
-      <TabsTrigger value="geral" className="data-[state=active]:bg-muted text-xs md:text-sm">Geral</TabsTrigger>
-      <TabsTrigger value="layout" className="data-[state=active]:bg-muted text-xs md:text-sm">Layout</TabsTrigger>
-      <TabsTrigger value="design" className="data-[state=active]:bg-muted text-xs md:text-sm">Design</TabsTrigger>
-    </TabsList>
-    
-    <div className="p-4 md:p-6 space-y-6 md:space-y-8">
-      <TabsContent value="geral" className="mt-0 space-y-6">
-        <div className="space-y-2">
-          <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
-          <Input 
-            value={widgetName}
-            onChange={(e) => setWidgetName(e.target.value)}
-            placeholder="Ex: Mural da Home"
-            className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
-          />
-        </div>
+  <div className="flex flex-col w-full h-full">
+    <div className="p-4 border-b bg-muted/10">
+      <Link href="/widgets" className="w-full">
+        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
+          <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar ao Início</span>
+        </Button>
+      </Link>
+    </div>
 
-        <div className="space-y-4 pt-4 border-t">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-bold flex items-center gap-2">
-                <Phone className="w-4 h-4 text-green-500" /> Botão WhatsApp
-              </Label>
-              <p className="text-[10px] text-muted-foreground">Exibir botão de contato na Página Pública</p>
-            </div>
-            <Switch 
-              checked={whatsappEnabled}
-              onCheckedChange={setWhatsappEnabled}
+    <Tabs defaultValue="geral" className="w-full">
+      <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
+        <TabsTrigger value="geral" className="data-[state=active]:bg-muted text-xs md:text-sm">Geral</TabsTrigger>
+        <TabsTrigger value="layout" className="data-[state=active]:bg-muted text-xs md:text-sm">Layout</TabsTrigger>
+        <TabsTrigger value="design" className="data-[state=active]:bg-muted text-xs md:text-sm">Design</TabsTrigger>
+      </TabsList>
+      
+      <div className="p-4 md:p-6 space-y-6 md:space-y-8">
+        <TabsContent value="geral" className="mt-0 space-y-6">
+          <div className="space-y-2">
+            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
+            <Input 
+              value={widgetName}
+              onChange={(e) => setWidgetName(e.target.value)}
+              placeholder="Ex: Mural da Home"
+              className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
             />
           </div>
 
-          {whatsappEnabled && (
-            <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-              <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número (DDD + Telefone)</Label>
-              <Input 
-                value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
-                placeholder="Ex: 5511999999999"
-                className="h-10 border-primary/20 focus:border-primary text-sm"
+          <div className="space-y-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-bold flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-green-500" /> Botão WhatsApp
+                </Label>
+                <p className="text-[10px] text-muted-foreground">Exibir botão de contato na Página Pública</p>
+              </div>
+              <Switch 
+                checked={whatsappEnabled}
+                onCheckedChange={setWhatsappEnabled}
               />
-              <p className="text-[9px] text-muted-foreground italic">Insira apenas números, incluindo o código do país (ex: 55).</p>
             </div>
-          )}
-        </div>
-      </TabsContent>
 
-      <TabsContent value="layout" className="mt-0 space-y-4 md:space-y-6">
-        <div className="space-y-3 md:space-y-4">
-          <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
-          <div className="grid grid-cols-1 gap-2 md:gap-3">
-            <button 
-              onClick={() => setLayout('popup')}
-              className={cn(
-                "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
-                layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-              )}
-            >
-              <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                <BellRing className="w-4 h-4 md:w-5 md:h-5" />
+            {whatsappEnabled && (
+              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número (DDD + Telefone)</Label>
+                <Input 
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  placeholder="Ex: 5511999999999"
+                  className="h-10 border-primary/20 focus:border-primary text-sm"
+                />
+                <p className="text-[9px] text-muted-foreground italic">Insira apenas números, incluindo o código do país (ex: 55).</p>
               </div>
-              <div className="min-w-0">
-                <p className="text-xs md:text-sm font-bold">Notificação VIP</p>
-                <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">Popup animado exclusivo</p>
-              </div>
-              <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-[8px] h-3.5 px-1">Novo</Badge>
-              {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-            </button>
-
-            <button 
-              onClick={() => setLayout('mural')}
-              className={cn(
-                "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                layout === 'mural' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-              )}
-            >
-              <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                <LayoutGrid className="w-4 h-4 md:w-5 md:h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs md:text-sm font-bold">Mural Dinâmico</p>
-                <p className="text-[9px] md:text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
-              </div>
-              {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-            </button>
-
-            <button 
-              onClick={() => setLayout('carousel')}
-              className={cn(
-                "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                layout === 'carousel' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-              )}
-            >
-              <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                <Play className="w-4 h-4 md:w-5 md:h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs md:text-sm font-bold">Carrossel Slider</p>
-                <p className="text-[9px] md:text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
-              </div>
-              {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-            </button>
-
-            <button 
-              onClick={() => setLayout('grid')}
-              className={cn(
-                "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                layout === 'grid' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-              )}
-            >
-              <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                <Columns className="w-4 h-4 md:w-5 md:h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs md:text-sm font-bold">Grade Estática</p>
-                <p className="text-[9px] md:text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
-              </div>
-              {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-            </button>
+            )}
           </div>
-        </div>
-      </TabsContent>
+        </TabsContent>
 
-      <TabsContent value="design" className="mt-0 space-y-4 md:space-y-6">
-        <div className="space-y-4">
-          <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
-          <div className="flex flex-wrap gap-3">
-            {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
-              <button
-                key={color}
-                onClick={() => setThemeColor(color)}
+        <TabsContent value="layout" className="mt-0 space-y-4 md:space-y-6">
+          <div className="space-y-3 md:space-y-4">
+            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
+            <div className="grid grid-cols-1 gap-2 md:gap-3">
+              <button 
+                onClick={() => setLayout('popup')}
                 className={cn(
-                  "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-transform hover:scale-110",
-                  themeColor === color ? "border-foreground" : "border-transparent"
+                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
+                  layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
                 )}
-                style={{ backgroundColor: color }}
-              />
-            ))}
+              >
+                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                  <BellRing className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm font-bold">Notificação VIP</p>
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">Popup animado exclusivo</p>
+                </div>
+                <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-[8px] h-3.5 px-1">Novo</Badge>
+                {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+              </button>
+
+              <button 
+                onClick={() => setLayout('mural')}
+                className={cn(
+                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                  layout === 'mural' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                )}
+              >
+                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                  <LayoutGrid className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm font-bold">Mural Dinâmico</p>
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
+                </div>
+                {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+              </button>
+
+              <button 
+                onClick={() => setLayout('carousel')}
+                className={cn(
+                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                  layout === 'carousel' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                )}
+              >
+                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                  <Play className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm font-bold">Carrossel Slider</p>
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
+                </div>
+                {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+              </button>
+
+              <button 
+                onClick={() => setLayout('grid')}
+                className={cn(
+                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                  layout === 'grid' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                )}
+              >
+                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                  <Columns className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm font-bold">Grade Estática</p>
+                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
+                </div>
+                {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+              </button>
+            </div>
           </div>
-        </div>
-      </TabsContent>
-    </div>
-  </Tabs>
+        </TabsContent>
+
+        <TabsContent value="design" className="mt-0 space-y-4 md:space-y-6">
+          <div className="space-y-4">
+            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
+            <div className="flex flex-wrap gap-3">
+              {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setThemeColor(color)}
+                  className={cn(
+                    "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-transform hover:scale-110",
+                    themeColor === color ? "border-foreground" : "border-transparent"
+                  )}
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+      </div>
+    </Tabs>
+  </div>
 );
 
 export default function WidgetEditPage({ params }: { params: Promise<{ widgetId: string }> }) {
@@ -350,7 +361,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   }
 
-  // Prepara as configurações para passar aos painéis
   const settingsProps = {
     widgetName, setWidgetName,
     whatsappEnabled, setWhatsappEnabled,
@@ -363,37 +373,32 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
       <header className="bg-background border-b h-16 md:h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
-          <Link href="/widgets">
-            <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10">
-              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-            </Button>
-          </Link>
-          <div className="truncate">
-            <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
-            <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
-          </div>
-        </div>
-
-        <div className="ml-auto flex items-center gap-2">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="lg:hidden h-9 w-9 border-primary/20 text-primary">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 text-primary">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80">
-              <SheetHeader className="p-6 pb-2">
+              <SheetHeader className="p-6 pb-2 border-b">
                 <SheetTitle className="font-headline text-primary flex items-center gap-2">
-                  <Settings2 className="w-5 if-5" /> Configurações
+                  <Settings2 className="w-5 h-5" /> Painel de Edição
                 </SheetTitle>
               </SheetHeader>
               <WidgetSettings {...settingsProps} />
             </SheetContent>
           </Sheet>
 
-          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-9 md:h-10 px-3 md:px-6 text-xs md:text-sm">
-            {isSaving ? <Loader2 className="animate-spin mr-2 h-3 w-3 md:h-4 md:w-4" /> : <Save className="mr-2 h-3 w-3 md:h-4 md:w-4" />}
-            <span className="hidden sm:inline">Salvar Projeto</span>
+          <div className="truncate ml-2 lg:ml-0">
+            <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
+            <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
+          </div>
+        </div>
+
+        <div className="ml-auto flex items-center gap-2">
+          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-9 md:h-10 px-4 md:px-6 text-xs md:text-sm font-bold">
+            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+            <span className="hidden sm:inline">Salvar Alterações</span>
             <span className="sm:hidden">Salvar</span>
           </Button>
         </div>
