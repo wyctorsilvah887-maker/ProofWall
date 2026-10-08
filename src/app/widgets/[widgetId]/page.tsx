@@ -17,7 +17,9 @@ import {
   Columns,
   Play,
   Palette,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,7 +61,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [themeColor, setThemeColor] = useState('#f97316');
   const [isSaving, setIsSaving] = useState(false);
-  const [previewIndex, setPreviewIndex] = useState(0);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   useEffect(() => {
     if (widgetData) {
@@ -80,17 +82,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     if (!approvedTestimonials) return [];
     return approvedTestimonials.filter((t: any) => selectedIds.includes(t.id));
   }, [approvedTestimonials, selectedIds]);
-
-  useEffect(() => {
-    if (selectedTestimonials.length > 1) {
-      const interval = setInterval(() => {
-        setPreviewIndex((prev) => (prev + 1) % selectedTestimonials.length);
-      }, 4000);
-      return () => clearInterval(interval);
-    } else {
-      setPreviewIndex(0);
-    }
-  }, [selectedTestimonials]);
 
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
@@ -136,7 +127,37 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   }
 
-  const currentPreview = selectedTestimonials[previewIndex];
+  // Componente de Card de Depoimento para o Preview
+  const TestimonialCard = ({ t, small = false }: { t: any, small?: boolean }) => (
+    <Card className={cn(
+      "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden",
+      small ? "p-3" : "p-6"
+    )} style={{ borderTopColor: themeColor, borderTopWidth: '3px', borderTopStyle: 'solid' }}>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="bg-primary/10 p-1.5 rounded-full">
+          <User className="w-3 h-3 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={cn("font-bold leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
+          <div className="flex gap-0.5">
+            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} />
+            ))}
+          </div>
+        </div>
+        {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0">Verificado</Badge>}
+      </div>
+      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-2" : "text-sm mb-4")}>
+        "{t.text}"
+      </p>
+      <div className={cn("pt-2 border-t flex items-center justify-between", small ? "mt-2" : "pt-3 mt-4")}>
+        <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">
+          Proova Social Proof
+        </span>
+        <Zap className="w-3 h-3 text-primary animate-pulse" />
+      </div>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
@@ -181,9 +202,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                     placeholder="Ex: Mural da Home"
                     className="border-primary/20 focus:border-primary"
                   />
-                  <p className="text-[10px] text-muted-foreground italic">Apenas para sua organização interna.</p>
                 </div>
-                
                 <div className="pt-4 border-t space-y-4">
                   <h3 className="text-sm font-bold flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-primary" /> Status da Seleção
@@ -263,7 +282,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
               <TabsContent value="design" className="mt-0 space-y-6">
                 <div className="space-y-4">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground text-gray-500">Cor de Destaque</Label>
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
                   <div className="flex flex-wrap gap-2">
                     {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
                       <button
@@ -291,116 +310,131 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </Tabs>
         </aside>
 
-        {/* Área Central: Seleção e Preview */}
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8">
-          <div className="max-w-4xl mx-auto grid gap-8">
+        {/* Área Central: Preview e Seleção */}
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
+          
+          <div className="max-w-4xl mx-auto space-y-4">
+            <h2 className="text-lg font-bold font-headline flex items-center gap-2">
+              <Eye className="w-5 h-5 text-primary" /> Visualização do {layout.toUpperCase()} em Tempo Real
+            </h2>
             
-            {/* Seção de Seleção de Depoimentos */}
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold font-headline flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-primary" /> 
-                  Depoimentos Aprovados
-                </h2>
-                <Badge variant="outline" className="bg-background">{approvedTestimonials?.length || 0} disponíveis</Badge>
-              </div>
+            <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[400px] flex flex-col items-center justify-center">
+              {selectedTestimonials.length > 0 ? (
+                <div className="w-full">
+                  {layout === 'mural' && (
+                    <div className="columns-1 md:columns-2 gap-4 space-y-4 animate-in fade-in duration-500">
+                      {selectedTestimonials.map((t, idx) => (
+                        <div key={t.id + idx} className="break-inside-avoid">
+                          <TestimonialCard t={t} small={selectedTestimonials.length > 2} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-              {!approvedTestimonials || approvedTestimonials.length === 0 ? (
-                <Card className="border-2 border-dashed bg-background/50">
-                  <CardContent className="py-16 text-center space-y-4">
-                    <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto" />
-                    <div className="space-y-1">
-                      <p className="font-bold text-muted-foreground">Nenhum depoimento para exibir</p>
-                      <p className="text-sm text-muted-foreground">Aprove depoimentos no Dash para que apareçam aqui.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-3">
-                  {approvedTestimonials.map((t: any) => (
-                    <div 
-                      key={t.id}
-                      onClick={() => toggleTestimonial(t.id)}
-                      className={cn(
-                        "relative group cursor-pointer transition-all duration-200 rounded-xl border-2 p-4 bg-background hover:border-primary/50",
-                        selectedIds.includes(t.id) ? "border-primary bg-primary/5" : "border-transparent shadow-sm"
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={cn(
-                          "mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
-                          selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30"
-                        )}>
-                          {selectedIds.includes(t.id) && <Check className="w-3 h-3 text-white" />}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="font-bold text-sm truncate">{t.userName}</span>
-                            <div className="flex gap-0.5 shrink-0">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <Star key={i} className={cn("w-2.5 h-2.5", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground italic line-clamp-2">
-                            "{t.text}"
-                          </p>
-                        </div>
+                  {layout === 'carousel' && (
+                    <div className="flex items-center justify-center gap-4 animate-in slide-in-from-right-10 duration-500">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
+                        className="rounded-full shadow-md bg-background/50"
+                      >
+                        <ChevronLeft />
+                      </Button>
+                      <div className="max-w-[320px] w-full">
+                        <TestimonialCard t={selectedTestimonials[carouselIndex]} />
                       </div>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
+                        className="rounded-full shadow-md bg-background/50"
+                      >
+                        <ChevronRight />
+                      </Button>
                     </div>
-                  ))}
+                  )}
+
+                  {layout === 'grid' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in zoom-in-95 duration-500">
+                      {selectedTestimonials.slice(0, 4).map((t, idx) => (
+                        <TestimonialCard key={t.id + idx} t={t} small />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center space-y-4 opacity-50">
+                  <div className="relative">
+                    <MessageSquare className="w-16 h-16 mx-auto text-primary" />
+                    <Zap className="w-6 h-6 text-primary absolute bottom-0 right-0 animate-bounce" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-bold uppercase tracking-widest text-sm text-primary">Selecione depoimentos abaixo</p>
+                    <p className="text-xs text-muted-foreground">Escolha os melhores depoimentos para ver como eles ficam.</p>
+                  </div>
                 </div>
               )}
-            </section>
-
-            {/* Preview Flutuante/Sticky para Mobile/Desktop */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold font-headline flex items-center gap-2">
-                <Eye className="w-5 h-5 text-primary" /> Visualização do {layout.toUpperCase()}
-              </h2>
-              <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-8 md:p-12 flex items-center justify-center min-h-[350px]">
-                {currentPreview ? (
-                  <div 
-                    key={currentPreview.id}
-                    className="bg-background rounded-2xl p-6 shadow-2xl border-2 border-primary/20 text-left w-full max-w-[320px] animate-in fade-in zoom-in-95 duration-500"
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="bg-primary/10 p-2 rounded-full">
-                        <User className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold leading-tight">{currentPreview.userName}</p>
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: currentPreview.rating || 5 }).map((_, i) => (
-                            <Star key={i} className="w-2.5 h-2.5 fill-primary text-primary" />
-                          ))}
-                        </div>
-                      </div>
-                      <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none">Verificado</Badge>
-                    </div>
-                    <p className="text-sm text-gray-700 italic leading-relaxed mb-4">
-                      "{currentPreview.text}"
-                    </p>
-                    <div className="pt-3 border-t flex items-center justify-between">
-                      <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-tighter">
-                        Proova Social Proof
-                      </span>
-                      <Zap className="w-3 h-3 text-primary animate-pulse" />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center space-y-4 opacity-50">
-                    <MessageSquare className="w-12 h-12 mx-auto text-primary" />
-                    <p className="text-xs font-bold uppercase tracking-widest">Selecione depoimentos acima</p>
-                  </div>
-                )}
-              </Card>
             </div>
+          </div>
+
+          {/* Seção de Seleção de Depoimentos */}
+          <div className="max-w-4xl mx-auto space-y-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold font-headline flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-primary" /> 
+                Depoimentos Aprovados
+              </h2>
+              <Badge variant="outline" className="bg-background">{approvedTestimonials?.length || 0} disponíveis</Badge>
+            </div>
+
+            {!approvedTestimonials || approvedTestimonials.length === 0 ? (
+              <Card className="border-2 border-dashed bg-background/50">
+                <CardContent className="py-16 text-center space-y-4">
+                  <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto" />
+                  <p className="font-bold text-muted-foreground">Aguardando novos depoimentos...</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {approvedTestimonials.map((t: any) => (
+                  <div 
+                    key={t.id}
+                    onClick={() => toggleTestimonial(t.id)}
+                    className={cn(
+                      "relative group cursor-pointer transition-all duration-200 rounded-xl border-2 p-4 bg-background hover:border-primary/50",
+                      selectedIds.includes(t.id) ? "border-primary bg-primary/5" : "border-transparent shadow-sm"
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
+                        selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30"
+                      )}>
+                        {selectedIds.includes(t.id) && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <span className="font-bold text-sm truncate">{t.userName}</span>
+                          <div className="flex gap-0.5 shrink-0">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} className={cn("w-2.5 h-2.5", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground italic line-clamp-2">
+                          "{t.text}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>
     </div>
   );
 }
-
