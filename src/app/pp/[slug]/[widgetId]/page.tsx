@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -29,6 +28,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [allTestimonials, setAllTestimonials] = useState<any[]>([]);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [muralIndex, setMuralIndex] = useState(0);
 
   useEffect(() => {
     async function findCompany() {
@@ -98,7 +98,26 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }, 3000);
       return () => clearInterval(intervalId);
     }
+    
+    if (layout === 'mural' && filteredTestimonials.length > 4) {
+      const intervalId = setInterval(() => {
+        setMuralIndex(prev => (prev + 4) % filteredTestimonials.length);
+      }, 6000);
+      return () => clearInterval(intervalId);
+    }
   }, [layout, filteredTestimonials]);
+
+  const visibleMuralTestimonials = useMemo(() => {
+    if (layout !== 'mural') return filteredTestimonials;
+    if (filteredTestimonials.length <= 4) return filteredTestimonials;
+    
+    const slice = [];
+    for (let i = 0; i < 4; i++) {
+      const idx = (muralIndex + i) % filteredTestimonials.length;
+      slice.push(filteredTestimonials[idx]);
+    }
+    return slice;
+  }, [filteredTestimonials, muralIndex, layout]);
 
   if (isLoading) {
     return (
@@ -136,7 +155,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
         isPopup ? "max-w-[calc(100vw-2rem)] sm:max-w-md border-l-4" : "border-t-4 mb-6",
-        "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
+        "animate-in fade-in zoom-in-95 slide-in-from-left-8"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -158,8 +177,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <div className="bg-primary/5 p-1.5 md:p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
                 <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
               </div>
-              <div className="flex flex-col">
-                <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight mb-1">{t.userName}</p>
+              <div className="flex flex-col min-w-0">
+                <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight mb-1 truncate">{t.userName}</p>
                 <div className="flex gap-0.5">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => (
                     <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
@@ -214,7 +233,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
           </h1>
           <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
-            {widgetData.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
+            {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
           </p>
         </div>
       </header>
@@ -228,9 +247,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         ) : (
           <>
             {layout === 'mural' && (
-              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-8">
-                {filteredTestimonials.map((t, i) => (
-                  <TestimonialCard key={t.id} t={t} index={i} />
+              <div 
+                key={muralIndex}
+                className="columns-1 sm:columns-2 lg:columns-2 gap-4 md:gap-8 max-w-5xl mx-auto"
+              >
+                {visibleMuralTestimonials.map((t, i) => (
+                  <TestimonialCard key={t.id + i} t={t} index={i} />
                 ))}
               </div>
             )}

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -60,7 +59,7 @@ const formatWhatsAppDisplay = (value: string) => {
 const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeColor }: { t: any, small?: boolean, isPopup?: boolean, index?: number, themeColor: string }) => (
   <Card 
     className={cn(
-      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95",
+      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-left-6",
       small ? "p-3" : "p-6",
       isPopup && "max-w-[260px] md:max-w-[300px] border-l-4 border-t-0"
     )} 
@@ -339,6 +338,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [muralIndex, setMuralIndex] = useState(0);
 
   useEffect(() => {
     if (widgetData) {
@@ -370,7 +370,26 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       }, 3000);
       return () => clearInterval(interval);
     }
+
+    if (layout === 'mural' && selectedTestimonials.length > 4) {
+      const interval = setInterval(() => {
+        setMuralIndex(prev => (prev + 4) % selectedTestimonials.length);
+      }, 6000);
+      return () => clearInterval(interval);
+    }
   }, [layout, selectedTestimonials]);
+
+  const visibleMuralTestimonials = useMemo(() => {
+    if (layout !== 'mural') return selectedTestimonials;
+    if (selectedTestimonials.length <= 4) return selectedTestimonials;
+    
+    const slice = [];
+    for (let i = 0; i < 4; i++) {
+      const idx = (muralIndex + i) % selectedTestimonials.length;
+      slice.push(selectedTestimonials[idx]);
+    }
+    return slice;
+  }, [selectedTestimonials, muralIndex, layout]);
 
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
@@ -491,10 +510,13 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
                   <div className="w-full flex items-center justify-center">
                     {layout === 'mural' && (
-                      <div className="columns-1 sm:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6 w-full max-w-2xl">
-                        {selectedTestimonials.map((t, idx) => (
+                      <div 
+                        key={muralIndex}
+                        className="columns-1 sm:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6 w-full max-w-2xl"
+                      >
+                        {visibleMuralTestimonials.map((t, idx) => (
                           <div key={t.id + idx} className="break-inside-avoid">
-                            <TestimonialCard t={t} small={selectedTestimonials.length > 2} index={idx} themeColor={themeColor} />
+                            <TestimonialCard t={t} small index={idx} themeColor={themeColor} />
                           </div>
                         ))}
                       </div>
@@ -503,7 +525,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                     {layout === 'carousel' && (
                       <div className="flex items-center justify-center gap-2 md:gap-6 animate-in slide-in-from-right-10 duration-500 w-full max-w-lg">
                         <div className="w-full">
-                          <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} themeColor={themeColor} />
+                          <TestimonialCard t={selectedTestimonials[carouselIndex % selectedTestimonials.length]} index={0} themeColor={themeColor} />
                         </div>
                       </div>
                     )}
