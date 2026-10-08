@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -100,29 +99,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4 px-4">
-          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
-          <p className="text-muted-foreground font-medium animate-pulse">Sincronizando Provas Sociais...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!companyData || !widgetData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
-        <Card className="max-w-md w-full text-center p-8 border-none shadow-xl">
-          <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto mb-4" />
-          <h1 className="text-xl md:text-2xl font-bold font-headline mb-2">Página não encontrada</h1>
-          <p className="text-sm text-muted-foreground">O link acessado é inválido ou o mural não está mais disponível.</p>
-        </Card>
-      </div>
-    );
-  }
-
   const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => (
     <Card 
       className={cn(
@@ -145,29 +121,33 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }}
     >
       <CardContent className="p-4 md:p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-0.5">
-            {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-            ))}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/5 p-1.5 md:p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
+              <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
+            </div>
+            <div>
+              <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight">{t.userName}</p>
+              <div className="flex gap-0.5 mt-1">
+                {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                  <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                ))}
+              </div>
+            </div>
           </div>
-          <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2">
+          <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0">
             <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
           </Badge>
         </div>
+
         <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors">
           "{t.text}"
         </blockquote>
-        <div className="flex items-center gap-3 pt-3 md:pt-4 border-t border-muted/50">
-          <div className="bg-primary/5 p-1.5 md:p-2 rounded-full group-hover:rotate-12 transition-transform" style={{ backgroundColor: `${themeColor}10` }}>
-            <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
-          </div>
-          <div>
-            <p className="font-bold text-xs md:text-sm text-gray-900">{t.userName}</p>
-            <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
-              {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
-            </p>
-          </div>
+
+        <div className="pt-3 border-t border-muted/50">
+          <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+            {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
+          </p>
         </div>
       </CardContent>
     </Card>

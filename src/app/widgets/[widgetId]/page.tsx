@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -76,13 +75,13 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
       animationFillMode: 'both'
     }}
   >
-    <div className="flex items-center gap-2 mb-3">
+    <div className="flex items-start gap-2 mb-3">
       <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
         <User className="w-3 h-3" style={{ color: themeColor }} />
       </div>
       <div className="flex-1 min-w-0">
         <p className={cn("font-bold leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
-        <div className="flex gap-0.5">
+        <div className="flex gap-0.5 mt-1">
           {Array.from({ length: t.rating || 5 }).map((_, i) => (
             <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
           ))}
