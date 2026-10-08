@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -259,7 +260,6 @@ export default function AdminPage() {
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
           <Image src="/c.png" alt="Proova" width={28} height={28} className="rounded-full shadow-sm" />
-          <span className="font-headline">Proova Admin</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">

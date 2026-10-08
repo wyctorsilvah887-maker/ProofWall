@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -221,7 +222,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <nav className="fixed top-0 left-0 right-0 h-14 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
         <div className="flex items-center gap-2">
           <Image src="/c.png" alt="Proova" width={28} height={28} className="rounded-full shadow-sm" />
-          <span className="font-headline font-black text-primary text-sm tracking-tight">Proova</span>
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs font-bold text-muted-foreground hover:text-primary">Início</Button>
