@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -48,14 +47,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Image from 'next/image';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
 const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeColor }: { t: any, small?: boolean, isPopup?: boolean, index?: number, themeColor: string }) => (
   <Card 
     className={cn(
-      "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95",
+      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95",
       small ? "p-3" : "p-6",
       isPopup && "max-w-[260px] md:max-w-[300px] border-l-4 border-t-0"
     )} 
@@ -63,7 +61,7 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
       borderTopColor: !isPopup ? themeColor : 'transparent', 
       borderLeftColor: isPopup ? themeColor : 'transparent',
       borderTopWidth: !isPopup ? '3px' : '0', 
-      borderLeftWidth: iisPopup ? '4px' : '0',
+      borderLeftWidth: isPopup ? '4px' : '0',
       borderStyle: 'solid',
       animationDelay: `${index * 50}ms`,
       animationFillMode: 'both'
@@ -184,15 +182,6 @@ const WidgetSettings = ({
                       <Upload className="w-4 h-4" /> Upload de Foto
                     </Button>
                   </div>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">Ou URL da imagem</Label>
-                  <Input 
-                    value={coverImageUrl}
-                    onChange={(e) => setCoverImageUrl(e.target.value)}
-                    placeholder="https://exemplo.com/imagem.jpg"
-                    className="h-8 text-[10px] border-primary/10"
-                  />
                 </div>
               </div>
             </div>
