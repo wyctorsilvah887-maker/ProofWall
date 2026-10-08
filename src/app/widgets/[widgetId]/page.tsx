@@ -20,12 +20,14 @@ import {
   ChevronRight,
   BellRing,
   Menu,
-  Settings2
+  Settings2,
+  Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
@@ -68,6 +70,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [themeColor, setThemeColor] = useState('#f97316');
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -77,6 +81,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       setSelectedIds(widgetData.selectedTestimonialIds || []);
       setLayout(widgetData.layout || 'mural');
       setThemeColor(widgetData.themeColor || '#f97316');
+      setWhatsappEnabled(widgetData.whatsappEnabled || false);
+      setWhatsappNumber(widgetData.whatsappNumber || '');
     }
   }, [widgetData]);
 
@@ -109,6 +115,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       selectedTestimonialIds: selectedIds,
       layout,
       themeColor,
+      whatsappEnabled,
+      whatsappNumber: whatsappNumber.trim(),
     };
 
     updateDoc(widgetRef, updates)
@@ -196,7 +204,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       </TabsList>
       
       <div className="p-4 md:p-6 space-y-6 md:space-y-8">
-        <TabsContent value="geral" className="mt-0 space-y-4 md:space-y-6">
+        <TabsContent value="geral" className="mt-0 space-y-6">
           <div className="space-y-2">
             <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
             <Input 
@@ -205,6 +213,34 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
               placeholder="Ex: Mural da Home"
               className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
             />
+          </div>
+
+          <div className="space-y-4 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-bold flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-green-500" /> Botão WhatsApp
+                </Label>
+                <p className="text-[10px] text-muted-foreground">Exibir botão de contato na Página Pública</p>
+              </div>
+              <Switch 
+                checked={whatsappEnabled}
+                onCheckedChange={setWhatsappEnabled}
+              />
+            </div>
+
+            {whatsappEnabled && (
+              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número (DDD + Telefone)</Label>
+                <Input 
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  placeholder="Ex: 5511999999999"
+                  className="h-10 border-primary/20 focus:border-primary text-sm"
+                />
+                <p className="text-[9px] text-muted-foreground italic">Insira apenas números, incluindo o código do país (ex: 55).</p>
+              </div>
+            )}
           </div>
         </TabsContent>
 

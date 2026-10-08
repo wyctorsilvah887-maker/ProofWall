@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -13,7 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -87,6 +86,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const layout = widgetData?.layout || 'mural';
   const themeColor = widgetData?.themeColor || '#f97316';
+  const whatsappEnabled = widgetData?.whatsappEnabled || false;
+  const whatsappNumber = widgetData?.whatsappNumber || '';
 
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
@@ -171,7 +172,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   );
 
   return (
-    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20">
+    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative">
       <header className="bg-background border-b py-12 md:py-24 px-4 shadow-sm relative overflow-hidden text-center">
         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
           <Zap className="w-32 h-32 md:w-48 md:h-48" style={{ color: themeColor }} />
@@ -281,6 +282,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         )}
       </main>
 
+      {whatsappEnabled && whatsappNumber && (
+        <a 
+          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all animate-in zoom-in fade-in duration-500"
+          title="Falar no WhatsApp"
+        >
+          <MessageCircle className="w-8 h-8 fill-current" />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">1</span>
+        </a>
+      )}
+
       <footer className="mt-16 md:mt-32 py-12 md:py-20 border-t bg-background text-center px-4">
         <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           <div className="flex flex-col items-center gap-4 md:gap-6">
@@ -304,4 +318,3 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     </div>
   );
 }
-
