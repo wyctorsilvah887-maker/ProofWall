@@ -19,12 +19,12 @@ import {
   ChevronLeft,
   ChevronRight,
   BellRing,
-  Menu,
   Settings2,
   Phone,
   Image as ImageIcon,
   Upload,
-  X
+  X,
+  Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,21 +101,6 @@ const WidgetSettings = ({
   themeColor, setThemeColor,
   coverImageUrl, setCoverImageUrl
 }: any) => {
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 1024 * 1024 * 2) {
-        toast({ variant: 'destructive', title: 'Arquivo muito grande', description: 'O limite é de 2MB.' });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverImageUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="flex flex-col w-full h-full">
       <div className="p-4 border-b bg-muted/10">
@@ -166,20 +151,14 @@ const WidgetSettings = ({
                 ) : (
                   <div className="aspect-video w-full rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/5 gap-2 text-center px-4">
                     <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Nenhuma imagem de capa</p>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Escolha sua capa (Upload em breve)</p>
                   </div>
                 )}
                 
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={handleFileUpload}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                    />
-                    <Button variant="outline" className="w-full h-10 gap-2 border-primary/20 text-primary hover:bg-primary/5 text-xs font-bold">
-                      <Upload className="w-4 h-4" /> Upload de Foto
+                    <Button disabled variant="outline" className="w-full h-10 gap-2 border-muted text-muted-foreground bg-muted/20 text-[10px] font-bold uppercase tracking-widest cursor-not-allowed">
+                      <Upload className="w-4 h-4 opacity-30" /> Upload de Foto (Em Breve)
                     </Button>
                   </div>
                 </div>
@@ -492,7 +471,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             )}>
               {selectedTestimonials.length > 0 ? (
                 <div className="w-full h-full flex flex-col items-center">
-                  {/* Public Page Preview Header Simulator */}
                   {coverImageUrl && layout !== 'popup' && (
                     <div className="w-full max-w-2xl mb-8 rounded-2xl overflow-hidden shadow-lg border-b-4" style={{ borderColor: themeColor }}>
                       <img src={coverImageUrl} className="w-full h-32 object-cover" alt="Capa Preview" />
