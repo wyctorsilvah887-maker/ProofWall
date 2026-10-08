@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -257,8 +258,8 @@ export default function AdminPage() {
     <div className="min-h-screen bg-muted/30 font-body">
       <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
-          <Shield className="w-6 h-6 text-primary" />
-          <span className="font-headline">Proova Panel</span>
+          <Image src="/c.png" alt="Proova" width={28} height={28} className="rounded-full shadow-sm" />
+          <span className="font-headline">Proova Admin</span>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">

@@ -1,8 +1,8 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   Plus, 
   Layout, 
@@ -200,6 +200,7 @@ export default function WidgetsPage() {
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
       <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
+          <Image src="/c.png" alt="Proova" width={32} height={32} className="rounded-full shadow-sm" />
           <span className="font-headline text-primary">Proova</span>
         </div>
         

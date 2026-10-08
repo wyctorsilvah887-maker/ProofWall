@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   ArrowLeft, 
   Save, 
@@ -459,16 +460,20 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             <SheetContent side="left" className="p-0 w-80">
               <SheetHeader className="p-6 pb-2 border-b">
                 <SheetTitle className="font-headline text-primary flex items-center gap-2">
-                  <Settings2 className="w-5 s-5" /> Painel de Edição
+                  <Image src="/c.png" alt="Proova" width={24} height={24} className="rounded-full" />
+                  Painel de Edição
                 </SheetTitle>
               </SheetHeader>
               <WidgetSettings {...settingsProps} />
             </SheetContent>
           </Sheet>
 
-          <div className="truncate ml-2 lg:ml-0">
-            <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
-            <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
+          <div className="flex items-center gap-3 ml-2 lg:ml-0">
+            <Image src="/c.png" alt="Proova" width={32} height={32} className="rounded-full shadow-sm hidden sm:block" />
+            <div className="truncate">
+              <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
+              <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
+            </div>
           </div>
         </div>
 

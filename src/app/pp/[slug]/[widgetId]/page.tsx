@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -35,12 +34,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta carregar primeiro pelo ID do usuário (Link Permanente)
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         setTargetUserId(slug);
         setCompanyData(docSnap.data());
       } else {
+        // Fallback: Busca pelo Slug da empresa (Link antigo)
         const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
         getDocs(q).then(snapshot => {
           if (!snapshot.empty) {
@@ -59,6 +60,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !targetUserId || !widgetId) return;
 
+    // Carregamento reativo do widget
     const widgetRef = doc(db, 'users', targetUserId, 'widgets', widgetId);
     const unsubWidget = onSnapshot(widgetRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -70,6 +72,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }
     });
 
+    // Carregamento reativo dos depoimentos aprovados
     const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
     const tQuery = query(testimonialsRef, where('status', '==', 'approved'));
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
@@ -95,22 +98,24 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
+  // Efeito de transição automática
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 3000);
+      }, 3000); // 3 segundos para carrossel/popup
       return () => clearInterval(intervalId);
     }
     
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const intervalId = setInterval(() => {
         setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 6000);
+      }, 6000); // 6 segundos para rotação do mural
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
 
+  // Lógica de seleção do mural (loop dinâmico)
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
@@ -177,32 +182,33 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <CardContent className="p-4 md:p-6 space-y-4">
         <div className="flex flex-col space-y-3">
           <div className="flex items-start justify-between w-full gap-2">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="bg-primary/5 p-1.5 md:p-2 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight mb-1 truncate">{t.userName}</p>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-                  ))}
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+                  <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
                 </div>
+                <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
+              </div>
+              <div className="flex gap-0.5">
+                {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                ))}
               </div>
             </div>
-            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0 whitespace-nowrap">
+            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0 whitespace-nowrap h-fit">
               <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
             </Badge>
           </div>
 
-          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-2 overflow-hidden break-words">
+          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
             "{t.text}"
           </blockquote>
 
-          <div className="pt-3 border-t border-muted/50 mt-2">
+          <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
             <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
               {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
             </p>
+            <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
           </div>
         </div>
       </CardContent>
@@ -211,9 +217,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
+      {/* Barra de Navegação Superior Discreta */}
+      <nav className="fixed top-0 left-0 right-0 h-14 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
+        <div className="flex items-center gap-2">
+          <Image src="/c.png" alt="Proova" width={28} height={28} className="rounded-full shadow-sm" />
+          <span className="font-headline font-black text-primary text-sm tracking-tight">Proova</span>
+        </div>
+        <Link href="/">
+          <Button variant="ghost" size="sm" className="text-xs font-bold text-muted-foreground hover:text-primary">Início</Button>
+        </Link>
+      </nav>
+
       <header className={cn(
-        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all",
-        coverImageUrl ? "pt-0 pb-12 md:pb-20" : "py-12 md:py-24 px-4"
+        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-14",
+        coverImageUrl ? "pb-12 md:pb-20" : "py-12 md:py-24 px-4"
       )}>
         {coverImageUrl && (
           <div className="w-full h-40 md:h-80 relative mb-8 md:mb-12">
@@ -230,7 +247,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4 flex flex-col items-center">
-          <div className="relative w-20 h-20 md:w-32 md:h-32 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl">
+          <div className="relative w-20 h-20 md:w-32 md:h-32 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl bg-muted">
              <Image 
               src="/c.png" 
               alt="Logo Empresa" 
@@ -241,10 +258,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
-          <h1 className="text-2xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1.1] md:leading-[0.9]">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.9]">
             O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
           </h1>
-          <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
             {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
           </p>
         </div>
