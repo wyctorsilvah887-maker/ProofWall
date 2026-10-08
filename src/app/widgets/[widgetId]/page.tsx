@@ -59,7 +59,7 @@ const formatWhatsAppDisplay = (value: string) => {
 const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeColor }: { t: any, small?: boolean, isPopup?: boolean, index?: number, themeColor: string }) => (
   <Card 
     className={cn(
-      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-left-6",
+      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95 slide-in-from-right-12",
       small ? "p-3" : "p-6",
       isPopup && "max-w-[260px] md:max-w-[300px] border-l-4 border-t-0"
     )} 
@@ -69,24 +69,23 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
       borderTopWidth: !isPopup ? '3px' : '0', 
       borderLeftWidth: isPopup ? '4px' : '0',
       borderStyle: 'solid',
-      animationDelay: `${index * 50}ms`,
+      animationDelay: `${index * 150}ms`,
       animationFillMode: 'both'
     }}
   >
     <div className="flex flex-col space-y-2">
-      <div className="flex items-start gap-2 mb-1">
-        <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
-          <User className="w-3 h-3" style={{ color: themeColor }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className={cn("font-bold leading-tight truncate mb-1", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
-          <div className="flex gap-0.5">
-            {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
-            ))}
+      <div className="flex flex-col space-y-1 mb-1">
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
+            <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
+          <p className={cn("font-bold leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
         </div>
-        {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0 hidden sm:flex">Verificado</Badge>}
+        <div className="flex gap-0.5 pl-7">
+          {Array.from({ length: t.rating || 5 }).map((_, i) => (
+            <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
+          ))}
+        </div>
       </div>
       <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm mb-2")}>
         "{t.text}"
@@ -203,7 +202,7 @@ const WidgetSettings = ({
                     />
                   </div>
                   <p className="text-[9px] text-muted-foreground leading-tight italic">
-                    * Insira o DDD e o número. A máscara será aplicada automaticamente.
+                    * Insira DDD + Número (ex: 1199887766). Apenas números.
                   </p>
                 </div>
               )}
@@ -597,7 +596,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                         {selectedIds.includes(t.id) && <Check className="w-3 h-3 md:w-4 md:h-4 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1.5 md:mb-2">
+                        <div className="flex flex-col space-y-0.5 mb-1.5 md:mb-2">
                           <span className="font-black text-xs md:text-sm truncate">{t.userName}</span>
                           <div className="flex gap-0.5 shrink-0">
                             {Array.from({ length: 5 }).map((_, i) => (

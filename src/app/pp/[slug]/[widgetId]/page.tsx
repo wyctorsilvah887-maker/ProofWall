@@ -155,7 +155,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
         isPopup ? "max-w-[calc(100vw-2rem)] sm:max-w-md border-l-4" : "border-t-4 mb-6",
-        "animate-in fade-in zoom-in-95 slide-in-from-left-8"
+        "animate-in fade-in zoom-in-95 slide-in-from-right-12"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -163,7 +163,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         borderTopWidth: !isPopup ? '4px' : '0',
         borderLeftWidth: isPopup ? '4px' : '0',
         borderStyle: 'solid',
-        animationDelay: `${index * 80}ms`,
+        animationDelay: `${index * 150}ms`,
         animationFillMode: 'both',
         boxShadow: `0 10px 30px -15px ${themeColor}40`,
         // @ts-ignore
