@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -134,7 +135,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <div className="flex items-center justify-between">
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+              <Star key={i} className="w-4 h-4 fill-primary text-primary" style={{ color: themeColor, fill: themeColor }} />
             ))}
           </div>
           <Badge variant="outline" className="text-[9px] bg-green-50 text-green-600 border-green-200">
@@ -145,8 +146,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           "{t.text}"
         </blockquote>
         <div className="flex items-center gap-3 pt-4 border-t border-muted/50">
-          <div className="bg-primary/5 p-2 rounded-full group-hover:bg-primary/10 transition-colors">
-            <User className="w-5 h-5 text-primary" />
+          <div className="bg-primary/5 p-2 rounded-full group-hover:bg-primary/10 transition-colors" style={{ backgroundColor: `${themeColor}10` }}>
+            <User className="w-5 h-5" style={{ color: themeColor }} />
           </div>
           <div>
             <p className="font-bold text-sm text-gray-900">{t.userName}</p>
@@ -163,14 +164,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-muted/10 font-body pb-20">
       <header className="bg-background border-b py-12 px-4 shadow-sm relative overflow-hidden text-center">
         <div className="absolute top-0 right-0 p-4 opacity-5">
-          <Zap className="w-32 h-32 text-primary" />
+          <Zap className="w-32 h-32" style={{ color: themeColor }} />
         </div>
         <div className="max-w-5xl mx-auto space-y-4 relative z-10">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 py-1 text-xs uppercase tracking-widest font-bold">
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 py-1 text-xs uppercase tracking-widest font-bold" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tighter text-gray-900">
-            O que dizem sobre <span className="text-primary">{companyData.companyName}</span>
+            O que dizem sobre <span style={{ color: themeColor }}>{companyData.companyName}</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {widgetData.name} — Experiências reais de clientes satisfeitos.
@@ -233,8 +234,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                       key={i} 
                       className={cn(
                         "w-2 h-2 rounded-full transition-all duration-300",
-                        i === currentIndex ? "bg-primary w-6" : "bg-primary/20"
+                        i === currentIndex ? "w-6" : "opacity-20"
                       )}
+                      style={{ backgroundColor: themeColor }}
                     />
                   ))}
                 </div>
@@ -244,8 +246,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             {layout === 'popup' && (
               <div className="flex flex-col items-center justify-center min-h-[400px] py-10 relative">
                 <div className="text-center mb-12 space-y-2">
-                  <Badge variant="outline" className="text-primary border-primary/20 px-4">Modo Demonstração</Badge>
-                  <p className="text-sm text-muted-foreground italic">Este widget flutuará no canto do seu site real.</p>
+                  <Badge variant="outline" className="px-4" style={{ color: themeColor, borderColor: `${themeColor}40` }}>Modo Notificação VIP</Badge>
+                  <p className="text-sm text-muted-foreground italic">Simulando a exibição de popups na sua Página Pública.</p>
                 </div>
                 
                 <div 
@@ -255,7 +257,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup />
                 </div>
                 
-                <div className="mt-8 flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest animate-pulse">
+                <div className="mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest animate-pulse" style={{ color: themeColor }}>
                   <Zap className="w-4 h-4" /> Próximo em instantes...
                 </div>
               </div>
@@ -273,7 +275,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
             <Link 
               href="/" 
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-primary-foreground text-sm font-bold hover:opacity-90 transition-all shadow-lg hover:-translate-y-0.5"
+              style={{ backgroundColor: themeColor }}
             >
               Conhecer a Proova <ArrowRight className="w-4 h-4" />
             </Link>
