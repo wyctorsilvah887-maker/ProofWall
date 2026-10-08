@@ -17,6 +17,7 @@ import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, Messa
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
@@ -31,18 +32,15 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [currentIndex, setCurrentIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
 
-  // Lógica de resolução da empresa: Tenta primeiro como UID (link permanente) e depois como slug (legado)
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta carregar direto pelo ID
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         setTargetUserId(slug);
         setCompanyData(docSnap.data());
       } else {
-        // Se não existir, busca por slug (links antigos)
         const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
         getDocs(q).then(snapshot => {
           if (!snapshot.empty) {
@@ -58,7 +56,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return () => unsubUser();
   }, [db, slug]);
 
-  // Carregamento do Widget e Depoimentos reativo
   useEffect(() => {
     if (!db || !targetUserId || !widgetId) return;
 
@@ -98,7 +95,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
-  // Animações automáticas
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
@@ -160,9 +156,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => (
     <Card 
       className={cn(
-        "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
+        "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
-        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4 mb-6",
+        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
         "animate-in fade-in zoom-in-95 slide-in-from-right-12"
       )} 
       style={{ 
@@ -233,7 +229,15 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <MessageSquare className="w-48 h-48 md:w-96 md:h-96" style={{ color: themeColor }} />
         </div>
         
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4">
+        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4 flex flex-col items-center">
+          <div className="relative w-20 h-20 md:w-32 md:h-32 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl">
+             <Image 
+              src="/c.png" 
+              alt="Logo Empresa" 
+              fill
+              className="object-cover"
+            />
+          </div>
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
