@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -68,11 +69,6 @@ export default function WidgetsPage() {
   }, [db, user]);
 
   const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
-
-  const companySlug = useMemo(() => {
-    if (!userData) return '';
-    return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
-  }, [userData]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -146,7 +142,8 @@ export default function WidgetsPage() {
   };
 
   const getWidgetCode = (widgetId: string) => {
-    return `<script src="${baseUrl}/widget.js?id=${widgetId}" defer></script>`;
+    // Usamos o UID do usuário para garantir que o link seja permanente
+    return `<script src="${baseUrl}/widget.js?id=${widgetId}&user=${user?.uid}" defer></script>`;
   };
 
   if (authLoading || userDataLoading || (user && !userData)) {
@@ -284,7 +281,8 @@ export default function WidgetsPage() {
                       size="sm" 
                       className="flex-1 lg:flex-none border-primary/20 text-primary hover:bg-primary/5 font-bold"
                       onClick={() => {
-                        const link = `${baseUrl}/pp/${companySlug}/${w.id}`;
+                        // Link permanente usando o UID
+                        const link = `${baseUrl}/pp/${user?.uid}/${w.id}`;
                         copyToClipboard(link, "Link da Página Pública");
                       }}
                     >

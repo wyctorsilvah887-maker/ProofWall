@@ -31,28 +31,34 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [currentIndex, setCurrentIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
 
+  // Lógica de resolução da empresa: Tenta primeiro como UID (link permanente) e depois como slug (legado)
   useEffect(() => {
-    async function findCompany() {
-      if (!db || !slug) return;
-      try {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('companySlug', '==', slug), limit(1));
-        const userSnapshot = await getDocs(q);
-        
-        if (!userSnapshot.empty) {
-          setTargetUserId(userSnapshot.docs[0].id);
-          setCompanyData(userSnapshot.docs[0].data());
-        } else {
-          setIsLoading(false);
-        }
-      } catch (err) {
-        console.error("Erro ao localizar empresa:", err);
-        setIsLoading(false);
+    if (!db || !slug) return;
+
+    // Tenta carregar direto pelo ID
+    const userRef = doc(db, 'users', slug);
+    const unsubUser = onSnapshot(userRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setTargetUserId(slug);
+        setCompanyData(docSnap.data());
+      } else {
+        // Se não existir, busca por slug (links antigos)
+        const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
+        getDocs(q).then(snapshot => {
+          if (!snapshot.empty) {
+            setTargetUserId(snapshot.docs[0].id);
+            setCompanyData(snapshot.docs[0].data());
+          } else {
+            setIsLoading(false);
+          }
+        }).catch(() => setIsLoading(false));
       }
-    }
-    findCompany();
+    }, () => setIsLoading(false));
+
+    return () => unsubUser();
   }, [db, slug]);
 
+  // Carregamento do Widget e Depoimentos reativo
   useEffect(() => {
     if (!db || !targetUserId || !widgetId) return;
 
@@ -92,6 +98,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
+  // Animações automáticas
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
