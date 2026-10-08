@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -273,20 +272,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
             {layout === 'popup' && (
               <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-20 relative px-4">
-                <div className="text-center mb-8 md:mb-16 space-y-3 md:space-y-4">
-                  <Badge variant="outline" className="px-4 md:px-6 py-0.5 md:py-1 text-xs font-bold tracking-widest" style={{ color: themeColor, borderColor: `${themeColor}40` }}>EXIBIÇÃO EM POPUP VIP</Badge>
-                  <p className="text-xs md:text-sm text-muted-foreground italic font-medium">Os feedbacks aparecerão como notificações dinâmicas para seus usuários.</p>
-                </div>
-                
                 <div 
                   key={filteredTestimonials[currentIndex].id}
                   className="animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out"
                 >
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
-                </div>
-                
-                <div className="mt-8 md:mt-12 flex items-center gap-2 md:gap-3 text-[10px] md:text-sm font-black uppercase tracking-[0.2em] md:tracking-[0.3em] animate-pulse" style={{ color: themeColor }}>
-                  <Zap className="w-4 h-4 md:w-5 md:h-5 fill-current" /> Sincronizando próximo feedback...
                 </div>
               </div>
             )}
