@@ -39,6 +39,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { useUser, useFirestore, useCollection, useAuth, useDoc } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
@@ -58,6 +59,7 @@ export default function WidgetsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
@@ -91,6 +93,9 @@ export default function WidgetsPage() {
       name: newWidgetName.trim(),
       selectedTestimonialIds: [],
       createdAt: serverTimestamp(),
+      layout: 'mural',
+      themeColor: '#f97316',
+      whatsappEnabled: false,
     };
 
     const widgetsRef = collection(db, 'users', user.uid, 'widgets');
@@ -99,6 +104,7 @@ export default function WidgetsPage() {
       .then((docRef) => {
         setNewWidgetName('');
         setIsCreating(false);
+        setIsCreateDialogOpen(false);
         toast({
           title: "Widget Criado!",
           description: "Redirecionando para as configurações...",
@@ -142,7 +148,6 @@ export default function WidgetsPage() {
   };
 
   const getWidgetCode = (widgetId: string) => {
-    // Usamos o UID do usuário para garantir que o link seja permanente
     return `<script src="${baseUrl}/widget.js?id=${widgetId}&user=${user?.uid}" defer></script>`;
   };
 
@@ -244,7 +249,7 @@ export default function WidgetsPage() {
             </div>
           </div>
           
-          <Button onClick={() => handleCreateWidget()} className="shadow-md">
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="shadow-md">
             <Plus className="w-4 h-4 mr-2" /> Novo Widget
           </Button>
         </div>
@@ -281,7 +286,6 @@ export default function WidgetsPage() {
                       size="sm" 
                       className="flex-1 lg:flex-none border-primary/20 text-primary hover:bg-primary/5 font-bold"
                       onClick={() => {
-                        // Link permanente usando o UID
                         const link = `${baseUrl}/pp/${user?.uid}/${w.id}`;
                         copyToClipboard(link, "Link da Página Pública");
                       }}
@@ -336,6 +340,33 @@ export default function WidgetsPage() {
         </div>
       </main>
 
+      {/* Dialog para Criar Widget */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Criar Novo Widget</DialogTitle>
+            <DialogDescription>
+              Dê um nome para identificar este mural de depoimentos.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateWidget} className="space-y-4 py-4">
+            <Input 
+              placeholder="Ex: Mural da Home"
+              value={newWidgetName}
+              onChange={(e) => setNewWidgetName(e.target.value)}
+              required
+              autoFocus
+            />
+            <DialogFooter>
+              <Button type="submit" disabled={isCreating} className="w-full sm:w-auto">
+                {isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
+                Criar Widget
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>
@@ -373,7 +404,7 @@ export default function WidgetsPage() {
               <ul className="text-xs text-muted-foreground space-y-2 list-disc pl-4">
                 <li>Carrega dinamicamente seus depoimentos aprovados.</li>
                 <li>Exibe o mural flutuante no canto inferior do seu site.</li>
-                <li>Otimizado para não afetar a velocidade de carregamento (Core Web Vitals).</li>
+                <li>Otimizado para não afetar a velocidade de carregamento.</li>
               </ul>
             </div>
           </div>
