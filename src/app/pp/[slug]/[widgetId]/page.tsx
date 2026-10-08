@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -86,6 +87,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const layout = widgetData?.layout || 'mural';
   const themeColor = widgetData?.themeColor || '#f97316';
+  const coverImageUrl = widgetData?.coverImageUrl || '';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
@@ -173,7 +175,17 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative">
-      <header className="bg-background border-b py-12 md:py-24 px-4 shadow-sm relative overflow-hidden text-center">
+      <header className={cn(
+        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all",
+        coverImageUrl ? "pt-0 pb-12 md:pb-20" : "py-12 md:py-24 px-4"
+      )}>
+        {coverImageUrl && (
+          <div className="w-full h-48 md:h-80 relative mb-8 md:mb-12">
+            <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa da Empresa" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+          </div>
+        )}
+
         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
           <Zap className="w-32 h-32 md:w-48 md:h-48" style={{ color: themeColor }} />
         </div>
@@ -181,7 +193,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <MessageSquare className="w-64 h-64 md:w-96 md:h-96" style={{ color: themeColor }} />
         </div>
         
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10">
+        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4">
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>

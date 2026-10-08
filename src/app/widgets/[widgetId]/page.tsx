@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -21,7 +22,10 @@ import {
   BellRing,
   Menu,
   Settings2,
-  Phone
+  Phone,
+  Image as ImageIcon,
+  Upload,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +48,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Image from 'next/image';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -58,7 +63,7 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
       borderTopColor: !isPopup ? themeColor : 'transparent', 
       borderLeftColor: isPopup ? themeColor : 'transparent',
       borderTopWidth: !isPopup ? '3px' : '0', 
-      borderLeftWidth: isPopup ? '4px' : '0',
+      borderLeftWidth: iisPopup ? '4px' : '0',
       borderStyle: 'solid',
       animationDelay: `${index * 50}ms`,
       animationFillMode: 'both'
@@ -95,174 +100,239 @@ const WidgetSettings = ({
   whatsappEnabled, setWhatsappEnabled, 
   whatsappNumber, setWhatsappNumber, 
   layout, setLayout, 
-  themeColor, setThemeColor 
-}: any) => (
-  <div className="flex flex-col w-full h-full">
-    <div className="p-4 border-b bg-muted/10">
-      <Link href="/widgets" className="w-full">
-        <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
-          <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-          </div>
-          <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar ao Início</span>
-        </Button>
-      </Link>
-    </div>
+  themeColor, setThemeColor,
+  coverImageUrl, setCoverImageUrl
+}: any) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024 * 2) {
+        toast({ variant: 'destructive', title: 'Arquivo muito grande', description: 'O limite é de 2MB.' });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    <Tabs defaultValue="geral" className="w-full">
-      <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
-        <TabsTrigger value="geral" className="data-[state=active]:bg-muted text-xs md:text-sm">Geral</TabsTrigger>
-        <TabsTrigger value="layout" className="data-[state=active]:bg-muted text-xs md:text-sm">Layout</TabsTrigger>
-        <TabsTrigger value="design" className="data-[state=active]:bg-muted text-xs md:text-sm">Design</TabsTrigger>
-      </TabsList>
-      
-      <div className="p-4 md:p-6 space-y-6 md:space-y-8">
-        <TabsContent value="geral" className="mt-0 space-y-6">
-          <div className="space-y-2">
-            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
-            <Input 
-              value={widgetName}
-              onChange={(e) => setWidgetName(e.target.value)}
-              placeholder="Ex: Mural da Home"
-              className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
-            />
-          </div>
+  return (
+    <div className="flex flex-col w-full h-full">
+      <div className="p-4 border-b bg-muted/10">
+        <Link href="/widgets" className="w-full">
+          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
+            <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar ao Início</span>
+          </Button>
+        </Link>
+      </div>
 
-          <div className="space-y-4 pt-4 border-t">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-sm font-bold flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-green-500" /> Botão WhatsApp
-                </Label>
-                <p className="text-[10px] text-muted-foreground">Exibir botão de contato na Página Pública</p>
-              </div>
-              <Switch 
-                checked={whatsappEnabled}
-                onCheckedChange={setWhatsappEnabled}
+      <Tabs defaultValue="geral" className="w-full">
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
+          <TabsTrigger value="geral" className="data-[state=active]:bg-muted text-xs md:text-sm">Geral</TabsTrigger>
+          <TabsTrigger value="layout" className="data-[state=active]:bg-muted text-xs md:text-sm">Layout</TabsTrigger>
+          <TabsTrigger value="design" className="data-[state=active]:bg-muted text-xs md:text-sm">Design</TabsTrigger>
+        </TabsList>
+        
+        <div className="p-4 md:p-6 space-y-6 md:space-y-8">
+          <TabsContent value="geral" className="mt-0 space-y-6">
+            <div className="space-y-2">
+              <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
+              <Input 
+                value={widgetName}
+                onChange={(e) => setWidgetName(e.target.value)}
+                placeholder="Ex: Mural da Home"
+                className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
               />
             </div>
 
-            {whatsappEnabled && (
-              <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número de Atendimento</Label>
-                <div className="relative">
+            <div className="space-y-4 pt-4 border-t">
+              <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <ImageIcon className="w-3 h-3" /> Imagem de Capa
+              </Label>
+              <div className="space-y-4">
+                {coverImageUrl ? (
+                  <div className="relative aspect-video w-full rounded-xl overflow-hidden border-2 border-primary/20 shadow-inner group">
+                    <img src={coverImageUrl} alt="Preview da capa" className="w-full h-full object-cover" />
+                    <button 
+                      onClick={() => setCoverImageUrl('')}
+                      className="absolute top-2 right-2 bg-destructive text-white p-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="aspect-video w-full rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/5 gap-2 text-center px-4">
+                    <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Nenhuma imagem de capa</p>
+                  </div>
+                )}
+                
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleFileUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                    />
+                    <Button variant="outline" className="w-full h-10 gap-2 border-primary/20 text-primary hover:bg-primary/5 text-xs font-bold">
+                      <Upload className="w-4 h-4" /> Upload de Foto
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-[9px] uppercase font-bold text-muted-foreground">Ou URL da imagem</Label>
                   <Input 
-                    value={whatsappNumber}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setWhatsappNumber(val);
-                    }}
-                    placeholder="Ex: 5511999999999"
-                    className="h-10 border-primary/20 focus:border-primary text-sm pl-4"
-                    maxLength={15}
+                    value={coverImageUrl}
+                    onChange={(e) => setCoverImageUrl(e.target.value)}
+                    placeholder="https://exemplo.com/imagem.jpg"
+                    className="h-8 text-[10px] border-primary/10"
                   />
                 </div>
-                <p className="text-[9px] text-muted-foreground leading-tight italic">
-                  * Insira DDI + DDD + Número (ex: 551199887766). Apenas números.
-                </p>
               </div>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="layout" className="mt-0 space-y-4 md:space-y-6">
-          <div className="space-y-3 md:space-y-4">
-            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
-            <div className="grid grid-cols-1 gap-2 md:gap-3">
-              <button 
-                onClick={() => setLayout('popup')}
-                className={cn(
-                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
-                  layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-                )}
-              >
-                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                  <BellRing className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm font-bold">Notificação VIP</p>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">Popup animado exclusivo</p>
-                </div>
-                <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-[8px] h-3.5 px-1">Novo</Badge>
-                {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-              </button>
-
-              <button 
-                onClick={() => setLayout('mural')}
-                className={cn(
-                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                  layout === 'mural' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-                )}
-              >
-                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                  <LayoutGrid className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm font-bold">Mural Dinâmico</p>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
-                </div>
-                {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-              </button>
-
-              <button 
-                onClick={() => setLayout('carousel')}
-                className={cn(
-                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                  layout === 'carousel' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-                )}
-              >
-                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                  <Play className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm font-bold">Carrossel Slider</p>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
-                </div>
-                {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-              </button>
-
-              <button 
-                onClick={() => setLayout('grid')}
-                className={cn(
-                  "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
-                  layout === 'grid' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
-                )}
-              >
-                <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                  <Columns className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm font-bold">Grade Estática</p>
-                  <p className="text-[9px] md:text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
-                </div>
-                {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
-              </button>
             </div>
-          </div>
-        </TabsContent>
 
-        <TabsContent value="design" className="mt-0 space-y-4 md:space-y-6">
-          <div className="space-y-4">
-            <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
-            <div className="flex flex-wrap gap-3">
-              {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setThemeColor(color)}
-                  className={cn(
-                    "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-transform hover:scale-110",
-                    themeColor === color ? "border-foreground" : "border-transparent"
-                  )}
-                  style={{ backgroundColor: color }}
+            <div className="space-y-4 pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-green-500" /> Botão WhatsApp
+                  </Label>
+                  <p className="text-[10px] text-muted-foreground">Exibir botão de contato na Página Pública</p>
+                </div>
+                <Switch 
+                  checked={whatsappEnabled}
+                  onCheckedChange={setWhatsappEnabled}
                 />
-              ))}
+              </div>
+
+              {whatsappEnabled && (
+                <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                  <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número de Atendimento</Label>
+                  <div className="relative">
+                    <Input 
+                      value={whatsappNumber}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setWhatsappNumber(val);
+                      }}
+                      placeholder="Ex: 5511999999999"
+                      className="h-10 border-primary/20 focus:border-primary text-sm pl-4"
+                      maxLength={15}
+                    />
+                  </div>
+                  <p className="text-[9px] text-muted-foreground leading-tight italic">
+                    * Insira DDI + DDD + Número (ex: 551199887766). Apenas números.
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
-        </TabsContent>
-      </div>
-    </Tabs>
-  </div>
-);
+          </TabsContent>
+
+          <TabsContent value="layout" className="mt-0 space-y-4 md:space-y-6">
+            <div className="space-y-3 md:space-y-4">
+              <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
+              <div className="grid grid-cols-1 gap-2 md:gap-3">
+                <button 
+                  onClick={() => setLayout('popup')}
+                  className={cn(
+                    "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
+                    layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                  )}
+                >
+                  <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                    <BellRing className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs md:text-sm font-bold">Notificação VIP</p>
+                    <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">Popup animado exclusivo</p>
+                  </div>
+                  <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-[8px] h-3.5 px-1">Novo</Badge>
+                  {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+                </button>
+
+                <button 
+                  onClick={() => setLayout('mural')}
+                  className={cn(
+                    "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                    layout === 'mural' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                  )}
+                >
+                  <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                    <LayoutGrid className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs md:text-sm font-bold">Mural Dinâmico</p>
+                    <p className="text-[9px] md:text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
+                  </div>
+                  {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+                </button>
+
+                <button 
+                  onClick={() => setLayout('carousel')}
+                  className={cn(
+                    "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                    layout === 'carousel' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                  )}
+                >
+                  <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                    <Play className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs md:text-sm font-bold">Carrossel Slider</p>
+                    <p className="text-[9px] md:text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
+                  </div>
+                  {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+                </button>
+
+                <button 
+                  onClick={() => setLayout('grid')}
+                  className={cn(
+                    "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
+                    layout === 'grid' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                  )}
+                >
+                  <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                    <Columns className="w-4 h-4 md:w-5 md:h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs md:text-sm font-bold">Grade Estática</p>
+                    <p className="text-[9px] md:text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
+                  </div>
+                  {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
+                </button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="design" className="mt-0 space-y-4 md:space-y-6">
+            <div className="space-y-4">
+              <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
+              <div className="flex flex-wrap gap-3">
+                {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setThemeColor(color)}
+                    className={cn(
+                      "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-transform hover:scale-110",
+                      themeColor === color ? "border-foreground" : "border-transparent"
+                    )}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
+  );
+};
 
 export default function WidgetEditPage({ params }: { params: Promise<{ widgetId: string }> }) {
   const { widgetId } = use(params);
@@ -289,6 +359,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [themeColor, setThemeColor] = useState('#f97316');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
@@ -300,6 +371,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       setThemeColor(widgetData.themeColor || '#f97316');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
+      setCoverImageUrl(widgetData.coverImageUrl || '');
     }
   }, [widgetData]);
 
@@ -334,6 +406,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       themeColor,
       whatsappEnabled,
       whatsappNumber: whatsappNumber.trim(),
+      coverImageUrl,
     };
 
     updateDoc(widgetRef, updates)
@@ -374,7 +447,8 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
     layout, setLayout,
-    themeColor, setThemeColor
+    themeColor, setThemeColor,
+    coverImageUrl, setCoverImageUrl
   };
 
   return (
@@ -428,62 +502,74 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
               layout === 'popup' && "items-center lg:items-start lg:justify-end"
             )}>
               {selectedTestimonials.length > 0 ? (
-                <div className="w-full h-full flex items-center justify-center">
-                  {layout === 'mural' && (
-                    <div className="columns-1 sm:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6 w-full max-w-2xl">
-                      {selectedTestimonials.map((t, idx) => (
-                        <div key={t.id + idx} className="break-inside-avoid">
-                          <TestimonialCard t={t} small={selectedTestimonials.length > 2} index={idx} themeColor={themeColor} />
+                <div className="w-full h-full flex flex-col items-center">
+                  {/* Public Page Preview Header Simulator */}
+                  {coverImageUrl && layout !== 'popup' && (
+                    <div className="w-full max-w-2xl mb-8 rounded-2xl overflow-hidden shadow-lg border-b-4" style={{ borderColor: themeColor }}>
+                      <img src={coverImageUrl} className="w-full h-32 object-cover" alt="Capa Preview" />
+                      <div className="bg-background p-4 text-center">
+                        <h3 className="font-headline font-bold text-sm">Preview da Capa no Mural</h3>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="w-full flex items-center justify-center">
+                    {layout === 'mural' && (
+                      <div className="columns-1 sm:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6 w-full max-w-2xl">
+                        {selectedTestimonials.map((t, idx) => (
+                          <div key={t.id + idx} className="break-inside-avoid">
+                            <TestimonialCard t={t} small={selectedTestimonials.length > 2} index={idx} themeColor={themeColor} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {layout === 'carousel' && (
+                      <div className="flex items-center justify-center gap-2 md:gap-6 animate-in slide-in-from-right-10 duration-500 w-full max-w-lg">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
+                          className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
+                        >
+                          <ChevronLeft className="h-4 w-4 md:h-5 md:h-5" />
+                        </Button>
+                        <div className="w-full">
+                          <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} themeColor={themeColor} />
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {layout === 'carousel' && (
-                    <div className="flex items-center justify-center gap-2 md:gap-6 animate-in slide-in-from-right-10 duration-500 w-full max-w-lg">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
-                      >
-                        <ChevronLeft className="h-4 w-4 md:h-5 md:h-5" />
-                      </Button>
-                      <div className="w-full">
-                        <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} themeColor={themeColor} />
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
+                          className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
+                        >
+                          <ChevronRight className="h-4 w-4 md:h-5 md:h-5" />
+                        </Button>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
-                      >
-                        <ChevronRight className="h-4 w-4 md:h-5 md:h-5" />
-                      </Button>
-                    </div>
-                  )}
+                    )}
 
-                  {layout === 'grid' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
-                      {selectedTestimonials.slice(0, 4).map((t, idx) => (
-                        <TestimonialCard key={t.id + idx} t={t} small index={idx} themeColor={themeColor} />
-                      ))}
-                    </div>
-                  )}
+                    {layout === 'grid' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
+                        {selectedTestimonials.slice(0, 4).map((t, idx) => (
+                          <TestimonialCard key={t.id + idx} t={t} small index={idx} themeColor={themeColor} />
+                        ))}
+                      </div>
+                    )}
 
-                  {layout === 'popup' && (
-                    <div className="lg:absolute lg:bottom-10 lg:left-10 flex flex-col items-center lg:items-start gap-3 md:gap-4 w-full lg:w-auto">
-                       <div className="bg-primary text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
-                        Novo Feedback Real
+                    {layout === 'popup' && (
+                      <div className="lg:absolute lg:bottom-10 lg:left-10 flex flex-col items-center lg:items-start gap-3 md:gap-4 w-full lg:w-auto">
+                        <div className="bg-primary text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
+                          Novo Feedback Real
+                        </div>
+                        <div 
+                          key={selectedTestimonials[carouselIndex % selectedTestimonials.length].id}
+                          className="animate-in slide-in-from-bottom-12 lg:slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
+                        >
+                          <TestimonialCard t={selectedTestimonials[carouselIndex % selectedTestimonials.length]} isPopup index={0} themeColor={themeColor} />
+                        </div>
                       </div>
-                      <div 
-                        key={selectedTestimonials[carouselIndex % selectedTestimonials.length].id}
-                        className="animate-in slide-in-from-bottom-12 lg:slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
-                      >
-                        <TestimonialCard t={selectedTestimonials[carouselIndex % selectedTestimonials.length]} isPopup index={0} themeColor={themeColor} />
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center space-y-4 md:space-y-6 opacity-40 group p-6">

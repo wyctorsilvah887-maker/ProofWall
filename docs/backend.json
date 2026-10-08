@@ -95,6 +95,23 @@
           "type": "string",
           "description": "Cor principal do widget."
         },
+        "coverImageUrl": {
+          "type": "string",
+          "description": "URL ou Base64 da imagem de capa da página pública."
+        },
+        "whatsappEnabled": {
+          "type": "boolean",
+          "description": "Ativa botão de WhatsApp."
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "Número para contato via WhatsApp."
+        },
+        "layout": {
+          "type": "string",
+          "enum": ["mural", "carousel", "grid", "popup"],
+          "description": "Tipo de layout do widget."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
