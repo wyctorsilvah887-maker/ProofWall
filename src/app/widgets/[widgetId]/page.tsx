@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -16,8 +17,6 @@ import {
   Columns,
   Play,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   BellRing,
   Settings2,
   Phone,
@@ -75,28 +74,30 @@ const TestimonialCard = ({ t, small = false, isPopup = false, index = 0, themeCo
       animationFillMode: 'both'
     }}
   >
-    <div className="flex items-start gap-2 mb-3">
-      <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
-        <User className="w-3 h-3" style={{ color: themeColor }} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className={cn("font-bold leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
-        <div className="flex gap-0.5 mt-1">
-          {Array.from({ length: t.rating || 5 }).map((_, i) => (
-            <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
-          ))}
+    <div className="flex flex-col space-y-2">
+      <div className="flex items-start gap-2 mb-1">
+        <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
+          <User className="w-3 h-3" style={{ color: themeColor }} />
         </div>
+        <div className="flex-1 min-w-0">
+          <p className={cn("font-bold leading-tight truncate mb-1", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
+          <div className="flex gap-0.5">
+            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
+            ))}
+          </div>
+        </div>
+        {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0 hidden sm:flex">Verificado</Badge>}
       </div>
-      {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0 hidden sm:flex">Verificado</Badge>}
-    </div>
-    <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm mb-4")}>
-      "{t.text}"
-    </p>
-    <div className={cn("pt-2 border-t flex items-center justify-between", small ? "mt-2" : "pt-3 mt-4")}>
-      <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">
-        Proova Social Proof
-      </span>
-      <Zap className="w-3 h-3 text-primary animate-pulse" style={{ color: themeColor }} />
+      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm mb-2")}>
+        "{t.text}"
+      </p>
+      <div className={cn("pt-2 border-t flex items-center justify-between", small ? "mt-1" : "pt-3 mt-2")}>
+        <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">
+          Proova Social Proof
+        </span>
+        <Zap className="w-3 h-3 text-primary animate-pulse" style={{ color: themeColor }} />
+      </div>
     </div>
   </Card>
 );
@@ -366,7 +367,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
       const interval = setInterval(() => {
         setCarouselIndex((prev) => (prev + 1) % selectedTestimonials.length);
-      }, 4000);
+      }, 3000);
       return () => clearInterval(interval);
     }
   }, [layout, selectedTestimonials]);
@@ -501,25 +502,9 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
                     {layout === 'carousel' && (
                       <div className="flex items-center justify-center gap-2 md:gap-6 animate-in slide-in-from-right-10 duration-500 w-full max-w-lg">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
-                          className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
-                        >
-                          <ChevronLeft className="h-4 w-4 md:h-5 md:h-5" />
-                        </Button>
                         <div className="w-full">
                           <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} themeColor={themeColor} />
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
-                          className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
-                        >
-                          <ChevronRight className="h-4 w-4 md:h-5 md:h-5" />
-                        </Button>
                       </div>
                     )}
 

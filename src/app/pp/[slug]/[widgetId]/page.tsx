@@ -13,7 +13,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -95,7 +95,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 5000);
+      }, 3000);
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
@@ -152,33 +152,35 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }}
     >
       <CardContent className="p-4 md:p-6 space-y-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary/5 p-1.5 md:p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
-              <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
-            </div>
-            <div>
-              <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight">{t.userName}</p>
-              <div className="flex gap-0.5 mt-1">
-                {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                  <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-                ))}
+        <div className="flex flex-col space-y-3">
+          <div className="flex items-start justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/5 p-1.5 md:p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
+                <User className="w-4 h-4 md:w-5 md:h-5" style={{ color: themeColor }} />
+              </div>
+              <div className="flex flex-col">
+                <p className="font-bold text-xs md:text-sm text-gray-900 leading-tight mb-1">{t.userName}</p>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                    <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                  ))}
+                </div>
               </div>
             </div>
+            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0">
+              <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
+            </Badge>
           </div>
-          <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0">
-            <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
-          </Badge>
-        </div>
 
-        <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors">
-          "{t.text}"
-        </blockquote>
+          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-2">
+            "{t.text}"
+          </blockquote>
 
-        <div className="pt-3 border-t border-muted/50">
-          <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
-            {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
-          </p>
+          <div className="pt-3 border-t border-muted/50 mt-2">
+            <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+              {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -209,7 +211,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             Social Proof by Proova
           </Badge>
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.9]">
-            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData.companyName}</span>
+            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
           </h1>
           <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
             {widgetData.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
@@ -244,27 +246,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             {layout === 'carousel' && (
               <div className="flex flex-col items-center gap-8 md:gap-12 py-8 md:py-16">
                 <div className="relative w-full max-w-3xl flex items-center justify-center gap-2 md:gap-6">
-                   <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={() => setCurrentIndex(prev => (prev - 1 + filteredTestimonials.length) % filteredTestimonials.length)}
-                    className="rounded-full shadow-lg bg-background h-10 w-10 md:h-14 md:w-14 border-none hover:scale-110 transition-transform shrink-0"
-                  >
-                    <ChevronLeft className="h-5 w-5 md:h-8 md:h-8" />
-                  </Button>
-                  
                   <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
                     <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
-
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    onClick={() => setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length)}
-                    className="rounded-full shadow-lg bg-background h-10 w-10 md:h-14 md:w-14 border-none hover:scale-110 transition-transform shrink-0"
-                  >
-                    <ChevronRight className="h-5 w-5 md:h-8 md:h-8" />
-                  </Button>
                 </div>
                 <div className="flex gap-2 md:gap-3">
                   {filteredTestimonials.map((_, i) => (
