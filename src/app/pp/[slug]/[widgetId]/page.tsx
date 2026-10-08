@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -93,7 +92,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       const timer = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
       }, 5000);
-      return () => clearInterval(interval);
+      return () => clearInterval(timer);
     }
   }, [layout, filteredTestimonials]);
 
