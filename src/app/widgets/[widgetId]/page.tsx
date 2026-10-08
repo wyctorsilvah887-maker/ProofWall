@@ -19,7 +19,8 @@ import {
   Palette,
   CheckCircle2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  BellRing
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +36,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type LayoutType = 'mural' | 'carousel' | 'grid';
+type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
 export default function WidgetEditPage({ params }: { params: Promise<{ widgetId: string }> }) {
   const { widgetId } = use(params);
@@ -83,6 +84,16 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     return approvedTestimonials.filter((t: any) => selectedIds.includes(t.id));
   }, [approvedTestimonials, selectedIds]);
 
+  // Efeito para o ciclo do Popup/Carrossel no preview
+  useEffect(() => {
+    if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
+      const interval = setInterval(() => {
+        setCarouselIndex((prev) => (prev + 1) % selectedTestimonials.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [layout, selectedTestimonials]);
+
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
 
@@ -127,12 +138,18 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   }
 
-  // Componente de Card de Depoimento para o Preview
-  const TestimonialCard = ({ t, small = false }: { t: any, small?: boolean }) => (
+  const TestimonialCard = ({ t, small = false, isPopup = false }: { t: any, small?: boolean, isPopup?: boolean }) => (
     <Card className={cn(
-      "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden",
-      small ? "p-3" : "p-6"
-    )} style={{ borderTopColor: themeColor, borderTopWidth: '3px', borderTopStyle: 'solid' }}>
+      "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden transition-all duration-300",
+      small ? "p-3" : "p-6",
+      isPopup && "max-w-[300px] border-l-4 border-t-0"
+    )} style={{ 
+      borderTopColor: !isPopup ? themeColor : 'transparent', 
+      borderLeftColor: isPopup ? themeColor : 'transparent',
+      borderTopWidth: !isPopup ? '3px' : '0', 
+      borderLeftWidth: isPopup ? '4px' : '0',
+      borderStyle: 'solid' 
+    }}>
       <div className="flex items-center gap-2 mb-3">
         <div className="bg-primary/10 p-1.5 rounded-full">
           <User className="w-3 h-3 text-primary" />
@@ -183,7 +200,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Sidebar de Configurações */}
         <aside className="w-full lg:w-80 bg-background border-r flex flex-col sticky top-16 h-[calc(100vh-64px)] overflow-y-auto z-40">
           <Tabs defaultValue="geral" className="w-full">
             <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2">
@@ -203,29 +219,30 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                     className="border-primary/20 focus:border-primary"
                   />
                 </div>
-                <div className="pt-4 border-t space-y-4">
-                  <h3 className="text-sm font-bold flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-primary" /> Status da Seleção
-                  </h3>
-                  <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
-                    <div className="flex items-end justify-between mb-1">
-                      <span className="text-2xl font-bold text-primary">{selectedIds.length}</span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Depoimentos</span>
-                    </div>
-                    <div className="w-full bg-primary/10 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-primary h-full transition-all duration-500" 
-                        style={{ width: `${Math.min((selectedIds.length / 10) * 100, 100)}%` }} 
-                      />
-                    </div>
-                  </div>
-                </div>
               </TabsContent>
 
               <TabsContent value="layout" className="mt-0 space-y-6">
                 <div className="space-y-4">
                   <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
                   <div className="grid grid-cols-1 gap-3">
+                    <button 
+                      onClick={() => setLayout('popup')}
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
+                        layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
+                      )}
+                    >
+                      <div className={cn("p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                        <BellRing className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold">Notificação VIP</p>
+                        <p className="text-[10px] text-muted-foreground">Popup flutuante animado (Exclusivo)</p>
+                      </div>
+                      <Badge className="absolute -top-2 -right-2 bg-primary text-[8px] h-4">Novo</Badge>
+                      {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
+                    </button>
+
                     <button 
                       onClick={() => setLayout('mural')}
                       className={cn(
@@ -295,14 +312,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                         style={{ backgroundColor: color }}
                       />
                     ))}
-                    <div className="relative">
-                      <Input 
-                        type="color" 
-                        value={themeColor} 
-                        onChange={(e) => setThemeColor(e.target.value)}
-                        className="w-8 h-8 p-0 border-none bg-transparent cursor-pointer rounded-full overflow-hidden"
-                      />
-                    </div>
                   </div>
                 </div>
               </TabsContent>
@@ -310,17 +319,18 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </Tabs>
         </aside>
 
-        {/* Área Central: Preview e Seleção */}
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
-          
           <div className="max-w-4xl mx-auto space-y-4">
             <h2 className="text-lg font-bold font-headline flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary" /> Visualização do {layout.toUpperCase()} em Tempo Real
+              <Eye className="w-5 h-5 text-primary" /> Visualização em Tempo Real
             </h2>
             
-            <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[400px] flex flex-col items-center justify-center">
+            <div className={cn(
+              "relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[450px] flex flex-col items-center justify-center transition-all duration-500",
+              layout === 'popup' && "items-start justify-end"
+            )}>
               {selectedTestimonials.length > 0 ? (
-                <div className="w-full">
+                <div className="w-full h-full flex items-center justify-center">
                   {layout === 'mural' && (
                     <div className="columns-1 md:columns-2 gap-4 space-y-4 animate-in fade-in duration-500">
                       {selectedTestimonials.map((t, idx) => (
@@ -362,6 +372,20 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                       ))}
                     </div>
                   )}
+
+                  {layout === 'popup' && (
+                    <div className="absolute bottom-10 left-10 flex flex-col items-start gap-2">
+                       <div className="bg-primary text-white text-[8px] font-bold px-2 py-0.5 rounded-full animate-pulse uppercase tracking-wider mb-2">
+                        Novo Feedback Real
+                      </div>
+                      <div 
+                        key={selectedTestimonials[carouselIndex].id}
+                        className="animate-in slide-in-from-left-full fade-in duration-700 ease-out"
+                      >
+                        <TestimonialCard t={selectedTestimonials[carouselIndex]} isPopup />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center space-y-4 opacity-50">
@@ -369,16 +393,12 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                     <MessageSquare className="w-16 h-16 mx-auto text-primary" />
                     <Zap className="w-6 h-6 text-primary absolute bottom-0 right-0 animate-bounce" />
                   </div>
-                  <div className="space-y-1">
-                    <p className="font-bold uppercase tracking-widest text-sm text-primary">Selecione depoimentos abaixo</p>
-                    <p className="text-xs text-muted-foreground">Escolha os melhores depoimentos para ver como eles ficam.</p>
-                  </div>
+                  <p className="font-bold uppercase tracking-widest text-sm text-primary">Selecione depoimentos abaixo</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Seção de Seleção de Depoimentos */}
           <div className="max-w-4xl mx-auto space-y-4 pt-4 border-t">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold font-headline flex items-center gap-2">
@@ -413,7 +433,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                       )}>
                         {selectedIds.includes(t.id) && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
                           <span className="font-bold text-sm truncate">{t.userName}</span>
