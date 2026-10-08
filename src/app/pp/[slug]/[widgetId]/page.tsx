@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -12,9 +13,10 @@ import {
   getDoc 
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -61,8 +63,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         // 3. Buscar depoimentos selecionados
         const selectedIds = wData.selectedTestimonialIds || [];
         if (selectedIds.length > 0) {
-          // Como o Firestore limita a busca por IDs em blocos de 10 no 'in',
-          // e para garantir a ordem/estado, buscamos individualmente ou filtramos
           const testimonialsRef = collection(db, 'users', userId, 'testimonials');
           const tQuery = query(testimonialsRef, where('status', '==', 'approved'));
           const tSnapshot = await getDocs(tQuery);
@@ -182,12 +182,23 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         )}
       </main>
 
-      <footer className="mt-20 py-10 border-t bg-background text-center space-y-4">
-        <p className="text-sm text-muted-foreground font-medium">
-          Deseja coletar depoimentos assim para sua empresa?
-        </p>
-        <div className="flex items-center justify-center gap-2">
-          <span className="font-headline font-bold text-xl tracking-tighter">Proova</span>
+      <footer className="mt-20 py-10 border-t bg-background text-center space-y-6">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground font-medium">
+            Deseja coletar depoimentos assim para sua empresa?
+          </p>
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground text-sm font-medium">Conheça a</span>
+              <span className="font-headline font-bold text-2xl tracking-tighter text-primary">Proova</span>
+            </div>
+            <Link 
+              href="/" 
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-primary/5 text-primary text-sm font-bold hover:bg-primary/10 transition-colors border border-primary/20"
+            >
+              Conhecer a Proova <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
