@@ -1,14 +1,15 @@
+
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Mail, User, Building2, Lock, Loader2 } from "lucide-react";
-import Link from "next/link";
+import Link from "link";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useFirestore, useAuth } from "@/firebase";
+import { useFirestore, useAuth, useUser } from "@/firebase";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { errorEmitter } from "@/firebase/error-emitter";
@@ -17,6 +18,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 export default function SignupPage() {
   const db = useFirestore();
   const auth = useAuth();
+  const { user, loading: authLoading } = useUser();
   const router = useRouter();
   
   const [name, setName] = useState("");
@@ -24,6 +26,12 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace('/dash');
+    }
+  }, [user, authLoading, router]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +41,7 @@ export default function SignupPage() {
     
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const newUser = userCredential.user;
       
       const slug = company.trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -46,7 +54,7 @@ export default function SignupPage() {
         createdAt: serverTimestamp(),
       };
 
-      setDoc(doc(db, "users", user.uid), userData)
+      setDoc(doc(db, "users", newUser.uid), userData)
         .then(() => {
           toast({
             title: "Conta Criada!",
@@ -56,7 +64,7 @@ export default function SignupPage() {
         })
         .catch(async (err) => {
           const permissionError = new FirestorePermissionError({
-            path: `users/${user.uid}`,
+            path: `users/${newUser.uid}`,
             operation: 'create',
             requestResourceData: userData,
           });
@@ -73,6 +81,14 @@ export default function SignupPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (authLoading || user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <Loader2 className="animate-spin h-10 w-10 text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-12 relative">

@@ -1,14 +1,25 @@
+
 'use client';
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star, CheckCircle2, Link2, ShieldCheck, Zap } from "lucide-react";
+import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2 } from "lucide-react";
 import { useUser } from "@/firebase";
 
 export default function Home() {
-  const { user } = useUser();
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dash');
+    }
+  }, [user, loading, router]);
+
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-saas');
   const avatars = [
     PlaceHolderImages.find(img => img.id === 'avatar-1'),
@@ -37,6 +48,14 @@ export default function Home() {
     }
   ];
 
+  if (loading || user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <Loader2 className="animate-spin h-10 w-10 text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
@@ -44,20 +63,12 @@ export default function Home() {
           <span className="font-headline text-2xl">Proova</span>
         </div>
         <div className="flex items-center gap-4">
-          {user ? (
-            <Link href="/dash">
-              <Button variant="ghost" size="sm">Acessar Dash</Button>
-            </Link>
-          ) : (
-            <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm">Entrar</Button>
-              </Link>
-              <Link href="/signup">
-                <Button size="sm">Cadastro</Button>
-              </Link>
-            </>
-          )}
+          <Link href="/login">
+            <Button variant="ghost" size="sm">Entrar</Button>
+          </Link>
+          <Link href="/signup">
+            <Button size="sm">Cadastro</Button>
+          </Link>
         </div>
       </header>
 
