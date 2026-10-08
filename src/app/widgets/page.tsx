@@ -16,7 +16,9 @@ import {
   Clock,
   Copy,
   Terminal,
-  CheckCircle2
+  CheckCircle2,
+  ExternalLink,
+  Globe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -65,6 +67,11 @@ export default function WidgetsPage() {
   }, [db, user]);
 
   const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
+
+  const companySlug = useMemo(() => {
+    if (!userData) return '';
+    return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
+  }, [userData]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -129,11 +136,11 @@ export default function WidgetsPage() {
       });
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, description: string = "Código de instalação") => {
     navigator.clipboard.writeText(text);
     toast({
       title: "Copiado!",
-      description: "Código de instalação copiado para a área de transferência.",
+      description: `${description} copiado para a área de transferência.`,
     });
   };
 
@@ -225,7 +232,7 @@ export default function WidgetsPage() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/dash">
@@ -244,7 +251,7 @@ export default function WidgetsPage() {
           </Button>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {widgetsLoading ? (
             <div className="py-20 text-center">
               <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" />
@@ -252,24 +259,40 @@ export default function WidgetsPage() {
           ) : (
             widgetsList?.map((w: any) => (
               <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-6 gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between p-6 gap-6">
                   <div className="flex items-center gap-4">
-                    <div className="bg-primary/10 p-3 rounded-xl">
-                      <Layout className="w-6 h-6 text-primary" />
+                    <div className="bg-primary/10 p-4 rounded-2xl">
+                      <Layout className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg">{w.name}</h3>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Criado em {w.createdAt?.toDate ? w.createdAt.toDate().toLocaleDateString('pt-BR') : 'Agora'}
-                      </p>
+                      <h3 className="font-bold text-xl">{w.name}</h3>
+                      <div className="flex items-center gap-3 mt-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {w.createdAt?.toDate ? w.createdAt.toDate().toLocaleDateString('pt-BR') : 'Agora'}
+                        </p>
+                        <Badge variant="secondary" className="text-[9px] h-4">
+                          {w.selectedTestimonialIds?.length || 0} Depoimentos
+                        </Badge>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0">
+                  <div className="flex flex-wrap items-center gap-2 border-t lg:border-t-0 pt-4 lg:pt-0">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1 lg:flex-none border-primary/20 text-primary hover:bg-primary/5 font-bold"
+                      onClick={() => {
+                        const link = `${baseUrl}/pp/${companySlug}/${w.id}`;
+                        copyToClipboard(link, "Link da Página Pública");
+                      }}
+                    >
+                      <Globe className="w-4 h-4 mr-2" /> Página Pública
+                    </Button>
                     <Button 
                       variant="secondary" 
                       size="sm" 
-                      className="flex-1 sm:flex-none"
+                      className="flex-1 lg:flex-none font-bold"
                       onClick={() => {
                         setSelectedWidget(w);
                         setIsDialogOpen(true);
@@ -278,9 +301,9 @@ export default function WidgetsPage() {
                       <Code className="w-4 h-4 mr-2" /> Código
                     </Button>
                     <Button 
-                      variant="outline" 
+                      variant="default" 
                       size="sm" 
-                      className="flex-1 sm:flex-none"
+                      className="flex-1 lg:flex-none font-bold"
                       onClick={() => router.push(`/widgets/${w.id}`)}
                     >
                       <Settings2 className="w-4 h-4 mr-2" /> Configurar
