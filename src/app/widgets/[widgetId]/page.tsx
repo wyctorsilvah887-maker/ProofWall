@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -9,7 +8,6 @@ import {
   Loader2, 
   Star, 
   Eye,
-  Settings,
   MessageSquare,
   Check,
   User,
@@ -17,7 +15,6 @@ import {
   LayoutGrid,
   Columns,
   Play,
-  Palette,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -143,7 +140,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       className={cn(
         "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95",
         small ? "p-3" : "p-6",
-        isPopup && "max-w-[300px] border-l-4 border-t-0"
+        isPopup && "max-w-[260px] md:max-w-[300px] border-l-4 border-t-0"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent', 
@@ -167,9 +164,9 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             ))}
           </div>
         </div>
-        {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0">Verificado</Badge>}
+        {!small && <Badge className="text-[8px] h-4 px-1.5 bg-green-500/10 text-green-600 border-none shrink-0 hidden sm:flex">Verificado</Badge>}
       </div>
-      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-2" : "text-sm mb-4")}>
+      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm mb-4")}>
         "{t.text}"
       </p>
       <div className={cn("pt-2 border-t flex items-center justify-between", small ? "mt-2" : "pt-3 mt-4")}>
@@ -183,135 +180,136 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
-      <header className="bg-background border-b h-16 flex items-center px-6 sticky top-0 z-[60] shadow-sm">
-        <div className="flex items-center gap-4">
+      <header className="bg-background border-b h-16 md:h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
           <Link href="/widgets">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <ArrowLeft className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10">
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-xl font-bold font-headline tracking-tight">{widgetName || 'Novo Mural'}</h1>
-            <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
+          <div className="truncate">
+            <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
+            <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
           </div>
         </div>
 
-        <div className="ml-auto">
-          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg px-6">
-            {isSaving ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar Projeto
+        <div className="ml-auto flex items-center gap-2">
+          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-9 md:h-10 px-3 md:px-6 text-xs md:text-sm">
+            {isSaving ? <Loader2 className="animate-spin mr-2 h-3 w-3 md:h-4 md:w-4" /> : <Save className="mr-2 h-3 w-3 md:h-4 md:w-4" />}
+            <span className="hidden sm:inline">Salvar Projeto</span>
+            <span className="sm:hidden">Salvar</span>
           </Button>
         </div>
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        <aside className="w-full lg:w-80 bg-background border-r flex flex-col sticky top-16 h-[calc(100vh-64px)] overflow-y-auto z-40">
+        <aside className="w-full lg:w-80 bg-background border-r flex flex-col lg:sticky lg:top-20 h-auto lg:h-[calc(100vh-80px)] overflow-y-visible lg:overflow-y-auto z-40 border-b lg:border-b-0 shadow-sm lg:shadow-none">
           <Tabs defaultValue="geral" className="w-full">
-            <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2">
-              <TabsTrigger value="geral" className="data-[state=active]:bg-muted">Geral</TabsTrigger>
-              <TabsTrigger value="layout" className="data-[state=active]:bg-muted">Layout</TabsTrigger>
-              <TabsTrigger value="design" className="data-[state=active]:bg-muted">Design</TabsTrigger>
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-hide">
+              <TabsTrigger value="geral" className="data-[state=active]:bg-muted text-xs md:text-sm">Geral</TabsTrigger>
+              <TabsTrigger value="layout" className="data-[state=active]:bg-muted text-xs md:text-sm">Layout</TabsTrigger>
+              <TabsTrigger value="design" className="data-[state=active]:bg-muted text-xs md:text-sm">Design</TabsTrigger>
             </TabsList>
             
-            <div className="p-6 space-y-8">
-              <TabsContent value="geral" className="mt-0 space-y-6">
+            <div className="p-4 md:p-6 space-y-6 md:space-y-8">
+              <TabsContent value="geral" className="mt-0 space-y-4 md:space-y-6">
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
+                  <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Nome Identificador</Label>
                   <Input 
                     value={widgetName}
                     onChange={(e) => setWidgetName(e.target.value)}
                     placeholder="Ex: Mural da Home"
-                    className="border-primary/20 focus:border-primary"
+                    className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
                   />
                 </div>
               </TabsContent>
 
-              <TabsContent value="layout" className="mt-0 space-y-6">
-                <div className="space-y-4">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
-                  <div className="grid grid-cols-1 gap-3">
+              <TabsContent value="layout" className="mt-0 space-y-4 md:space-y-6">
+                <div className="space-y-3 md:space-y-4">
+                  <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 md:gap-3">
                     <button 
                       onClick={() => setLayout('popup')}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
+                        "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all relative overflow-hidden",
                         layout === 'popup' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
                       )}
                     >
-                      <div className={cn("p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                        <BellRing className="w-5 h-5" />
+                      <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'popup' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                        <BellRing className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">Notificação VIP</p>
-                        <p className="text-[10px] text-muted-foreground">Popup flutuante animado (Exclusivo)</p>
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm font-bold">Notificação VIP</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground truncate">Popup animado exclusivo</p>
                       </div>
-                      <Badge className="absolute -top-2 -right-2 bg-primary text-[8px] h-4">Novo</Badge>
-                      {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
+                      <Badge className="absolute -top-1.5 -right-1.5 bg-primary text-[8px] h-3.5 px-1 sm:hidden lg:flex">Novo</Badge>
+                      {layout === 'popup' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
                     </button>
 
                     <button 
                       onClick={() => setLayout('mural')}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
+                        "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
                         layout === 'mural' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
                       )}
                     >
-                      <div className={cn("p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                        <LayoutGrid className="w-5 h-5" />
+                      <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'mural' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                        <LayoutGrid className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">Mural Dinâmico</p>
-                        <p className="text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm font-bold">Mural Dinâmico</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
                       </div>
-                      {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
+                      {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
                     </button>
 
                     <button 
                       onClick={() => setLayout('carousel')}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
+                        "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
                         layout === 'carousel' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
                       )}
                     >
-                      <div className={cn("p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                        <Play className="w-5 h-5" />
+                      <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'carousel' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                        <Play className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">Carrossel Slider</p>
-                        <p className="text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm font-bold">Carrossel Slider</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground">Exibição horizontal contínua</p>
                       </div>
-                      {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
+                      {layout === 'carousel' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
                     </button>
 
                     <button 
                       onClick={() => setLayout('grid')}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
+                        "flex items-center gap-3 p-2 md:p-3 rounded-xl border-2 text-left transition-all",
                         layout === 'grid' ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/30"
                       )}
                     >
-                      <div className={cn("p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
-                        <Columns className="w-5 h-5" />
+                      <div className={cn("p-1.5 md:p-2 rounded-lg", layout === 'grid' ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                        <Columns className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">Grade Estática</p>
-                        <p className="text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
+                      <div className="min-w-0">
+                        <p className="text-xs md:text-sm font-bold">Grade Estática</p>
+                        <p className="text-[9px] md:text-[10px] text-muted-foreground">Colunas e linhas uniformes</p>
                       </div>
-                      {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
+                      {layout === 'grid' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary shrink-0" />}
                     </button>
                   </div>
                 </div>
               </TabsContent>
 
-              <TabsContent value="design" className="mt-0 space-y-6">
+              <TabsContent value="design" className="mt-0 space-y-4 md:space-y-6">
                 <div className="space-y-4">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
-                  <div className="flex flex-wrap gap-2">
+                  <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
+                  <div className="flex flex-wrap gap-3">
                     {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
                       <button
                         key={color}
                         onClick={() => setThemeColor(color)}
                         className={cn(
-                          "w-8 h-8 rounded-full border-2 transition-transform hover:scale-110",
+                          "w-7 h-7 md:w-8 md:h-8 rounded-full border-2 transition-transform hover:scale-110",
                           themeColor === color ? "border-foreground" : "border-transparent"
                         )}
                         style={{ backgroundColor: color }}
@@ -324,20 +322,20 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </Tabs>
         </aside>
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
-          <div className="max-w-4xl mx-auto space-y-4">
-            <h2 className="text-lg font-bold font-headline flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary" /> Visualização em Tempo Real
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8 md:space-y-12">
+          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
+            <h2 className="text-base md:text-lg font-bold font-headline flex items-center gap-2">
+              <Eye className="w-4 h-4 md:w-5 md:h-5 text-primary" /> Visualização em Tempo Real
             </h2>
             
             <div className={cn(
-              "relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[500px] flex flex-col items-center justify-center transition-all duration-500",
-              layout === 'popup' && "items-start justify-end"
+              "relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-4 md:p-10 rounded-2xl min-h-[400px] md:min-h-[500px] flex flex-col items-center justify-center transition-all duration-500",
+              layout === 'popup' && "items-center lg:items-start lg:justify-end"
             )}>
               {selectedTestimonials.length > 0 ? (
                 <div className="w-full h-full flex items-center justify-center">
                   {layout === 'mural' && (
-                    <div className="columns-1 md:columns-2 gap-6 space-y-6 w-full max-w-2xl">
+                    <div className="columns-1 sm:columns-2 gap-4 md:gap-6 space-y-4 md:space-y-6 w-full max-w-2xl">
                       {selectedTestimonials.map((t, idx) => (
                         <div key={t.id + idx} className="break-inside-avoid">
                           <TestimonialCard t={t} small={selectedTestimonials.length > 2} index={idx} />
@@ -347,31 +345,31 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   )}
 
                   {layout === 'carousel' && (
-                    <div className="flex items-center justify-center gap-6 animate-in slide-in-from-right-10 duration-500 w-full">
+                    <div className="flex items-center justify-center gap-2 md:gap-6 animate-in slide-in-from-right-10 duration-500 w-full max-w-lg">
                       <Button 
                         variant="ghost" 
                         size="icon" 
                         onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50 h-10 w-10"
+                        className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
                       >
-                        <ChevronLeft />
+                        <ChevronLeft className="h-4 w-4 md:h-5 md:h-5" />
                       </Button>
-                      <div className="max-w-[340px] w-full">
+                      <div className="w-full">
                         <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} />
                       </div>
                       <Button 
                         variant="ghost" 
                         size="icon" 
                         onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50 h-10 w-10"
+                        className="rounded-full shadow-md bg-background/50 h-8 w-8 md:h-10 md:w-10 shrink-0"
                       >
-                        <ChevronRight />
+                        <ChevronRight className="h-4 w-4 md:h-5 md:h-5" />
                       </Button>
                     </div>
                   )}
 
                   {layout === 'grid' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
                       {selectedTestimonials.slice(0, 4).map((t, idx) => (
                         <TestimonialCard key={t.id + idx} t={t} small index={idx} />
                       ))}
@@ -379,13 +377,13 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   )}
 
                   {layout === 'popup' && (
-                    <div className="absolute bottom-10 left-10 flex flex-col items-start gap-4">
-                       <div className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
+                    <div className="lg:absolute lg:bottom-10 lg:left-10 flex flex-col items-center lg:items-start gap-3 md:gap-4 w-full lg:w-auto">
+                       <div className="bg-primary text-white text-[9px] md:text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
                         Novo Feedback Real
                       </div>
                       <div 
                         key={selectedTestimonials[carouselIndex].id}
-                        className="animate-in slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
+                        className="animate-in slide-in-from-bottom-12 lg:slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
                       >
                         <TestimonialCard t={selectedTestimonials[carouselIndex]} isPopup index={0} />
                       </div>
@@ -393,61 +391,61 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   )}
                 </div>
               ) : (
-                <div className="text-center space-y-6 opacity-40 group">
+                <div className="text-center space-y-4 md:space-y-6 opacity-40 group p-6">
                   <div className="relative">
-                    <MessageSquare className="w-20 h-20 mx-auto text-primary transition-transform group-hover:scale-110" />
-                    <Zap className="w-8 h-8 text-primary absolute bottom-0 right-1/4 animate-bounce" />
+                    <MessageSquare className="w-16 h-16 md:w-20 md:h-20 mx-auto text-primary transition-transform group-hover:scale-110" />
+                    <Zap className="w-6 h-6 md:w-8 md:h-8 text-primary absolute bottom-0 right-1/4 animate-bounce" />
                   </div>
-                  <p className="font-black uppercase tracking-[0.2em] text-sm text-primary">Selecione depoimentos abaixo</p>
+                  <p className="font-black uppercase tracking-[0.2em] text-[10px] md:text-sm text-primary">Selecione depoimentos abaixo</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-4 pt-8 border-t">
+          <div className="max-w-4xl mx-auto space-y-4 md:space-y-6 pt-8 border-t">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold font-headline flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-primary" /> 
+              <h2 className="text-base md:text-lg font-bold font-headline flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-primary" /> 
                 Depoimentos Aprovados
               </h2>
-              <Badge variant="outline" className="bg-background px-3">{approvedTestimonials?.length || 0} disponíveis</Badge>
+              <Badge variant="outline" className="bg-background px-3 text-[10px] md:text-xs">{approvedTestimonials?.length || 0} disponíveis</Badge>
             </div>
 
             {!approvedTestimonials || approvedTestimonials.length === 0 ? (
               <Card className="border-2 border-dashed bg-background/50 rounded-2xl">
-                <CardContent className="py-20 text-center space-y-4">
-                  <MessageSquare className="w-16 h-16 text-muted-foreground/20 mx-auto" />
-                  <p className="font-bold text-muted-foreground">Aguardando novos depoimentos para moderação...</p>
+                <CardContent className="py-16 md:py-20 text-center space-y-4">
+                  <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto" />
+                  <p className="font-bold text-muted-foreground text-sm">Aguardando novos depoimentos para moderação...</p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid gap-3 md:gap-4">
                 {approvedTestimonials.map((t: any) => (
                   <div 
                     key={t.id}
                     onClick={() => toggleTestimonial(t.id)}
                     className={cn(
-                      "relative group cursor-pointer transition-all duration-300 rounded-2xl border-2 p-5 bg-background hover:shadow-lg",
+                      "relative group cursor-pointer transition-all duration-300 rounded-2xl border-2 p-4 md:p-5 bg-background hover:shadow-lg",
                       selectedIds.includes(t.id) ? "border-primary bg-primary/5" : "border-transparent shadow-sm hover:border-primary/20"
                     )}
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 md:gap-4">
                       <div className={cn(
-                        "mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
+                        "mt-1 w-5 h-5 md:w-6 md:h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
                         selectedIds.includes(t.id) ? "bg-primary border-primary scale-110" : "border-muted-foreground/30"
                       )}>
-                        {selectedIds.includes(t.id) && <Check className="w-4 h-4 text-white" />}
+                        {selectedIds.includes(t.id) && <Check className="w-3 h-3 md:w-4 md:h-4 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="font-black text-sm truncate">{t.userName}</span>
+                        <div className="flex items-center justify-between gap-2 mb-1.5 md:mb-2">
+                          <span className="font-black text-xs md:text-sm truncate">{t.userName}</span>
                           <div className="flex gap-0.5 shrink-0">
                             {Array.from({ length: 5 }).map((_, i) => (
-                              <Star key={i} className={cn("w-3 h-3", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
+                              <Star key={i} className={cn("w-2.5 h-2.5 md:w-3 md:h-3", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
                             ))}
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground italic line-clamp-2 leading-relaxed">
+                        <p className="text-[10px] md:text-xs text-muted-foreground italic line-clamp-2 leading-relaxed">
                           "{t.text}"
                         </p>
                       </div>
