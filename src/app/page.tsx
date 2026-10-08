@@ -59,7 +59,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       <header className="px-4 lg:px-6 h-20 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm" />
+          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="flex items-center gap-4">
           <Link href="/login">

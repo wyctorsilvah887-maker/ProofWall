@@ -175,7 +175,7 @@ export default function DashPage() {
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm" />
+          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">

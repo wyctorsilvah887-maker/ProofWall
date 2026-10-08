@@ -34,14 +34,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta carregar primeiro pelo ID do usuário (Link Permanente)
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         setTargetUserId(slug);
         setCompanyData(docSnap.data());
       } else {
-        // Fallback: Busca pelo Slug da empresa (Link antigo)
         const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
         getDocs(q).then(snapshot => {
           if (!snapshot.empty) {
@@ -60,7 +58,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !targetUserId || !widgetId) return;
 
-    // Carregamento reativo do widget
     const widgetRef = doc(db, 'users', targetUserId, 'widgets', widgetId);
     const unsubWidget = onSnapshot(widgetRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -72,7 +69,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }
     });
 
-    // Carregamento reativo dos depoimentos aprovados
     const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
     const tQuery = query(testimonialsRef, where('status', '==', 'approved'));
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
@@ -98,7 +94,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
-  // Efeito de transição automática acelerado
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
@@ -115,7 +110,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
-  // Lógica de seleção do mural (loop dinâmico)
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
@@ -217,10 +211,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
-      {/* Barra de Navegação Superior Discreta */}
       <nav className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
         <div className="flex items-center gap-2">
-          <Image src="/c.png" alt="Logo" width={40} height={40} className="rounded-full shadow-sm" />
+          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={48} height={48} className="rounded-2xl shadow-sm" />
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs font-bold text-muted-foreground hover:text-primary">Início</Button>
@@ -243,9 +236,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4 flex flex-col items-center">
-          <div className="relative w-24 h-24 md:w-40 md:h-40 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl bg-muted">
+          <div className="relative w-32 h-32 md:w-48 md:h-48 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted">
              <Image 
-              src="/c.png" 
+              src="/maskable_icon_x512 (3).png" 
               alt="Logo Empresa" 
               fill
               className="object-cover"

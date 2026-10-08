@@ -460,7 +460,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             <SheetContent side="left" className="p-0 w-80">
               <SheetHeader className="p-6 pb-2 border-b">
                 <SheetTitle className="font-headline text-primary flex items-center gap-2">
-                  <Image src="/c.png" alt="Logo" width={40} height={40} className="rounded-full shadow-sm" />
+                  <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
                 </SheetTitle>
               </SheetHeader>
               <WidgetSettings {...settingsProps} />
@@ -468,7 +468,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </Sheet>
 
           <div className="flex items-center gap-3 ml-2 lg:ml-0">
-            <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm hidden sm:block" />
+            <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm hidden sm:block" />
             <div className="truncate">
               <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
               <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>

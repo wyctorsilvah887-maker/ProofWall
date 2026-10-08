@@ -137,12 +137,12 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAccessCodeSubmit} className="space-y-4">
-              <Input
+              <input
                 type="password"
                 placeholder="Código"
                 value={accessCode}
                 onChange={(e) => setAccessCode(e.target.value)}
-                className="text-center text-2xl tracking-[0.5em]"
+                className="text-center text-2xl tracking-[0.5em] w-full border rounded-md p-2 h-12"
                 required
               />
               <Button type="submit" className="w-full h-12 text-lg">Desbloquear</Button>
@@ -258,7 +258,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-muted/30 font-body">
       <header className="bg-background border-b h-20 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
-          <Image src="/c.png" alt="Logo" width={40} height={40} className="rounded-full shadow-sm" />
+          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="ml-auto flex items-center gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">
