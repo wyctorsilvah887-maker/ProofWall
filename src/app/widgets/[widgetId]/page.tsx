@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -84,7 +85,6 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     return approvedTestimonials.filter((t: any) => selectedIds.includes(t.id));
   }, [approvedTestimonials, selectedIds]);
 
-  // Efeito para o ciclo do Popup/Carrossel no preview
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
       const interval = setInterval(() => {
@@ -138,27 +138,32 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   }
 
-  const TestimonialCard = ({ t, small = false, isPopup = false }: { t: any, small?: boolean, isPopup?: boolean }) => (
-    <Card className={cn(
-      "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden transition-all duration-300",
-      small ? "p-3" : "p-6",
-      isPopup && "max-w-[300px] border-l-4 border-t-0"
-    )} style={{ 
-      borderTopColor: !isPopup ? themeColor : 'transparent', 
-      borderLeftColor: isPopup ? themeColor : 'transparent',
-      borderTopWidth: !isPopup ? '3px' : '0', 
-      borderLeftWidth: isPopup ? '4px' : '0',
-      borderStyle: 'solid' 
-    }}>
+  const TestimonialCard = ({ t, small = false, isPopup = false, index = 0 }: { t: any, small?: boolean, isPopup?: boolean, index?: number }) => (
+    <Card 
+      className={cn(
+        "bg-background shadow-xl border-t-4 border-none text-left overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl animate-in fade-in zoom-in-95",
+        small ? "p-3" : "p-6",
+        isPopup && "max-w-[300px] border-l-4 border-t-0"
+      )} 
+      style={{ 
+        borderTopColor: !isPopup ? themeColor : 'transparent', 
+        borderLeftColor: isPopup ? themeColor : 'transparent',
+        borderTopWidth: !isPopup ? '3px' : '0', 
+        borderLeftWidth: isPopup ? '4px' : '0',
+        borderStyle: 'solid',
+        animationDelay: `${index * 50}ms`,
+        animationFillMode: 'both'
+      }}
+    >
       <div className="flex items-center gap-2 mb-3">
-        <div className="bg-primary/10 p-1.5 rounded-full">
-          <User className="w-3 h-3 text-primary" />
+        <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
+          <User className="w-3 h-3" style={{ color: themeColor }} />
         </div>
         <div className="flex-1 min-w-0">
           <p className={cn("font-bold leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} />
+              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
             ))}
           </div>
         </div>
@@ -171,7 +176,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
         <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">
           Proova Social Proof
         </span>
-        <Zap className="w-3 h-3 text-primary animate-pulse" />
+        <Zap className="w-3 h-3 text-primary animate-pulse" style={{ color: themeColor }} />
       </div>
     </Card>
   );
@@ -255,7 +260,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                       </div>
                       <div>
                         <p className="text-sm font-bold">Mural Dinâmico</p>
-                        <p className="text-[10px] text-muted-foreground">Estilo alvenaria (Pinterest)</p>
+                        <p className="text-[10px] text-muted-foreground">Estilo alvenaria premium</p>
                       </div>
                       {layout === 'mural' && <CheckCircle2 className="w-4 h-4 ml-auto text-primary" />}
                     </button>
@@ -326,39 +331,39 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             </h2>
             
             <div className={cn(
-              "relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[450px] flex flex-col items-center justify-center transition-all duration-500",
+              "relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 md:p-10 rounded-2xl min-h-[500px] flex flex-col items-center justify-center transition-all duration-500",
               layout === 'popup' && "items-start justify-end"
             )}>
               {selectedTestimonials.length > 0 ? (
                 <div className="w-full h-full flex items-center justify-center">
                   {layout === 'mural' && (
-                    <div className="columns-1 md:columns-2 gap-4 space-y-4 animate-in fade-in duration-500">
+                    <div className="columns-1 md:columns-2 gap-6 space-y-6 w-full max-w-2xl">
                       {selectedTestimonials.map((t, idx) => (
                         <div key={t.id + idx} className="break-inside-avoid">
-                          <TestimonialCard t={t} small={selectedTestimonials.length > 2} />
+                          <TestimonialCard t={t} small={selectedTestimonials.length > 2} index={idx} />
                         </div>
                       ))}
                     </div>
                   )}
 
                   {layout === 'carousel' && (
-                    <div className="flex items-center justify-center gap-4 animate-in slide-in-from-right-10 duration-500">
+                    <div className="flex items-center justify-center gap-6 animate-in slide-in-from-right-10 duration-500 w-full">
                       <Button 
                         variant="ghost" 
                         size="icon" 
                         onClick={() => setCarouselIndex(prev => (prev - 1 + selectedTestimonials.length) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50"
+                        className="rounded-full shadow-md bg-background/50 h-10 w-10"
                       >
                         <ChevronLeft />
                       </Button>
-                      <div className="max-w-[320px] w-full">
-                        <TestimonialCard t={selectedTestimonials[carouselIndex]} />
+                      <div className="max-w-[340px] w-full">
+                        <TestimonialCard t={selectedTestimonials[carouselIndex]} index={0} />
                       </div>
                       <Button 
                         variant="ghost" 
                         size="icon" 
                         onClick={() => setCarouselIndex(prev => (prev + 1) % selectedTestimonials.length)}
-                        className="rounded-full shadow-md bg-background/50"
+                        className="rounded-full shadow-md bg-background/50 h-10 w-10"
                       >
                         <ChevronRight />
                       </Button>
@@ -366,83 +371,83 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                   )}
 
                   {layout === 'grid' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in zoom-in-95 duration-500">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
                       {selectedTestimonials.slice(0, 4).map((t, idx) => (
-                        <TestimonialCard key={t.id + idx} t={t} small />
+                        <TestimonialCard key={t.id + idx} t={t} small index={idx} />
                       ))}
                     </div>
                   )}
 
                   {layout === 'popup' && (
-                    <div className="absolute bottom-10 left-10 flex flex-col items-start gap-2">
-                       <div className="bg-primary text-white text-[8px] font-bold px-2 py-0.5 rounded-full animate-pulse uppercase tracking-wider mb-2">
+                    <div className="absolute bottom-10 left-10 flex flex-col items-start gap-4">
+                       <div className="bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full animate-bounce uppercase tracking-widest shadow-lg" style={{ backgroundColor: themeColor }}>
                         Novo Feedback Real
                       </div>
                       <div 
                         key={selectedTestimonials[carouselIndex].id}
-                        className="animate-in slide-in-from-left-full fade-in duration-700 ease-out"
+                        className="animate-in slide-in-from-left-full fade-in zoom-in duration-700 ease-out"
                       >
-                        <TestimonialCard t={selectedTestimonials[carouselIndex]} isPopup />
+                        <TestimonialCard t={selectedTestimonials[carouselIndex]} isPopup index={0} />
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="text-center space-y-4 opacity-50">
+                <div className="text-center space-y-6 opacity-40 group">
                   <div className="relative">
-                    <MessageSquare className="w-16 h-16 mx-auto text-primary" />
-                    <Zap className="w-6 h-6 text-primary absolute bottom-0 right-0 animate-bounce" />
+                    <MessageSquare className="w-20 h-20 mx-auto text-primary transition-transform group-hover:scale-110" />
+                    <Zap className="w-8 h-8 text-primary absolute bottom-0 right-1/4 animate-bounce" />
                   </div>
-                  <p className="font-bold uppercase tracking-widest text-sm text-primary">Selecione depoimentos abaixo</p>
+                  <p className="font-black uppercase tracking-[0.2em] text-sm text-primary">Selecione depoimentos abaixo</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-4 pt-4 border-t">
+          <div className="max-w-4xl mx-auto space-y-4 pt-8 border-t">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold font-headline flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-primary" /> 
                 Depoimentos Aprovados
               </h2>
-              <Badge variant="outline" className="bg-background">{approvedTestimonials?.length || 0} disponíveis</Badge>
+              <Badge variant="outline" className="bg-background px-3">{approvedTestimonials?.length || 0} disponíveis</Badge>
             </div>
 
             {!approvedTestimonials || approvedTestimonials.length === 0 ? (
-              <Card className="border-2 border-dashed bg-background/50">
-                <CardContent className="py-16 text-center space-y-4">
-                  <MessageSquare className="w-12 h-12 text-muted-foreground/30 mx-auto" />
-                  <p className="font-bold text-muted-foreground">Aguardando novos depoimentos...</p>
+              <Card className="border-2 border-dashed bg-background/50 rounded-2xl">
+                <CardContent className="py-20 text-center space-y-4">
+                  <MessageSquare className="w-16 h-16 text-muted-foreground/20 mx-auto" />
+                  <p className="font-bold text-muted-foreground">Aguardando novos depoimentos para moderação...</p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-3">
+              <div className="grid gap-4">
                 {approvedTestimonials.map((t: any) => (
                   <div 
                     key={t.id}
                     onClick={() => toggleTestimonial(t.id)}
                     className={cn(
-                      "relative group cursor-pointer transition-all duration-200 rounded-xl border-2 p-4 bg-background hover:border-primary/50",
-                      selectedIds.includes(t.id) ? "border-primary bg-primary/5" : "border-transparent shadow-sm"
+                      "relative group cursor-pointer transition-all duration-300 rounded-2xl border-2 p-5 bg-background hover:shadow-lg",
+                      selectedIds.includes(t.id) ? "border-primary bg-primary/5" : "border-transparent shadow-sm hover:border-primary/20"
                     )}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-4">
                       <div className={cn(
-                        "mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
-                        selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30"
+                        "mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0",
+                        selectedIds.includes(t.id) ? "bg-primary border-primary scale-110" : "border-muted-foreground/30"
                       )}>
-                        {selectedIds.includes(t.id) && <Check className="w-3 h-3 text-white" />}
+                        {selectedIds.includes(t.id) && <Check className="w-4 h-4 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className="font-bold text-sm truncate">{t.userName}</span>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="font-black text-sm truncate">{t.userName}</span>
                           <div className="flex gap-0.5 shrink-0">
                             {Array.from({ length: 5 }).map((_, i) => (
-                              <Star key={i} className={cn("w-2.5 h-2.5", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
+                              <Star key={i} className={cn("w-3 h-3", i < (t.rating || 5) ? "fill-primary text-primary" : "text-muted-foreground/30")} />
                             ))}
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground italic line-clamp-2">
+                        <p className="text-xs text-muted-foreground italic line-clamp-2 leading-relaxed">
                           "{t.text}"
                         </p>
                       </div>
