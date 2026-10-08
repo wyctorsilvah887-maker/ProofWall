@@ -144,14 +144,22 @@ const WidgetSettings = ({
 
             {whatsappEnabled && (
               <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número (DDD + Telefone)</Label>
-                <Input 
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  placeholder="Ex: 5511999999999"
-                  className="h-10 border-primary/20 focus:border-primary text-sm"
-                />
-                <p className="text-[9px] text-muted-foreground italic">Insira apenas números, incluindo o código do país (ex: 55).</p>
+                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">Número de Atendimento</Label>
+                <div className="relative">
+                  <Input 
+                    value={whatsappNumber}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setWhatsappNumber(val);
+                    }}
+                    placeholder="Ex: 5511999999999"
+                    className="h-10 border-primary/20 focus:border-primary text-sm pl-4"
+                    maxLength={15}
+                  />
+                </div>
+                <p className="text-[9px] text-muted-foreground leading-tight italic">
+                  * Insira DDI + DDD + Número (ex: 551199887766). Apenas números.
+                </p>
               </div>
             )}
           </div>
