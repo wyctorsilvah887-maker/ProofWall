@@ -449,7 +449,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
-      <header className="bg-background border-b h-16 md:h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+      <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
           <Sheet>
             <SheetTrigger asChild>
@@ -460,8 +460,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             <SheetContent side="left" className="p-0 w-80">
               <SheetHeader className="p-6 pb-2 border-b">
                 <SheetTitle className="font-headline text-primary flex items-center gap-2">
-                  <Image src="/c.png" alt="Proova" width={24} height={24} className="rounded-full" />
-                  Painel de Edição
+                  <Image src="/c.png" alt="Logo" width={40} height={40} className="rounded-full shadow-sm" />
                 </SheetTitle>
               </SheetHeader>
               <WidgetSettings {...settingsProps} />
@@ -469,7 +468,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </Sheet>
 
           <div className="flex items-center gap-3 ml-2 lg:ml-0">
-            <Image src="/c.png" alt="Proova" width={32} height={32} className="rounded-full shadow-sm hidden sm:block" />
+            <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm hidden sm:block" />
             <div className="truncate">
               <h1 className="text-sm md:text-xl font-bold font-headline tracking-tight truncate">{widgetName || 'Novo Mural'}</h1>
               <p className="hidden md:block text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Personalização do Widget</p>
@@ -487,7 +486,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       </header>
 
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        <aside className="hidden lg:flex w-80 bg-background border-r flex-col sticky top-20 h-[calc(100vh-80px)] overflow-y-auto z-40">
+        <aside className="hidden lg:flex w-80 bg-background border-r flex-col sticky top-24 h-[calc(100vh-96px)] overflow-y-auto z-40">
           <WidgetSettings {...settingsProps} />
         </aside>
 

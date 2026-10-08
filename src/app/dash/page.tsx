@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -174,9 +173,9 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      <header className="bg-background border-b h-16 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <Image src="/c.png" alt="Proova" width={32} height={32} className="rounded-full shadow-sm" />
+          <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm" />
         </div>
         
         <nav className="ml-8 hidden md:flex items-center gap-6">
@@ -191,9 +190,6 @@ export default function DashPage() {
           <div className="flex flex-col items-end mr-1 md:mr-2">
             <span className="text-xs md:text-sm font-semibold truncate max-w-[120px] md:max-w-none">
               {userData?.companyName || 'Minha Empresa'}
-            </span>
-            <span className="text-[9px] md:text-[10px] uppercase text-muted-foreground tracking-tighter md:tracking-normal">
-              {userData?.isAdmin ? 'Admin' : 'Membro'}
             </span>
           </div>
 
@@ -358,7 +354,7 @@ export default function DashPage() {
                           <User className="w-5 h-5 text-primary" />
                         </div>
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col space-y-1 mb-1">
                             <span className="font-bold text-sm md:text-base">{t.userName}</span>
                             <div className="flex gap-0.5">
                               {Array.from({ length: t.rating || 5 }).map((_, i) => (
@@ -418,21 +414,18 @@ export default function DashPage() {
                     className="absolute bottom-4 right-0 left-0 animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
                   >
                     <div className="bg-background rounded-2xl p-4 shadow-2xl border-2 border-primary/20 text-left max-w-[280px] mx-auto">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="bg-primary/10 p-1.5 rounded-full">
-                          <User className="w-3 h-3 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold leading-tight">{displayTestimonials[previewIndex].userName}</p>
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
-                              <Star key={i} className="w-2 h-2 fill-primary text-primary" />
-                            ))}
+                      <div className="flex flex-col space-y-1 mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-primary/10 p-1.5 rounded-full">
+                            <User className="w-3 h-3 text-primary" />
                           </div>
+                          <p className="text-[10px] font-bold leading-tight">{displayTestimonials[previewIndex].userName}</p>
                         </div>
-                        <Badge className="ml-auto text-[8px] h-4 px-1 bg-green-500/10 text-green-600 hover:bg-green-500/10 border-none">
-                          Verificado
-                        </Badge>
+                        <div className="flex gap-0.5 pl-7">
+                          {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
+                            <Star key={i} className="w-2 h-2 fill-primary text-primary" />
+                          ))}
+                        </div>
                       </div>
                       <p className="text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
                         "{displayTestimonials[previewIndex].text}"

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -99,19 +98,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
 
-  // Efeito de transição automática
+  // Efeito de transição automática acelerado
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 3000); // 3 segundos para carrossel/popup
+      }, 3000); 
       return () => clearInterval(intervalId);
     }
     
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const intervalId = setInterval(() => {
         setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 6000); // 6 segundos para rotação do mural
+      }, 6000);
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
@@ -190,7 +189,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 </div>
                 <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
               </div>
-              <div className="flex gap-0.5">
+              <div className="flex gap-0.5 pl-7">
                 {Array.from({ length: t.rating || 5 }).map((_, i) => (
                   <Star key={i} className="w-3.5 h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
                 ))}
@@ -219,9 +218,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
       {/* Barra de Navegação Superior Discreta */}
-      <nav className="fixed top-0 left-0 right-0 h-14 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
+      <nav className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
         <div className="flex items-center gap-2">
-          <Image src="/c.png" alt="Proova" width={28} height={28} className="rounded-full shadow-sm" />
+          <Image src="/c.png" alt="Logo" width={40} height={40} className="rounded-full shadow-sm" />
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs font-bold text-muted-foreground hover:text-primary">Início</Button>
@@ -229,7 +228,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       </nav>
 
       <header className={cn(
-        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-14",
+        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-16",
         coverImageUrl ? "pb-12 md:pb-20" : "py-12 md:py-24 px-4"
       )}>
         {coverImageUrl && (
@@ -242,12 +241,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
           <Zap className="w-24 h-24 md:w-48 md:h-48" style={{ color: themeColor }} />
         </div>
-        <div className="absolute -bottom-24 -left-24 p-4 opacity-[0.03] pointer-events-none">
-          <MessageSquare className="w-48 h-48 md:w-96 md:h-96" style={{ color: themeColor }} />
-        </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4 flex flex-col items-center">
-          <div className="relative w-20 h-20 md:w-32 md:h-32 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl bg-muted">
+          <div className="relative w-24 h-24 md:w-40 md:h-40 mb-4 overflow-hidden rounded-full border-4 border-white shadow-xl bg-muted">
              <Image 
               src="/c.png" 
               alt="Logo Empresa" 
@@ -281,7 +277,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 className="columns-1 sm:columns-2 gap-4 md:gap-8 max-w-5xl mx-auto px-1"
               >
                 {visibleMuralTestimonials.map((t, i) => (
-                  <TestimonialCard key={t.id + i} t={t} index={i} />
+                  <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />
                 ))}
               </div>
             )}

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from "react";
@@ -58,9 +57,9 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
-      <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
+      <header className="px-4 lg:px-6 h-20 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-50">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <Image src="/c.png" alt="Logo" width={32} height={32} className="rounded-full shadow-sm" />
+          <Image src="/c.png" alt="Logo" width={48} height={48} className="rounded-full shadow-sm" />
         </div>
         <div className="flex items-center gap-4">
           <Link href="/login">
@@ -255,7 +254,7 @@ export default function Home() {
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-6 text-center">
               <div className="space-y-3">
-                <h2 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline leading-tight">
+                <h2 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5 peso-bold font-headline leading-tight">
                   Seja um membro fundador da Proova.
                 </h2>
                 <p className="max-w-[700px] text-primary-foreground/80 text-sm md:text-lg lg:text-xl/relaxed mx-auto">
