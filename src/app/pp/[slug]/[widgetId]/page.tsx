@@ -12,7 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, Zap, MessageCircle, Globe } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, Zap, MessageCircle, Globe, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -43,6 +43,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta carregar por ID ou por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -79,11 +80,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       }
       setIsLoading(false);
     }, async (serverError) => {
-      const permissionError = new FirestorePermissionError({
-        path: widgetRef.path,
-        operation: 'get',
-      } satisfies SecurityRuleContext);
-      errorEmitter.emit('permission-error', permissionError);
       setIsLoading(false);
     });
 
@@ -93,11 +89,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setAllTestimonials(docs);
     }, async (serverError) => {
-      const permissionError = new FirestorePermissionError({
-        path: testimonialsRef.path,
-        operation: 'list',
-      } satisfies SecurityRuleContext);
-      errorEmitter.emit('permission-error', permissionError);
       setIsLoading(false);
     });
 
@@ -136,14 +127,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
-  // Autoplay for Carousel
   useEffect(() => {
     if (!api || layout !== 'carousel') return;
-    
     const interval = setInterval(() => {
       api.scrollNext();
     }, 5000);
-
     return () => clearInterval(interval);
   }, [api, layout]);
 
@@ -179,8 +167,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <MessageSquare className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
+              <h2 className="text-2xl font-bold font-headline text-gray-900">Mural não encontrado</h2>
+              <p className="text-muted-foreground">O link acessado é inválido ou não possui depoimentos selecionados.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>
@@ -199,8 +187,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <Card 
         className={cn(
           "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
-          !noAnim && "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
-          isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
+          !noAnim && "hover:shadow-2xl",
+          isPopup ? "max-w-full border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 duration-1000 ease-out",
           !noAnim && slideClass,
           layout === 'mural' ? "mb-6" : ""
@@ -214,11 +202,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           animationDelay: isPopup || noAnim ? '0ms' : `${index * 150}ms`,
           animationFillMode: 'both',
           boxShadow: `0 10px 30px -15px ${themeColor}40`,
-          // @ts-ignore
-          "--tw-ring-color": `${themeColor}20`
         }}
       >
-        <CardContent className={cn("p-4 md:p-6 space-y-4", layout === 'carousel' ? "h-full" : "")}>
+        <CardContent className={cn("p-4 md:p-6 space-y-4")}>
           <div className="flex flex-col space-y-3">
             <div className="flex items-start justify-between w-full gap-2">
               <div className="flex flex-col min-w-0">
@@ -226,7 +212,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
                     <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
                   </div>
-                  <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
+                  <p className="font-bold text-xs text-gray-900 leading-tight truncate">{t.userName}</p>
                 </div>
                 <div className="flex gap-0.5 pl-7">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => (
@@ -236,12 +222,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </div>
             </div>
 
-            <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
+            <blockquote className="text-sm text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
               "{t.text}"
             </blockquote>
 
             <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
-              <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold">
                 {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
               </p>
               <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
@@ -253,148 +239,142 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
-      <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between transition-all">
-        <div className="flex items-center gap-2">
-           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={64} height={64} className="rounded-2xl shadow-sm" />
-        </div>
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">Início</Button>
-        </Link>
-      </nav>
-
-      <header className={cn(
-        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-20 md:pt-24",
-        coverImageUrl ? "pb-12 md:pb-20" : "py-12 md:py-24 px-4"
-      )}>
-        {coverImageUrl && (
-          <div className="w-full h-48 md:h-80 relative mb-8 md:mb-12">
-            <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa da Empresa" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-          </div>
-        )}
-
-        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-          <Zap className="w-24 h-24 md:w-48 md:h-48" style={{ color: themeColor }} />
-        </div>
+    <div className="min-h-screen bg-muted/20 font-body flex items-center justify-center p-0 md:p-6 overflow-x-hidden">
+      {/* Container Principal Estilo Device/App */}
+      <div className="w-full max-w-2xl bg-background md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:ring-1 md:ring-primary/5 flex flex-col min-h-screen md:min-h-[850px] overflow-hidden relative">
         
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
-            Social Proof VIP
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.85]">
-            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-8" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
-          </h1>
-          <p className="text-base md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium px-4 leading-relaxed">
-            {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
-          </p>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-20 overflow-hidden">
-        {filteredTestimonials.length === 0 ? (
-          <div className="text-center py-20 md:py-40 bg-background rounded-2xl md:rounded-[3rem] border-2 md:border-4 border-dashed border-muted px-4 shadow-inner">
-            <MessageSquare className="w-16 h-16 md:w-24 md:h-24 text-muted-foreground/10 mx-auto mb-6 md:mb-8" />
-            <p className="text-muted-foreground text-base md:text-xl font-bold uppercase tracking-widest">Aguardando novos depoimentos...</p>
+        {/* Header/Nav Interno */}
+        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
+          <div className="flex items-center gap-2">
+            <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={40} height={40} className="rounded-xl" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">VIP Social Proof</span>
           </div>
-        ) : (
-          <div className="w-full">
-            {layout === 'mural' && (
-              <div 
-                key={muralIndex}
-                className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-10 max-w-6xl mx-auto px-1 transition-all duration-700"
-              >
-                {visibleMuralTestimonials.map((t, i) => (
-                  <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />
-                ))}
-              </div>
-            )}
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest">Início</Button>
+          </Link>
+        </nav>
 
-            {layout === 'grid' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
-                {filteredTestimonials.map((t, i) => (
-                  <TestimonialCard key={t.id} t={t} index={i} />
-                ))}
-              </div>
-            )}
+        {/* Conteúdo da Página VIP */}
+        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-20">
+          {/* Capa */}
+          {coverImageUrl ? (
+            <div className="h-48 w-full relative shrink-0">
+              <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+            </div>
+          ) : (
+            <div className="h-40 w-full bg-muted/30 flex flex-col items-center justify-center text-muted-foreground/20 shrink-0">
+              <Zap className="w-16 h-16" style={{ color: `${themeColor}20` }} />
+            </div>
+          )}
 
-            {layout === 'carousel' && (
-              <div className="w-full max-w-4xl mx-auto py-8 md:py-20 px-1">
-                <Carousel 
-                  setApi={setApi}
-                  opts={{ loop: true, align: "center" }}
-                  className="w-full"
-                >
-                  <CarouselContent>
-                    {filteredTestimonials.map((t, i) => (
-                      <CarouselItem key={t.id} className="md:basis-1/2 lg:basis-1/2 px-4 py-6">
-                        <TestimonialCard t={t} noAnim index={i} />
-                      </CarouselItem>
+          {/* Cabeçalho da Empresa */}
+          <header className="px-6 py-8 text-center space-y-4">
+            <Badge variant="outline" className="text-[8px] uppercase tracking-[0.2em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>
+              Aprovado por Clientes
+            </Badge>
+            <h1 className="text-4xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
+              {companyData?.companyName}
+            </h1>
+            <p className="text-muted-foreground font-medium text-lg max-w-md mx-auto">
+              {widgetData?.name}
+            </p>
+          </header>
+
+          {/* Testemunhos */}
+          <main className="px-6 space-y-8 flex-1">
+            {filteredTestimonials.length === 0 ? (
+              <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
+                <MessageSquare className="w-12 h-12" />
+                <p className="text-[10px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
+              </div>
+            ) : (
+              <div className="w-full">
+                {layout === 'mural' && (
+                  <div key={muralIndex} className="columns-1 sm:columns-2 gap-4 transition-all duration-700">
+                    {visibleMuralTestimonials.map((t, i) => (
+                      <div key={t.id + muralIndex + i} className="break-inside-avoid">
+                        <TestimonialCard t={t} index={i} />
+                      </div>
                     ))}
-                  </CarouselContent>
-                </Carousel>
-                <div className="flex justify-center gap-3 mt-8">
-                  {filteredTestimonials.map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={cn(
-                        "h-2.5 rounded-full transition-all duration-700 bg-gray-300",
-                        api?.selectedScrollSnap() === i ? "w-10" : "w-2.5"
-                      )}
-                      style={{ backgroundColor: api?.selectedScrollSnap() === i ? themeColor : undefined }}
-                    />
-                  ))}
-                </div>
+                  </div>
+                )}
+
+                {layout === 'grid' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {filteredTestimonials.map((t, i) => (
+                      <TestimonialCard key={t.id} t={t} index={i} />
+                    ))}
+                  </div>
+                )}
+
+                {layout === 'carousel' && (
+                  <div className="w-full max-w-sm mx-auto py-4">
+                    <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+                      <CarouselContent>
+                        {filteredTestimonials.map((t, i) => (
+                          <CarouselItem key={t.id} className="p-2">
+                            <TestimonialCard t={t} noAnim index={i} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
+                    <div className="flex justify-center gap-2 mt-6">
+                      {filteredTestimonials.map((_, i) => (
+                        <div 
+                          key={i} 
+                          className={cn(
+                            "h-1.5 rounded-full transition-all duration-700 bg-gray-300",
+                            api?.selectedScrollSnap() === i ? "w-6" : "w-1.5"
+                          )}
+                          style={{ backgroundColor: api?.selectedScrollSnap() === i ? themeColor : undefined }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {layout === 'popup' && (
+                  <div className="flex justify-center py-10" key={filteredTestimonials[currentIndex]?.id}>
+                    <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
+                  </div>
+                )}
               </div>
             )}
+          </main>
 
-            {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-24 relative px-4 overflow-hidden">
-                <div 
-                  key={filteredTestimonials[currentIndex]?.id}
-                  className="w-full max-w-md flex justify-center"
-                >
-                  <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-
-      {whatsappEnabled && whatsappNumber && (
-        <a 
-          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="fixed bottom-8 right-8 z-[200] bg-green-500 text-white p-5 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all animate-in zoom-in fade-in duration-700"
-          title="Falar no WhatsApp"
-        >
-          <MessageCircle className="w-10 h-10 fill-current" />
-          <span className="absolute -top-2 -right-2 bg-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white animate-bounce">1</span>
-        </a>
-      )}
-
-      <footer className="mt-20 md:mt-40 py-16 md:py-32 border-t bg-background text-center px-4 overflow-hidden shadow-inner">
-        <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-          <div className="flex flex-col items-center gap-4 md:gap-6">
+          {/* Rodapé / Link Externo */}
+          <footer className="mt-auto px-6 py-12 text-center space-y-6">
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 md:gap-4 px-10 md:px-14 py-4 md:py-6 rounded-full text-primary-foreground text-sm md:text-xl font-black hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)]"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white text-sm font-black shadow-xl hover:scale-105 transition-all"
                 style={{ backgroundColor: themeColor }}
               >
-                Conhecer {companyData?.companyName} <Globe className="w-5 h-5 md:w-6 md:h-6" />
+                Visitar Site Oficial <Globe className="w-4 h-4" />
               </a>
             )}
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium opacity-50">
+            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
               © Proova Social Proof VIP
             </p>
-          </div>
+          </footer>
         </div>
-      </footer>
+
+        {/* WhatsApp Flutuante Interno */}
+        {whatsappEnabled && whatsappNumber && (
+          <a 
+            href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="absolute bottom-6 right-6 z-30 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+          >
+            <MessageCircle className="w-6 h-6 fill-current" />
+            <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
