@@ -40,7 +40,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta carregar por ID primeiro, depois por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -176,7 +175,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm border-none",
+          "bg-white rounded-xl p-2.5 space-y-1.5 transition-all duration-700 shadow-sm border-none text-left",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
         style={{ 
@@ -184,21 +183,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           animationFillMode: 'both',
         }}
       >
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col space-y-1">
+          <div className="flex items-center gap-1.5">
             <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-              <User className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: themeColor }} />
+              <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
             </div>
-            <span className="font-bold text-[10px] sm:text-sm text-gray-900 leading-tight truncate">{t.userName}</span>
+            <span className="font-bold text-[10px] sm:text-xs text-gray-900 leading-tight truncate">{t.userName}</span>
           </div>
           
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-current" style={{ color: themeColor }} />
+              <Star key={i} className="w-2.5 h-2.5 fill-current" style={{ color: themeColor }} />
             ))}
           </div>
 
-          <p className="text-gray-700 italic text-[10px] sm:text-sm leading-relaxed">
+          <p className="text-gray-700 italic text-[10px] sm:text-xs leading-relaxed">
             "{t.text}"
           </p>
         </div>
@@ -235,7 +234,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-10 h-10" />
-                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
+                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando depoimentos</p>
               </div>
             ) : (
               <div className="w-full space-y-4">
@@ -268,18 +267,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                         ))}
                       </CarouselContent>
                     </Carousel>
-                    <div className="flex justify-center gap-2 mt-6">
-                      {filteredTestimonials.map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={cn(
-                            "h-1.5 rounded-full transition-all duration-700 bg-gray-300",
-                            api?.selectedScrollSnap() === i ? "w-6" : "w-1.5"
-                          )}
-                          style={{ backgroundColor: api?.selectedScrollSnap() === i ? themeColor : undefined }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 )}
 

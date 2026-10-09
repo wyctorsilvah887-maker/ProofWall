@@ -119,14 +119,15 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
-  // Função para aplicar a máscara no número de WhatsApp
+  
   const formatWhatsApp = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 4) return `${numbers.slice(0, 2)} (${numbers.slice(2)}`;
-    if (numbers.length <= 6) return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4)}`;
-    if (numbers.length <= 11) return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4, 9)}-${numbers.slice(9)}`;
-    return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4, 9)}-${numbers.slice(9, 13)}`;
+    const v = value.replace(/\D/g, '').slice(0, 13);
+    if (!v) return '';
+    if (v.length <= 2) return v;
+    if (v.length <= 4) return `${v.slice(0, 2)} (${v.slice(2)}`;
+    if (v.length <= 8) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4)}`;
+    if (v.length <= 12) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 8)}-${v.slice(8)}`;
+    return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,6 +228,8 @@ const PublicPageSettings = ({
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
                   <Input 
+                    type="text"
+                    inputMode="numeric"
                     value={whatsappNumber} 
                     onChange={handleWhatsAppChange} 
                     placeholder="55 (11) 99999-9999" 
