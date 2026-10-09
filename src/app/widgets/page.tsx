@@ -46,8 +46,6 @@ import { collection, addDoc, serverTimestamp, doc, deleteDoc } from 'firebase/fi
 import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -109,9 +107,9 @@ export default function WidgetsPage() {
           title: "Widget Criado!",
           description: "Redirecionando para as configurações...",
         });
-        router.push(`/widgets/${docRef.id}`);
+        router.push(`/widgetconfig/${docRef.id}`);
       })
-      .catch(async (err) => {
+      .catch(async () => {
         setIsCreating(false);
       });
   };
@@ -213,13 +211,13 @@ export default function WidgetsPage() {
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button variant="outline" size="sm" className="border-primary/20 text-primary font-bold" onClick={() => router.push(`/widgetconfig/${w.id}`)}>
+                  <Button variant="outline" size="sm" className="border-primary/20 text-primary font-bold" onClick={() => router.push(`/widgets/${w.id}`)}>
                     <Globe className="w-4 h-4 mr-2" /> Página Pública
                   </Button>
                   <Button variant="secondary" size="sm" className="font-bold" onClick={() => { setSelectedWidget(w); setIsDialogOpen(true); }}>
                     <Code className="w-4 h-4 mr-2" /> Código
                   </Button>
-                  <Button variant="default" size="sm" className="font-bold" onClick={() => router.push(`/widgets/${w.id}`)}>
+                  <Button variant="default" size="sm" className="font-bold" onClick={() => router.push(`/widgetconfig/${w.id}`)}>
                     <Settings2 className="w-4 h-4 mr-2" /> Configurar
                   </Button>
                   <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDeleteWidget(w.id)}><Trash2 className="w-4 h-4" /></Button>
