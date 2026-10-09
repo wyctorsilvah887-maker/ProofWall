@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -13,7 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle, Globe } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, MessageCircle, Globe } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -348,14 +347,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <footer className="mt-20 md:mt-40 py-16 md:py-32 border-t bg-background text-center px-4 overflow-hidden shadow-inner">
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
           <div className="flex flex-col items-center gap-4 md:gap-6">
-            <Link 
-              href={`/c/${companyData?.companySlug || slug}`}
-              className="inline-flex items-center gap-3 md:gap-4 px-8 md:px-12 py-3 md:py-5 rounded-full border-2 border-primary text-primary text-xs md:text-sm font-black hover:bg-primary/5 transition-all"
-              style={{ borderColor: themeColor, color: themeColor }}
-            >
-              Deixar meu feedback <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
-            </Link>
-
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
@@ -367,6 +358,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 Conhecer {companyData?.companyName} <Globe className="w-5 h-5 md:w-6 md:h-6" />
               </a>
             )}
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium opacity-50">
+              © Proova Social Proof
+            </p>
           </div>
         </div>
       </footer>
