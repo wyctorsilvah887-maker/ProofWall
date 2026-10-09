@@ -248,14 +248,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </nav>
 
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-20">
-          {coverImageUrl ? (
+          {coverImageUrl && (
             <div className="h-48 w-full relative shrink-0">
               <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-            </div>
-          ) : (
-            <div className="h-40 w-full bg-muted/30 flex flex-col items-center justify-center text-muted-foreground/20 shrink-0">
-              <MessageSquare className="w-16 h-16" />
             </div>
           )}
 
@@ -263,11 +259,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             <Badge variant="outline" className="text-[8px] uppercase tracking-[0.2em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>
               Aprovado por Clientes
             </Badge>
-            <h1 className="text-4xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
-              {companyData?.companyName}
+            <h1 className="text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
+              O que dizem sobre {companyData?.companyName}
             </h1>
-            <p className="text-muted-foreground font-medium text-lg max-w-md mx-auto">
-              {widgetData?.name}
+            <p className="text-muted-foreground font-medium text-sm max-w-md mx-auto">
+              Depoimentos reais de clientes satisfeitos com nossos serviços.
             </p>
           </header>
 

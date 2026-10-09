@@ -181,7 +181,7 @@ const PublicPageSettings = ({
                     { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
                     { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade (Grid)' },
-                    { id: 'popup', icon: MessageSquare, label: 'Notificação' },
+                    { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
                   ].map((item) => (
                     <button 
                       key={item.id}
@@ -438,23 +438,22 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-2xl sm:rounded-[2.5rem] min-h-[400px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5 w-full">
-              {coverImageUrl ? (
+              {coverImageUrl && (
                 <div className="h-24 sm:h-64 w-full relative">
                   <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-                </div>
-              ) : (
-                <div className="h-24 sm:h-64 w-full bg-muted/20 flex flex-col items-center justify-center text-muted-foreground/20 gap-2">
-                  <ImageIcon className="w-6 h-6 sm:w-16 sm:h-16" />
-                  <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em]">Sem Capa</span>
                 </div>
               )}
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
                   <Badge variant="outline" className="text-[7px] sm:text-[10px] uppercase tracking-[0.2em] font-black py-0.5 sm:py-1 px-3 sm:px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
-                  <h1 className="text-xl sm:text-6xl font-black tracking-tighter leading-tight break-words px-2" style={{ color: themeColor }}>{userData?.companyName}</h1>
-                  <p className="text-muted-foreground font-medium text-xs sm:text-2xl max-w-xl mx-auto px-4">{widgetName}</p>
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
+                    O que dizem sobre {userData?.companyName}
+                  </h1>
+                  <p className="text-muted-foreground font-medium text-xs sm:text-sm max-w-xl mx-auto px-4">
+                    Depoimentos reais de clientes satisfeitos com nossos serviços.
+                  </p>
                 </div>
 
                 <div className="w-full max-w-3xl mx-auto px-2">
