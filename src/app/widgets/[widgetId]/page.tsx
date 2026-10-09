@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -72,7 +73,7 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
     <Card 
       className={cn(
         "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
-        "p-3",
+        "p-2.5",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
@@ -88,23 +89,23 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
         boxShadow: `0 10px 30px -15px ${themeColor}20`
       }}
     >
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-1.5">
         <div className="flex items-start justify-between w-full gap-2">
           <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-1.5 mb-0.5">
               <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                <User className="w-3 h-3" style={{ color: themeColor }} />
+                <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
               </div>
-              <p className="font-bold text-gray-900 leading-tight truncate text-[10px]">{t.userName}</p>
+              <p className="font-bold text-gray-900 leading-tight truncate text-[9px]">{t.userName}</p>
             </div>
-            <div className="flex gap-0.5 pl-6">
+            <div className="flex gap-0.5 pl-5">
               {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
+                <Star key={i} className="fill-primary text-primary w-2 h-2" style={{ color: themeColor, fill: themeColor }} />
               ))}
             </div>
           </div>
         </div>
-        <p className="text-gray-700 italic leading-relaxed text-[10px] line-clamp-3">"{t.text}"</p>
+        <p className="text-gray-700 italic leading-relaxed text-[9px] line-clamp-3">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -118,6 +119,21 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
+  // Função para aplicar a máscara no número de WhatsApp
+  const formatWhatsApp = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 4) return `${numbers.slice(0, 2)} (${numbers.slice(2)}`;
+    if (numbers.length <= 6) return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4)}`;
+    if (numbers.length <= 11) return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4, 9)}-${numbers.slice(9)}`;
+    return `${numbers.slice(0, 2)} (${numbers.slice(2, 4)}) ${numbers.slice(4, 9)}-${numbers.slice(9, 13)}`;
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatWhatsApp(e.target.value);
+    setWhatsappNumber(formatted);
+  };
+
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div className="p-4 border-b bg-muted/10 shrink-0">
@@ -212,10 +228,10 @@ const PublicPageSettings = ({
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
                   <Input 
                     value={whatsappNumber} 
-                    onChange={(e) => setWhatsappNumber(e.target.value)} 
-                    placeholder="Ex: 5511999999999" 
+                    onChange={handleWhatsAppChange} 
+                    placeholder="55 (11) 99999-9999" 
                   />
-                  <p className="text-[9px] text-muted-foreground">Insira o DDI + DDD + Número (apenas números)</p>
+                  <p className="text-[9px] text-muted-foreground">Formato: DDI + DDD + Número</p>
                 </div>
               )}
               <div className="space-y-2">
@@ -452,8 +468,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
-                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
-                    O que dizem sobre {userData?.companyName}
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900">
+                    O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                   </h1>
                   <p className="text-muted-foreground font-medium text-xs sm:text-sm max-w-xl mx-auto px-4">
                     {widgetName} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.

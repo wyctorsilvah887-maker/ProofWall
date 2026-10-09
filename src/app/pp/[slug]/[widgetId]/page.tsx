@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -39,6 +40,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta carregar por ID primeiro, depois por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
