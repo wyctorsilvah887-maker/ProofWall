@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -284,7 +285,7 @@ export default function WidgetsPage() {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 lg:flex-none border-primary/20 text-primary hover:bg-primary/5 font-bold"
-                      onClick={() => router.push(`/widgetconfig/${w.id}`)}
+                      onClick={() => router.push(`/widgets/${w.id}`)}
                     >
                       <Globe className="w-4 h-4 mr-2" /> Página Pública
                     </Button>
