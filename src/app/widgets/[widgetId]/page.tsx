@@ -134,10 +134,10 @@ const PublicPageSettings = ({
       </div>
 
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
-        <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0">
-          <TabsTrigger value="geral" className="text-xs">Identidade</TabsTrigger>
-          <TabsTrigger value="design" className="text-xs">Layout</TabsTrigger>
-          <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0 overflow-x-auto no-scrollbar">
+          <TabsTrigger value="geral" className="text-xs shrink-0">Identidade</TabsTrigger>
+          <TabsTrigger value="design" className="text-xs shrink-0">Layout</TabsTrigger>
+          <TabsTrigger value="social" className="text-xs shrink-0">Social</TabsTrigger>
         </TabsList>
         
         <ScrollArea className="flex-1">
@@ -367,10 +367,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body overflow-x-hidden">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <Link href="/widgets" className="hidden sm:block">
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          <Link href="/widgets" className="hidden sm:block shrink-0">
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
               <ArrowLeft className="h-5 w-5" />
             </Button>
@@ -379,7 +379,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden text-primary shrink-0"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-80 flex flex-col">
+            <SheetContent side="left" className="p-0 w-[280px] sm:w-80 flex flex-col">
               <SheetHeader className="px-4 pt-6 text-left sr-only">
                 <SheetTitle>Editor da Página VIP</SheetTitle>
               </SheetHeader>
@@ -387,15 +387,15 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <Monitor className="w-5 h-5 sm:w-6 sm:h-6 text-primary hidden xs:block" />
+            <Monitor className="w-5 h-5 sm:w-6 sm:h-6 text-primary hidden xs:block shrink-0" />
             <div className="flex flex-col min-w-0">
-              <h1 className="text-xs sm:text-sm font-bold tracking-tight truncate max-w-[120px] sm:max-w-[200px]">{widgetName || 'Página Pública'}</h1>
+              <h1 className="text-xs sm:text-sm font-bold tracking-tight truncate max-w-[100px] sm:max-w-[200px]">{widgetName || 'Página Pública'}</h1>
               <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black">Editor de Página VIP</span>
             </div>
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2 shrink-0">
-          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
+          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold text-[10px] sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
             {isSaving ? <Loader2 className="animate-spin mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
             <span className="hidden xs:inline">Salvar Página</span>
             <span className="xs:hidden">Salvar</span>
@@ -403,44 +403,44 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden relative">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
           <PublicPageSettings {...settingsProps} />
         </aside>
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-3 sm:p-4 md:p-8">
           <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4" /> Prévia da Página VIP</h2>
-              <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="text-[10px] sm:text-xs text-primary font-black uppercase tracking-widest hover:underline flex items-center gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-[10px] sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4 shrink-0" /> Prévia da Página VIP</h2>
+              <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="text-[9px] sm:text-xs text-primary font-black uppercase tracking-widest hover:underline flex items-center gap-1 shrink-0">
                 Abrir Link <ExternalLink className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="relative border-none shadow-2xl bg-background rounded-[1.5rem] sm:rounded-[2.5rem] min-h-[500px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5">
+            <div className="relative border-none shadow-2xl bg-background rounded-2xl sm:rounded-[2.5rem] min-h-[400px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               {coverImageUrl ? (
-                <div className="h-32 sm:h-64 w-full relative">
+                <div className="h-24 sm:h-64 w-full relative">
                   <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                 </div>
               ) : (
-                <div className="h-32 sm:h-64 w-full bg-muted/20 flex flex-col items-center justify-center text-muted-foreground/20 gap-2">
-                  <ImageIcon className="w-8 h-8 sm:w-16 sm:h-16" />
-                  <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em]">Sem Imagem de Capa</span>
+                <div className="h-24 sm:h-64 w-full bg-muted/20 flex flex-col items-center justify-center text-muted-foreground/20 gap-2">
+                  <ImageIcon className="w-6 h-6 sm:w-16 sm:h-16" />
+                  <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em]">Sem Capa</span>
                 </div>
               )}
               
-              <div className="p-6 sm:p-12 space-y-6 sm:space-y-12 flex-1">
+              <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col">
                 <div className="text-center space-y-2 sm:space-y-4">
-                  <Badge variant="outline" className="text-[8px] sm:text-[10px] uppercase tracking-[0.3em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
-                  <h1 className="text-2xl sm:text-6xl font-black tracking-tighter leading-tight" style={{ color: themeColor }}>{userData?.companyName}</h1>
-                  <p className="text-muted-foreground font-medium text-sm sm:text-2xl max-w-xl mx-auto">{widgetName}</p>
+                  <Badge variant="outline" className="text-[7px] sm:text-[10px] uppercase tracking-[0.2em] font-black py-0.5 sm:py-1 px-3 sm:px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
+                  <h1 className="text-xl sm:text-6xl font-black tracking-tighter leading-tight break-words" style={{ color: themeColor }}>{userData?.companyName}</h1>
+                  <p className="text-muted-foreground font-medium text-xs sm:text-2xl max-w-xl mx-auto px-2">{widgetName}</p>
                 </div>
 
                 <div className="w-full max-w-3xl mx-auto">
                   {selectedTestimonials.length > 0 ? (
                     layout === 'mural' ? (
-                      <div key={muralIndex} className="columns-1 sm:columns-2 gap-4 transition-all duration-700">
+                      <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
                             <TestimonialCard t={t} themeColor={themeColor} small index={i} layout={layout} muralIndex={muralIndex} />
@@ -448,7 +448,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         ))}
                       </div>
                     ) : layout === 'carousel' ? (
-                      <div className="w-full max-w-[280px] sm:max-w-md mx-auto">
+                      <div className="w-full max-w-xs sm:max-w-md mx-auto">
                         <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                           <CarouselContent>
                             {selectedTestimonials.map((t: any, i) => (
@@ -460,7 +460,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         </Carousel>
                       </div>
                     ) : layout === 'popup' ? (
-                      <div className="max-w-[280px] sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
+                      <div className="max-w-xs sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
                           themeColor={themeColor} 
@@ -470,55 +470,55 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {selectedTestimonials.slice(0, 4).map((t: any, i) => (
                           <TestimonialCard key={t.id} t={t} themeColor={themeColor} small index={i} layout={layout} />
                         ))}
                       </div>
                     )
                   ) : (
-                    <div className="py-20 text-center opacity-20 flex flex-col items-center gap-4">
-                      <MessageSquare className="w-12 h-12" />
-                      <p className="text-[10px] font-black uppercase tracking-widest">Nenhum depoimento selecionado</p>
+                    <div className="py-10 sm:py-20 text-center opacity-20 flex flex-col items-center gap-4">
+                      <MessageSquare className="w-8 h-8 sm:w-12 sm:h-12" />
+                      <p className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest">Nenhum depoimento</p>
                     </div>
                   )}
                 </div>
               </div>
 
               {whatsappEnabled && (
-                <div className="absolute bottom-6 sm:bottom-10 right-6 sm:right-10 bg-green-500 p-3 sm:p-5 rounded-full text-white shadow-2xl animate-in zoom-in fade-in duration-700">
-                  <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />
-                  <span className="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white animate-pulse" />
+                <div className="absolute bottom-4 sm:bottom-10 right-4 sm:right-10 bg-green-500 p-2 sm:p-5 rounded-full text-white shadow-2xl animate-in zoom-in fade-in duration-700">
+                  <MessageCircle className="w-5 h-5 sm:w-8 sm:h-8" />
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-500 w-2 h-2 rounded-full border-2 border-white animate-pulse" />
                 </div>
               )}
             </div>
 
             <div className="p-4 sm:p-6 bg-background rounded-2xl border shadow-sm space-y-4">
               <div className="flex items-center gap-2 text-primary">
-                <Link2 className="w-4 h-4" />
-                <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-widest">Link de Compartilhamento</h3>
+                <Link2 className="w-4 h-4 shrink-0" />
+                <h3 className="text-[9px] sm:text-xs font-black uppercase tracking-widest">Link de Compartilhamento</h3>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[9px] sm:text-[10px] h-10 flex-1" />
-                <Button variant="secondary" className="h-10 px-6 font-bold" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}>
-                  <Copy className="h-4 w-4 mr-2" /> Copiar
+                <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[9px] sm:text-[10px] h-10 flex-1 overflow-x-auto" />
+                <Button variant="secondary" className="h-10 px-4 sm:px-6 font-bold text-xs" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}>
+                  <Copy className="h-3 w-3 sm:mr-2 mr-1" /> Copiar
                 </Button>
               </div>
             </div>
 
             <div className="space-y-4 pt-4 border-t">
-              <h2 className="text-xs sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground">
-                <MessageSquare className="w-4 h-4" /> Selecionar Depoimentos
+              <h2 className="text-[10px] sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground">
+                <MessageSquare className="w-4 h-4 shrink-0" /> Selecionar Depoimentos
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
                     <div className="flex items-start gap-3">
                       <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="font-bold text-[10px] sm:text-xs block truncate">{t.userName}</span>
+                        <span className="font-bold text-[9px] sm:text-xs block truncate">{t.userName}</span>
                         <p className="text-[8px] sm:text-[10px] text-muted-foreground italic line-clamp-2 mt-1 leading-relaxed">"{t.text}"</p>
                       </div>
                     </div>
@@ -531,19 +531,19 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       </main>
 
       <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
-        <DialogContent className="w-[90vw] max-w-md rounded-2xl p-8">
+        <DialogContent className="w-[95vw] sm:max-w-md rounded-2xl p-6 sm:p-8">
           <DialogHeader className="text-center">
-            <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-6">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
+            <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4 sm:mb-6">
+              <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             </div>
-            <DialogTitle className="text-2xl font-black font-headline tracking-tight">Página VIP Publicada!</DialogTitle>
-            <DialogDescription className="text-sm font-medium leading-relaxed mt-2">
-              Suas alterações de design, links sociais e imagem de capa já estão no ar para todos os seus clientes.
+            <DialogTitle className="text-xl sm:text-2xl font-black font-headline tracking-tight">Página VIP Publicada!</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm font-medium leading-relaxed mt-2">
+              Suas alterações de design, links sociais e imagem de capa já estão no ar.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
             <Button className="w-full font-black h-12 text-sm shadow-xl" onClick={() => setIsLinkDialogOpen(false)}>Concluído</Button>
-            <Button variant="ghost" className="w-full font-bold text-[10px] uppercase tracking-widest" onClick={() => { window.open(publicPageLink, '_blank'); }}>Visualizar Link Real</Button>
+            <Button variant="ghost" className="w-full font-bold text-[9px] sm:text-[10px] uppercase tracking-widest" onClick={() => { window.open(publicPageLink, '_blank'); }}>Visualizar Link Real</Button>
           </div>
         </DialogContent>
       </Dialog>
