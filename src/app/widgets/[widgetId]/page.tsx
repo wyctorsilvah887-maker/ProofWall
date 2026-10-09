@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -11,8 +12,6 @@ import {
   MessageSquare,
   Check,
   User,
-  Zap,
-  LayoutGrid,
   Monitor,
   CheckCircle2,
   Menu,
@@ -352,12 +351,17 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
+          <Link href="/widgets" className="hidden sm:block">
+            <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
-              <SheetHeader className="sr-only">
+              <SheetHeader className="px-4 pt-6 text-left">
                 <SheetTitle>Editor da Página VIP</SheetTitle>
               </SheetHeader>
               <div className="flex-1 min-h-0"><PublicPageSettings {...settingsProps} /></div>
