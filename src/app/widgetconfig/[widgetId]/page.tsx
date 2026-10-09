@@ -45,10 +45,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index = 0, layout = 'mural', muralIndex = 0 }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number, layout?: string, muralIndex?: number }) => {
+const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
   const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
   const slideClass = layout === 'mural' 
     ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
@@ -58,17 +64,18 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index 
     <Card 
       className={cn(
         "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-700",
-        small ? "p-3 mb-4" : "p-6",
+        small ? "p-3" : "p-6",
         isPopup ? "max-w-[280px] border-l-4" : "border-t-4",
-        "animate-in duration-1000 ease-out",
-        slideClass
+        !noAnim && "animate-in duration-1000 ease-out",
+        !noAnim && slideClass,
+        small ? "mb-0" : "mb-4"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent', 
         borderLeftColor: isPopup ? themeColor : 'transparent',
         borderTopWidth: !isPopup ? '3px' : '0', 
         borderLeftWidth: isPopup ? '4px' : '0',
-        animationDelay: isPopup ? '0ms' : `${index * 100}ms`,
+        animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
         animationFillMode: 'both',
         boxShadow: `0 10px 30px -15px ${themeColor}20`
       }}
@@ -176,6 +183,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [baseUrl, setBaseUrl] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -198,7 +206,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   }, [approvedTestimonials, selectedIds]);
 
   useEffect(() => {
-    if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
+    if (layout === 'popup' && selectedTestimonials.length > 1) {
       const interval = setInterval(() => {
         setPreviewIndex(prev => (prev + 1) % selectedTestimonials.length);
       }, 5000);
@@ -212,6 +220,15 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       return () => clearInterval(interval);
     }
   }, [layout, selectedTestimonials]);
+
+  // Autoplay for Carousel Preview
+  useEffect(() => {
+    if (!api || layout !== 'carousel') return;
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [api, layout]);
 
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || selectedTestimonials.length === 0) return [];
@@ -292,38 +309,45 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-10 rounded-[2rem] min-h-[400px] flex items-center justify-center">
               <div className="w-full max-w-2xl">
                 {selectedTestimonials.length > 0 ? (
-                  <div className={cn(
-                    "w-full transition-all duration-700",
-                    layout === 'mural' && "columns-2 gap-4",
-                    layout === 'grid' && "grid grid-cols-2 gap-4",
-                    (layout === 'carousel' || layout === 'popup') && "max-w-md mx-auto"
-                  )}>
+                  <div className="w-full transition-all duration-700">
                     {layout === 'mural' ? (
-                      <div key={muralIndex} className="contents">
+                      <div key={muralIndex} className="columns-2 gap-4">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
                             <TestimonialCard t={t} small themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
                           </div>
                         ))}
                       </div>
+                    ) : layout === 'carousel' ? (
+                      <div className="max-w-md mx-auto">
+                        <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+                          <CarouselContent>
+                            {selectedTestimonials.map((t: any) => (
+                              <CarouselItem key={t.id}>
+                                <TestimonialCard t={t} small themeColor={themeColor} noAnim layout={layout} />
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                        </Carousel>
+                      </div>
+                    ) : layout === 'popup' ? (
+                      <div className="max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
+                        <TestimonialCard 
+                          t={selectedTestimonials[previewIndex]} 
+                          small 
+                          themeColor={themeColor} 
+                          isPopup={true} 
+                          layout={layout}
+                        />
+                      </div>
                     ) : (
-                      layout === 'carousel' || layout === 'popup' ? (
-                        <div key={selectedTestimonials[previewIndex]?.id}>
-                          <TestimonialCard 
-                            t={selectedTestimonials[previewIndex]} 
-                            small 
-                            themeColor={themeColor} 
-                            isPopup={layout === 'popup'} 
-                            layout={layout}
-                          />
-                        </div>
-                      ) : (
-                        selectedTestimonials.slice(0, 4).map((t: any, i) => (
+                      <div className="grid grid-cols-2 gap-4">
+                        {selectedTestimonials.slice(0, 4).map((t: any, i) => (
                           <div key={t.id} className="break-inside-avoid">
                             <TestimonialCard t={t} small themeColor={themeColor} index={i} layout={layout} />
                           </div>
-                        ))
-                      )
+                        ))}
+                      </div>
                     )}
                   </div>
                 ) : (

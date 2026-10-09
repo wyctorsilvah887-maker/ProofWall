@@ -20,6 +20,12 @@ import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import Image from 'next/image';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -32,6 +38,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
     if (!db || !slug) return;
@@ -114,7 +121,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
 
   useEffect(() => {
-    if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
+    if (layout === 'popup' && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
       }, 5000); 
@@ -129,11 +136,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
+  // Autoplay for Carousel
+  useEffect(() => {
+    if (!api || layout !== 'carousel') return;
+    
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [api, layout]);
+
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
     const slice = [];
-    // O usuário solicitou 3 ou 4. Vamos fixar em 4 para melhor preenchimento.
     const countToShow = Math.min(4, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
@@ -172,8 +189,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     );
   }
 
-  const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => {
-    // Determina direção aleatória de entrada para o layout mural
+  const TestimonialCard = ({ t, isPopup = false, index = 0, noAnim = false }: { t: any, isPopup?: boolean, index?: number, noAnim?: boolean }) => {
     const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
     const slideClass = layout === 'mural' 
       ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
@@ -182,11 +198,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
-          "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
+          "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
+          !noAnim && "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
           isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-          "animate-in fade-in zoom-in-95 duration-1000 ease-out",
-          slideClass
+          !noAnim && "animate-in fade-in zoom-in-95 duration-1000 ease-out",
+          !noAnim && slideClass,
+          layout === 'mural' ? "mb-6" : ""
         )} 
         style={{ 
           borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -194,14 +211,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderTopWidth: !isPopup ? '4px' : '0',
           borderLeftWidth: isPopup ? '4px' : '0',
           borderStyle: 'solid',
-          animationDelay: isPopup ? '0ms' : `${index * 150}ms`,
+          animationDelay: isPopup || noAnim ? '0ms' : `${index * 150}ms`,
           animationFillMode: 'both',
           boxShadow: `0 10px 30px -15px ${themeColor}40`,
           // @ts-ignore
           "--tw-ring-color": `${themeColor}20`
         }}
       >
-        <CardContent className="p-4 md:p-6 space-y-4">
+        <CardContent className={cn("p-4 md:p-6 space-y-4", layout === 'carousel' ? "h-full" : "")}>
           <div className="flex flex-col space-y-3">
             <div className="flex items-start justify-between w-full gap-2">
               <div className="flex flex-col min-w-0">
@@ -302,22 +319,29 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'carousel' && (
-              <div className="flex flex-col items-center gap-8 md:gap-16 py-8 md:py-20 overflow-hidden px-1">
-                <div className="relative w-full max-w-3xl flex items-center justify-center">
-                  <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
-                    <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
-                  </div>
-                </div>
-                <div className="flex gap-3 md:gap-4">
+              <div className="w-full max-w-4xl mx-auto py-8 md:py-20 px-1">
+                <Carousel 
+                  setApi={setApi}
+                  opts={{ loop: true, align: "center" }}
+                  className="w-full"
+                >
+                  <CarouselContent>
+                    {filteredTestimonials.map((t, i) => (
+                      <CarouselItem key={t.id} className="md:basis-1/2 lg:basis-1/2 px-4 py-6">
+                        <TestimonialCard t={t} noAnim index={i} />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+                <div className="flex justify-center gap-3 mt-8">
                   {filteredTestimonials.map((_, i) => (
-                    <button 
+                    <div 
                       key={i} 
-                      onClick={() => setCurrentIndex(i)}
                       className={cn(
-                        "h-2 md:h-2.5 rounded-full transition-all duration-700",
-                        i === currentIndex ? "w-8 md:w-16" : "w-2 md:w-2.5 bg-gray-300 hover:bg-gray-400"
+                        "h-2.5 rounded-full transition-all duration-700 bg-gray-300",
+                        api?.selectedScrollSnap() === i ? "w-10" : "w-2.5"
                       )}
-                      style={{ backgroundColor: i === currentIndex ? themeColor : undefined }}
+                      style={{ backgroundColor: api?.selectedScrollSnap() === i ? themeColor : undefined }}
                     />
                   ))}
                 </div>
