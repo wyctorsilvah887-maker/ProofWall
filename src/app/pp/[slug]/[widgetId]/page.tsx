@@ -162,7 +162,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <MessageSquare className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
+              h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
               <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
@@ -211,9 +211,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 ))}
               </div>
             </div>
-            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0 whitespace-nowrap h-fit">
-              <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
-            </Badge>
           </div>
 
           <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">

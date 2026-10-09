@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -86,9 +85,6 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index 
             ))}
           </div>
         </div>
-        <Badge variant="outline" className="text-[8px] bg-green-50 text-green-600 border-green-200 px-1 shrink-0 h-fit">
-          <ShieldCheck className="w-2.5 h-2.5" />
-        </Badge>
       </div>
       <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
     </div>

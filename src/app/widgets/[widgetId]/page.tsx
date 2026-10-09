@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -93,11 +92,6 @@ const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index 
             ))}
           </div>
         </div>
-        {!small && (
-          <Badge variant="outline" className="text-[9px] bg-green-50 text-green-600 border-green-200 px-2 shrink-0 h-fit">
-            <ShieldCheck className="w-3 h-3 mr-1" /> VIP
-          </Badge>
-        )}
       </div>
       <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
     </div>
@@ -156,7 +150,7 @@ const PublicPageSettings = ({
 
             <TabsContent value="design" className="mt-0 space-y-6">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estilo da Página</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
                     { id: 'mural', icon: LayoutGrid, label: 'Mural (Masonry)' },
