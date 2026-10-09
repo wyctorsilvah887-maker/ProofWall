@@ -19,7 +19,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
+import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -71,11 +71,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         setWidgetData(null);
       }
       setIsLoading(false);
-    }, (error) => {
+    }, async (serverError) => {
       const permissionError = new FirestorePermissionError({
         path: widgetRef.path,
         operation: 'get',
-      });
+      } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
       setIsLoading(false);
     });
@@ -85,8 +85,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setAllTestimonials(docs);
-    }, (error) => {
-      console.error("Erro ao carregar depoimentos:", error);
+    }, async (serverError) => {
+      const permissionError = new FirestorePermissionError({
+        path: testimonialsRef.path,
+        operation: 'list',
+      } satisfies SecurityRuleContext);
+      errorEmitter.emit('permission-error', permissionError);
     });
 
     return () => {

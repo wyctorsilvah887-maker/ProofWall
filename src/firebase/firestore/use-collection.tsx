@@ -22,26 +22,24 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
 
     setLoading(true);
     
-    // O onSnapshot do Firestore é o melhor lugar para capturar erros de permissão de listagem
     const unsubscribe = onSnapshot(
       query,
       (snapshot) => {
         setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T)));
         setLoading(false);
       },
-      (error: any) => {
-        // Se a permissão for negada, emitimos o erro contextual
+      async (error: any) => {
         if (error.code === 'permission-denied') {
-          // Tenta extrair o caminho da coleção de forma segura
-          let path = 'users';
+          let path = 'unknown-collection';
           try {
-            // Acessa a propriedade interna do SDK para diagnóstico do caminho
             const internalQuery = (query as any)._query || query;
-            if (internalQuery.path) {
+            if (internalQuery.path && internalQuery.path.segments) {
               path = internalQuery.path.segments.join('/');
+            } else if ((query as any).path) {
+              path = (query as any).path;
             }
           } catch (e) {
-            path = 'users';
+            path = 'error-resolving-path';
           }
 
           const permissionError = new FirestorePermissionError({

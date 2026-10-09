@@ -8,7 +8,7 @@ service cloud.firestore {
       // Permite a criação inicial (Cadastro)
       allow create: if true;
       
-      // Qualquer um pode ler dados básicos e listar usuários (necessário para a página de coleta localizar o slug)
+      // Qualquer um pode ler dados básicos e listar usuários
       allow get, list: if true;
       
       // O próprio usuário sempre pode editar seu perfil
@@ -25,6 +25,7 @@ service cloud.firestore {
         allow create: if true;
         
         // PÚBLICO pode ler depoimentos aprovados (Necessário para a Página Pública)
+        // O allow read permite tanto 'get' quanto 'list' se a condição for satisfeita
         allow read: if resource.data.status == 'approved';
         
         // APENAS O DONO da conta (userId) ou um ADMIN global pode gerenciar os depoimentos
@@ -34,7 +35,7 @@ service cloud.firestore {
 
       // Regras para a SUB-COLEÇÃO de widgets
       match /widgets/{widgetId} {
-        // PÚBLICO pode ler a configuração do widget para a página PP (Necessário para a Página Pública)
+        // PÚBLICO pode ler a configuração do widget (Necessário para a Página Pública)
         allow read: if true;
         
         // APENAS O DONO pode gerenciar seus widgets
