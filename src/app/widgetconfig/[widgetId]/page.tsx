@@ -66,7 +66,7 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index 
       className={cn(
         "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-700",
         small ? "p-3" : "p-6",
-        isPopup ? "max-w-[280px] border-l-4" : "border-t-4",
+        isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
         small ? "mb-0" : "mb-4"
@@ -268,8 +268,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body overflow-x-hidden w-full">
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm w-full">
         <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
           <Link href="/widgets" className="hidden sm:block">
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
@@ -304,21 +304,21 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-x-hidden w-full">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
           <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} />
         </aside>
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
-          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8 w-full max-w-full">
+          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 w-full overflow-x-hidden">
             <h2 className="text-xs sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4" /> Simulação de Incorporação</h2>
             
-            <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 sm:p-10 rounded-2xl sm:rounded-[2rem] min-h-[350px] sm:min-h-[400px] flex items-center justify-center">
-              <div className="w-full max-w-2xl">
+            <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 sm:p-10 rounded-2xl sm:rounded-[2rem] min-h-[350px] sm:min-h-[400px] flex items-center justify-center w-full">
+              <div className="w-full max-w-2xl px-2">
                 {selectedTestimonials.length > 0 ? (
-                  <div className="w-full transition-all duration-700">
+                  <div className="w-full transition-all duration-700 overflow-x-hidden">
                     {layout === 'mural' ? (
-                      <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4">
+                      <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 w-full">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
                             <TestimonialCard t={t} small themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
@@ -326,7 +326,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                         ))}
                       </div>
                     ) : layout === 'carousel' ? (
-                      <div className="max-w-[280px] sm:max-w-md mx-auto">
+                      <div className="max-w-full sm:max-w-md mx-auto">
                         <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                           <CarouselContent>
                             {selectedTestimonials.map((t: any) => (
@@ -338,7 +338,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                         </Carousel>
                       </div>
                     ) : layout === 'popup' ? (
-                      <div className="max-w-[280px] sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
+                      <div className="max-w-full sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
                           small 
@@ -364,12 +364,12 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <div className="absolute top-3 right-4 text-[7px] sm:text-[8px] font-mono text-muted-foreground uppercase">Embed Preview</div>
             </div>
 
-            <div className="space-y-4 pt-4 border-t">
+            <div className="space-y-4 pt-4 border-t w-full">
               <h2 className="text-xs sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><MessageSquare className="w-4 h-4" /> Escolher Depoimentos</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
                 {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
-                    <div className="flex items-start gap-3">
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background w-full", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
+                    <div className="flex items-start gap-3 w-full">
                       <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                       </div>
@@ -393,9 +393,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             <DialogTitle className="text-xl sm:text-2xl font-headline">Mural Embutido Salvo!</DialogTitle>
             <DialogDescription className="text-xs sm:text-sm">As alterações de layout e cores já estão ativas no seu site via código de incorporação.</DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 w-full">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Seu Código de Incorporação</Label>
-            <div className="relative bg-muted/50 rounded-lg p-3 sm:p-4 border border-primary/20">
+            <div className="relative bg-muted/50 rounded-lg p-3 sm:p-4 border border-primary/20 w-full overflow-hidden">
               <pre className="text-[9px] sm:text-[10px] font-mono text-gray-800 break-all whitespace-pre-wrap">{embedCode}</pre>
               <Button size="icon" variant="secondary" className="absolute top-1 sm:top-2 right-1 sm:right-2 h-7 w-7 sm:h-8 sm:w-8" onClick={() => { navigator.clipboard.writeText(embedCode); toast({ title: "Código Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
             </div>
@@ -406,3 +406,4 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     </div>
   );
 }
+

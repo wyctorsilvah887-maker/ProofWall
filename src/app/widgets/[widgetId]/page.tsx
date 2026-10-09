@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -72,7 +73,7 @@ const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index 
       className={cn(
         "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
         small ? "p-3" : "p-6",
-        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
+        isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
         small ? "mb-0" : "mb-4"
@@ -367,8 +368,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body overflow-x-hidden">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body overflow-x-hidden w-full">
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm w-full">
         <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
           <Link href="/widgets" className="hidden sm:block shrink-0">
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
@@ -403,21 +404,21 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden relative">
+      <main className="flex-1 flex overflow-x-hidden relative w-full">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
           <PublicPageSettings {...settingsProps} />
         </aside>
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-3 sm:p-4 md:p-8">
-          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between gap-2">
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-3 sm:p-4 md:p-8 w-full max-w-full">
+          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 w-full overflow-x-hidden">
+            <div className="flex items-center justify-between gap-2 w-full">
               <h2 className="text-[10px] sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4 shrink-0" /> Prévia da Página VIP</h2>
               <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="text-[9px] sm:text-xs text-primary font-black uppercase tracking-widest hover:underline flex items-center gap-1 shrink-0">
                 Abrir Link <ExternalLink className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="relative border-none shadow-2xl bg-background rounded-2xl sm:rounded-[2.5rem] min-h-[400px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5">
+            <div className="relative border-none shadow-2xl bg-background rounded-2xl sm:rounded-[2.5rem] min-h-[400px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5 w-full">
               {coverImageUrl ? (
                 <div className="h-24 sm:h-64 w-full relative">
                   <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
@@ -430,14 +431,14 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </div>
               )}
               
-              <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col">
-                <div className="text-center space-y-2 sm:space-y-4">
+              <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
+                <div className="text-center space-y-2 sm:space-y-4 w-full">
                   <Badge variant="outline" className="text-[7px] sm:text-[10px] uppercase tracking-[0.2em] font-black py-0.5 sm:py-1 px-3 sm:px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
-                  <h1 className="text-xl sm:text-6xl font-black tracking-tighter leading-tight break-words" style={{ color: themeColor }}>{userData?.companyName}</h1>
-                  <p className="text-muted-foreground font-medium text-xs sm:text-2xl max-w-xl mx-auto px-2">{widgetName}</p>
+                  <h1 className="text-xl sm:text-6xl font-black tracking-tighter leading-tight break-words px-2" style={{ color: themeColor }}>{userData?.companyName}</h1>
+                  <p className="text-muted-foreground font-medium text-xs sm:text-2xl max-w-xl mx-auto px-4">{widgetName}</p>
                 </div>
 
-                <div className="w-full max-w-3xl mx-auto">
+                <div className="w-full max-w-3xl mx-auto px-2">
                   {selectedTestimonials.length > 0 ? (
                     layout === 'mural' ? (
                       <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
@@ -448,7 +449,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         ))}
                       </div>
                     ) : layout === 'carousel' ? (
-                      <div className="w-full max-w-xs sm:max-w-md mx-auto">
+                      <div className="w-full max-w-full sm:max-w-md mx-auto">
                         <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                           <CarouselContent>
                             {selectedTestimonials.map((t: any, i) => (
@@ -460,7 +461,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         </Carousel>
                       </div>
                     ) : layout === 'popup' ? (
-                      <div className="max-w-xs sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
+                      <div className="max-w-full sm:max-w-md mx-auto px-2" key={selectedTestimonials[previewIndex]?.id}>
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
                           themeColor={themeColor} 
@@ -486,34 +487,34 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               </div>
 
               {whatsappEnabled && (
-                <div className="absolute bottom-4 sm:bottom-10 right-4 sm:right-10 bg-green-500 p-2 sm:p-5 rounded-full text-white shadow-2xl animate-in zoom-in fade-in duration-700">
+                <div className="absolute bottom-4 sm:bottom-10 right-4 sm:right-10 bg-green-500 p-2 sm:p-5 rounded-full text-white shadow-2xl animate-in zoom-in fade-in duration-700 z-10">
                   <MessageCircle className="w-5 h-5 sm:w-8 sm:h-8" />
                   <span className="absolute -top-0.5 -right-0.5 bg-red-500 w-2 h-2 rounded-full border-2 border-white animate-pulse" />
                 </div>
               )}
             </div>
 
-            <div className="p-4 sm:p-6 bg-background rounded-2xl border shadow-sm space-y-4">
+            <div className="p-4 sm:p-6 bg-background rounded-2xl border shadow-sm space-y-4 w-full">
               <div className="flex items-center gap-2 text-primary">
                 <Link2 className="w-4 h-4 shrink-0" />
                 <h3 className="text-[9px] sm:text-xs font-black uppercase tracking-widest">Link de Compartilhamento</h3>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[9px] sm:text-[10px] h-10 flex-1 overflow-x-auto" />
-                <Button variant="secondary" className="h-10 px-4 sm:px-6 font-bold text-xs" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}>
+              <div className="flex flex-col sm:flex-row gap-2 w-full">
+                <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[9px] sm:text-[10px] h-10 flex-1 min-w-0" />
+                <Button variant="secondary" className="h-10 px-4 sm:px-6 font-bold text-xs shrink-0" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}>
                   <Copy className="h-3 w-3 sm:mr-2 mr-1" /> Copiar
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 pt-4 border-t">
+            <div className="space-y-4 pt-4 border-t w-full">
               <h2 className="text-[10px] sm:text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground">
                 <MessageSquare className="w-4 h-4 shrink-0" /> Selecionar Depoimentos
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
                 {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
-                    <div className="flex items-start gap-3">
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background w-full", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
+                    <div className="flex items-start gap-3 w-full">
                       <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                       </div>
@@ -550,3 +551,4 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
+
