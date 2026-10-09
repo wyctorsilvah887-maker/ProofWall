@@ -36,12 +36,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta primeiro carregar pelo UID (slug pode ser o UID nos novos links)
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         setTargetUserId(slug);
         setCompanyData(docSnap.data());
       } else {
+        // Fallback para busca por companySlug caso o slug não seja um UID
         const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
         getDocs(q).then(snapshot => {
           if (!snapshot.empty) {
@@ -91,6 +93,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         operation: 'list',
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
+      // Não trava a página se os depoimentos falharem, mas para o loading
+      setIsLoading(false);
     });
 
     return () => {
@@ -228,21 +232,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
-      <nav className="fixed top-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-6 justify-between transition-all">
+      <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between transition-all">
         <div className="flex items-center gap-2">
-          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={48} height={48} className="rounded-2xl shadow-sm" />
+          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={64} height={64} className="rounded-2xl shadow-sm" />
         </div>
         <Link href="/">
-          <Button variant="ghost" size="sm" className="text-xs font-bold text-muted-foreground hover:text-primary">Início</Button>
+          <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">Início</Button>
         </Link>
       </nav>
 
       <header className={cn(
-        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-16",
+        "bg-background border-b shadow-sm relative overflow-hidden text-center transition-all pt-20 md:pt-24",
         coverImageUrl ? "pb-12 md:pb-20" : "py-12 md:py-24 px-4"
       )}>
         {coverImageUrl && (
-          <div className="w-full h-40 md:h-80 relative mb-8 md:mb-12">
+          <div className="w-full h-48 md:h-80 relative mb-8 md:mb-12">
             <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa da Empresa" />
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
           </div>
@@ -252,8 +256,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <Zap className="w-24 h-24 md:w-48 md:h-48" style={{ color: themeColor }} />
         </div>
         
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-6 relative z-10 px-4 flex flex-col items-center">
-          <div className="relative w-32 h-32 md:w-48 md:h-48 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted">
+        <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
+          <div className="relative w-32 h-32 md:w-56 md:h-56 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted transition-transform hover:scale-105 duration-500">
              <Image 
               src="/maskable_icon_x512 (3).png" 
               alt="Logo Empresa" 
@@ -261,30 +265,30 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               className="object-cover"
             />
           </div>
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-4 md:px-6 py-1 md:py-1.5 text-[9px] md:text-xs uppercase tracking-[0.2em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
+          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof by Proova
           </Badge>
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.9]">
-            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-4" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
+          <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.85]">
+            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-8" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
           </h1>
-          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium px-4">
+          <p className="text-base md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium px-4 leading-relaxed">
             {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
           </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-16 overflow-hidden">
+      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-20 overflow-hidden">
         {filteredTestimonials.length === 0 ? (
-          <div className="text-center py-20 md:py-32 bg-background rounded-2xl md:rounded-[2rem] border-2 md:border-4 border-dashed border-muted px-4">
-            <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground/20 mx-auto mb-4 md:mb-6" />
-            <p className="text-muted-foreground text-base md:text-lg font-bold">Aguardando a seleção de depoimentos para este mural.</p>
+          <div className="text-center py-20 md:py-40 bg-background rounded-2xl md:rounded-[3rem] border-2 md:border-4 border-dashed border-muted px-4 shadow-inner">
+            <MessageSquare className="w-16 h-16 md:w-24 md:h-24 text-muted-foreground/10 mx-auto mb-6 md:mb-8" />
+            <p className="text-muted-foreground text-base md:text-xl font-bold uppercase tracking-widest">Aguardando novos depoimentos...</p>
           </div>
         ) : (
           <div className="w-full">
             {layout === 'mural' && (
               <div 
                 key={muralIndex}
-                className="columns-1 sm:columns-2 gap-4 md:gap-8 max-w-5xl mx-auto px-1"
+                className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-10 max-w-6xl mx-auto px-1"
               >
                 {visibleMuralTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />
@@ -293,7 +297,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'grid' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
                 {filteredTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id} t={t} index={i} />
                 ))}
@@ -301,20 +305,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'carousel' && (
-              <div className="flex flex-col items-center gap-8 md:gap-12 py-8 md:py-16 overflow-hidden px-1">
+              <div className="flex flex-col items-center gap-8 md:gap-16 py-8 md:py-20 overflow-hidden px-1">
                 <div className="relative w-full max-w-3xl flex items-center justify-center">
                   <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
                     <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
                 </div>
-                <div className="flex gap-2 md:gap-3">
+                <div className="flex gap-3 md:gap-4">
                   {filteredTestimonials.map((_, i) => (
                     <button 
                       key={i} 
                       onClick={() => setCurrentIndex(i)}
                       className={cn(
-                        "h-1.5 md:h-2 rounded-full transition-all duration-500",
-                        i === currentIndex ? "w-6 md:w-10" : "w-1.5 md:w-2 bg-gray-300 hover:bg-gray-400"
+                        "h-2 md:h-2.5 rounded-full transition-all duration-700",
+                        i === currentIndex ? "w-8 md:w-16" : "w-2 md:w-2.5 bg-gray-300 hover:bg-gray-400"
                       )}
                       style={{ backgroundColor: i === currentIndex ? themeColor : undefined }}
                     />
@@ -324,10 +328,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-20 relative px-4 overflow-hidden">
+              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[600px] py-12 md:py-24 relative px-4 overflow-hidden">
                 <div 
                   key={filteredTestimonials[currentIndex].id}
-                  className="w-full max-w-md animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out"
+                  className="w-full max-w-md animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out shadow-2xl"
                 >
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
                 </div>
@@ -342,30 +346,32 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all animate-in zoom-in fade-in duration-500"
+          className="fixed bottom-8 right-8 z-[200] bg-green-500 text-white p-5 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all animate-in zoom-in fade-in duration-700"
           title="Falar no WhatsApp"
         >
-          <MessageCircle className="w-8 h-8 fill-current" />
-          <span className="absolute -top-2 -right-2 bg-red-500 text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">1</span>
+          <MessageCircle className="w-10 h-10 fill-current" />
+          <span className="absolute -top-2 -right-2 bg-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full border-2 border-white animate-bounce">1</span>
         </a>
       )}
 
-      <footer className="mt-16 md:mt-32 py-12 md:py-20 border-t bg-background text-center px-4 overflow-hidden">
-        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
-          <div className="flex flex-col items-center gap-4 md:gap-6">
-            <div className="flex items-center gap-2 md:gap-3">
-              <span className="text-muted-foreground text-sm md:text-lg font-medium">Conheça a</span>
-              <span className="font-headline font-black text-3xl md:text-4xl tracking-tighter text-primary">Proova</span>
+      <footer className="mt-20 md:mt-40 py-16 md:py-32 border-t bg-background text-center px-4 overflow-hidden shadow-inner">
+        <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
+          <div className="flex flex-col items-center gap-6 md:gap-10">
+            <div className="flex items-center gap-3 md:gap-4">
+              <span className="text-muted-foreground text-sm md:text-xl font-medium tracking-wide">Conheça a</span>
+              <div className="flex items-center gap-2">
+                 <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={48} height={48} className="rounded-xl shadow-sm" />
+              </div>
             </div>
-            <p className="text-muted-foreground text-[10px] md:text-sm max-w-sm">
+            <p className="text-muted-foreground text-xs md:text-lg max-w-lg leading-relaxed px-4">
               Transforme a satisfação dos seus clientes em sua ferramenta de vendas mais poderosa.
             </p>
             <Link 
               href="/" 
-              className="inline-flex items-center gap-2 md:gap-3 px-8 md:px-10 py-3 md:py-4 rounded-full text-primary-foreground text-sm md:text-lg font-black hover:scale-105 transition-all shadow-xl"
+              className="inline-flex items-center gap-3 md:gap-4 px-10 md:px-14 py-4 md:py-6 rounded-full text-primary-foreground text-sm md:text-xl font-black hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)]"
               style={{ backgroundColor: themeColor }}
             >
-              Conhecer a Proova <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+              Conhecer a Proova <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           </div>
         </div>

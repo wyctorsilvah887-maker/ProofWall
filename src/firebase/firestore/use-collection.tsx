@@ -32,10 +32,11 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         if (error.code === 'permission-denied') {
           let path = 'unknown-collection';
           try {
+            // Tenta extrair o caminho de forma segura
             const internalQuery = (query as any)._query || query;
             if (internalQuery.path && internalQuery.path.segments) {
               path = internalQuery.path.segments.join('/');
-            } else if ((query as any).path) {
+            } else if (typeof (query as any).path === 'string') {
               path = (query as any).path;
             }
           } catch (e) {

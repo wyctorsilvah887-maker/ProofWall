@@ -25,11 +25,10 @@ service cloud.firestore {
         allow create: if true;
         
         // PÚBLICO pode ler depoimentos aprovados (Necessário para a Página Pública)
-        // O allow read permite tanto 'get' quanto 'list' se a condição for satisfeita
         allow read: if resource.data.status == 'approved';
         
-        // APENAS O DONO da conta (userId) ou um ADMIN global pode gerenciar os depoimentos
-        allow update, delete: if (request.auth != null && request.auth.uid == userId) || 
+        // O DONO da conta (userId) ou um ADMIN global pode ler e gerenciar TODOS os depoimentos
+        allow read, update, delete: if (request.auth != null && request.auth.uid == userId) || 
           (request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
       }
 
