@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -172,116 +173,78 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     );
   }
 
-  const TestimonialCard = ({ t, isPopup = false, index = 0, noAnim = false }: { t: any, isPopup?: boolean, index?: number, noAnim?: boolean }) => {
-    const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
-    const slideClass = layout === 'mural' 
-      ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
-      : (isPopup ? "slide-in-from-bottom-full" : "slide-in-from-bottom-8");
-
+  const TestimonialCard = ({ t, index = 0, noAnim = false }: { t: any, index?: number, noAnim?: boolean }) => {
     return (
-      <Card 
+      <div 
         className={cn(
-          "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
-          !noAnim && "hover:shadow-2xl",
-          isPopup ? "max-w-full border-l-4" : "border-t-4",
-          !noAnim && "animate-in fade-in zoom-in-95 duration-1000 ease-out",
-          !noAnim && slideClass,
-          layout === 'mural' ? "mb-4" : ""
-        )} 
+          "bg-white rounded-2xl p-5 space-y-3 transition-all duration-700",
+          !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
+        )}
         style={{ 
-          borderTopColor: !isPopup ? themeColor : 'transparent',
-          borderLeftColor: isPopup ? themeColor : 'transparent',
-          borderTopWidth: !isPopup ? '3px' : '0',
-          borderLeftWidth: isPopup ? '4px' : '0',
-          borderStyle: 'solid',
-          animationDelay: isPopup || noAnim ? '0ms' : `${index * 150}ms`,
+          animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
-          boxShadow: `0 10px 30px -15px ${themeColor}40`,
         }}
       >
-        <CardContent className={cn("p-3 sm:p-4 space-y-3")}>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-start justify-between w-full gap-2">
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                    <User className="w-3 h-3" style={{ color: themeColor }} />
-                  </div>
-                  <p className="font-bold text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
-                </div>
-                <div className="flex gap-0.5 pl-6">
-                  {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <blockquote className="text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
-              "{t.text}"
-            </blockquote>
-
-            <div className="pt-2 border-t border-muted/50 mt-1 flex items-center justify-between">
-              <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
-                {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Recente'}
-              </p>
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/5 p-2 rounded-full" style={{ backgroundColor: `${themeColor}10` }}>
+            <User className="w-4 h-4" style={{ color: themeColor }} />
           </div>
-        </CardContent>
-      </Card>
+          <span className="font-bold text-sm text-gray-900">{t.userName}</span>
+        </div>
+        
+        <div className="flex gap-0.5">
+          {Array.from({ length: t.rating || 5 }).map((_, i) => (
+            <Star key={i} className="w-3.5 h-3.5 fill-current" style={{ color: themeColor }} />
+          ))}
+        </div>
+
+        <p className="text-gray-700 italic text-sm leading-relaxed">
+          "{t.text}"
+        </p>
+      </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 font-body flex items-center justify-center p-0 md:p-6 overflow-x-hidden">
-      <div className="w-full max-w-2xl bg-background md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:ring-1 md:ring-primary/5 flex flex-col min-h-screen md:min-h-[850px] overflow-hidden relative">
+    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-4 md:p-8">
+      <div className="w-full max-w-2xl bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col min-h-[90vh] overflow-hidden relative border border-gray-100">
         
-        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Social Proof</span>
-          </div>
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest">Início</Button>
-          </Link>
-        </nav>
-
-        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-20">
-          {coverImageUrl && (
-            <div className="h-48 w-full relative shrink-0">
-              <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-10">
+          <header className="px-6 py-12 text-center space-y-6">
+            <div className="flex justify-center">
+              <Badge variant="outline" className="text-[9px] uppercase tracking-[0.2em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>
+                SOCIAL PROOF
+              </Badge>
             </div>
-          )}
-
-          <header className="px-6 py-8 text-center space-y-2">
-            <h1 className="text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
-              O que dizem sobre {companyData?.companyName}
-            </h1>
-            <p className="text-muted-foreground font-medium text-sm max-w-md mx-auto">
-              {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
-            </p>
+            
+            <div className="space-y-2">
+              <h1 className="text-3xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
+                O que dizem sobre <br /> {companyData?.companyName}
+              </h1>
+              <p className="text-muted-foreground font-medium text-sm max-w-md mx-auto">
+                Depoimentos reais de clientes satisfeitos com nossos serviços.
+              </p>
+            </div>
           </header>
 
-          <main className="px-6 space-y-8 flex-1">
+          <main className="px-6 space-y-6 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-12 h-12" />
-                <p className="text-[10px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
+                <p className="text-[10px] font-black uppercase tracking-widest">Nenhum depoimento selecionado</p>
               </div>
             ) : (
-              <div className="w-full">
+              <div className="w-full space-y-4">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-1 sm:columns-2 gap-4 transition-all duration-700">
+                  <div key={muralIndex} className="space-y-4">
                     {visibleMuralTestimonials.map((t, i) => (
-                      <div key={t.id + muralIndex + i} className="break-inside-avoid">
-                        <TestimonialCard t={t} index={i} />
-                      </div>
+                      <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />
                     ))}
                   </div>
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
@@ -315,15 +278,15 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'popup' && (
-                  <div className="flex justify-center py-10" key={filteredTestimonials[currentIndex]?.id}>
-                    <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
+                  <div className="flex justify-center py-4" key={filteredTestimonials[currentIndex]?.id}>
+                    <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
                 )}
               </div>
             )}
           </main>
 
-          <footer className="mt-auto px-6 py-12 text-center space-y-6">
+          <footer className="mt-auto px-6 py-10 text-center space-y-6">
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
@@ -356,3 +319,4 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     </div>
   );
 }
+
