@@ -2,267 +2,364 @@
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
-import { useFirestore, useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  limit, 
-  doc, 
-  onSnapshot
-} from 'firebase/firestore';
-import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, Globe } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+  ArrowLeft, 
+  Save, 
+  Loader2, 
+  Star, 
+  Eye,
+  MessageSquare,
+  Check,
+  User,
+  Zap,
+  LayoutGrid,
+  Monitor,
+  CheckCircle2,
+  Menu,
+  Globe,
+  Copy,
+  ExternalLink,
+  Link2,
+  Image as ImageIcon,
+  MessageCircle
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
-import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
-export default function WidgetPublicMural({ params }: { params: Promise<{ widgetId: string }> }) {
-  const { widgetId } = use(params);
-  const db = useFirestore();
-  const { user } = useUser();
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [companyData, setCompanyData] = useState<any>(null);
-  const [widgetData, setWidgetData] = useState<any>(null);
-  const [allTestimonials, setAllTestimonials] = useState<any[]>([]);
-  const [targetUserId, setTargetUserId] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [muralIndex, setMuralIndex] = useState(0);
-
-  useEffect(() => {
-    // Se não houver targetUserId e tivermos um widgetId, precisamos descobrir quem é o dono do widget
-    // Por simplicidade, assumimos que se o user está logado e acessando a rota, ele pode ser o dono
-    // Em uma app real, buscaríamos pelo widgetId globalmente ou via uma cloud function.
-    if (user) {
-      setTargetUserId(user.uid);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!db || !targetUserId || !widgetId) return;
-
-    const widgetRef = doc(db, 'users', targetUserId, 'widgets', widgetId);
-    const unsubWidget = onSnapshot(widgetRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setWidgetData(docSnap.data());
-      } else {
-        setWidgetData(null);
-      }
-      setIsLoading(false);
-    }, async (serverError) => {
-      setIsLoading(false);
-    });
-
-    const userRef = doc(db, 'users', targetUserId);
-    const unsubUser = onSnapshot(userRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setCompanyData(docSnap.data());
-      }
-    });
-
-    const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
-    const tQuery = query(testimonialsRef, where('status', '==', 'approved'));
-    const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
-      const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      setAllTestimonials(docs);
-    });
-
-    return () => {
-      unsubWidget();
-      unsubUser();
-      unsubTestimonials();
-    };
-  }, [db, targetUserId, widgetId]);
-
-  const filteredTestimonials = useMemo(() => {
-    if (!widgetData || !allTestimonials.length) return [];
-    const selectedIds = widgetData.selectedTestimonialIds || [];
-    return allTestimonials.filter(t => selectedIds.includes(t.id));
-  }, [widgetData, allTestimonials]);
-
-  const layout = widgetData?.layout || 'mural';
-  const themeColor = widgetData?.themeColor || '#f97316';
-
-  useEffect(() => {
-    if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
-      const intervalId = setInterval(() => {
-        setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 3000); 
-      return () => clearInterval(intervalId);
-    }
-    
-    if (layout === 'mural' && filteredTestimonials.length > 0) {
-      const intervalId = setInterval(() => {
-        setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 6000);
-      return () => clearInterval(intervalId);
-    }
-  }, [layout, filteredTestimonials]);
-
-  const visibleMuralTestimonials = useMemo(() => {
-    if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
-    
-    const slice = [];
-    const countToShow = Math.min(4, filteredTestimonials.length);
-    for (let i = 0; i < countToShow; i++) {
-      const idx = (muralIndex + i) % filteredTestimonials.length;
-      slice.push(filteredTestimonials[idx]);
-    }
-    return slice;
-  }, [filteredTestimonials, muralIndex, layout]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
-        <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
-      </div>
-    );
-  }
-
-  if (!widgetData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
-        <Card className="w-full max-w-md text-center shadow-xl border-none">
-          <CardContent className="pt-10 pb-10 space-y-6">
-            <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
-            <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => (
-    <Card 
-      className={cn(
-        "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
-        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-        "animate-in fade-in zoom-in-95 slide-in-from-right-12"
-      )} 
-      style={{ 
-        borderTopColor: !isPopup ? themeColor : 'transparent',
-        borderLeftColor: isPopup ? themeColor : 'transparent',
-        borderTopWidth: !isPopup ? '4px' : '0',
-        borderLeftWidth: isPopup ? '4px' : '0',
-        borderStyle: 'solid',
-        animationDelay: `${index * 150}ms`,
-        animationFillMode: 'both',
-        boxShadow: `0 10px 30px -15px ${themeColor}40`,
-      }}
-    >
-      <CardContent className="p-4 md:p-6 space-y-4">
-        <div className="flex flex-col space-y-3">
-          <div className="flex items-start justify-between w-full gap-2">
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                  <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
-                </div>
-                <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
-              </div>
-              <div className="flex gap-0.5 pl-7">
-                {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5" style={{ color: themeColor, fill: themeColor }} />
-                ))}
-              </div>
-            </div>
-            <Badge variant="outline" className="text-[8px] md:text-[9px] bg-green-50 text-green-600 border-green-200 px-1.5 md:px-2 shrink-0 whitespace-nowrap h-fit">
-              <ShieldCheck className="w-3 h-3 mr-1" /> Verificado
-            </Badge>
-          </div>
-          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic pt-1 overflow-hidden break-words">
-            "{t.text}"
-          </blockquote>
-          <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
-            <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
-              {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
-            </p>
-            <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
-          </div>
+const TestimonialCard = ({ t, themeColor }: { t: any, themeColor: string }) => (
+  <Card 
+    className="bg-background shadow-lg border-none p-6 text-left border-t-4" 
+    style={{ borderTopColor: themeColor }}
+  >
+    <div className="flex flex-col space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="bg-primary/5 p-1 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
+          <User className="w-4 h-4" style={{ color: themeColor }} />
         </div>
-      </CardContent>
-    </Card>
-  );
+        <p className="font-bold text-sm truncate">{t.userName}</p>
+      </div>
+      <div className="flex gap-0.5 pl-7">
+        {Array.from({ length: t.rating || 5 }).map((_, i) => (
+          <Star key={i} className="w-3 h-3 fill-primary text-primary" style={{ color: themeColor, fill: themeColor }} />
+        ))}
+      </div>
+      <p className="text-gray-700 italic text-sm">"{t.text}"</p>
+    </div>
+  </Card>
+);
 
+const PublicPageSettings = ({ 
+  widgetName, setWidgetName,
+  themeColor, setThemeColor,
+  coverImageUrl, setCoverImageUrl,
+  whatsappEnabled, setWhatsappEnabled,
+  whatsappNumber, setWhatsappNumber,
+  externalSiteUrl, setExternalSiteUrl
+}: any) => {
   return (
-    <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
-      <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between">
-        <div className="flex items-center gap-2">
-           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={64} height={64} className="rounded-2xl shadow-sm" />
-        </div>
-        <Link href="/">
-          <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold uppercase tracking-widest">Início</Button>
+    <div className="flex flex-col w-full h-full overflow-hidden">
+      <div className="p-4 border-b bg-muted/10 shrink-0">
+        <Link href="/widgets" className="w-full">
+          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
+            <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar aos Widgets</span>
+          </Button>
         </Link>
-      </nav>
+      </div>
 
-      <header className="bg-background border-b shadow-sm relative overflow-hidden text-center pt-20 md:pt-24 py-12 md:py-24 px-4">
-        <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
-          <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
-            Social Proof
-          </Badge>
-          <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-headline tracking-tighter text-gray-900 leading-[1]">
-            O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-8" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName || 'Nossa Empresa'}</span>
-          </h1>
-          <p className="text-base md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium px-4 leading-relaxed">
-            {widgetData?.name} — Experiências reais de clientes satisfeitos.
-          </p>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 mt-8 md:mt-20">
-        {filteredTestimonials.length === 0 ? (
-          <div className="text-center py-20 bg-background rounded-2xl border-4 border-dashed border-muted px-4">
-            <MessageSquare className="w-16 h-16 text-muted-foreground/10 mx-auto mb-6" />
-            <p className="text-muted-foreground text-base md:text-xl font-bold uppercase tracking-widest">Aguardando novos depoimentos...</p>
-          </div>
-        ) : (
-          <div className="w-full">
-            {layout === 'mural' && (
-              <div key={muralIndex} className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-10 max-w-6xl mx-auto px-1">
-                {visibleMuralTestimonials.map((t, i) => <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />)}
+      <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0">
+          <TabsTrigger value="geral" className="text-xs">Identidade</TabsTrigger>
+          <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
+        </TabsList>
+        
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-6 pb-10">
+            <TabsContent value="geral" className="mt-0 space-y-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título do Mural</Label>
+                <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} placeholder="Ex: Nossos Elogios" />
               </div>
-            )}
-            {layout === 'grid' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
-                {filteredTestimonials.map((t, i) => <TestimonialCard key={t.id} t={t} index={i} />)}
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">URL da Imagem de Capa</Label>
+                <Input value={coverImageUrl} onChange={(e) => setCoverImageUrl(e.target.value)} placeholder="https://imagem.jpg" />
               </div>
-            )}
-            {layout === 'carousel' && (
-              <div className="flex flex-col items-center gap-8 py-8 md:py-20 overflow-hidden px-1">
-                <div className="relative w-full max-w-3xl flex items-center justify-center">
-                  <div className="w-full min-w-0" key={filteredTestimonials[currentIndex].id}>
-                    <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
-                  </div>
-                </div>
-                <div className="flex gap-3 md:gap-4">
-                  {filteredTestimonials.map((_, i) => (
-                    <button key={i} onClick={() => setCurrentIndex(i)} className={cn("h-2 md:h-2.5 rounded-full transition-all duration-700", i === currentIndex ? "w-8 md:w-16" : "w-2 md:w-2.5 bg-gray-300")} style={{ backgroundColor: i === currentIndex ? themeColor : undefined }} />
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
+                <div className="flex flex-wrap gap-2">
+                  {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
+                    <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
                   ))}
                 </div>
               </div>
-            )}
-            {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] py-12 relative px-4 overflow-hidden">
-                <div key={filteredTestimonials[currentIndex].id} className="w-full max-w-md animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out shadow-2xl">
-                  <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
+            </TabsContent>
+
+            <TabsContent value="social" className="mt-0 space-y-6">
+              <div className="flex items-center justify-between p-3 border rounded-xl bg-muted/10">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-bold">Botão de WhatsApp</Label>
+                  <p className="text-[10px] text-muted-foreground">Ativar botão flutuante</p>
+                </div>
+                <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
+              </div>
+              {whatsappEnabled && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
+                  <Input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="Ex: 5511999999999" />
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do seu Site Externo</Label>
+                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://meusite.com.br" />
+              </div>
+            </TabsContent>
+          </div>
+        </ScrollArea>
+      </Tabs>
+    </div>
+  );
+};
+
+export default function PublicPageEditorPage({ params }: { params: Promise<{ widgetId: string }> }) {
+  const { widgetId } = use(params);
+  const { user, loading: authLoading } = useUser();
+  const db = useFirestore();
+  const router = useRouter();
+
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
+  const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
+  const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
+
+  const testimonialsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'testimonials'), where('status', '==', 'approved'));
+  }, [db, user]);
+
+  const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
+
+  const [widgetName, setWidgetName] = useState('');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [themeColor, setThemeColor] = useState('#f97316');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [externalSiteUrl, setExternalSiteUrl] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [baseUrl, setBaseUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
+  }, []);
+
+  useEffect(() => {
+    if (widgetData) {
+      setWidgetName(widgetData.name || '');
+      setSelectedIds(widgetData.selectedTestimonialIds || []);
+      setThemeColor(widgetData.themeColor || '#f97316');
+      setCoverImageUrl(widgetData.coverImageUrl || '');
+      setWhatsappEnabled(widgetData.whatsappEnabled || false);
+      setWhatsappNumber(widgetData.whatsappNumber || '');
+      setExternalSiteUrl(widgetData.externalSiteUrl || '');
+    }
+  }, [widgetData]);
+
+  useEffect(() => {
+    if (!authLoading && !user) router.replace('/login');
+  }, [user, authLoading, router]);
+
+  const handleSave = async () => {
+    if (!widgetRef || !widgetName.trim()) return;
+    setIsSaving(true);
+    const updates = {
+      name: widgetName.trim(),
+      selectedTestimonialIds: selectedIds,
+      themeColor,
+      coverImageUrl,
+      whatsappEnabled,
+      whatsappNumber,
+      externalSiteUrl,
+    };
+    updateDoc(widgetRef, updates)
+      .then(() => {
+        setIsSaving(false);
+        setIsLinkDialogOpen(true);
+      })
+      .catch(() => setIsSaving(false));
+  };
+
+  const toggleTestimonial = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const companySlug = userData?.companySlug || '';
+  const publicPageLink = `${baseUrl}/pp/${companySlug}/${widgetId}`;
+
+  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
+    return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
+  }
+
+  const settingsProps = {
+    widgetName, setWidgetName,
+    themeColor, setThemeColor,
+    coverImageUrl, setCoverImageUrl,
+    whatsappEnabled, setWhatsappEnabled,
+    whatsappNumber, setWhatsappNumber,
+    externalSiteUrl, setExternalSiteUrl
+  };
+
+  return (
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+        <div className="flex items-center gap-3 flex-1">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-80 flex flex-col">
+              <SheetHeader className="sr-only"><SheetTitle>Editor da Página Pública</SheetTitle></SheetHeader>
+              <div className="flex-1 min-h-0"><PublicPageSettings {...settingsProps} /></div>
+            </SheetContent>
+          </Sheet>
+          <div className="flex items-center gap-3">
+            <Monitor className="w-6 h-6 text-primary hidden sm:block" />
+            <div className="flex flex-col">
+              <h1 className="text-sm font-bold tracking-tight truncate max-w-[200px]">{widgetName || 'Página Pública'}</h1>
+              <span className="text-[10px] text-muted-foreground uppercase font-black">Editor de Página VIP</span>
+            </div>
+          </div>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold">
+            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+            Salvar
+          </Button>
+        </div>
+      </header>
+
+      <main className="flex-1 flex overflow-hidden">
+        <aside className="hidden lg:flex w-80 bg-background border-r flex-col">
+          <PublicPageSettings {...settingsProps} />
+        </aside>
+
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4" /> Prévia do Mural</h2>
+              <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline flex items-center gap-1">
+                Ver Página Real <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+
+            <div className="relative border-none shadow-2xl bg-background rounded-[2rem] min-h-[500px] flex flex-col overflow-hidden">
+              {coverImageUrl ? (
+                <div className="h-40 w-full relative">
+                  <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                </div>
+              ) : (
+                <div className="h-40 w-full bg-muted flex items-center justify-center text-muted-foreground/30">
+                  <ImageIcon className="w-12 h-12" />
+                </div>
+              )}
+              
+              <div className="p-8 space-y-8 flex-1">
+                <div className="text-center space-y-2">
+                  <h1 className="text-4xl font-black tracking-tighter" style={{ color: themeColor }}>{userData?.companyName}</h1>
+                  <p className="text-muted-foreground font-medium">{widgetName}</p>
+                </div>
+
+                <div className="columns-1 sm:columns-2 gap-4">
+                  {approvedTestimonials?.filter(t => selectedIds.includes(t.id)).slice(0, 4).map((t: any) => (
+                    <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4">
+                      <TestimonialCard t={t} themeColor={themeColor} />
+                    </div>
+                  ))}
+                  {selectedIds.length === 0 && (
+                    <div className="col-span-full py-20 text-center opacity-20"><MessageSquare className="w-12 h-12 mx-auto" /><p className="text-xs font-bold uppercase mt-2">Nenhum depoimento selecionado</p></div>
+                  )}
                 </div>
               </div>
-            )}
+
+              {whatsappEnabled && (
+                <div className="absolute bottom-6 right-6 bg-green-500 p-3 rounded-full text-white shadow-lg animate-bounce">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 bg-white rounded-2xl border shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-primary"><Link2 className="w-4 h-4" /><h3 className="text-xs font-bold uppercase tracking-widest">Link da sua Página Pública</h3></div>
+              <div className="flex gap-2">
+                <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[10px] h-10" />
+                <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t">
+              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><MessageSquare className="w-4 h-4" /> Selecionar Depoimentos</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {approvedTestimonials?.map((t: any) => (
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm")}>
+                    <div className="flex items-start gap-3">
+                      <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                        {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold text-xs block truncate">{t.userName}</span>
+                        <p className="text-[10px] text-muted-foreground italic line-clamp-1 mt-0.5">"{t.text}"</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </main>
 
-      <footer className="mt-20 md:mt-40 py-16 border-t bg-background text-center px-4 shadow-inner">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium opacity-50">
-          © Proova Social Proof
-        </p>
-      </footer>
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4"><CheckCircle2 className="w-8 h-8 text-primary" /></div>
+            <DialogTitle className="text-2xl font-headline">Página Pública Atualizada!</DialogTitle>
+            <DialogDescription className="text-sm text-gray-700">As atualizações no design e links sociais já estão ativas para todos os visitantes.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4"><Button className="w-full font-bold h-12" onClick={() => setIsLinkDialogOpen(false)}>Concluído</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
