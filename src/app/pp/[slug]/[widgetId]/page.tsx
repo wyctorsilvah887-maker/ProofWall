@@ -162,7 +162,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <MessageSquare className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
+              <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
               <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
