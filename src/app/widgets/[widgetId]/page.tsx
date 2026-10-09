@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -21,6 +20,7 @@ import {
   Image as ImageIcon,
   MessageCircle,
   Layout,
+  LayoutGrid,
   Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -362,7 +362,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
               <SheetHeader className="px-4 pt-6 text-left">
-                <SheetTitle>Editor da Página VIP</SheetTitle>
+                <SheetTitle className="sr-only">Editor da Página VIP</SheetTitle>
               </SheetHeader>
               <div className="flex-1 min-h-0"><PublicPageSettings {...settingsProps} /></div>
             </SheetContent>
