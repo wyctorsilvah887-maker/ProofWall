@@ -146,7 +146,7 @@ const EmbedSettings = ({
           <div className="space-y-4">
             <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Esquema de Cores</Label>
             <div className="flex flex-wrap gap-2">
-              {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
+              {['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000'].map((color) => (
                 <button key={color} onClick={() => setThemeColor(color)} className={cn("w-8 h-8 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
               ))}
             </div>
@@ -406,4 +406,3 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     </div>
   );
 }
-
