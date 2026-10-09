@@ -23,7 +23,10 @@ import {
   ExternalLink,
   Link2,
   Image as ImageIcon,
-  MessageCircle
+  MessageCircle,
+  Layout,
+  Play,
+  Grid
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,24 +57,33 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-const TestimonialCard = ({ t, themeColor }: { t: any, themeColor: string }) => (
+type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
+
+const TestimonialCard = ({ t, themeColor, small = false, isPopup = false }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean }) => (
   <Card 
-    className="bg-background shadow-lg border-none p-6 text-left border-t-4" 
-    style={{ borderTopColor: themeColor }}
+    className={cn(
+      "bg-background shadow-lg border-none text-left overflow-hidden border-t-4",
+      small ? "p-3" : "p-6",
+      isPopup && "max-w-[280px] border-l-4 border-t-0"
+    )} 
+    style={{ 
+      borderTopColor: !isPopup ? themeColor : 'transparent',
+      borderLeftColor: isPopup ? themeColor : 'transparent'
+    }}
   >
     <div className="flex flex-col space-y-3">
       <div className="flex items-center gap-2">
         <div className="bg-primary/5 p-1 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
-          <User className="w-4 h-4" style={{ color: themeColor }} />
+          <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
         </div>
-        <p className="font-bold text-sm truncate">{t.userName}</p>
+        <p className={cn("font-bold truncate", small ? "text-[10px]" : "text-sm")}>{t.userName}</p>
       </div>
-      <div className="flex gap-0.5 pl-7">
+      <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
         {Array.from({ length: t.rating || 5 }).map((_, i) => (
-          <Star key={i} className="w-3 h-3 fill-primary text-primary" style={{ color: themeColor, fill: themeColor }} />
+          <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-3 h-3")} style={{ color: themeColor, fill: themeColor }} />
         ))}
       </div>
-      <p className="text-gray-700 italic text-sm">"{t.text}"</p>
+      <p className={cn("text-gray-700 italic", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
     </div>
   </Card>
 );
@@ -82,7 +94,8 @@ const PublicPageSettings = ({
   coverImageUrl, setCoverImageUrl,
   whatsappEnabled, setWhatsappEnabled,
   whatsappNumber, setWhatsappNumber,
-  externalSiteUrl, setExternalSiteUrl
+  externalSiteUrl, setExternalSiteUrl,
+  layout, setLayout
 }: any) => {
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
@@ -100,6 +113,7 @@ const PublicPageSettings = ({
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0">
           <TabsTrigger value="geral" className="text-xs">Identidade</TabsTrigger>
+          <TabsTrigger value="design" className="text-xs">Layout</TabsTrigger>
           <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
         </TabsList>
         
@@ -107,7 +121,7 @@ const PublicPageSettings = ({
           <div className="p-4 space-y-6 pb-10">
             <TabsContent value="geral" className="mt-0 space-y-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título do Mural</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título da Página</Label>
                 <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} placeholder="Ex: Nossos Elogios" />
               </div>
               <div className="space-y-2">
@@ -119,6 +133,32 @@ const PublicPageSettings = ({
                 <div className="flex flex-wrap gap-2">
                   {['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#000000'].map((color) => (
                     <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="design" className="mt-0 space-y-6">
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estilo do Mural</Label>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { id: 'mural', icon: LayoutGrid, label: 'Mural (Masonry)' },
+                    { id: 'carousel', icon: Play, label: 'Carrossel' },
+                    { id: 'grid', icon: Layout, label: 'Grade (Grid)' },
+                    { id: 'popup', icon: MessageSquare, label: 'Popup Único' },
+                  ].map((item) => (
+                    <button 
+                      key={item.id}
+                      onClick={() => setLayout(item.id as LayoutType)} 
+                      className={cn(
+                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
+                        layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20"
+                      )}
+                    >
+                      <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
+                      <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -172,6 +212,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [widgetName, setWidgetName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('#f97316');
+  const [layout, setLayout] = useState<LayoutType>('mural');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -189,6 +230,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setWidgetName(widgetData.name || '');
       setSelectedIds(widgetData.selectedTestimonialIds || []);
       setThemeColor(widgetData.themeColor || '#f97316');
+      setLayout(widgetData.layout || 'mural');
       setCoverImageUrl(widgetData.coverImageUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
@@ -207,6 +249,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       name: widgetName.trim(),
       selectedTestimonialIds: selectedIds,
       themeColor,
+      layout,
       coverImageUrl,
       whatsappEnabled,
       whatsappNumber,
@@ -237,8 +280,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     coverImageUrl, setCoverImageUrl,
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
-    externalSiteUrl, setExternalSiteUrl
+    externalSiteUrl, setExternalSiteUrl,
+    layout, setLayout
   };
+
+  const visibleTestimonials = approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
@@ -249,7 +295,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
-              <SheetHeader className="sr-only"><SheetTitle>Editor da Página Pública</SheetTitle></SheetHeader>
+              <SheetHeader className="sr-only"><SheetTitle>Editor da Página VIP</SheetTitle></SheetHeader>
               <div className="flex-1 min-h-0"><PublicPageSettings {...settingsProps} /></div>
             </SheetContent>
           </Sheet>
@@ -277,20 +323,20 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4" /> Prévia do Mural</h2>
+              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><Eye className="w-4 h-4" /> Prévia da Página</h2>
               <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="text-xs text-primary font-bold hover:underline flex items-center gap-1">
-                Ver Página Real <ExternalLink className="w-3 h-3" />
+                Ver Link Real <ExternalLink className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="relative border-none shadow-2xl bg-background rounded-[2rem] min-h-[500px] flex flex-col overflow-hidden">
+            <div className="relative border-none shadow-2xl bg-background rounded-[2rem] min-h-[600px] flex flex-col overflow-hidden">
               {coverImageUrl ? (
-                <div className="h-40 w-full relative">
+                <div className="h-48 w-full relative">
                   <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                 </div>
               ) : (
-                <div className="h-40 w-full bg-muted flex items-center justify-center text-muted-foreground/30">
+                <div className="h-48 w-full bg-muted flex items-center justify-center text-muted-foreground/30">
                   <ImageIcon className="w-12 h-12" />
                 </div>
               )}
@@ -298,30 +344,37 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="p-8 space-y-8 flex-1">
                 <div className="text-center space-y-2">
                   <h1 className="text-4xl font-black tracking-tighter" style={{ color: themeColor }}>{userData?.companyName}</h1>
-                  <p className="text-muted-foreground font-medium">{widgetName}</p>
+                  <p className="text-muted-foreground font-medium text-xl">{widgetName}</p>
                 </div>
 
-                <div className="columns-1 sm:columns-2 gap-4">
-                  {approvedTestimonials?.filter(t => selectedIds.includes(t.id)).slice(0, 4).map((t: any) => (
-                    <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4">
-                      <TestimonialCard t={t} themeColor={themeColor} />
-                    </div>
-                  ))}
-                  {selectedIds.length === 0 && (
+                <div className={cn(
+                  "w-full",
+                  layout === 'mural' && "columns-1 sm:columns-2 gap-4",
+                  layout === 'grid' && "grid grid-cols-1 sm:grid-cols-2 gap-4",
+                  layout === 'carousel' && "max-w-md mx-auto",
+                  layout === 'popup' && "max-w-xs mx-auto"
+                )}>
+                  {visibleTestimonials.length > 0 ? (
+                    visibleTestimonials.slice(0, layout === 'mural' || layout === 'grid' ? 6 : 1).map((t: any) => (
+                      <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4">
+                        <TestimonialCard t={t} themeColor={themeColor} small={layout !== 'popup'} isPopup={layout === 'popup'} />
+                      </div>
+                    ))
+                  ) : (
                     <div className="col-span-full py-20 text-center opacity-20"><MessageSquare className="w-12 h-12 mx-auto" /><p className="text-xs font-bold uppercase mt-2">Nenhum depoimento selecionado</p></div>
                   )}
                 </div>
               </div>
 
               {whatsappEnabled && (
-                <div className="absolute bottom-6 right-6 bg-green-500 p-3 rounded-full text-white shadow-lg animate-bounce">
+                <div className="absolute bottom-6 right-6 bg-green-500 p-3 rounded-full text-white shadow-lg">
                   <MessageCircle className="w-6 h-6" />
                 </div>
               )}
             </div>
 
             <div className="p-6 bg-white rounded-2xl border shadow-sm space-y-4">
-              <div className="flex items-center gap-2 text-primary"><Link2 className="w-4 h-4" /><h3 className="text-xs font-bold uppercase tracking-widest">Link da sua Página Pública</h3></div>
+              <div className="flex items-center gap-2 text-primary"><Link2 className="w-4 h-4" /><h3 className="text-xs font-bold uppercase tracking-widest">Link de Acesso Direto</h3></div>
               <div className="flex gap-2">
                 <Input readOnly value={publicPageLink} className="bg-muted/30 border-primary/20 font-mono text-[10px] h-10" />
                 <Button variant="secondary" size="icon" onClick={() => { navigator.clipboard.writeText(publicPageLink); toast({ title: "Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
@@ -329,10 +382,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
 
             <div className="space-y-4 pt-4 border-t">
-              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><MessageSquare className="w-4 h-4" /> Selecionar Depoimentos</h2>
+              <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><MessageSquare className="w-4 h-4" /> Selecionar Depoimentos para Exibir</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm")}>
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
                     <div className="flex items-start gap-3">
                       <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
@@ -354,8 +407,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <DialogContent className="sm:max-w-md">
           <DialogHeader className="text-center">
             <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4"><CheckCircle2 className="w-8 h-8 text-primary" /></div>
-            <DialogTitle className="text-2xl font-headline">Página Pública Atualizada!</DialogTitle>
-            <DialogDescription className="text-sm text-gray-700">As atualizações no design e links sociais já estão ativas para todos os visitantes.</DialogDescription>
+            <DialogTitle className="text-2xl font-headline">Página VIP Atualizada!</DialogTitle>
+            <DialogDescription className="text-sm text-gray-700">As atualizações no layout, design e links sociais já estão ativas. Seus clientes verão as mudanças instantaneamente.</DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4"><Button className="w-full font-bold h-12" onClick={() => setIsLinkDialogOpen(false)}>Concluído</Button></DialogFooter>
         </DialogContent>
@@ -363,3 +416,4 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
+
