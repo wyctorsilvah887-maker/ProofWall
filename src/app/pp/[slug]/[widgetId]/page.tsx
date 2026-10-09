@@ -170,71 +170,45 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     );
   }
 
-  const TestimonialCard = ({ t, isPopup = false, index = 0, noAnim = false }: { t: any, isPopup?: boolean, index?: number, noAnim?: boolean }) => {
-    const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
-    const slideClass = layout === 'mural' 
-      ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
-      : (isPopup ? "slide-in-from-bottom-full" : "slide-in-from-bottom-8");
-
+  const TestimonialCard = ({ t, index = 0, noAnim = false }: { t: any, index?: number, noAnim?: boolean }) => {
     return (
       <Card 
         className={cn(
-          "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group",
-          !noAnim && "hover:shadow-2xl",
-          isPopup ? "max-w-full border-l-4" : "border-t-4",
-          !noAnim && "animate-in fade-in zoom-in-95 duration-1000 ease-out",
-          !noAnim && slideClass,
-          layout === 'mural' ? "mb-4" : ""
-        )} 
+          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm border-none",
+          !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
+        )}
         style={{ 
-          borderTopColor: !isPopup ? themeColor : 'transparent',
-          borderLeftColor: isPopup ? themeColor : 'transparent',
-          borderTopWidth: !isPopup ? '3px' : '0',
-          borderLeftWidth: isPopup ? '4px' : '0',
-          borderStyle: 'solid',
-          animationDelay: isPopup || noAnim ? '0ms' : `${index * 150}ms`,
+          animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
-          boxShadow: `0 10px 30px -15px ${themeColor}40`,
         }}
       >
-        <CardContent className={cn("p-2 sm:p-3 space-y-1.5")}>
-          <div className="flex flex-col space-y-1">
-            <div className="flex items-start justify-between w-full gap-2">
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                    <User className="w-2 h-2" style={{ color: themeColor }} />
-                  </div>
-                  <p className="font-bold text-[8px] sm:text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
-                </div>
-                <div className="flex gap-0.5 pl-4">
-                  {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-2 h-2 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-                  ))}
-                </div>
-              </div>
+        <div className="flex flex-col space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+              <User className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: themeColor }} />
             </div>
-
-            <blockquote className="text-[9px] sm:text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-0.5 overflow-hidden break-words">
-              "{t.text}"
-            </blockquote>
-
-            <div className="pt-1 border-t border-muted/50 mt-1 flex items-center justify-between">
-              <p className="text-[6px] sm:text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
-                {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Recente'}
-              </p>
-            </div>
+            <span className="font-bold text-[10px] sm:text-sm text-gray-900 leading-tight truncate">{t.userName}</span>
           </div>
-        </CardContent>
+          
+          <div className="flex gap-0.5">
+            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+              <Star key={i} className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-current" style={{ color: themeColor }} />
+            ))}
+          </div>
+
+          <p className="text-gray-700 italic text-[10px] sm:text-sm leading-relaxed">
+            "{t.text}"
+          </p>
+        </div>
       </Card>
     );
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 font-body flex items-center justify-center p-0 md:p-6 overflow-x-hidden">
-      <div className="w-full max-w-2xl bg-background md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:ring-1 md:ring-primary/5 flex flex-col min-h-screen md:min-h-[850px] overflow-hidden relative">
+    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8">
+      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col min-h-screen md:min-h-[90vh] overflow-hidden relative border border-gray-100 mx-auto">
         
-        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
+        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">SOCIAL PROOF</span>
           </div>
@@ -244,25 +218,27 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </nav>
 
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
-          <header className="px-6 py-10 text-center space-y-3">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900">
-              O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
-            </h1>
-            <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
-              {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
-            </p>
+          <header className="px-6 py-10 sm:py-16 text-center space-y-4">
+            <div className="space-y-3">
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tighter leading-tight text-gray-900">
+                O que dizem sobre <br /> <span style={{ color: themeColor }}>{companyData?.companyName}</span>
+              </h1>
+              <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
+                {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
+              </p>
+            </div>
           </header>
 
-          <main className="px-6 space-y-8 flex-1">
+          <main className="px-6 space-y-6 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-10 h-10" />
                 <p className="text-[9px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
               </div>
             ) : (
-              <div className="w-full">
+              <div className="w-full space-y-4">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-2 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
+                  <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
                     {visibleMuralTestimonials.map((t, i) => (
                       <div key={t.id + muralIndex + i} className="break-inside-avoid mb-3">
                         <TestimonialCard t={t} index={i} />
@@ -272,7 +248,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
@@ -306,15 +282,15 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'popup' && (
-                  <div className="flex justify-center py-10" key={filteredTestimonials[currentIndex]?.id}>
-                    <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
+                  <div className="flex justify-center py-4" key={filteredTestimonials[currentIndex]?.id}>
+                    <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                   </div>
                 )}
               </div>
             )}
           </main>
 
-          <footer className="mt-auto px-6 py-12 text-center space-y-6">
+          <footer className="mt-auto px-6 py-10 text-center space-y-6">
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
