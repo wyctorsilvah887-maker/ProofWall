@@ -19,7 +19,8 @@ import {
   Menu,
   Terminal,
   Copy,
-  Layout
+  Layout,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,37 +47,50 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Badge } from '@/components/ui/badge';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, small = false, isPopup = false, themeColor }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string }) => (
+const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index = 0 }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number }) => (
   <Card 
     className={cn(
-      "bg-background shadow-xl border-none text-left overflow-hidden border-t-4 animate-in fade-in zoom-in-95 transition-all duration-500",
-      small ? "p-3" : "p-6",
-      isPopup && "max-w-[280px] border-l-4 border-t-0"
+      "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-700",
+      small ? "p-3 mb-4" : "p-6",
+      isPopup ? "max-w-[280px] border-l-4" : "border-t-4",
+      isPopup 
+        ? "animate-in slide-in-from-bottom-8 fade-in zoom-in duration-700" 
+        : "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
     )} 
     style={{ 
       borderTopColor: !isPopup ? themeColor : 'transparent', 
       borderLeftColor: isPopup ? themeColor : 'transparent',
       borderTopWidth: !isPopup ? '3px' : '0', 
       borderLeftWidth: isPopup ? '4px' : '0',
+      animationDelay: isPopup ? '0ms' : `${index * 100}ms`,
+      animationFillMode: 'both',
       boxShadow: `0 10px 30px -15px ${themeColor}20`
     }}
   >
     <div className="flex flex-col space-y-2">
-      <div className="flex items-center gap-2">
-        <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
-          <User className="w-3 h-3" style={{ color: themeColor }} />
+      <div className="flex items-start justify-between w-full gap-2">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}15` }}>
+              <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+            </div>
+            <p className={cn("font-bold text-gray-900 leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
+          </div>
+          <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
+            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
+            ))}
+          </div>
         </div>
-        <p className={cn("font-bold truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
+        <Badge variant="outline" className="text-[8px] bg-green-50 text-green-600 border-green-200 px-1 shrink-0 h-fit">
+          <ShieldCheck className="w-2.5 h-2.5" />
+        </Badge>
       </div>
-      <div className="flex gap-0.5 pl-6">
-        {Array.from({ length: t.rating || 5 }).map((_, i) => (
-          <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
-        ))}
-      </div>
-      <p className={cn("text-gray-700 italic", small ? "text-[10px] line-clamp-3" : "text-sm mb-2")}>"{t.text}"</p>
+      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
     </div>
   </Card>
 );
@@ -160,6 +174,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [isSaving, setIsSaving] = useState(false);
   const [isCodeDialogOpen, setIsCodeDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -176,6 +191,19 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
+
+  const selectedTestimonials = useMemo(() => {
+    return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
+  }, [approvedTestimonials, selectedIds]);
+
+  useEffect(() => {
+    if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
+      const interval = setInterval(() => {
+        setPreviewIndex(prev => (prev + 1) % selectedTestimonials.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [layout, selectedTestimonials]);
 
   const handleSave = async () => {
     if (!widgetRef) return;
@@ -244,22 +272,29 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             
             <div className="relative border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 p-10 rounded-[2rem] min-h-[400px] flex items-center justify-center">
               <div className="w-full max-w-2xl">
-                {approvedTestimonials?.filter(t => selectedIds.includes(t.id)).length > 0 ? (
+                {selectedTestimonials.length > 0 ? (
                   <div className={cn(
                     "w-full transition-all duration-700",
                     layout === 'mural' && "columns-2 gap-4",
                     layout === 'grid' && "grid grid-cols-2 gap-4",
-                    layout === 'carousel' && "max-w-md mx-auto",
-                    layout === 'popup' && "max-w-xs mx-auto"
+                    (layout === 'carousel' || layout === 'popup') && "max-w-md mx-auto"
                   )}>
-                    {approvedTestimonials
-                      .filter(t => selectedIds.includes(t.id))
-                      .slice(0, layout === 'mural' || layout === 'grid' ? 4 : 1)
-                      .map((t: any) => (
-                        <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                          <TestimonialCard t={t} small themeColor={themeColor} isPopup={layout === 'popup'} />
+                    {layout === 'carousel' || layout === 'popup' ? (
+                      <div key={selectedTestimonials[previewIndex]?.id}>
+                        <TestimonialCard 
+                          t={selectedTestimonials[previewIndex]} 
+                          small 
+                          themeColor={themeColor} 
+                          isPopup={layout === 'popup'} 
+                        />
+                      </div>
+                    ) : (
+                      selectedTestimonials.slice(0, 4).map((t: any, i) => (
+                        <div key={t.id} className="break-inside-avoid">
+                          <TestimonialCard t={t} small themeColor={themeColor} index={i} />
                         </div>
-                      ))}
+                      ))
+                    )}
                   </div>
                 ) : (
                   <div className="text-center opacity-20"><MessageSquare className="w-12 h-12 mx-auto" /><p className="text-[10px] font-bold uppercase mt-2">Selecione depoimentos abaixo</p></div>
@@ -310,4 +345,3 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     </div>
   );
 }
-

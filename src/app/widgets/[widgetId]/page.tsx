@@ -24,7 +24,8 @@ import {
   Image as ImageIcon,
   MessageCircle,
   Layout,
-  Play
+  Play,
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,32 +58,48 @@ import {
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, themeColor, small = false, isPopup = false }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean }) => (
+const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index = 0 }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean, index?: number }) => (
   <Card 
     className={cn(
-      "bg-background shadow-lg border-none text-left overflow-hidden border-t-4 transition-all duration-500",
-      small ? "p-3" : "p-6",
-      isPopup && "max-w-[280px] border-l-4 border-t-0"
+      "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
+      small ? "p-3 mb-4" : "p-6",
+      isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
+      isPopup 
+        ? "animate-in slide-in-from-bottom-8 fade-in zoom-in duration-700" 
+        : "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
     )} 
     style={{ 
       borderTopColor: !isPopup ? themeColor : 'transparent',
       borderLeftColor: isPopup ? themeColor : 'transparent',
+      borderTopWidth: !isPopup ? '4px' : '0',
+      borderLeftWidth: isPopup ? '4px' : '0',
+      animationDelay: isPopup ? '0ms' : `${index * 100}ms`,
+      animationFillMode: 'both',
       boxShadow: `0 10px 30px -15px ${themeColor}20`
     }}
   >
     <div className="flex flex-col space-y-3">
-      <div className="flex items-center gap-2">
-        <div className="bg-primary/5 p-1 rounded-full" style={{ backgroundColor: `${themeColor}15` }}>
-          <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+      <div className="flex items-start justify-between w-full gap-2">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+              <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+            </div>
+            <p className={cn("font-bold text-gray-900 leading-tight truncate", small ? "text-[10px]" : "text-sm")}>{t.userName}</p>
+          </div>
+          <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
+            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-3 h-3")} style={{ color: themeColor, fill: themeColor }} />
+            ))}
+          </div>
         </div>
-        <p className={cn("font-bold truncate", small ? "text-[10px]" : "text-sm")}>{t.userName}</p>
+        {!small && (
+          <Badge variant="outline" className="text-[9px] bg-green-50 text-green-600 border-green-200 px-2 shrink-0 h-fit">
+            <ShieldCheck className="w-3 h-3 mr-1" /> VIP
+          </Badge>
+        )}
       </div>
-      <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
-        {Array.from({ length: t.rating || 5 }).map((_, i) => (
-          <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-3 h-3")} style={{ color: themeColor, fill: themeColor }} />
-        ))}
-      </div>
-      <p className={cn("text-gray-700 italic", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
+      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
     </div>
   </Card>
 );
@@ -219,6 +236,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isSaving, setIsSaving] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -240,6 +258,19 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
+
+  const selectedTestimonials = useMemo(() => {
+    return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
+  }, [approvedTestimonials, selectedIds]);
+
+  useEffect(() => {
+    if ((layout === 'carousel' || layout === 'popup') && selectedTestimonials.length > 1) {
+      const interval = setInterval(() => {
+        setPreviewIndex(prev => (prev + 1) % selectedTestimonials.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [layout, selectedTestimonials]);
 
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
@@ -282,8 +313,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     externalSiteUrl, setExternalSiteUrl,
     layout, setLayout
   };
-
-  const visibleTestimonials = approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
@@ -349,18 +378,32 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </div>
 
                 <div className={cn(
-                  "w-full",
+                  "w-full transition-all duration-700",
                   layout === 'mural' && "columns-1 sm:columns-2 gap-4",
                   layout === 'grid' && "grid grid-cols-1 sm:grid-cols-2 gap-4",
-                  layout === 'carousel' && "max-w-md mx-auto",
-                  layout === 'popup' && "max-w-xs mx-auto"
+                  (layout === 'carousel' || layout === 'popup') && "max-w-md mx-auto"
                 )}>
-                  {visibleTestimonials.length > 0 ? (
-                    visibleTestimonials.slice(0, layout === 'mural' || layout === 'grid' ? 6 : 1).map((t: any) => (
-                      <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <TestimonialCard t={t} themeColor={themeColor} small={layout !== 'popup'} isPopup={layout === 'popup'} />
+                  {selectedTestimonials.length > 0 ? (
+                    layout === 'carousel' || layout === 'popup' ? (
+                      <div key={selectedTestimonials[previewIndex]?.id}>
+                        <TestimonialCard 
+                          t={selectedTestimonials[previewIndex]} 
+                          themeColor={themeColor} 
+                          small={layout !== 'popup'} 
+                          isPopup={layout === 'popup'} 
+                        />
                       </div>
-                    ))
+                    ) : (
+                      selectedTestimonials.map((t: any, i) => (
+                        <TestimonialCard 
+                          key={t.id} 
+                          t={t} 
+                          themeColor={themeColor} 
+                          small 
+                          index={i}
+                        />
+                      ))
+                    )
                   ) : (
                     <div className="col-span-full py-20 text-center opacity-20"><MessageSquare className="w-12 h-12 mx-auto" /><p className="text-xs font-bold uppercase mt-2">Nenhum depoimento selecionado</p></div>
                   )}
@@ -417,4 +460,3 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
-
