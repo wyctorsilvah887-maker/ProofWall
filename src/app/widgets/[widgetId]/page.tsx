@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -695,7 +694,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             </div>
             <DialogTitle className="text-2xl font-headline">Widget Atualizado!</DialogTitle>
             <DialogDescription>
-              Seu mural de depoimentos está pronto. Use o link abaixo para compartilhar com seus clientes ou incorporar em seu site.
+              Seu mural de depoimentos está pronto. Use o link abaixo para compartilhar com seus clientes.
             </DialogDescription>
           </DialogHeader>
           
