@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -50,7 +52,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           }
         }).catch(() => setIsLoading(false));
       }
-    }, () => setIsLoading(false));
+    }, (error) => {
+      console.error("Erro ao carregar usuário:", error);
+      setIsLoading(false);
+    });
 
     return () => unsubUser();
   }, [db, slug]);
@@ -62,11 +67,17 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const unsubWidget = onSnapshot(widgetRef, (docSnap) => {
       if (docSnap.exists()) {
         setWidgetData(docSnap.data());
-        setIsLoading(false);
       } else {
         setWidgetData(null);
-        setIsLoading(false);
       }
+      setIsLoading(false);
+    }, (error) => {
+      const permissionError = new FirestorePermissionError({
+        path: widgetRef.path,
+        operation: 'get',
+      });
+      errorEmitter.emit('permission-error', permissionError);
+      setIsLoading(false);
     });
 
     const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
@@ -74,6 +85,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setAllTestimonials(docs);
+    }, (error) => {
+      console.error("Erro ao carregar depoimentos:", error);
     });
 
     return () => {
@@ -143,7 +156,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada no sistema.</p>
+              <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>

@@ -24,7 +24,7 @@ service cloud.firestore {
         // QUALQUER UM pode enviar um depoimento para uma empresa
         allow create: if true;
         
-        // PÚBLICO pode ler depoimentos aprovados
+        // PÚBLICO pode ler depoimentos aprovados (Necessário para a Página Pública)
         allow read: if resource.data.status == 'approved';
         
         // APENAS O DONO da conta (userId) ou um ADMIN global pode gerenciar os depoimentos
@@ -34,7 +34,7 @@ service cloud.firestore {
 
       // Regras para a SUB-COLEÇÃO de widgets
       match /widgets/{widgetId} {
-        // PÚBLICO pode ler a configuração do widget para a página PP
+        // PÚBLICO pode ler a configuração do widget para a página PP (Necessário para a Página Pública)
         allow read: if true;
         
         // APENAS O DONO pode gerenciar seus widgets
