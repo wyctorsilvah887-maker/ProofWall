@@ -16,15 +16,13 @@ import {
   Monitor,
   CheckCircle2,
   Menu,
-  Globe,
   Copy,
   ExternalLink,
   Link2,
   Image as ImageIcon,
   MessageCircle,
   Layout,
-  Play,
-  ShieldCheck
+  Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,46 +55,52 @@ import {
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index = 0 }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean, index?: number }) => (
-  <Card 
-    className={cn(
-      "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
-      small ? "p-3 mb-4" : "p-6",
-      isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-      isPopup 
-        ? "animate-in slide-in-from-bottom-8 fade-in zoom-in duration-700" 
-        : "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
-    )} 
-    style={{ 
-      borderTopColor: !isPopup ? themeColor : 'transparent',
-      borderLeftColor: isPopup ? themeColor : 'transparent',
-      borderTopWidth: !isPopup ? '4px' : '0',
-      borderLeftWidth: isPopup ? '4px' : '0',
-      animationDelay: isPopup ? '0ms' : `${index * 100}ms`,
-      animationFillMode: 'both',
-      boxShadow: `0 10px 30px -15px ${themeColor}20`
-    }}
-  >
-    <div className="flex flex-col space-y-3">
-      <div className="flex items-start justify-between w-full gap-2">
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-              <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index = 0, layout = 'mural', muralIndex = 0 }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean, index?: number, layout?: string, muralIndex?: number }) => {
+  const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+  const slideClass = layout === 'mural' 
+    ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
+    : (isPopup ? "slide-in-from-bottom-8 fade-in zoom-in duration-700" : "fade-in zoom-in-95 slide-in-from-bottom-4");
+
+  return (
+    <Card 
+      className={cn(
+        "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
+        small ? "p-3 mb-4" : "p-6",
+        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
+        "animate-in duration-1000 ease-out",
+        slideClass
+      )} 
+      style={{ 
+        borderTopColor: !isPopup ? themeColor : 'transparent',
+        borderLeftColor: isPopup ? themeColor : 'transparent',
+        borderTopWidth: !isPopup ? '4px' : '0',
+        borderLeftWidth: isPopup ? '4px' : '0',
+        animationDelay: isPopup ? '0ms' : `${index * 100}ms`,
+        animationFillMode: 'both',
+        boxShadow: `0 10px 30px -15px ${themeColor}20`
+      }}
+    >
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-start justify-between w-full gap-2">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+                <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+              </div>
+              <p className={cn("font-bold text-gray-900 leading-tight truncate", small ? "text-[10px]" : "text-sm")}>{t.userName}</p>
             </div>
-            <p className={cn("font-bold text-gray-900 leading-tight truncate", small ? "text-[10px]" : "text-sm")}>{t.userName}</p>
-          </div>
-          <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
-            {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-3 h-3")} style={{ color: themeColor, fill: themeColor }} />
-            ))}
+            <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
+              {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-3 h-3")} style={{ color: themeColor, fill: themeColor }} />
+              ))}
+            </div>
           </div>
         </div>
+        <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
       </div>
-      <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
-    </div>
-  </Card>
-);
+    </Card>
+  );
+};
 
 const PublicPageSettings = ({ 
   widgetName, setWidgetName,
@@ -153,7 +157,7 @@ const PublicPageSettings = ({
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estilo da Página</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
-                    { id: 'mural', icon: LayoutGrid, label: 'Mural (Masonry)' },
+                    { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
                     { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade (Grid)' },
                     { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
@@ -231,6 +235,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [muralIndex, setMuralIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -264,7 +269,25 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       }, 5000);
       return () => clearInterval(interval);
     }
+
+    if (layout === 'mural' && selectedTestimonials.length > 0) {
+      const interval = setInterval(() => {
+        setMuralIndex(prev => (prev + 1) % selectedTestimonials.length);
+      }, 6000);
+      return () => clearInterval(interval);
+    }
   }, [layout, selectedTestimonials]);
+
+  const visibleMuralTestimonials = useMemo(() => {
+    if (layout !== 'mural' || selectedTestimonials.length === 0) return [];
+    const slice = [];
+    const countToShow = Math.min(4, selectedTestimonials.length);
+    for (let i = 0; i < countToShow; i++) {
+      const idx = (muralIndex + i) % selectedTestimonials.length;
+      slice.push(selectedTestimonials[idx]);
+    }
+    return slice;
+  }, [selectedTestimonials, muralIndex, layout]);
 
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
@@ -332,6 +355,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2">
+          <Link href="/widgets"><Button variant="ghost" size="sm" className="hidden sm:flex mr-2">Cancelar</Button></Link>
           <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             Salvar
@@ -378,25 +402,28 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   (layout === 'carousel' || layout === 'popup') && "max-w-md mx-auto"
                 )}>
                   {selectedTestimonials.length > 0 ? (
-                    layout === 'carousel' || layout === 'popup' ? (
-                      <div key={selectedTestimonials[previewIndex]?.id}>
-                        <TestimonialCard 
-                          t={selectedTestimonials[previewIndex]} 
-                          themeColor={themeColor} 
-                          small={layout !== 'popup'} 
-                          isPopup={layout === 'popup'} 
-                        />
+                    layout === 'mural' ? (
+                      <div key={muralIndex} className="contents">
+                        {visibleMuralTestimonials.map((t: any, i) => (
+                          <TestimonialCard key={t.id + muralIndex} t={t} themeColor={themeColor} small index={i} layout={layout} muralIndex={muralIndex} />
+                        ))}
                       </div>
                     ) : (
-                      selectedTestimonials.map((t: any, i) => (
-                        <TestimonialCard 
-                          key={t.id} 
-                          t={t} 
-                          themeColor={themeColor} 
-                          small 
-                          index={i}
-                        />
-                      ))
+                      layout === 'carousel' || layout === 'popup' ? (
+                        <div key={selectedTestimonials[previewIndex]?.id}>
+                          <TestimonialCard 
+                            t={selectedTestimonials[previewIndex]} 
+                            themeColor={themeColor} 
+                            small={layout !== 'popup'} 
+                            isPopup={layout === 'popup'} 
+                            layout={layout}
+                          />
+                        </div>
+                      ) : (
+                        selectedTestimonials.map((t: any, i) => (
+                          <TestimonialCard key={t.id} t={t} themeColor={themeColor} small index={i} layout={layout} />
+                        ))
+                      )
                     )
                   ) : (
                     <div className="col-span-full py-20 text-center opacity-20"><MessageSquare className="w-12 h-12 mx-auto" /><p className="text-xs font-bold uppercase mt-2">Nenhum depoimento selecionado</p></div>

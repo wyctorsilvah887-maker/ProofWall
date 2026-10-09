@@ -12,7 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, MessageCircle, Globe } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, Zap, MessageCircle, Globe } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -36,7 +36,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta buscar por ID direto ou por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -125,7 +124,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const intervalId = setInterval(() => {
         setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 7000);
+      }, 6000);
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
@@ -134,7 +133,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
     const slice = [];
-    const countToShow = Math.min(6, filteredTestimonials.length);
+    // O usuário solicitou 3 ou 4. Vamos fixar em 4 para melhor preenchimento.
+    const countToShow = Math.min(4, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -172,61 +172,68 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     );
   }
 
-  const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => (
-    <Card 
-      className={cn(
-        "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
-        "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
-        isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-        isPopup 
-          ? "animate-in slide-in-from-bottom-full fade-in zoom-in duration-1000 ease-out" 
-          : "animate-in fade-in zoom-in-95 slide-in-from-bottom-8"
-      )} 
-      style={{ 
-        borderTopColor: !isPopup ? themeColor : 'transparent',
-        borderLeftColor: isPopup ? themeColor : 'transparent',
-        borderTopWidth: !isPopup ? '4px' : '0',
-        borderLeftWidth: isPopup ? '4px' : '0',
-        borderStyle: 'solid',
-        animationDelay: isPopup ? '0ms' : `${index * 150}ms`,
-        animationFillMode: 'both',
-        boxShadow: `0 10px 30px -15px ${themeColor}40`,
-        // @ts-ignore
-        "--tw-ring-color": `${themeColor}20`
-      }}
-    >
-      <CardContent className="p-4 md:p-6 space-y-4">
-        <div className="flex flex-col space-y-3">
-          <div className="flex items-start justify-between w-full gap-2">
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                  <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
+  const TestimonialCard = ({ t, isPopup = false, index = 0 }: { t: any, isPopup?: boolean, index?: number }) => {
+    // Determina direção aleatória de entrada para o layout mural
+    const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+    const slideClass = layout === 'mural' 
+      ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
+      : (isPopup ? "slide-in-from-bottom-full" : "slide-in-from-bottom-8");
+
+    return (
+      <Card 
+        className={cn(
+          "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
+          "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
+          isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
+          "animate-in fade-in zoom-in-95 duration-1000 ease-out",
+          slideClass
+        )} 
+        style={{ 
+          borderTopColor: !isPopup ? themeColor : 'transparent',
+          borderLeftColor: isPopup ? themeColor : 'transparent',
+          borderTopWidth: !isPopup ? '4px' : '0',
+          borderLeftWidth: isPopup ? '4px' : '0',
+          borderStyle: 'solid',
+          animationDelay: isPopup ? '0ms' : `${index * 150}ms`,
+          animationFillMode: 'both',
+          boxShadow: `0 10px 30px -15px ${themeColor}40`,
+          // @ts-ignore
+          "--tw-ring-color": `${themeColor}20`
+        }}
+      >
+        <CardContent className="p-4 md:p-6 space-y-4">
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-start justify-between w-full gap-2">
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+                    <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
+                  </div>
+                  <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
                 </div>
-                <p className="font-bold text-sm text-gray-900 leading-tight truncate">{t.userName}</p>
-              </div>
-              <div className="flex gap-0.5 pl-7">
-                {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
-                ))}
+                <div className="flex gap-0.5 pl-7">
+                  {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
-            "{t.text}"
-          </blockquote>
+            <blockquote className="text-sm md:text-base text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
+              "{t.text}"
+            </blockquote>
 
-          <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
-            <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
-              {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
-            </p>
-            <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
+            <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
+              <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+                {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
+              </p>
+              <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
