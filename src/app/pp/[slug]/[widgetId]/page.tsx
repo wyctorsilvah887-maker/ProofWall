@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -37,6 +36,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta buscar por ID direto ou por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -111,7 +111,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const themeColor = widgetData?.themeColor || '#f97316';
   const coverImageUrl = widgetData?.coverImageUrl || '';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
-  const whatsappNumber = whatsappNumber || '';
+  const whatsappNumber = widgetData?.whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
 
   useEffect(() => {
@@ -178,7 +178,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
         isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-        "animate-in fade-in zoom-in-95 slide-in-from-bottom-8"
+        isPopup 
+          ? "animate-in slide-in-from-bottom-full fade-in zoom-in duration-1000 ease-out" 
+          : "animate-in fade-in zoom-in-95 slide-in-from-bottom-8"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -186,7 +188,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         borderTopWidth: !isPopup ? '4px' : '0',
         borderLeftWidth: isPopup ? '4px' : '0',
         borderStyle: 'solid',
-        animationDelay: `${index * 150}ms`,
+        animationDelay: isPopup ? '0ms' : `${index * 150}ms`,
         animationFillMode: 'both',
         boxShadow: `0 10px 30px -15px ${themeColor}40`,
         // @ts-ignore
@@ -319,10 +321,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
 
             {layout === 'popup' && (
-              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[600px] py-12 md:py-24 relative px-4 overflow-hidden">
+              <div className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-12 md:py-24 relative px-4 overflow-hidden">
                 <div 
-                  key={filteredTestimonials[currentIndex].id}
-                  className="w-full max-w-md animate-in slide-in-from-bottom-12 fade-in zoom-in duration-700 ease-out shadow-2xl"
+                  key={filteredTestimonials[currentIndex]?.id}
+                  className="w-full max-w-md flex justify-center"
                 >
                   <TestimonialCard t={filteredTestimonials[currentIndex]} isPopup index={0} />
                 </div>
@@ -368,4 +370,3 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     </div>
   );
 }
-
