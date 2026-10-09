@@ -25,7 +25,10 @@ import {
   Upload,
   X,
   Menu,
-  Globe
+  Globe,
+  Copy,
+  ExternalLink,
+  Link2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +52,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -337,6 +348,9 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const db = useFirestore();
   const router = useRouter();
 
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
   const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
   const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
 
@@ -359,8 +373,17 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [baseUrl, setBaseUrl] = useState('');
+  
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     if (widgetData) {
@@ -380,6 +403,11 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  const companySlug = useMemo(() => {
+    if (!userData) return '';
+    return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
+  }, [userData]);
 
   const selectedTestimonials = useMemo(() => {
     if (!approvedTestimonials) return [];
@@ -432,6 +460,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     updateDoc(widgetRef, updates)
       .then(() => {
         setIsSaving(false);
+        setIsLinkDialogOpen(true);
         toast({
           title: "Widget Atualizado",
           description: "As alterações foram salvas com sucesso.",
@@ -454,7 +483,17 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     );
   };
 
-  if (authLoading || widgetLoading || testimonialsLoading) {
+  const publicPageLink = `${baseUrl}/pp/${companySlug}/${widgetId}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(publicPageLink);
+    toast({
+      title: "Copiado!",
+      description: "Link da página pública copiado para a área de transferência.",
+    });
+  };
+
+  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30">
         <Loader2 className="animate-spin h-10 w-10 text-primary" />
@@ -647,6 +686,47 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
           </div>
         </div>
       </main>
+
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl font-headline">Widget Atualizado!</DialogTitle>
+            <DialogDescription>
+              Seu mural de depoimentos está pronto. Use o link abaixo para compartilhar com seus clientes ou incorporar em seu site.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Link da Página Pública</Label>
+              <div className="flex gap-2">
+                <Input 
+                  readOnly 
+                  value={publicPageLink}
+                  className="bg-muted/30 border-primary/20 font-mono text-xs h-11"
+                />
+                <Button variant="secondary" size="icon" className="h-11 w-11 shrink-0" onClick={copyLink}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" className="w-full" onClick={() => setIsLinkDialogOpen(false)}>
+              Fechar
+            </Button>
+            <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button className="w-full gap-2">
+                <ExternalLink className="w-4 h-4" /> Ver Página
+              </Button>
+            </a>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
