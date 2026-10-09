@@ -24,7 +24,8 @@ import {
   Image as ImageIcon,
   Upload,
   X,
-  Menu
+  Menu,
+  Globe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -107,6 +108,7 @@ const WidgetSettings = ({
   widgetName, setWidgetName, 
   whatsappEnabled, setWhatsappEnabled, 
   whatsappNumber, setWhatsappNumber, 
+  externalSiteUrl, setExternalSiteUrl,
   layout, setLayout, 
   themeColor, setThemeColor,
   coverImageUrl, setCoverImageUrl
@@ -142,6 +144,21 @@ const WidgetSettings = ({
                   placeholder="Ex: Mural da Home"
                   className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
                 />
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <Label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Globe className="w-3 h-3" /> Site Externo (Empresa)
+                </Label>
+                <Input 
+                  value={externalSiteUrl}
+                  onChange={(e) => setExternalSiteUrl(e.target.value)}
+                  placeholder="https://suaempresa.com.br"
+                  className="h-10 md:h-11 border-primary/20 focus:border-primary text-sm"
+                />
+                <p className="text-[9px] text-muted-foreground italic">
+                  * Link para o botão "Conhecer Empresa" no rodapé da Página Pública.
+                </p>
               </div>
 
               <div className="space-y-4 pt-4 border-t">
@@ -339,6 +356,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
   const [themeColor, setThemeColor] = useState('#f97316');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [externalSiteUrl, setExternalSiteUrl] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -352,6 +370,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       setThemeColor(widgetData.themeColor || '#f97316');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
+      setExternalSiteUrl(widgetData.externalSiteUrl || '');
       setCoverImageUrl(widgetData.coverImageUrl || '');
     }
   }, [widgetData]);
@@ -406,6 +425,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
       themeColor,
       whatsappEnabled,
       whatsappNumber: whatsappNumber.trim(),
+      externalSiteUrl: externalSiteUrl.trim(),
       coverImageUrl,
     };
 
@@ -446,6 +466,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
     widgetName, setWidgetName,
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
+    externalSiteUrl, setExternalSiteUrl,
     layout, setLayout,
     themeColor, setThemeColor,
     coverImageUrl, setCoverImageUrl
@@ -540,7 +561,7 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                     )}
 
                     {layout === 'grid' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
+                      <div className="grid grid-cols-1 sm:columns-2 gap-4 md:gap-6 animate-in zoom-in-95 duration-500 w-full max-w-2xl">
                         {selectedTestimonials.slice(0, 4).map((t, idx) => (
                           <TestimonialCard key={t.id + idx} t={t} small index={idx} themeColor={themeColor} />
                         ))}

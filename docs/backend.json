@@ -54,7 +54,7 @@
         "userEmail": {
           "type": "string",
           "format": "email",
-          "description": "E-mail do cliente."
+          "description": "Endereço de e-mail do cliente."
         },
         "rating": {
           "type": "number",
@@ -106,6 +106,10 @@
         "whatsappNumber": {
           "type": "string",
           "description": "Número para contato via WhatsApp."
+        },
+        "externalSiteUrl": {
+          "type": "string",
+          "description": "URL do site externo da empresa."
         },
         "layout": {
           "type": "string",
