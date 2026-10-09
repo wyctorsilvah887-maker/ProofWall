@@ -23,7 +23,8 @@ import {
   Layout,
   LayoutGrid,
   Play,
-  Upload
+  Upload,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -237,6 +238,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
   const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
 
+  const widgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+
+  const { data: allWidgets, loading: allWidgetsLoading } = useCollection(widgetsQuery);
+
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'testimonials'), where('status', '==', 'approved'));
@@ -284,6 +292,17 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
 
+  const takenIds = useMemo(() => {
+    if (!allWidgets) return new Set<string>();
+    const ids = new Set<string>();
+    allWidgets.forEach((w: any) => {
+      if (w.id !== widgetId && w.selectedTestimonialIds) {
+        w.selectedTestimonialIds.forEach((id: string) => ids.add(id));
+      }
+    });
+    return ids;
+  }, [allWidgets, widgetId]);
+
   useEffect(() => {
     if (layout === 'popup' && selectedTestimonials.length > 1) {
       const interval = setInterval(() => {
@@ -300,7 +319,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     }
   }, [layout, selectedTestimonials]);
 
-  // Autoplay for Carousel Preview
   useEffect(() => {
     if (!api || layout !== 'carousel') return;
     const interval = setInterval(() => {
@@ -342,13 +360,21 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   };
 
   const toggleTestimonial = (id: string) => {
+    if (takenIds.has(id)) {
+      toast({
+        variant: "destructive",
+        title: "Feedback Indisponível",
+        description: "Este depoimento já está sendo usado em outro widget.",
+      });
+      return;
+    }
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
   const companySlug = userData?.companySlug || '';
   const publicPageLink = `${baseUrl}/pp/${companySlug}/${widgetId}`;
 
-  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
+  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading || allWidgetsLoading) {
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
@@ -506,19 +532,35 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 <MessageSquare className="w-4 h-4 shrink-0" /> Selecionar Depoimentos
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
-                {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background w-full", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
-                    <div className="flex items-start gap-3 w-full">
-                      <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
-                        {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold text-[9px] sm:text-xs block truncate">{t.userName}</span>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground italic line-clamp-2 mt-1 leading-relaxed">"{t.text}"</p>
+                {approvedTestimonials?.map((t: any) => {
+                  const isTaken = takenIds.has(t.id);
+                  return (
+                    <div 
+                      key={t.id} 
+                      onClick={() => toggleTestimonial(t.id)} 
+                      className={cn(
+                        "cursor-pointer transition-all rounded-xl border-2 p-3 sm:p-4 bg-background w-full", 
+                        selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10",
+                        isTaken && "opacity-50 cursor-not-allowed grayscale"
+                      )}
+                    >
+                      <div className="flex items-start gap-3 w-full">
+                        <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                          {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-bold text-[9px] sm:text-xs block truncate">{t.userName}</span>
+                          <p className="text-[8px] sm:text-[10px] text-muted-foreground italic line-clamp-2 mt-1 leading-relaxed">"{t.text}"</p>
+                          {isTaken && (
+                            <div className="mt-2 flex items-center gap-1 text-[7px] font-bold text-destructive uppercase tracking-widest">
+                              <Lock className="w-2.5 h-2.5" /> Já em uso em outro widget
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
