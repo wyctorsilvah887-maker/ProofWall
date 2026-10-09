@@ -12,13 +12,11 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, Zap, MessageCircle, Globe, ArrowLeft } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, MessageCircle, Globe, LayoutGrid, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import Image from 'next/image';
 import {
   Carousel,
@@ -43,7 +41,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta carregar por ID ou por Slug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -79,7 +76,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         setWidgetData(null);
       }
       setIsLoading(false);
-    }, async (serverError) => {
+    }, () => {
       setIsLoading(false);
     });
 
@@ -88,7 +85,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setAllTestimonials(docs);
-    }, async (serverError) => {
+    }, () => {
       setIsLoading(false);
     });
 
@@ -137,7 +134,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
-    
     const slice = [];
     const countToShow = Math.min(4, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
@@ -168,7 +164,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold font-headline text-gray-900">Mural não encontrado</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou não possui depoimentos selecionados.</p>
+              <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>
@@ -191,12 +187,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           isPopup ? "max-w-full border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 duration-1000 ease-out",
           !noAnim && slideClass,
-          layout === 'mural' ? "mb-6" : ""
+          layout === 'mural' ? "mb-4" : ""
         )} 
         style={{ 
           borderTopColor: !isPopup ? themeColor : 'transparent',
           borderLeftColor: isPopup ? themeColor : 'transparent',
-          borderTopWidth: !isPopup ? '4px' : '0',
+          borderTopWidth: !isPopup ? '3px' : '0',
           borderLeftWidth: isPopup ? '4px' : '0',
           borderStyle: 'solid',
           animationDelay: isPopup || noAnim ? '0ms' : `${index * 150}ms`,
@@ -204,33 +200,32 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           boxShadow: `0 10px 30px -15px ${themeColor}40`,
         }}
       >
-        <CardContent className={cn("p-4 md:p-6 space-y-4")}>
-          <div className="flex flex-col space-y-3">
+        <CardContent className={cn("p-3 sm:p-4 space-y-3")}>
+          <div className="flex flex-col space-y-2">
             <div className="flex items-start justify-between w-full gap-2">
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                    <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
+                    <User className="w-3 h-3" style={{ color: themeColor }} />
                   </div>
-                  <p className="font-bold text-xs text-gray-900 leading-tight truncate">{t.userName}</p>
+                  <p className="font-bold text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
                 </div>
-                <div className="flex gap-0.5 pl-7">
+                <div className="flex gap-0.5 pl-6">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                    <Star key={i} className="w-3 h-3 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
                   ))}
                 </div>
               </div>
             </div>
 
-            <blockquote className="text-sm text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
+            <blockquote className="text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
               "{t.text}"
             </blockquote>
 
-            <div className="pt-3 border-t border-muted/50 mt-2 flex items-center justify-between">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-semibold">
-                {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Cliente Recente'}
+            <div className="pt-2 border-t border-muted/50 mt-1 flex items-center justify-between">
+              <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
+                {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Recente'}
               </p>
-              <Zap className="w-3 h-3 text-primary/30 animate-pulse" style={{ color: themeColor }} />
             </div>
           </div>
         </CardContent>
@@ -240,23 +235,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-muted/20 font-body flex items-center justify-center p-0 md:p-6 overflow-x-hidden">
-      {/* Container Principal Estilo Device/App */}
       <div className="w-full max-w-2xl bg-background md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] md:ring-1 md:ring-primary/5 flex flex-col min-h-screen md:min-h-[850px] overflow-hidden relative">
         
-        {/* Header/Nav Interno */}
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
             <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={40} height={40} className="rounded-xl" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">VIP Social Proof</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Social Proof</span>
           </div>
           <Link href="/">
             <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest">Início</Button>
           </Link>
         </nav>
 
-        {/* Conteúdo da Página VIP */}
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-20">
-          {/* Capa */}
           {coverImageUrl ? (
             <div className="h-48 w-full relative shrink-0">
               <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
@@ -264,11 +255,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           ) : (
             <div className="h-40 w-full bg-muted/30 flex flex-col items-center justify-center text-muted-foreground/20 shrink-0">
-              <Zap className="w-16 h-16" style={{ color: `${themeColor}20` }} />
+              <MessageSquare className="w-16 h-16" />
             </div>
           )}
 
-          {/* Cabeçalho da Empresa */}
           <header className="px-6 py-8 text-center space-y-4">
             <Badge variant="outline" className="text-[8px] uppercase tracking-[0.2em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>
               Aprovado por Clientes
@@ -281,7 +271,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </p>
           </header>
 
-          {/* Testemunhos */}
           <main className="px-6 space-y-8 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
@@ -343,7 +332,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
           </main>
 
-          {/* Rodapé / Link Externo */}
           <footer className="mt-auto px-6 py-12 text-center space-y-6">
             {externalSiteUrl && (
               <a 
@@ -357,12 +345,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </a>
             )}
             <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
-              © Proova Social Proof VIP
+              © Proova Social Proof
             </p>
           </footer>
         </div>
 
-        {/* WhatsApp Flutuante Interno */}
         {whatsappEnabled && whatsappNumber && (
           <a 
             href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 

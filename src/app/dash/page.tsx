@@ -4,7 +4,6 @@ import { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
-  Zap, 
   CheckCircle2, 
   MessageSquare,
   LogOut,
@@ -248,7 +247,7 @@ export default function DashPage() {
             <CardContent>
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {testimonialsData?.length || 0} <span className="text-lg font-medium text-muted-foreground">avaliações recebidas</span>
+                  {testimonialsData?.length || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
                   <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-none text-[10px] h-5 px-1.5">
@@ -299,9 +298,6 @@ export default function DashPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground text-gray-600 leading-relaxed">
-                  Envie este link direto para seus clientes via WhatsApp ou gere o <strong>QR Code de Balcão</strong> para coletar depoimentos no seu estabelecimento físico.
-                </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Input 
                     readOnly 
@@ -313,10 +309,9 @@ export default function DashPage() {
                       variant="secondary" 
                       className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0"
                       onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-                      title="Copiar Link"
                     >
                       <Copy className="h-4 w-4 sm:mr-0 mr-2" />
-                      <span className="sm:hidden font-bold">Copiar Link</span>
+                      <span className="sm:hidden font-bold">Copiar</span>
                     </Button>
                     <Button 
                       variant="outline" 
@@ -324,7 +319,7 @@ export default function DashPage() {
                       onClick={() => setIsQrDialogOpen(true)}
                     >
                       <QrCode className="h-4 w-4" />
-                      <span>QR de Balcão</span>
+                      <span>QR Code</span>
                     </Button>
                   </div>
                 </div>
@@ -348,33 +343,30 @@ export default function DashPage() {
               ) : displayTestimonials.length > 0 ? (
                 displayTestimonials.map((t: any) => (
                   <Card key={t.id} className="border-none shadow-sm overflow-hidden">
-                    <CardContent className="p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
                         <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
-                          <User className="w-5 h-5 text-primary" />
+                          <User className="w-4 h-4 text-primary" />
                         </div>
                         <div className="space-y-1">
-                          <div className="flex flex-col space-y-1 mb-1">
-                            <span className="font-bold text-sm md:text-base">{t.userName}</span>
+                          <div className="flex flex-col space-y-0.5 mb-1">
+                            <span className="font-bold text-xs">{t.userName}</span>
                             <div className="flex gap-0.5">
                               {Array.from({ length: t.rating || 5 }).map((_, i) => (
                                 <Star key={i} className="w-3 h-3 fill-primary text-primary" />
                               ))}
                             </div>
                           </div>
-                          <p className="text-sm text-gray-700 italic line-clamp-2 md:line-clamp-none">
+                          <p className="text-xs text-gray-700 italic line-clamp-2 md:line-clamp-none">
                             "{t.text}"
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                           <Clock className="w-3 h-3" />
                           {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
                         </div>
-                        <Badge variant={t.status === 'approved' ? 'default' : 'secondary'} className="capitalize text-[10px]">
-                          {t.status === 'approved' ? 'Aprovado' : 'Pendente'}
-                        </Badge>
                       </div>
                     </CardContent>
                   </Card>
@@ -382,8 +374,7 @@ export default function DashPage() {
               ) : (
                 <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
                   <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">Nenhum depoimento recebido ainda.</p>
-                  <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest">Compartilhe seu link de coleta acima</p>
+                  <p className="text-sm text-muted-foreground">Nenhum depoimento ainda.</p>
                 </div>
               )}
             </div>
@@ -392,19 +383,12 @@ export default function DashPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Eye className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold font-headline tracking-tight">Visualização ao Vivo</h2>
+              <h2 className="text-xl font-bold font-headline tracking-tight">Visualização</h2>
             </div>
             
             <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
               <div className="absolute top-4 left-4">
                 <Layout className="w-4 h-4 text-primary/40" />
-              </div>
-              
-              <div className="space-y-4 mb-8">
-                <h3 className="text-lg font-bold font-headline">Simulação do Widget</h3>
-                <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-                  Assim é como seus visitantes verão os depoimentos no canto do seu site.
-                </p>
               </div>
 
               <div className="relative w-full h-full flex items-center justify-center">
@@ -413,42 +397,40 @@ export default function DashPage() {
                     key={displayTestimonials[previewIndex].id}
                     className="absolute bottom-4 right-0 left-0 animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
                   >
-                    <div className="bg-background rounded-2xl p-4 shadow-2xl border-2 border-primary/20 text-left max-w-[280px] mx-auto">
+                    <div className="bg-background rounded-xl p-3 shadow-2xl border border-primary/20 text-left max-w-[240px] mx-auto">
                       <div className="flex flex-col space-y-1 mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="bg-primary/10 p-1.5 rounded-full">
+                          <div className="bg-primary/10 p-1 rounded-full">
                             <User className="w-3 h-3 text-primary" />
                           </div>
                           <p className="text-[10px] font-bold leading-tight">{displayTestimonials[previewIndex].userName}</p>
                         </div>
-                        <div className="flex gap-0.5 pl-7">
+                        <div className="flex gap-0.5 pl-6">
                           {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
-                            <Star key={i} className="w-2 h-2 fill-primary text-primary" />
+                            <Star key={i} className="w-2.5 h-2.5 fill-primary text-primary" />
                           ))}
                         </div>
                       </div>
-                      <p className="text-[11px] text-gray-700 italic line-clamp-2 leading-relaxed">
+                      <p className="text-[10px] text-gray-700 italic line-clamp-3 leading-relaxed">
                         "{displayTestimonials[previewIndex].text}"
                       </p>
                       <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
                         <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
                           Proova Social Proof
                         </span>
-                        <Zap className="w-2.5 h-2.5 text-primary animate-pulse" />
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-muted/20 border-2 border-dashed rounded-2xl p-8 text-muted-foreground flex flex-col items-center gap-3">
                     <MessageSquare className="w-8 h-8 opacity-20" />
-                    <p className="text-[10px] uppercase font-bold tracking-widest">Aguardando Dados</p>
                   </div>
                 )}
               </div>
 
               <div className="mt-auto pt-6 w-full">
                 <Button variant="outline" className="w-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/widgets')}>
-                  Personalizar Design
+                  Personalizar
                 </Button>
               </div>
             </Card>
@@ -464,7 +446,7 @@ export default function DashPage() {
               QR Code de Balcão
             </DialogTitle>
             <DialogDescription className="text-base">
-              Perfeito para imprimir e deixar no seu balcão ou mesas. Seus clientes podem escanear este código para deixar um depoimento rapidamente.
+              Seus clientes podem escanear este código para deixar um depoimento rapidamente.
             </DialogDescription>
           </DialogHeader>
           
@@ -486,7 +468,7 @@ export default function DashPage() {
                   className="flex-1 h-12 border-primary text-primary hover:bg-primary/5"
                   onClick={handlePrintQr}
                 >
-                  <Printer className="w-5 h-5 mr-2" /> Imprimir p/ Balcão
+                  <Printer className="w-5 h-5 mr-2" /> Imprimir
                 </Button>
                 <Button 
                   className="flex-1 h-12 shadow-lg"
@@ -504,19 +486,15 @@ export default function DashPage() {
                       const pngUrl = canvas.toDataURL('image/png');
                       const downloadLink = document.createElement('a');
                       downloadLink.href = pngUrl;
-                      downloadLink.download = `qrcode-balcao-proova-${companySlug}.png`;
+                      downloadLink.download = `qrcode-proova-${companySlug}.png`;
                       downloadLink.click();
                     };
                     img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
-                    toast({ title: "Download Iniciado", description: "O arquivo PNG do QR Code está sendo baixado." });
                   }}
                 >
                   <Download className="w-5 h-5 mr-2" /> Baixar PNG
                 </Button>
               </div>
-              <p className="text-[10px] text-center text-muted-foreground uppercase font-bold tracking-widest pt-2 px-4">
-                Dica: Imprima em papel fotográfico para melhor durabilidade no seu balcão.
-              </p>
             </div>
           </div>
         </DialogContent>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -12,7 +11,6 @@ import {
   MessageSquare,
   Check,
   User,
-  Zap,
   LayoutGrid,
   Play,
   CheckCircle2,
@@ -56,7 +54,7 @@ import {
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
+const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
   const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
   const slideClass = layout === 'mural' 
     ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
@@ -66,11 +64,11 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index 
     <Card 
       className={cn(
         "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-700",
-        small ? "p-3" : "p-6",
+        "p-3",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
-        small ? "mb-0" : "mb-4"
+        "mb-0"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent', 
@@ -87,18 +85,18 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor, index 
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}15` }}>
-                <User className={cn(small ? "w-3 h-3" : "w-4 h-4")} style={{ color: themeColor }} />
+                <User className="w-3 h-3" style={{ color: themeColor }} />
               </div>
-              <p className={cn("font-bold text-gray-900 leading-tight truncate", small ? "text-[10px]" : "text-xs")}>{t.userName}</p>
+              <p className="font-bold text-gray-900 leading-tight truncate text-[10px]">{t.userName}</p>
             </div>
-            <div className={cn("flex gap-0.5", small ? "pl-6" : "pl-7")}>
+            <div className="flex gap-0.5 pl-6">
               {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
+                <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
               ))}
             </div>
           </div>
         </div>
-        <p className={cn("text-gray-700 italic leading-relaxed", small ? "text-[10px] line-clamp-3" : "text-sm")}>"{t.text}"</p>
+        <p className="text-gray-700 italic leading-relaxed text-[10px] line-clamp-3">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -130,7 +128,7 @@ const EmbedSettings = ({
                 { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
                 { id: 'carousel', icon: Play, label: 'Carrossel Slider' },
                 { id: 'grid', icon: Layout, label: 'Grade Estática' },
-                { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
+                { id: 'popup', icon: MessageSquare, label: 'Notificação' },
               ].map((item) => (
                 <button 
                   key={item.id}
@@ -347,7 +345,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 w-full">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
-                            <TestimonialCard t={t} small themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
+                            <TestimonialCard t={t} themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
                           </div>
                         ))}
                       </div>
@@ -357,7 +355,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                           <CarouselContent>
                             {selectedTestimonials.map((t: any) => (
                               <CarouselItem key={t.id}>
-                                <TestimonialCard t={t} small themeColor={themeColor} noAnim layout={layout} />
+                                <TestimonialCard t={t} themeColor={themeColor} noAnim layout={layout} />
                               </CarouselItem>
                             ))}
                           </CarouselContent>
@@ -367,7 +365,6 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <div className="max-w-full sm:max-w-md mx-auto" key={selectedTestimonials[previewIndex]?.id}>
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
-                          small 
                           themeColor={themeColor} 
                           isPopup={true} 
                           layout={layout}
@@ -377,7 +374,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {selectedTestimonials.slice(0, 4).map((t: any, i) => (
                           <div key={t.id} className="break-inside-avoid">
-                            <TestimonialCard t={t} small themeColor={themeColor} index={i} layout={layout} />
+                            <TestimonialCard t={t} themeColor={themeColor} index={i} layout={layout} />
                           </div>
                         ))}
                       </div>
