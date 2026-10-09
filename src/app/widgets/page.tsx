@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -19,7 +18,6 @@ import {
   Copy,
   Terminal,
   CheckCircle2,
-  ExternalLink,
   Globe
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -110,7 +108,7 @@ export default function WidgetsPage() {
           title: "Widget Criado!",
           description: "Redirecionando para as configurações...",
         });
-        router.push(`/widgets/${docRef.id}`);
+        router.push(`/widgetconfig/${docRef.id}`);
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
@@ -286,7 +284,7 @@ export default function WidgetsPage() {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 lg:flex-none border-primary/20 text-primary hover:bg-primary/5 font-bold"
-                      onClick={() => router.push(`/widgets/${w.id}`)}
+                      onClick={() => router.push(`/widgetconfig/${w.id}`)}
                     >
                       <Globe className="w-4 h-4 mr-2" /> Página Pública
                     </Button>
@@ -305,7 +303,7 @@ export default function WidgetsPage() {
                       variant="default" 
                       size="sm" 
                       className="flex-1 lg:flex-none font-bold"
-                      onClick={() => router.push(`/widgets/${w.id}`)}
+                      onClick={() => router.push(`/widgetconfig/${w.id}`)}
                     >
                       <Settings2 className="w-4 h-4 mr-2" /> Configurar
                     </Button>
