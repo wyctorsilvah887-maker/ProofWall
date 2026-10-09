@@ -12,11 +12,10 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle, Building2 } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
@@ -36,14 +35,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta primeiro carregar pelo UID (slug pode ser o UID nos novos links)
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
         setTargetUserId(slug);
         setCompanyData(docSnap.data());
       } else {
-        // Fallback para busca por companySlug caso o slug não seja um UID
         const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
         getDocs(q).then(snapshot => {
           if (!snapshot.empty) {
@@ -233,7 +230,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
       <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between transition-all">
         <div className="flex items-center gap-2">
-          {/* Removido logotipo da ferramenta do cabeçalho */}
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">Início</Button>
@@ -256,12 +252,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
-          {/* Logo central substituído por ícone genérico ou removido conforme solicitado */}
-          <div className="relative w-32 h-32 md:w-56 md:h-56 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted flex items-center justify-center transition-transform hover:scale-105 duration-500">
-             <div className="bg-primary/5 w-full h-full flex items-center justify-center">
-               <Building2 className="w-16 h-16 md:w-24 md:h-24 text-primary/20" />
-             </div>
-          </div>
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
             Social Proof
           </Badge>
@@ -354,12 +344,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <footer className="mt-20 md:mt-40 py-16 md:py-32 border-t bg-background text-center px-4 overflow-hidden shadow-inner">
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
           <div className="flex flex-col items-center gap-6 md:gap-10">
-            <div className="flex items-center gap-3 md:gap-4">
-              <span className="text-muted-foreground text-sm md:text-xl font-medium tracking-wide">Conheça a</span>
-              <div className="flex items-center gap-2">
-                 <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={48} height={48} className="rounded-xl shadow-sm" />
-              </div>
-            </div>
             <p className="text-muted-foreground text-xs md:text-lg max-w-lg leading-relaxed px-4">
               Transforme a satisfação dos seus clientes em sua ferramenta de vendas mais poderosa.
             </p>
