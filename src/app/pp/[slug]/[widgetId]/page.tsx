@@ -255,15 +255,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           )}
 
-          <header className="px-6 py-8 text-center space-y-4">
-            <Badge variant="outline" className="text-[8px] uppercase tracking-[0.2em] font-black py-1 px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>
-              Aprovado por Clientes
-            </Badge>
+          <header className="px-6 py-8 text-center space-y-2">
             <h1 className="text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
               O que dizem sobre {companyData?.companyName}
             </h1>
             <p className="text-muted-foreground font-medium text-sm max-w-md mx-auto">
-              Depoimentos reais de clientes satisfeitos com nossos serviços.
+              {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
             </p>
           </header>
 
