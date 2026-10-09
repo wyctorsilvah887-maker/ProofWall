@@ -113,7 +113,6 @@ const TestimonialCard = ({ t, themeColor, small = false, isPopup = false, index 
 const PublicPageSettings = ({ 
   widgetName, setWidgetName,
   themeColor, setThemeColor,
-  coverImageUrl, setCoverImageUrl,
   whatsappEnabled, setWhatsappEnabled,
   whatsappNumber, setWhatsappNumber,
   externalSiteUrl, setExternalSiteUrl,
@@ -150,11 +149,7 @@ const PublicPageSettings = ({
               </div>
               
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (URL)</Label>
-                  <Input value={coverImageUrl} onChange={(e) => setCoverImageUrl(e.target.value)} placeholder="https://exemplo.com/capa.jpg" />
-                </div>
-                
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa</Label>
                 <div className="relative group">
                   <div className="border-2 border-dashed border-muted-foreground/20 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 bg-muted/5 opacity-60 cursor-not-allowed transition-all">
                     <div className="bg-background p-3 rounded-full shadow-sm">
@@ -360,7 +355,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const settingsProps = {
     widgetName, setWidgetName,
     themeColor, setThemeColor,
-    coverImageUrl, setCoverImageUrl,
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
     externalSiteUrl, setExternalSiteUrl,
@@ -551,4 +545,3 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
-
