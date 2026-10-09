@@ -206,8 +206,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8">
-      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto">
+    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative">
+      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
@@ -296,19 +296,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </p>
           </footer>
         </div>
-
-        {whatsappEnabled && whatsappNumber && (
-          <a 
-            href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
-          >
-            <MessageCircle className="w-6 h-6 fill-current" />
-            <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
-          </a>
-        )}
       </div>
+
+      {whatsappEnabled && whatsappNumber && (
+        <a 
+          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
+        >
+          <MessageCircle className="w-6 h-6 fill-current" />
+          <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
+        </a>
+      )}
     </div>
   );
 }

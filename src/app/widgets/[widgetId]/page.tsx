@@ -18,7 +18,6 @@ import {
   Copy,
   ExternalLink,
   Link2,
-  Image as ImageIcon,
   MessageCircle,
   Layout,
   LayoutGrid,
@@ -36,7 +35,6 @@ import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -121,13 +119,22 @@ const PublicPageSettings = ({
 }: any) => {
   
   const formatWhatsApp = (value: string) => {
-    const v = value.replace(/\D/g, '').slice(0, 13);
+    const v = value.replace(/\D/g, '');
     if (!v) return '';
-    if (v.length <= 2) return v;
-    if (v.length <= 4) return `${v.slice(0, 2)} (${v.slice(2)}`;
-    if (v.length <= 8) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4)}`;
-    if (v.length <= 12) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 8)}-${v.slice(8)}`;
-    return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
+    
+    const len = v.length;
+    if (len <= 2) return v;
+    
+    // Se começar com 55 (DDI Brasil)
+    if (v.startsWith('55') && len > 4) {
+      if (len <= 12) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 8)}-${v.slice(8)}`;
+      return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
+    }
+    
+    // Formato padrão brasileiro (DDD) 9XXXX-XXXX
+    if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
+    if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
+    return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -232,9 +239,10 @@ const PublicPageSettings = ({
                     inputMode="numeric"
                     value={whatsappNumber} 
                     onChange={handleWhatsAppChange} 
-                    placeholder="55 (11) 99999-9999" 
+                    placeholder="(11) 99999-9999" 
+                    className="h-12 text-base md:text-sm"
                   />
-                  <p className="text-[9px] text-muted-foreground">Formato: DDI + DDD + Número</p>
+                  <p className="text-[9px] text-muted-foreground">Formato automático aplicado ao digitar.</p>
                 </div>
               )}
               <div className="space-y-2">
