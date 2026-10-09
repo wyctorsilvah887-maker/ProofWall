@@ -3,7 +3,6 @@
 
 import { useState, useMemo, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { 
   ArrowLeft, 
   Save, 
@@ -15,7 +14,6 @@ import {
   User,
   Zap,
   LayoutGrid,
-  Columns,
   Play,
   CheckCircle2,
   Menu,
@@ -32,8 +30,6 @@ import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -56,7 +52,7 @@ type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 const TestimonialCard = ({ t, small = false, isPopup = false, themeColor }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string }) => (
   <Card 
     className={cn(
-      "bg-background shadow-xl border-none text-left overflow-hidden border-t-4 animate-in fade-in zoom-in-95",
+      "bg-background shadow-xl border-none text-left overflow-hidden border-t-4 animate-in fade-in zoom-in-95 transition-all duration-500",
       small ? "p-3" : "p-6",
       isPopup && "max-w-[280px] border-l-4 border-t-0"
     )} 
@@ -65,6 +61,7 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor }: { t:
       borderLeftColor: isPopup ? themeColor : 'transparent',
       borderTopWidth: !isPopup ? '3px' : '0', 
       borderLeftWidth: isPopup ? '4px' : '0',
+      boxShadow: `0 10px 30px -15px ${themeColor}20`
     }}
   >
     <div className="flex flex-col space-y-2">
@@ -76,7 +73,7 @@ const TestimonialCard = ({ t, small = false, isPopup = false, themeColor }: { t:
       </div>
       <div className="flex gap-0.5 pl-6">
         {Array.from({ length: t.rating || 5 }).map((_, i) => (
-          <Star key={i} className={cn("fill-primary text-primary", small ? "w-2 h-2" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
+          <Star key={i} className={cn("fill-primary text-primary", small ? "w-2.5 h-2.5" : "w-2.5 h-2.5")} style={{ color: themeColor, fill: themeColor }} />
         ))}
       </div>
       <p className={cn("text-gray-700 italic", small ? "text-[10px] line-clamp-3" : "text-sm mb-2")}>"{t.text}"</p>
@@ -115,10 +112,10 @@ const EmbedSettings = ({
                 <button 
                   key={item.id}
                   onClick={() => setLayout(item.id as LayoutType)} 
-                  className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5" : "border-muted")}
+                  className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20")}
                 >
-                  <item.icon className="w-4 h-4" />
-                  <span className="text-xs font-bold">{item.label}</span>
+                  <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
+                  <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
                 </button>
               ))}
             </div>
@@ -214,7 +211,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
-              <SheetHeader className="sr-only"><SheetTitle>Editor de Mural Embutido</SheetTitle></SheetHeader>
+              <SheetHeader className="sr-only">
+                <SheetTitle>Editor de Mural Embutido</SheetTitle>
+              </SheetHeader>
               <div className="flex-1 min-h-0"><EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} /></div>
             </SheetContent>
           </Sheet>
@@ -247,7 +246,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <div className="w-full max-w-2xl">
                 {approvedTestimonials?.filter(t => selectedIds.includes(t.id)).length > 0 ? (
                   <div className={cn(
-                    "w-full",
+                    "w-full transition-all duration-700",
                     layout === 'mural' && "columns-2 gap-4",
                     layout === 'grid' && "grid grid-cols-2 gap-4",
                     layout === 'carousel' && "max-w-md mx-auto",
@@ -257,7 +256,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       .filter(t => selectedIds.includes(t.id))
                       .slice(0, layout === 'mural' || layout === 'grid' ? 4 : 1)
                       .map((t: any) => (
-                        <div key={t.id} className="mb-4">
+                        <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                           <TestimonialCard t={t} small themeColor={themeColor} isPopup={layout === 'popup'} />
                         </div>
                       ))}
@@ -273,7 +272,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <h2 className="text-sm font-bold font-headline flex items-center gap-2 text-muted-foreground"><MessageSquare className="w-4 h-4" /> Escolher Depoimentos</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {approvedTestimonials?.map((t: any) => (
-                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm")}>
+                  <div key={t.id} onClick={() => toggleTestimonial(t.id)} className={cn("cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10")}>
                     <div className="flex items-start gap-3">
                       <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
@@ -311,3 +310,4 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     </div>
   );
 }
+

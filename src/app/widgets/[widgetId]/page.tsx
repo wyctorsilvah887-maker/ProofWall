@@ -3,7 +3,6 @@
 
 import { useState, useMemo, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { 
   ArrowLeft, 
   Save, 
@@ -25,8 +24,7 @@ import {
   Image as ImageIcon,
   MessageCircle,
   Layout,
-  Play,
-  Grid
+  Play
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,13 +60,14 @@ type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 const TestimonialCard = ({ t, themeColor, small = false, isPopup = false }: { t: any, themeColor: string, small?: boolean, isPopup?: boolean }) => (
   <Card 
     className={cn(
-      "bg-background shadow-lg border-none text-left overflow-hidden border-t-4",
+      "bg-background shadow-lg border-none text-left overflow-hidden border-t-4 transition-all duration-500",
       small ? "p-3" : "p-6",
       isPopup && "max-w-[280px] border-l-4 border-t-0"
     )} 
     style={{ 
       borderTopColor: !isPopup ? themeColor : 'transparent',
-      borderLeftColor: isPopup ? themeColor : 'transparent'
+      borderLeftColor: isPopup ? themeColor : 'transparent',
+      boxShadow: `0 10px 30px -15px ${themeColor}20`
     }}
   >
     <div className="flex flex-col space-y-3">
@@ -146,7 +145,7 @@ const PublicPageSettings = ({
                     { id: 'mural', icon: LayoutGrid, label: 'Mural (Masonry)' },
                     { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade (Grid)' },
-                    { id: 'popup', icon: MessageSquare, label: 'Popup Único' },
+                    { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
                   ].map((item) => (
                     <button 
                       key={item.id}
@@ -295,7 +294,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
-              <SheetHeader className="sr-only"><SheetTitle>Editor da Página VIP</SheetTitle></SheetHeader>
+              <SheetHeader className="sr-only">
+                <SheetTitle>Editor da Página VIP</SheetTitle>
+              </SheetHeader>
               <div className="flex-1 min-h-0"><PublicPageSettings {...settingsProps} /></div>
             </SheetContent>
           </Sheet>
@@ -356,7 +357,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 )}>
                   {visibleTestimonials.length > 0 ? (
                     visibleTestimonials.slice(0, layout === 'mural' || layout === 'grid' ? 6 : 1).map((t: any) => (
-                      <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4">
+                      <div key={t.id} className="mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <TestimonialCard t={t} themeColor={themeColor} small={layout !== 'popup'} isPopup={layout === 'popup'} />
                       </div>
                     ))
@@ -367,7 +368,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               </div>
 
               {whatsappEnabled && (
-                <div className="absolute bottom-6 right-6 bg-green-500 p-3 rounded-full text-white shadow-lg">
+                <div className="absolute bottom-6 right-6 bg-green-500 p-3 rounded-full text-white shadow-lg animate-in zoom-in fade-in">
                   <MessageCircle className="w-6 h-6" />
                 </div>
               )}

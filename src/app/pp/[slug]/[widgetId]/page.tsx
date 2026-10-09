@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -110,21 +111,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const themeColor = widgetData?.themeColor || '#f97316';
   const coverImageUrl = widgetData?.coverImageUrl || '';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
-  const whatsappNumber = widgetData?.whatsappNumber || '';
+  const whatsappNumber = whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
 
   useEffect(() => {
     if ((layout === 'carousel' || layout === 'popup') && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
         setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 3000); 
+      }, 5000); 
       return () => clearInterval(intervalId);
     }
     
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const intervalId = setInterval(() => {
         setMuralIndex(prev => (prev + 1) % filteredTestimonials.length);
-      }, 6000);
+      }, 7000);
       return () => clearInterval(intervalId);
     }
   }, [layout, filteredTestimonials]);
@@ -133,7 +134,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     
     const slice = [];
-    const countToShow = Math.min(4, filteredTestimonials.length);
+    const countToShow = Math.min(6, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -177,7 +178,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         "break-inside-avoid border-none shadow-lg transition-all duration-700 bg-background group mb-6",
         "hover:-translate-y-2 hover:shadow-2xl hover:ring-2",
         isPopup ? "max-w-full sm:max-w-md border-l-4" : "border-t-4",
-        "animate-in fade-in zoom-in-95 slide-in-from-right-12"
+        "animate-in fade-in zoom-in-95 slide-in-from-bottom-8"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -256,7 +257,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
-            Social Proof
+            Social Proof VIP
           </Badge>
           <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.85]">
             O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-8" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
@@ -278,7 +279,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             {layout === 'mural' && (
               <div 
                 key={muralIndex}
-                className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-10 max-w-6xl mx-auto px-1"
+                className="columns-1 sm:columns-2 lg:columns-3 gap-4 md:gap-10 max-w-6xl mx-auto px-1 transition-all duration-700"
               >
                 {visibleMuralTestimonials.map((t, i) => (
                   <TestimonialCard key={t.id + muralIndex + i} t={t} index={i} />
@@ -359,7 +360,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </a>
             )}
             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium opacity-50">
-              © Proova Social Proof
+              © Proova Social Proof VIP
             </p>
           </div>
         </div>
@@ -367,3 +368,4 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     </div>
   );
 }
+
