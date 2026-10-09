@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import Image from 'next/image';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -230,6 +231,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
       <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between transition-all">
         <div className="flex items-center gap-2">
+           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={64} height={64} className="rounded-2xl shadow-sm" />
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">Início</Button>
@@ -344,15 +346,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <footer className="mt-20 md:mt-40 py-16 md:py-32 border-t bg-background text-center px-4 overflow-hidden shadow-inner">
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
           <div className="flex flex-col items-center gap-6 md:gap-10">
-            <p className="text-muted-foreground text-xs md:text-lg max-w-lg leading-relaxed px-4">
-              Transforme a satisfação dos seus clientes em sua ferramenta de vendas mais poderosa.
-            </p>
             <Link 
-              href="/" 
+              href={`/c/${companyData?.companySlug || slug}`}
               className="inline-flex items-center gap-3 md:gap-4 px-10 md:px-14 py-4 md:py-6 rounded-full text-primary-foreground text-sm md:text-xl font-black hover:scale-105 transition-all shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)]"
               style={{ backgroundColor: themeColor }}
             >
-              Conhecer a Proova <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+              Deixar meu feedback <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           </div>
         </div>
