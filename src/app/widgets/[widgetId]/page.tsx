@@ -412,6 +412,9 @@ export default function WidgetEditorPage({ params }: { params: Promise<{ widgetI
               <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 flex flex-col">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Configurações do Mural</SheetTitle>
+              </SheetHeader>
               <div className="flex-1 min-h-0"><WidgetSettings {...settingsProps} /></div>
             </SheetContent>
           </Sheet>
