@@ -46,7 +46,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, limit } from 'firebase/firestore';
+import { doc, collection, query, orderBy } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -84,8 +84,7 @@ export default function DashPage() {
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(
-      collection(db, 'users', user.uid, 'testimonials'),
-      limit(10)
+      collection(db, 'users', user.uid, 'testimonials')
     );
   }, [db, user]);
 
@@ -386,24 +385,24 @@ export default function DashPage() {
               <h2 className="text-xl font-bold font-headline tracking-tight">Visualização</h2>
             </div>
             
-            <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
+            <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative min-h-[350px] md:min-h-[400px] flex flex-col items-center justify-center p-4 md:p-6 text-center">
               <div className="absolute top-4 left-4">
                 <Layout className="w-4 h-4 text-primary/40" />
               </div>
 
-              <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative w-full flex-1 flex items-center justify-center py-8">
                 {displayTestimonials.length > 0 ? (
                   <div 
                     key={displayTestimonials[previewIndex].id}
-                    className="absolute bottom-4 right-0 left-0 animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
+                    className="w-full max-w-[280px] animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
                   >
-                    <div className="bg-background rounded-xl p-3 shadow-2xl border border-primary/20 text-left max-w-[240px] mx-auto">
+                    <div className="bg-background rounded-xl p-3 md:p-4 shadow-2xl border border-primary/20 text-left w-full">
                       <div className="flex flex-col space-y-1 mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="bg-primary/10 p-1 rounded-full">
+                          <div className="bg-primary/10 p-1 rounded-full shrink-0">
                             <User className="w-3 h-3 text-primary" />
                           </div>
-                          <p className="text-[10px] font-bold leading-tight">{displayTestimonials[previewIndex].userName}</p>
+                          <p className="text-[10px] md:text-xs font-bold leading-tight truncate">{displayTestimonials[previewIndex].userName}</p>
                         </div>
                         <div className="flex gap-0.5 pl-6">
                           {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
@@ -411,10 +410,10 @@ export default function DashPage() {
                           ))}
                         </div>
                       </div>
-                      <p className="text-[10px] text-gray-700 italic line-clamp-3 leading-relaxed">
+                      <p className="text-[10px] md:text-xs text-gray-700 italic line-clamp-3 leading-relaxed">
                         "{displayTestimonials[previewIndex].text}"
                       </p>
-                      <div className="mt-2 pt-2 border-t border-muted flex items-center justify-between">
+                      <div className="mt-3 pt-2 border-t border-muted flex items-center justify-between">
                         <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
                           Proova Social Proof
                         </span>
@@ -428,8 +427,8 @@ export default function DashPage() {
                 )}
               </div>
 
-              <div className="mt-auto pt-6 w-full">
-                <Button variant="outline" className="w-full text-xs h-8 border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/widgets')}>
+              <div className="mt-auto w-full">
+                <Button variant="outline" className="w-full text-xs h-9 border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/widgets')}>
                   Personalizar
                 </Button>
               </div>
@@ -439,23 +438,23 @@ export default function DashPage() {
       </main>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-2xl">
+            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl">
               <QrCode className="w-6 h-6 text-primary" />
               QR Code de Balcão
             </DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogDescription className="text-sm md:text-base">
               Seus clientes podem escanear este código para deixar um depoimento rapidamente.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex flex-col items-center justify-center py-6 space-y-6">
-            <div className="p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/20">
+          <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6">
+            <div className="p-4 md:p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/20">
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={240} 
+                size={200} 
                 level="H"
                 includeMargin={true}
               />
@@ -478,7 +477,7 @@ export default function DashPage() {
                     const svgData = new XMLSerializer().serializeToString(svg);
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const img = new Image();
+                    const img = new (window as any).Image();
                     img.onload = () => {
                       canvas.width = img.width;
                       canvas.height = img.height;
