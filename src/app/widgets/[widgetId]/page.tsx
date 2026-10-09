@@ -407,6 +407,12 @@ export default function WidgetEditorPage({ params }: { params: Promise<{ widgetI
     <div className="min-h-screen bg-muted/20 flex flex-col font-body pb-20">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 flex-1 min-w-0">
+          <Link href="/widgets" className="mr-2 hidden sm:block">
+            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-primary">
+              <ArrowLeft className="w-4 h-4" />
+              <span className="font-bold">Voltar</span>
+            </Button>
+          </Link>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 text-primary"><Menu className="h-6 w-6" /></Button>
