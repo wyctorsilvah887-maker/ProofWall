@@ -12,7 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, ShieldCheck, Zap, ArrowRight, MessageCircle, Building2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -93,7 +93,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         operation: 'list',
       } satisfies SecurityRuleContext);
       errorEmitter.emit('permission-error', permissionError);
-      // Não trava a página se os depoimentos falharem, mas para o loading
       setIsLoading(false);
     });
 
@@ -234,7 +233,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-muted/10 font-body pb-12 md:pb-20 relative overflow-x-hidden">
       <nav className="fixed top-0 left-0 right-0 h-16 md:h-20 bg-background/80 backdrop-blur-md border-b z-[150] flex items-center px-4 md:px-8 justify-between transition-all">
         <div className="flex items-center gap-2">
-          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={64} height={64} className="rounded-2xl shadow-sm" />
+          {/* Removido logotipo da ferramenta do cabeçalho */}
         </div>
         <Link href="/">
           <Button variant="ghost" size="sm" className="text-xs md:text-sm font-bold text-muted-foreground hover:text-primary uppercase tracking-widest">Início</Button>
@@ -257,16 +256,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </div>
         
         <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10 px-4 flex flex-col items-center">
-          <div className="relative w-32 h-32 md:w-56 md:h-56 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted transition-transform hover:scale-105 duration-500">
-             <Image 
-              src="/maskable_icon_x512 (3).png" 
-              alt="Logo Empresa" 
-              fill
-              className="object-cover"
-            />
+          {/* Logo central substituído por ícone genérico ou removido conforme solicitado */}
+          <div className="relative w-32 h-32 md:w-56 md:h-56 mb-4 overflow-hidden rounded-3xl border-4 border-white shadow-2xl bg-muted flex items-center justify-center transition-transform hover:scale-105 duration-500">
+             <div className="bg-primary/5 w-full h-full flex items-center justify-center">
+               <Building2 className="w-16 h-16 md:w-24 md:h-24 text-primary/20" />
+             </div>
           </div>
           <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-none px-6 md:px-8 py-1.5 md:py-2 text-[9px] md:text-xs uppercase tracking-[0.3em] font-black" style={{ backgroundColor: `${themeColor}20`, color: themeColor }}>
-            Social Proof by Proova
+            Social Proof
           </Badge>
           <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-headline tracking-tighter text-gray-900 leading-[1] md:leading-[0.85]">
             O que dizem sobre <br className="hidden sm:block"/> <span className="underline decoration-4 md:decoration-8 underline-offset-8" style={{ textDecorationColor: `${themeColor}40` }}>{companyData?.companyName}</span>
