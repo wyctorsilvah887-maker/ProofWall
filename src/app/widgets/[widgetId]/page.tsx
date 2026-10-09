@@ -628,6 +628,29 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
                 </div>
               )}
             </div>
+
+            {/* Public Link Section under Preview */}
+            <div className="w-full max-w-4xl mx-auto mt-4 p-6 bg-background rounded-2xl border shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-primary">
+                <Link2 className="w-4 h-4" />
+                <h3 className="text-sm font-bold font-headline uppercase tracking-widest">Link da Página Pública</h3>
+              </div>
+              <div className="flex gap-2">
+                <Input 
+                  readOnly 
+                  value={publicPageLink}
+                  className="bg-muted/30 border-primary/20 font-mono text-[10px] md:text-xs h-10"
+                />
+                <Button variant="secondary" size="icon" className="h-10 w-10 shrink-0" onClick={copyLink}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <a href={publicPageLink} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-primary/20 text-primary hover:bg-primary/5">
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </a>
+              </div>
+            </div>
           </div>
 
           <div className="max-w-4xl mx-auto space-y-4 md:space-y-6 pt-8 border-t">
@@ -692,37 +715,16 @@ export default function WidgetEditPage({ params }: { params: Promise<{ widgetId:
             <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
               <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
-            <DialogTitle className="text-2xl font-headline">Widget Atualizado!</DialogTitle>
-            <DialogDescription>
-              Seu mural de depoimentos está pronto. Use o link abaixo para compartilhar com seus clientes.
+            <DialogTitle className="text-2xl font-headline">Alterações Salvas!</DialogTitle>
+            <DialogDescription className="text-base text-gray-700">
+              As atualizações foram aplicadas com sucesso. Links compartilhados anteriormente continuarão funcionando e exibirão o novo visual automaticamente.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Link da Página Pública</Label>
-              <div className="flex gap-2">
-                <Input 
-                  readOnly 
-                  value={publicPageLink}
-                  className="bg-muted/30 border-primary/20 font-mono text-xs h-11"
-                />
-                <Button variant="secondary" size="icon" className="h-11 w-11 shrink-0" onClick={copyLink}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" className="w-full" onClick={() => setIsLinkDialogOpen(false)}>
-              Fechar
+          <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
+            <Button className="w-full font-bold h-12" onClick={() => setIsLinkDialogOpen(false)}>
+              Entendido
             </Button>
-            <a href={publicPageLink} target="_blank" rel="noopener noreferrer" className="w-full">
-              <Button className="w-full gap-2">
-                <ExternalLink className="w-4 h-4" /> Ver Página
-              </Button>
-            </a>
           </DialogFooter>
         </DialogContent>
       </Dialog>
