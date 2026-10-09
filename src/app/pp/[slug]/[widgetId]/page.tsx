@@ -17,7 +17,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import {
   Carousel,
   CarouselContent,
@@ -239,7 +238,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
-            <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={40} height={40} className="rounded-xl" />
             <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Social Proof</span>
           </div>
           <Link href="/">
