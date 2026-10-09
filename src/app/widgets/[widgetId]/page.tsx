@@ -210,7 +210,12 @@ const PublicPageSettings = ({
               {whatsappEnabled && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
-                  <Input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="Ex: 5511999999999" />
+                  <Input 
+                    value={whatsappNumber} 
+                    onChange={(e) => setWhatsappNumber(e.target.value)} 
+                    placeholder="Ex: 5511999999999" 
+                  />
+                  <p className="text-[9px] text-muted-foreground">Insira o DDI + DDD + Número (apenas números)</p>
                 </div>
               )}
               <div className="space-y-2">
@@ -447,12 +452,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
-                  <Badge variant="outline" className="text-[7px] sm:text-[10px] uppercase tracking-[0.2em] font-black py-0.5 sm:py-1 px-3 sm:px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
                   <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
                     O que dizem sobre {userData?.companyName}
                   </h1>
                   <p className="text-muted-foreground font-medium text-xs sm:text-sm max-w-xl mx-auto px-4">
-                    Depoimentos reais de clientes satisfeitos com nossos serviços.
+                    {widgetName} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
                   </p>
                 </div>
 

@@ -206,7 +206,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8">
-      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col min-h-screen md:min-h-[90vh] overflow-hidden relative border border-gray-100 mx-auto">
+      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
@@ -221,7 +221,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
               <h1 className="text-2xl sm:text-3xl font-black tracking-tighter leading-tight text-gray-900">
-                O que dizem sobre <br /> <span style={{ color: themeColor }}>{companyData?.companyName}</span>
+                O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
               <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
