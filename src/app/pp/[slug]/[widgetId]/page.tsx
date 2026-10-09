@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -199,30 +200,30 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           boxShadow: `0 10px 30px -15px ${themeColor}40`,
         }}
       >
-        <CardContent className={cn("p-2 sm:p-3 space-y-2")}>
-          <div className="flex flex-col space-y-1.5">
+        <CardContent className={cn("p-2 sm:p-3 space-y-1.5")}>
+          <div className="flex flex-col space-y-1">
             <div className="flex items-start justify-between w-full gap-2">
               <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="flex items-center gap-1 mb-0.5">
                   <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                    <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
+                    <User className="w-2 h-2" style={{ color: themeColor }} />
                   </div>
-                  <p className="font-bold text-[9px] sm:text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
+                  <p className="font-bold text-[8px] sm:text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
                 </div>
-                <div className="flex gap-0.5 pl-5">
+                <div className="flex gap-0.5 pl-4">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-2.5 h-2.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                    <Star key={i} className="w-2 h-2 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
                   ))}
                 </div>
               </div>
             </div>
 
-            <blockquote className="text-[10px] sm:text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-0.5 overflow-hidden break-words">
+            <blockquote className="text-[9px] sm:text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-0.5 overflow-hidden break-words">
               "{t.text}"
             </blockquote>
 
-            <div className="pt-1.5 border-t border-muted/50 mt-1 flex items-center justify-between">
-              <p className="text-[7px] sm:text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
+            <div className="pt-1 border-t border-muted/50 mt-1 flex items-center justify-between">
+              <p className="text-[6px] sm:text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
                 {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Recente'}
               </p>
             </div>
@@ -238,26 +239,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Social Proof</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">SOCIAL PROOF</span>
           </div>
           <Link href="/">
-            <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest">Início</Button>
+            <Button variant="ghost" size="sm" className="text-[9px] font-bold uppercase tracking-widest">Início</Button>
           </Link>
         </nav>
 
-        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-20">
-          {coverImageUrl && (
-            <div className="h-48 w-full relative shrink-0">
-              <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-            </div>
-          )}
-
-          <header className="px-6 py-8 text-center space-y-2">
-            <h1 className="text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
+        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
+          <header className="px-6 py-10 text-center space-y-3">
+            <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
               O que dizem sobre {companyData?.companyName}
             </h1>
-            <p className="text-muted-foreground font-medium text-sm max-w-md mx-auto">
+            <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
               {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
             </p>
           </header>
@@ -265,8 +259,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <main className="px-6 space-y-8 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
-                <MessageSquare className="w-12 h-12" />
-                <p className="text-[10px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
+                <MessageSquare className="w-10 h-10" />
+                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
               </div>
             ) : (
               <div className="w-full">
@@ -329,13 +323,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white text-sm font-black shadow-xl hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white text-[11px] font-black shadow-xl hover:scale-105 transition-all"
                 style={{ backgroundColor: themeColor }}
               >
                 Visitar Site Oficial <Globe className="w-4 h-4" />
               </a>
             )}
-            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
+            <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
               © Proova Social Proof
             </p>
           </footer>
@@ -346,7 +340,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="absolute bottom-6 right-6 z-30 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all"
+            className="fixed bottom-6 right-6 md:absolute md:bottom-6 md:right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
           >
             <MessageCircle className="w-6 h-6 fill-current" />
             <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
