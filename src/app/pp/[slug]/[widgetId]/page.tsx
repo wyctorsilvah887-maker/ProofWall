@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -13,8 +12,7 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, MessageCircle, Globe, LayoutGrid, Play } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Star, User, Loader2, MessageSquare, MessageCircle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -103,7 +101,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const layout = widgetData?.layout || 'mural';
   const themeColor = widgetData?.themeColor || '#f97316';
-  const coverImageUrl = widgetData?.coverImageUrl || '';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
@@ -248,8 +245,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
           <header className="px-6 py-10 text-center space-y-3">
-            <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
-              O que dizem sobre {companyData?.companyName}
+            <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900">
+              O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
             </h1>
             <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
               {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
@@ -340,7 +337,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 md:absolute md:bottom-6 md:right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
+            className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
           >
             <MessageCircle className="w-6 h-6 fill-current" />
             <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
