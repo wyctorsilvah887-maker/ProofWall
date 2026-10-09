@@ -199,30 +199,30 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           boxShadow: `0 10px 30px -15px ${themeColor}40`,
         }}
       >
-        <CardContent className={cn("p-3 sm:p-4 space-y-3")}>
-          <div className="flex flex-col space-y-2">
+        <CardContent className={cn("p-2 sm:p-3 space-y-2")}>
+          <div className="flex flex-col space-y-1.5">
             <div className="flex items-start justify-between w-full gap-2">
               <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-1.5 mb-0.5">
                   <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                    <User className="w-3 h-3" style={{ color: themeColor }} />
+                    <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
                   </div>
-                  <p className="font-bold text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
+                  <p className="font-bold text-[9px] sm:text-[10px] text-gray-900 leading-tight truncate">{t.userName}</p>
                 </div>
-                <div className="flex gap-0.5 pl-6">
+                <div className="flex gap-0.5 pl-5">
                   {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
+                    <Star key={i} className="w-2.5 h-2.5 transition-transform group-hover:scale-110" style={{ color: themeColor, fill: themeColor }} />
                   ))}
                 </div>
               </div>
             </div>
 
-            <blockquote className="text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-1 overflow-hidden break-words">
+            <blockquote className="text-[10px] sm:text-xs text-gray-700 leading-relaxed italic group-hover:text-gray-900 transition-colors pt-0.5 overflow-hidden break-words">
               "{t.text}"
             </blockquote>
 
-            <div className="pt-2 border-t border-muted/50 mt-1 flex items-center justify-between">
-              <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
+            <div className="pt-1.5 border-t border-muted/50 mt-1 flex items-center justify-between">
+              <p className="text-[7px] sm:text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">
                 {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Recente'}
               </p>
             </div>
@@ -271,9 +271,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             ) : (
               <div className="w-full">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-1 sm:columns-2 gap-4 transition-all duration-700">
+                  <div key={muralIndex} className="columns-2 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
                     {visibleMuralTestimonials.map((t, i) => (
-                      <div key={t.id + muralIndex + i} className="break-inside-avoid">
+                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-3">
                         <TestimonialCard t={t} index={i} />
                       </div>
                     ))}
@@ -281,7 +281,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
