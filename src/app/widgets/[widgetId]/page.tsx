@@ -117,54 +117,32 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
-<<<<<<< HEAD
-  const formatWhatsApp = (value: string) => {
-    let val = value.replace(/\D/g, '');
-    if (val.length > 13) val = val.slice(0, 13);
-    
-    let formatted = val;
-    if (val.length > 0) {
-      formatted = '+' + val;
-      if (val.length > 2) {
-        formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2);
-        if (val.length > 4) {
-          formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2, 4) + ') ' + val.slice(4);
-          if (val.length > 9) {
-            formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2, 4) + ') ' + val.slice(4, 9) + '-' + val.slice(9);
-          }
-        }
-      }
-    }
-    return formatted;
-  };
-
-  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWhatsappNumber(formatWhatsApp(e.target.value));
-=======
   
   const formatWhatsApp = (value: string) => {
     const v = value.replace(/\D/g, '');
     if (!v) return '';
     
     const len = v.length;
-    if (len <= 2) return v;
     
     // Se começar com 55 (DDI Brasil)
-    if (v.startsWith('55') && len > 4) {
-      if (len <= 12) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 8)}-${v.slice(8)}`;
-      return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
+    if (v.startsWith('55')) {
+      if (len <= 2) return `+${v}`;
+      if (len <= 4) return `+${v.slice(0, 2)} (${v.slice(2)}`;
+      if (len <= 9) return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4)}`;
+      if (len <= 13) return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
+      return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9, 13)}`;
     }
     
-    // Formato padrão brasileiro (DDD) 9XXXX-XXXX
+    // Formato padrão brasileiro sem DDI (DDD) 9XXXX-XXXX
+    if (len <= 2) return `(${v}`;
     if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
     if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
-    return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+    return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7, 11)}`;
   };
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatWhatsApp(e.target.value);
     setWhatsappNumber(formatted);
->>>>>>> 2850dbefe64cb15aa59d65b72f57b6825bdc5112
   };
 
   return (
@@ -259,19 +237,15 @@ const PublicPageSettings = ({
               {whatsappEnabled && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
-<<<<<<< HEAD
-                  <Input value={whatsappNumber} onChange={handleWhatsAppChange} placeholder="+55 (11) 99999-9999" />
-=======
                   <Input 
                     type="text"
                     inputMode="numeric"
                     value={whatsappNumber} 
                     onChange={handleWhatsAppChange} 
-                    placeholder="(11) 99999-9999" 
+                    placeholder="+55 (11) 99999-9999" 
                     className="h-12 text-base md:text-sm"
                   />
-                  <p className="text-[9px] text-muted-foreground">Formato automático aplicado ao digitar.</p>
->>>>>>> 2850dbefe64cb15aa59d65b72f57b6825bdc5112
+                  <p className="text-[9px] text-muted-foreground">Formato DDI + DDD + Número aplicado automaticamente.</p>
                 </div>
               )}
               <div className="space-y-2">
