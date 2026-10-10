@@ -118,6 +118,30 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
+  const formatWhatsApp = (value: string) => {
+    let val = value.replace(/\D/g, '');
+    if (val.length > 13) val = val.slice(0, 13);
+    
+    let formatted = val;
+    if (val.length > 0) {
+      formatted = '+' + val;
+      if (val.length > 2) {
+        formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2);
+        if (val.length > 4) {
+          formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2, 4) + ') ' + val.slice(4);
+          if (val.length > 9) {
+            formatted = '+' + val.slice(0, 2) + ' (' + val.slice(2, 4) + ') ' + val.slice(4, 9) + '-' + val.slice(9);
+          }
+        }
+      }
+    }
+    return formatted;
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWhatsappNumber(formatWhatsApp(e.target.value));
+  };
+
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div className="p-4 border-b bg-muted/10 shrink-0">
@@ -210,7 +234,7 @@ const PublicPageSettings = ({
               {whatsappEnabled && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
-                  <Input value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="Ex: 5511999999999" />
+                  <Input value={whatsappNumber} onChange={handleWhatsAppChange} placeholder="+55 (11) 99999-9999" />
                 </div>
               )}
               <div className="space-y-2">
