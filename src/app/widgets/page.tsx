@@ -43,7 +43,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useUser, useFirestore, useCollection, useAuth, useDoc } from '@/firebase';
-import { collection, addDoc, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
+import { collection, setDoc, serverTimestamp, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
@@ -88,34 +88,58 @@ export default function WidgetsPage() {
     if (!newWidgetName.trim() || !db || !user) return;
 
     setIsCreating(true);
-    const widgetData = {
-      name: newWidgetName.trim(),
-      selectedTestimonialIds: [],
-      createdAt: serverTimestamp(),
-      layout: 'mural',
-      themeColor: '#f97316',
-      whatsappEnabled: false,
-      whatsappNumber: '',
-      externalSiteUrl: '',
-      coverImageUrl: '',
-    };
+    
+    // Gerar Slug amigável para ser o ID
+    let slug = newWidgetName.trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^a-z0-9\s-]/g, '') // Remove caracteres especiais
+      .replace(/\s+/g, '-') // Espaços para hifens
+      .replace(/-+/g, '-'); // Hifens repetidos
 
-    const widgetsRef = collection(db, 'users', user.uid, 'widgets');
+    try {
+      const widgetRef = doc(db, 'users', user.uid, 'widgets', slug);
+      
+      // Verificar se já existe
+      const docSnap = await getDoc(widgetRef);
+      if (docSnap.exists()) {
+        // Se já existe, adicionamos um sufixo temporal curto
+        slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
+      }
 
-    addDoc(widgetsRef, widgetData)
-      .then((docRef) => {
-        setNewWidgetName('');
-        setIsCreating(false);
-        setIsCreateDialogOpen(false);
-        toast({
-          title: "Widget Criado!",
-          description: "Configurando o mural embutido...",
-        });
-        router.push(`/widgetconfig/${docRef.id}`);
-      })
-      .catch(async () => {
-        setIsCreating(false);
+      const finalWidgetRef = doc(db, 'users', user.uid, 'widgets', slug);
+
+      const widgetData = {
+        name: newWidgetName.trim(),
+        selectedTestimonialIds: [],
+        createdAt: serverTimestamp(),
+        layout: 'mural',
+        themeColor: '#f97316',
+        whatsappEnabled: false,
+        whatsappNumber: '',
+        externalSiteUrl: '',
+        coverImageUrl: '',
+      };
+
+      await setDoc(finalWidgetRef, widgetData);
+      
+      setNewWidgetName('');
+      setIsCreating(false);
+      setIsCreateDialogOpen(false);
+      toast({
+        title: "Mural Criado!",
+        description: "Configurando o novo link amigável...",
       });
+      router.push(`/widgetconfig/${slug}`);
+      
+    } catch (error: any) {
+      console.error("Erro ao criar widget:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro na criação",
+        description: "Não foi possível criar o mural agora."
+      });
+      setIsCreating(false);
+    }
   };
 
   const handleDeleteWidget = async (widgetId: string) => {

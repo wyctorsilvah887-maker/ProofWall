@@ -1,6 +1,8 @@
+
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **IDs Baseados em Slugs:** Widgets agora utilizam o nome (slugificado) como ID no Firestore. Isso resulta em URLs amigáveis como `/pp/[slug]/[nome-do-widget]` e buscas O(1) mais eficientes.
 - **Adaptação Desktop (/pp):** Aumentada largura máxima do container central e ajustado o mural para 3 colunas em telas grandes, mantendo a experiência mobile intacta.
 - **Blueprint:** Criado arquivo `docs/blueprint.md` para centralizar a estratégia do produto.
 - **Rodapé da Página Pública:** Adicionada chamada de ação (CTA) "Quer faturar mais? Crie seu Proova" no rodapé para incentivar novos cadastros.
@@ -12,5 +14,5 @@
 
 ## 🚀 Próximos Marcos Técnicos
 - [ ] Implementação de Depoimentos em Vídeo.
-- [ ] Refinamento da máscara de telefone para outros países.
+- [ ] Validação de Slugs duplicados com sugestões automáticas.
 - [ ] Otimização de SEO para as páginas de coleta.

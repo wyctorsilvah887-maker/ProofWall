@@ -1,25 +1,20 @@
-# Proova - Blueprint Estratégico
 
-## 🎯 A Maior Dor: A "Morte Silenciosa" das Vendas
-A principal dor que o Proova resolve para o empresário local e remoto é a perda de vendas por falta de confiança imediata.
+# Proova - Inteligência Estratégica
 
-### Análise Estratégica da Solução
-1. **O Desperdício de Autoridade (O "Elogio Invisível"):** Transforma elogios que ficariam escondidos em ferramentas de fechamento. O Proova dá visibilidade ao que o empresário já faz de bom.
-2. **A Barreira da Prova Social (Redução de Fricção):** Transforma o pedido de depoimento em um processo profissional. O link `proova.io/c/marca` eleva o status da empresa.
-3. **Percepção de Empresa Viva:** Sites estáticos parecem mortos. O Proova traz rostos, nomes e opiniões reais, baixando a guarda da resistência do novo cliente.
-4. **Objeção da Falsidade:** Combate a incredulidade de textos simples com páginas públicas dedicadas e, futuramente, depoimentos em vídeo.
+## 🎯 Posicionamento
+O Proova não é apenas uma ferramenta de coleta de depoimentos. Ele é um **Redutor de Ciclo de Venda**. Sua função principal é eliminar a "Morte Silenciosa" das vendas causada pela falta de confiança imediata do cliente.
 
-## 📍 Posicionamento e Diferencial
-- **Foco:** Empresário local e remoto que precisa de agilidade.
-- **Diferencial:** Domínio `proova.wsstudioscompany.com.br` para autoridade instantânea e simplicidade extrema.
-- **Estética:** Design "App-like", focado em mobile, minimalista e elegante.
-- **Promessa:** Redução do Ciclo de Venda através da confiança instantânea.
+## 💡 A Dor que Resolvemos
+1. **Desperdício de Autoridade:** Transforma elogios "escondidos" (WhatsApp/Presencial) em ativos públicos de venda.
+2. **Fricção na Coleta:** O link `proova.io/c/sua-marca` torna o ato de avaliar um processo de "Experiência VIP".
+3. **Incredulidade:** Depoimentos em páginas dedicadas (`/pp`) e widgets dinâmicos passam muito mais verdade que textos estáticos.
 
-## 🚀 Próximos Passos
-- Implementação de Depoimentos em Vídeo (VIP).
-- Integração com Google Maps (redirecionamento inteligente).
-- Dashboard de analíticos avançados.
-- Melhorias na compressão de imagens de capa.
+## 🏗️ Arquitetura de Branding (URLs)
+Adotamos o uso de **Slugs amigáveis** como IDs de documentos. 
+- **Página de Coleta:** `/c/[company-slug]`
+- **Página VIP:** `/pp/[company-slug]/[widget-slug]`
+Isso melhora o SEO, aumenta a confiança do cliente final e otimiza a performance de busca no banco de dados.
 
----
-*Este documento define a alma do produto e deve guiar todas as decisões de desenvolvimento.*
+## 🚀 Visão de Futuro
+- **Vídeo Prova:** O próximo grande passo para aniquilar a objeção de falsidade.
+- **Widget Central:** Um snippet único que gerencia múltiplos murais dinamicamente.
