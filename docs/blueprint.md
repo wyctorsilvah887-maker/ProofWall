@@ -1,18 +1,25 @@
-# **App Name**: Jarvis
+# Proova - Blueprint Estratégico
 
-## Core Features:
+## 🎯 A Maior Dor: A "Morte Silenciosa" das Vendas
+A principal dor que o Proova resolve para o empresário local e remoto é a perda de vendas por falta de confiança imediata.
 
-- Ativação por Comando de Voz: Ativa o assistente usando um comando de voz ou palavra de ativação predefinida, permitindo interação sem o uso das mãos.
-- Processamento de Conversa por IA: Utiliza a API Gemini para processar consultas faladas (através de uma ferramenta inteligente de conversão de fala em texto) e gerar respostas textuais altamente relevantes.
-- Síntese de Resposta por Voz: Gera respostas faladas com som natural a partir da saída de texto da IA usando uma ferramenta de conversão de texto em fala, especificamente configurada com uma voz masculina.
-- Exibição de Status Interativo: Um painel minimalista com um elemento circular central que indica visualmente o estado atual do Jarvis, como ouvindo, processando ou falando.
+### Análise Estratégica da Solução
+1. **O Desperdício de Autoridade (O "Elogio Invisível"):** Transforma elogios que ficariam escondidos em ferramentas de fechamento. O Proova dá visibilidade ao que o empresário já faz de bom.
+2. **A Barreira da Prova Social (Redução de Fricção):** Transforma o pedido de depoimento em um processo profissional. O link `proova.io/c/marca` eleva o status da empresa.
+3. **Percepção de Empresa Viva:** Sites estáticos parecem mortos. O Proova traz rostos, nomes e opiniões reais, baixando a guarda da resistência do novo cliente.
+4. **Objeção da Falsidade:** Combate a incredulidade de textos simples com páginas públicas dedicadas e, futuramente, depoimentos em vídeo.
 
-## Style Guidelines:
+## 📍 Posicionamento e Diferencial
+- **Foco:** Empresário local e remoto que precisa de agilidade.
+- **Diferencial:** Domínio `proova.io` para autoridade instantânea e simplicidade extrema.
+- **Estética:** Design "App-like", focado em mobile, minimalista e elegante.
+- **Promessa:** Redução do Ciclo de Venda através da confiança instantânea.
 
-- Cor primária: Um laranja vibrante e ousado (#FF8000) para interações energéticas, significando atividade de IA e tecnologia moderna.
-- Cor de fundo: Um tom profundamente saturado, quase preto, com um toque sutil de laranja (#141110), proporcionando um pano de fundo elegante e sofisticado para o tema escuro.
-- Cor de destaque: Um marcante vermelho-laranja (#E04747) para destacar informações importantes ou elementos interativos, garantindo forte contraste e interesse visual.
-- Títulos e texto de exibição: 'Space Grotesk' (sans-serif) para uma estética moderna e inspirada em tecnologia. Texto do corpo: 'Inter' (sans-serif) para legibilidade clara em informações de suporte ou transcrições.
-- Use ícones de linha limpos e geométricos que se alinham com o tema tecnológico 'preto e laranja' minimalista e futurista, focando na clareza e funcionalidade.
-- Um layout altamente focado e minimalista centrado no círculo de status interativo, garantindo que todas as interações de voz sejam claramente refletidas visualmente.
-- Animações sutis e fluidas para o círculo de status central, fornecendo feedback visual dinâmico durante os estados de audição, processamento e fala, sem ser distrativo.
+## 🚀 Próximos Passos
+- Implementação de Depoimentos em Vídeo (VIP).
+- Integração com Google Maps (redirecionamento inteligente).
+- Dashboard de analíticos avançados.
+- Melhorias na compressão de imagens de capa.
+
+---
+*Este documento define a alma do produto e deve guiar todas as decisões de desenvolvimento.*
