@@ -175,7 +175,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm border-none overflow-hidden",
+          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden border-0",
           isPopup ? "border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
@@ -184,6 +184,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderLeftColor: isPopup ? themeColor : 'transparent',
           borderTopWidth: !isPopup ? '4px' : '0',
           borderLeftWidth: isPopup ? '4px' : '0',
+          borderStyle: 'solid',
           animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
         }}
