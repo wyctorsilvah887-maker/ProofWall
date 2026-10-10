@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -17,7 +18,6 @@ import {
   Copy,
   ExternalLink,
   Link2,
-  Image as ImageIcon,
   MessageCircle,
   Layout,
   LayoutGrid,
@@ -35,7 +35,6 @@ import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -72,7 +71,7 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
     <Card 
       className={cn(
         "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
-        "p-3",
+        "p-2.5",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
@@ -88,23 +87,23 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
         boxShadow: `0 10px 30px -15px ${themeColor}20`
       }}
     >
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-1.5">
         <div className="flex items-start justify-between w-full gap-2">
           <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-1.5 mb-0.5">
               <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-                <User className="w-3 h-3" style={{ color: themeColor }} />
+                <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
               </div>
-              <p className="font-bold text-gray-900 leading-tight truncate text-[10px]">{t.userName}</p>
+              <p className="font-bold text-gray-900 leading-tight truncate text-[9px]">{t.userName}</p>
             </div>
-            <div className="flex gap-0.5 pl-6">
+            <div className="flex gap-0.5 pl-5">
               {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
+                <Star key={i} className="fill-primary text-primary w-2 h-2" style={{ color: themeColor, fill: themeColor }} />
               ))}
             </div>
           </div>
         </div>
-        <p className="text-gray-700 italic leading-relaxed text-[10px] line-clamp-3">"{t.text}"</p>
+        <p className="text-gray-700 italic leading-relaxed text-[9px] line-clamp-3">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -118,6 +117,7 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
+<<<<<<< HEAD
   const formatWhatsApp = (value: string) => {
     let val = value.replace(/\D/g, '');
     if (val.length > 13) val = val.slice(0, 13);
@@ -140,6 +140,31 @@ const PublicPageSettings = ({
 
   const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWhatsappNumber(formatWhatsApp(e.target.value));
+=======
+  
+  const formatWhatsApp = (value: string) => {
+    const v = value.replace(/\D/g, '');
+    if (!v) return '';
+    
+    const len = v.length;
+    if (len <= 2) return v;
+    
+    // Se começar com 55 (DDI Brasil)
+    if (v.startsWith('55') && len > 4) {
+      if (len <= 12) return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 8)}-${v.slice(8)}`;
+      return `${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
+    }
+    
+    // Formato padrão brasileiro (DDD) 9XXXX-XXXX
+    if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
+    if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
+    return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+  };
+
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatWhatsApp(e.target.value);
+    setWhatsappNumber(formatted);
+>>>>>>> 2850dbefe64cb15aa59d65b72f57b6825bdc5112
   };
 
   return (
@@ -234,7 +259,19 @@ const PublicPageSettings = ({
               {whatsappEnabled && (
                 <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
+<<<<<<< HEAD
                   <Input value={whatsappNumber} onChange={handleWhatsAppChange} placeholder="+55 (11) 99999-9999" />
+=======
+                  <Input 
+                    type="text"
+                    inputMode="numeric"
+                    value={whatsappNumber} 
+                    onChange={handleWhatsAppChange} 
+                    placeholder="(11) 99999-9999" 
+                    className="h-12 text-base md:text-sm"
+                  />
+                  <p className="text-[9px] text-muted-foreground">Formato automático aplicado ao digitar.</p>
+>>>>>>> 2850dbefe64cb15aa59d65b72f57b6825bdc5112
                 </div>
               )}
               <div className="space-y-2">
@@ -471,12 +508,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
-                  <Badge variant="outline" className="text-[7px] sm:text-[10px] uppercase tracking-[0.2em] font-black py-0.5 sm:py-1 px-3 sm:px-4 border-primary/20 text-primary" style={{ borderColor: `${themeColor}40`, color: themeColor }}>Social Proof</Badge>
-                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900" style={{ color: themeColor }}>
-                    O que dizem sobre {userData?.companyName}
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900">
+                    O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                   </h1>
                   <p className="text-muted-foreground font-medium text-xs sm:text-sm max-w-xl mx-auto px-4">
-                    Depoimentos reais de clientes satisfeitos com nossos serviços.
+                    {widgetName} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
                   </p>
                 </div>
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -175,7 +176,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden",
+          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden text-left",
           isPopup ? "border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
@@ -189,21 +190,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           animationFillMode: 'both',
         }}
       >
-        <div className="flex flex-col space-y-1.5">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col space-y-1">
+          <div className="flex items-center gap-1.5">
             <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
-              <User className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: themeColor }} />
+              <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
             </div>
-            <span className="font-bold text-[10px] sm:text-sm text-gray-900 leading-tight truncate">{t.userName}</span>
+            <span className="font-bold text-[10px] sm:text-xs text-gray-900 leading-tight truncate">{t.userName}</span>
           </div>
           
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 fill-current" style={{ color: themeColor }} />
+              <Star key={i} className="w-2.5 h-2.5 fill-current" style={{ color: themeColor }} />
             ))}
           </div>
 
-          <p className="text-gray-700 italic text-[10px] sm:text-sm leading-relaxed">
+          <p className="text-gray-700 italic text-[10px] sm:text-xs leading-relaxed">
             "{t.text}"
           </p>
         </div>
@@ -212,8 +213,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8">
-      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col min-h-screen md:min-h-[90vh] overflow-hidden relative border border-gray-100 mx-auto">
+    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative">
+      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
@@ -228,7 +229,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
               <h1 className="text-2xl sm:text-3xl font-black tracking-tighter leading-tight text-gray-900">
-                O que dizem sobre <br /> <span style={{ color: themeColor }}>{companyData?.companyName}</span>
+                O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
               <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
@@ -240,7 +241,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-10 h-10" />
-                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando novos depoimentos</p>
+                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando depoimentos</p>
               </div>
             ) : (
               <div className="w-full space-y-4">
@@ -273,18 +274,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                         ))}
                       </CarouselContent>
                     </Carousel>
-                    <div className="flex justify-center gap-2 mt-6">
-                      {filteredTestimonials.map((_, i) => (
-                        <div 
-                          key={i} 
-                          className={cn(
-                            "h-1.5 rounded-full transition-all duration-700 bg-gray-300",
-                            api?.selectedScrollSnap() === i ? "w-6" : "w-1.5"
-                          )}
-                          style={{ backgroundColor: api?.selectedScrollSnap() === i ? themeColor : undefined }}
-                        />
-                      ))}
-                    </div>
                   </div>
                 )}
 
@@ -319,19 +308,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           </footer>
         </div>
-
-        {whatsappEnabled && whatsappNumber && (
-          <a 
-            href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
-          >
-            <MessageCircle className="w-6 h-6 fill-current" />
-            <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
-          </a>
-        )}
       </div>
+
+      {whatsappEnabled && whatsappNumber && (
+        <a 
+          href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
+        >
+          <MessageCircle className="w-6 h-6 fill-current" />
+          <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
+        </a>
+      )}
     </div>
   );
 }
