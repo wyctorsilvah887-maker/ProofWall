@@ -23,6 +23,7 @@ A principal dor que o Proova cura é a **"Morte Silenciosa" das vendas por falta
 - [ ] Melhorias na compressão de imagens de capa.
 
 ## 📝 Histórico de Alterações Recentes
+- **Bordas nos Cards:** Reintrodução das bordas coloridas (4px) no topo ou lateral dos depoimentos na página `/pp` para reforçar a identidade visual.
 - **Página Pública (/pp):** Ajustada para visualização mobile "app-card" centralizada.
 - **Botão WhatsApp:** Configurado como flutuante e fixo para acompanhar o scroll.
 - **Configuração de Widget:** Implementada máscara funcional de WhatsApp no formato `+55 (XX) XXXXX-XXXX`.
