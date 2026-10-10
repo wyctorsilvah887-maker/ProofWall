@@ -1,6 +1,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Adaptação Desktop (/pp):** Aumentada largura máxima do container central e ajustado o mural para 3 colunas em telas grandes, mantendo a experiência mobile intacta.
 - **Blueprint:** Criado arquivo `docs/blueprint.md` para centralizar a estratégia do produto.
 - **Rodapé da Página Pública:** Adicionada chamada de ação (CTA) "Quer faturar mais? Crie seu Proova" no rodapé para incentivar novos cadastros.
 - **Bordas nos Cards:** Reintrodução das bordas coloridas nos depoimentos na página `/pp`. Corrigido bug de visibilidade onde classes Shadcn ocultavam a borda.

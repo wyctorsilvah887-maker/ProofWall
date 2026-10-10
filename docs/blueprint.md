@@ -11,7 +11,7 @@ A principal dor que o Proova resolve para o empresário local e remoto é a perd
 
 ## 📍 Posicionamento e Diferencial
 - **Foco:** Empresário local e remoto que precisa de agilidade.
-- **Diferencial:** Domínio `proova.io` para autoridade instantânea e simplicidade extrema.
+- **Diferencial:** Domínio `proova.wsstudioscompany.com.br` para autoridade instantânea e simplicidade extrema.
 - **Estética:** Design "App-like", focado em mobile, minimalista e elegante.
 - **Promessa:** Redução do Ciclo de Venda através da confiança instantânea.
 

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -133,7 +132,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     const slice = [];
-    const countToShow = Math.min(4, filteredTestimonials.length);
+    const countToShow = Math.min(6, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -214,7 +213,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative">
-      <div className="w-full max-w-2xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
+      <div className="w-full max-w-2xl lg:max-w-4xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
@@ -228,10 +227,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tighter leading-tight text-gray-900">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-gray-900">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
-              <p className="text-muted-foreground font-medium text-[11px] sm:text-sm max-w-md mx-auto leading-relaxed">
+              <p className="text-muted-foreground font-medium text-[11px] sm:text-sm lg:text-base max-w-2xl mx-auto leading-relaxed">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
               </p>
             </div>
@@ -246,7 +245,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             ) : (
               <div className="w-full space-y-4">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
+                  <div key={muralIndex} className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4 transition-all duration-700">
                     {visibleMuralTestimonials.map((t, i) => (
                       <div key={t.id + muralIndex + i} className="break-inside-avoid mb-3">
                         <TestimonialCard t={t} index={i} />
@@ -256,7 +255,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
@@ -264,7 +263,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'carousel' && (
-                  <div className="w-full max-w-sm mx-auto py-4">
+                  <div className="w-full max-w-lg mx-auto py-4">
                     <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                       <CarouselContent>
                         {filteredTestimonials.map((t, i) => (
@@ -279,7 +278,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
                 {layout === 'popup' && (
                   <div className="flex justify-center py-4" key={filteredTestimonials[currentIndex]?.id}>
-                    <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
+                    <div className="w-full max-w-md">
+                      <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
+                    </div>
                   </div>
                 )}
               </div>
