@@ -175,7 +175,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden border-0",
+          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden",
           isPopup ? "border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
@@ -309,9 +309,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 Visitar Site Oficial <Globe className="w-4 h-4" />
               </a>
             )}
-            <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
-              © Proova Social Proof
-            </p>
+            <div className="space-y-3">
+              <Link href="/signup" className="block text-[10px] font-black text-primary hover:underline uppercase tracking-widest animate-pulse">
+                Quer faturar mais? Crie seu Proova
+              </Link>
+              <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
+                © Proova Social Proof
+              </p>
+            </div>
           </footer>
         </div>
 

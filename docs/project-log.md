@@ -23,6 +23,7 @@ A principal dor que o Proova cura é a **"Morte Silenciosa" das vendas por falta
 - [ ] Melhorias na compressão de imagens de capa.
 
 ## 📝 Histórico de Alterações Recentes
+- **Rodapé da Página Pública:** Adicionada chamada de ação (CTA) "Quer faturar mais? Crie seu Proova" no rodapé para incentivar novos cadastros a partir das páginas de demonstração.
 - **Bordas nos Cards:** Reintrodução das bordas coloridas (4px) no topo ou lateral dos depoimentos na página `/pp` para reforçar a identidade visual. Corrigido bug de visibilidade onde classes Shadcn ocultavam a borda.
 - **Página Pública (/pp):** Ajustada para visualização mobile "app-card" centralizada.
 - **Botão WhatsApp:** Configurado como flutuante e fixo para acompanhar o scroll.
