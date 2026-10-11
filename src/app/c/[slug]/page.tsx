@@ -59,18 +59,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         if (foundUserId) {
           setTargetUserId(foundUserId);
           
-          // Prioridade 1: Link global do Usuário (Configurado no Dash)
           if (foundUserDoc?.googleMapsUrl) {
             setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
           }
           
-          // Buscar widgets para encontrar um ID para contagem de cliques
           const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
           const widgetsSnap = await getDocs(widgetsRef);
           
           if (!widgetsSnap.empty) {
             setActiveWidgetId(widgetsSnap.docs[0].id);
-            // Prioridade 2: Link do Widget (se o global não existir)
             if (!foundUserDoc?.googleMapsUrl) {
               const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
               if (gWidget) {
@@ -93,7 +90,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
     
-    // Incrementar contagem no primeiro widget encontrado para o dashboard rastrear
     if (activeWidgetId) {
       const widgetRef = doc(db, 'users', targetUserId, 'widgets', activeWidgetId);
       updateDoc(widgetRef, {
@@ -101,7 +97,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       });
     }
 
-    // Adicionar parâmetros UTM para rastreio profissional
     let finalUrl = googleMapsUrl.trim();
     const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
     
@@ -112,6 +107,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     }
 
     window.open(finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`, '_blank');
+  };
+
+  const handleResetForm = () => {
+    setUserName('');
+    setUserEmail('');
+    setRating(5);
+    setText('');
+    setIsSubmitting(false);
+    setSubmitted(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,6 +138,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     addDoc(testimonialsRef, testimonialData)
       .then(() => {
         setSubmitted(true);
+        setIsSubmitting(false);
         toast({
           title: "Depoimento Enviado!",
           description: "Obrigado por compartilhar sua experiência.",
@@ -192,7 +197,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {displayCompanyName}.</p>
             </div>
 
-            {/* Só mostrar o botão do Google se a nota for 4 ou 5 estrelas */}
             {googleMapsUrl && rating >= 4 && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
@@ -210,7 +214,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             )}
             
             <div className="pt-4">
-              <Button variant="ghost" onClick={() => setSubmitted(false)} className="text-xs text-muted-foreground">
+              <Button variant="ghost" onClick={handleResetForm} className="text-xs text-muted-foreground">
                 Enviar outro depoimento
               </Button>
             </div>
