@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
@@ -59,12 +59,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         if (foundUserId) {
           setTargetUserId(foundUserId);
           
-          // Prioridade 1: Link global do Usuário
+          // Prioridade 1: Link global do Usuário (Configurado no Dash)
           if (foundUserDoc?.googleMapsUrl) {
             setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
           }
           
-          // Buscar widgets para encontrar um ID para contagem (se necessário) ou link alternativo
+          // Buscar widgets para encontrar um ID para contagem de cliques
           const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
           const widgetsSnap = await getDocs(widgetsRef);
           
@@ -93,7 +93,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
     
-    // Incrementar contagem no primeiro widget encontrado ou no configurado
+    // Incrementar contagem no primeiro widget encontrado para o dashboard rastrear
     if (activeWidgetId) {
       const widgetRef = doc(db, 'users', targetUserId, 'widgets', activeWidgetId);
       updateDoc(widgetRef, {
@@ -101,8 +101,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       });
     }
 
-    const url = googleMapsUrl;
-    window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
+    // Adicionar parâmetros UTM para rastreio profissional
+    let finalUrl = googleMapsUrl.trim();
+    const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
+    
+    if (finalUrl.includes('?')) {
+      finalUrl += `&${utmParams}`;
+    } else {
+      finalUrl += `?${utmParams}`;
+    }
+
+    window.open(finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`, '_blank');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,7 +170,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             <Search className="w-12 h-12 text-muted-foreground mx-auto" />
             <div className="space-y-2">
               <h2 className="text-2xl font-bold font-headline">Empresa Não Encontrada</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada no sistema.</p>
+              <p className="text-muted-foreground">O link acessado é inválido ou a empresa não está cadastrada.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>
@@ -180,19 +189,23 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
-              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso e já nos ajuda muito.</p>
+              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {displayCompanyName}.</p>
             </div>
 
-            {googleMapsUrl && (
+            {/* Só mostrar o botão do Google se a nota for 4 ou 5 estrelas */}
+            {googleMapsUrl && rating >= 4 && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <p className="text-sm font-semibold text-gray-700">Pode nos dar uma força extra?</p>
-                <p className="text-xs text-muted-foreground">Replique sua avaliação no nosso perfil do Google para que outros clientes nos encontrem!</p>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-gray-800">Ficamos muito felizes com sua nota!</p>
+                  <p className="text-xs text-muted-foreground">Você poderia nos ajudar replicando essa avaliação no nosso perfil do Google?</p>
+                </div>
                 <Button 
                   onClick={handleGoogleRedirect}
                   className="w-full h-14 rounded-xl gap-3 text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all bg-[#4285F4] hover:bg-[#357ae8]"
                 >
-                  <MapPin className="w-5 h-5" /> Avaliar no Google também
+                  <MapPin className="w-5 h-5" /> Avaliar no Google Business
                 </Button>
+                <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Isso nos ajuda a crescer nossa visibilidade local</p>
               </div>
             )}
             
