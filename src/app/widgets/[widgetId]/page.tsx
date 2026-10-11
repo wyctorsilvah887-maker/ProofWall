@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -97,7 +98,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
               <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
                 <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
               </div>
-              <p className="font-bold text-gray-900 leading-tight truncate text-[9px]">{t.userName}</p>
+              <p className="font-bold text-foreground leading-tight truncate text-[9px]">{t.userName}</p>
             </div>
             <div className="flex gap-0.5 pl-5">
               {Array.from({ length: t.rating || 5 }).map((_, i) => (
@@ -106,7 +107,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
             </div>
           </div>
         </div>
-        <p className="text-gray-700 italic leading-relaxed text-[9px] line-clamp-3">"{t.text}"</p>
+        <p className="text-foreground/80 italic leading-relaxed text-[9px] line-clamp-3">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -531,7 +532,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
-                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-gray-900">
+                  <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-foreground">
                     O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                   </h1>
                   <p className="text-muted-foreground font-medium text-xs sm:text-sm max-w-xl mx-auto px-4">
