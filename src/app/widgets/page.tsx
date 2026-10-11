@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -47,6 +46,7 @@ import { collection, setDoc, serverTimestamp, doc, deleteDoc, getDoc } from 'fir
 import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -89,20 +89,17 @@ export default function WidgetsPage() {
 
     setIsCreating(true);
     
-    // Gerar Slug amigável para ser o ID
     let slug = newWidgetName.trim().toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove acentos
-      .replace(/[^a-z0-9\s-]/g, '') // Remove caracteres especiais
-      .replace(/\s+/g, '-') // Espaços para hifens
-      .replace(/-+/g, '-'); // Hifens repetidos
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
 
     try {
       const widgetRef = doc(db, 'users', user.uid, 'widgets', slug);
       
-      // Verificar se já existe
       const docSnap = await getDoc(widgetRef);
       if (docSnap.exists()) {
-        // Se já existe, adicionamos um sufixo temporal curto
         slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
       }
 
@@ -204,7 +201,8 @@ export default function WidgetsPage() {
           <Link href="/dash" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Dash</Link>
           <Link href="/widgets" className="text-sm font-medium text-primary transition-colors">Widgets</Link>
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-4">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/20">
@@ -281,7 +279,7 @@ export default function WidgetsPage() {
           <div className="space-y-6 py-4">
             <p className="text-sm text-muted-foreground">Copie o código abaixo e cole antes da tag <code>&lt;/body&gt;</code> do seu site para exibir este mural.</p>
             <div className="relative bg-muted/50 rounded-lg p-4 border border-primary/20">
-              <pre className="text-[10px] font-mono text-gray-800 break-all whitespace-pre-wrap">{selectedWidget ? getWidgetCode(selectedWidget.id) : ''}</pre>
+              <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap">{selectedWidget ? getWidgetCode(selectedWidget.id) : ''}</pre>
               <Button size="icon" variant="secondary" className="absolute top-2 right-2 h-8 w-8 shadow-sm" onClick={() => selectedWidget && copyToClipboard(getWidgetCode(selectedWidget.id))}><Copy className="h-4 w-4" /></Button>
             </div>
           </div>

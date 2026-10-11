@@ -51,6 +51,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -87,7 +88,7 @@ const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index =
               <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}15` }}>
                 <User className="w-3 h-3" style={{ color: themeColor }} />
               </div>
-              <p className="font-bold text-gray-900 leading-tight truncate text-[10px]">{t.userName}</p>
+              <p className="font-bold leading-tight truncate text-[10px] text-foreground">{t.userName}</p>
             </div>
             <div className="flex gap-0.5 pl-6">
               {Array.from({ length: t.rating || 5 }).map((_, i) => (
@@ -96,7 +97,7 @@ const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index =
             </div>
           </div>
         </div>
-        <p className="text-gray-700 italic leading-relaxed text-[10px] line-clamp-3">"{t.text}"</p>
+        <p className="italic leading-relaxed text-[10px] line-clamp-3 text-foreground/80">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -319,7 +320,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             </div>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex items-center gap-4 shrink-0">
+          <ThemeToggle />
           <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold text-xs sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
             {isSaving ? <Loader2 className="animate-spin mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
             <span className="hidden xs:inline">Salvar Código</span>
@@ -435,7 +437,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
           <div className="py-4 w-full">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Seu Código de Incorporação</Label>
             <div className="relative bg-muted/50 rounded-lg p-3 sm:p-4 border border-primary/20 w-full overflow-hidden">
-              <pre className="text-[9px] sm:text-[10px] font-mono text-gray-800 break-all whitespace-pre-wrap">{embedCode}</pre>
+              <pre className="text-[9px] sm:text-[10px] font-mono text-foreground break-all whitespace-pre-wrap">{embedCode}</pre>
               <Button size="icon" variant="secondary" className="absolute top-1 sm:top-2 right-1 sm:right-2 h-7 w-7 sm:h-8 sm:w-8" onClick={() => { navigator.clipboard.writeText(embedCode); toast({ title: "Código Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
             </div>
           </div>
