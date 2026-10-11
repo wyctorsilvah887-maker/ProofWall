@@ -19,7 +19,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0); // Iniciando em 0 para estrelas desmarcadas
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -112,7 +112,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleResetForm = () => {
     setUserName('');
     setUserEmail('');
-    setRating(5);
+    setRating(0); // Resetando para 0
     setText('');
     setIsSubmitting(false);
     setSubmitted(false);
@@ -120,6 +120,16 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (rating === 0) {
+      toast({
+        variant: "destructive",
+        title: "Nota Obrigatória",
+        description: "Por favor, selecione uma nota de 1 a 5 estrelas.",
+      });
+      return;
+    }
+
     if (!userName.trim() || !text.trim() || !db || !targetUserId) return;
 
     setIsSubmitting(true);
@@ -258,6 +268,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     </button>
                   ))}
                 </div>
+                {rating === 0 && (
+                  <p className="text-[10px] text-destructive font-bold uppercase animate-pulse">Clique em uma estrela para avaliar</p>
+                )}
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
