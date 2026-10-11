@@ -23,6 +23,10 @@
           "format": "email",
           "description": "Endereço de e-mail."
         },
+        "googleMapsUrl": {
+          "type": "string",
+          "description": "Link global do Google Maps da empresa."
+        },
         "isAdmin": {
           "type": "boolean",
           "description": "Define se o usuário tem privilégios administrativos."

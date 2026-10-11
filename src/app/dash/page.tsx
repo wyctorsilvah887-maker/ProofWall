@@ -25,7 +25,8 @@ import {
   Printer,
   MapPin,
   TrendingUp,
-  Shield
+  Shield,
+  Edit3
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -45,9 +46,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, orderBy } from 'firebase/firestore';
+import { doc, collection, query, updateDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -61,6 +64,9 @@ export default function DashPage() {
   const [baseUrl, setBaseUrl] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
+  const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
+  const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -70,6 +76,12 @@ export default function DashPage() {
       setBaseUrl(window.location.origin);
     }
   }, []);
+
+  useEffect(() => {
+    if (userData?.googleMapsUrl) {
+      setNewGoogleMapsUrl(userData.googleMapsUrl);
+    }
+  }, [userData]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -130,6 +142,24 @@ export default function DashPage() {
       title: "Copiado!",
       description: `${description} copiado para a área de transferência.`,
     });
+  };
+
+  const handleUpdateGoogleMapsUrl = async () => {
+    if (!userDocRef || isUpdatingUrl) return;
+    setIsUpdatingUrl(true);
+    updateDoc(userDocRef, {
+      googleMapsUrl: newGoogleMapsUrl.trim()
+    })
+      .then(() => {
+        toast({ title: "Link Atualizado", description: "O link do Google Maps foi salvo com sucesso." });
+        setIsGoogleMapsDialogOpen(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao atualizar URL:", err);
+      })
+      .finally(() => {
+        setIsUpdatingUrl(false);
+      });
   };
 
   const handlePrintQr = () => {
@@ -245,7 +275,7 @@ export default function DashPage() {
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
             <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
-              <Plus className="w-5 h-5 mr-2" /> Novo Widget
+              <Plus className="w-5 h-5 mr-2" /> Novo Mural
             </Button>
           </Link>
         </header>
@@ -279,21 +309,29 @@ export default function DashPage() {
             </div>
           </Card>
 
-          <Card className="border-none shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
-              <MapPin className="h-4 w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold">{totalGoogleRedirects}</div>
-                <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
-                  Ativo
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Total de cliques para o seu Google Business.</p>
-            </CardContent>
-          </Card>
+          <div className="relative group">
+            <div 
+              onClick={() => setIsGoogleMapsDialogOpen(true)}
+              className="absolute -top-3 right-4 z-40 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
+            >
+              <Edit3 className="w-2.5 h-2.5" /> Configurar Link
+            </div>
+            <Card className="border-none shadow-sm relative overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
+                <MapPin className="h-4 w-4 text-primary" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2">
+                  <div className="text-2xl font-bold">{totalGoogleRedirects}</div>
+                  <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
+                    {userData?.googleMapsUrl ? 'Ativo' : 'Pendente'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground text-gray-700 mt-1">Total de cliques para o seu Google Business.</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -449,6 +487,40 @@ export default function DashPage() {
           </div>
         </div>
       </main>
+
+      <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
+        <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <MapPin className="w-6 h-6 text-primary" /> Configurar Google Business
+            </DialogTitle>
+            <DialogDescription>
+              Insira o link direto do seu perfil no Google Maps para que os clientes possam replicar as avaliações.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="google-url" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">URL do Perfil Google</Label>
+              <Input 
+                id="google-url"
+                placeholder="https://g.page/r/..." 
+                value={newGoogleMapsUrl} 
+                onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
+                className="h-12 border-primary/20 focus-visible:ring-primary/20"
+              />
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta do formulário.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 shadow-lg">
+              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+              Salvar Link Global
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
         <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">

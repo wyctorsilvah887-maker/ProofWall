@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
@@ -25,7 +25,8 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [submitted, setSubmitted] = useState(false);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
-  const [googleMapsWidget, setGoogleMapsWidget] = useState<any>(null);
+  const [googleMapsUrl, setGoogleMapsUrl] = useState<string | null>(null);
+  const [activeWidgetId, setActiveWidgetId] = useState<string | null>(null);
 
   const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
@@ -40,25 +41,43 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         const snapshot = await getDocs(q);
         
         let foundUserId = null;
+        let foundUserDoc = null;
+
         if (!snapshot.empty) {
           foundUserId = snapshot.docs[0].id;
+          foundUserDoc = snapshot.docs[0].data();
         } else {
           const slugAlt = slug.replace(/-/g, ' ');
           const qAlt = query(usersRef, where('companyName', '==', slugAlt), limit(1));
           const snapshotAlt = await getDocs(qAlt);
           if (!snapshotAlt.empty) {
             foundUserId = snapshotAlt.docs[0].id;
+            foundUserDoc = snapshotAlt.docs[0].data();
           }
         }
 
         if (foundUserId) {
           setTargetUserId(foundUserId);
-          // Buscar se existe algum widget com link do Google Maps para exibir o convite depois
+          
+          // Prioridade 1: Link global do Usuário
+          if (foundUserDoc?.googleMapsUrl) {
+            setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
+          }
+          
+          // Buscar widgets para encontrar um ID para contagem (se necessário) ou link alternativo
           const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
           const widgetsSnap = await getDocs(widgetsRef);
-          const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
-          if (gWidget) {
-            setGoogleMapsWidget({ id: gWidget.id, ...gWidget.data() });
+          
+          if (!widgetsSnap.empty) {
+            setActiveWidgetId(widgetsSnap.docs[0].id);
+            // Prioridade 2: Link do Widget (se o global não existir)
+            if (!foundUserDoc?.googleMapsUrl) {
+              const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
+              if (gWidget) {
+                setGoogleMapsUrl(gWidget.data().googleMapsUrl);
+                setActiveWidgetId(gWidget.id);
+              }
+            }
           }
         }
       } catch (err) {
@@ -72,14 +91,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   }, [db, slug]);
 
   const handleGoogleRedirect = async () => {
-    if (!db || !targetUserId || !googleMapsWidget) return;
+    if (!db || !targetUserId || !googleMapsUrl) return;
     
-    const widgetRef = doc(db, 'users', targetUserId, 'widgets', googleMapsWidget.id);
-    updateDoc(widgetRef, {
-      googleRedirectCount: increment(1)
-    });
+    // Incrementar contagem no primeiro widget encontrado ou no configurado
+    if (activeWidgetId) {
+      const widgetRef = doc(db, 'users', targetUserId, 'widgets', activeWidgetId);
+      updateDoc(widgetRef, {
+        googleRedirectCount: increment(1)
+      });
+    }
 
-    const url = googleMapsWidget.googleMapsUrl;
+    const url = googleMapsUrl;
     window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
   };
 
@@ -94,7 +116,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       userEmail: userEmail.trim().toLowerCase(),
       rating,
       text: text.trim(),
-      status: 'approved', // Aprovação automática
+      status: 'approved',
       createdAt: serverTimestamp(),
     };
 
@@ -161,7 +183,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso e já nos ajuda muito.</p>
             </div>
 
-            {googleMapsWidget && (
+            {googleMapsUrl && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <p className="text-sm font-semibold text-gray-700">Pode nos dar uma força extra?</p>
                 <p className="text-xs text-muted-foreground">Replique sua avaliação no nosso perfil do Google para que outros clientes nos encontrem!</p>
