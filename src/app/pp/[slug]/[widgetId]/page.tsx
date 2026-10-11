@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -102,6 +101,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const layout = widgetData?.layout || 'mural';
   const themeColor = widgetData?.themeColor || '#f97316';
+  const secondaryColor = widgetData?.secondaryColor || '#ffffff';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
@@ -188,11 +188,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderStyle: 'solid',
           animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
+          backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
         }}
       >
         <div className="flex flex-col space-y-1">
           <div className="flex items-center gap-1.5">
-            <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+            <div className="p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
               <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
             </div>
             <span className="font-bold text-[10px] sm:text-xs text-gray-900 leading-tight truncate">{t.userName}</span>
@@ -213,7 +214,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative">
+    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative" style={{ backgroundColor: secondaryColor ? `${secondaryColor}08` : '#F8F9FA' }}>
       <div className="w-full max-w-2xl lg:max-w-4xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">

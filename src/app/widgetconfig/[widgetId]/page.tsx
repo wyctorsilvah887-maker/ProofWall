@@ -18,7 +18,8 @@ import {
   Terminal,
   Copy,
   Layout,
-  Lock
+  Lock,
+  Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,7 +56,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
+const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, secondaryColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
   const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
   const slideClass = layout === 'mural' 
     ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
@@ -78,14 +79,15 @@ const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index =
         borderLeftWidth: isPopup ? '4px' : '0',
         animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
         animationFillMode: 'both',
-        boxShadow: `0 10px 30px -15px ${themeColor}20`
+        boxShadow: `0 10px 30px -15px ${themeColor}20`,
+        backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
       }}
     >
       <div className="flex flex-col space-y-2">
         <div className="flex items-start justify-between w-full gap-2">
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}15` }}>
+              <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
                 <User className="w-3 h-3" style={{ color: themeColor }} />
               </div>
               <p className="font-bold leading-tight truncate text-[10px] text-foreground">{t.userName}</p>
@@ -105,8 +107,11 @@ const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, index =
 
 const EmbedSettings = ({ 
   layout, setLayout, 
-  themeColor, setThemeColor
+  themeColor, setThemeColor,
+  secondaryColor, setSecondaryColor
 }: any) => {
+  const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
+  
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
       <div className="p-4 border-b bg-muted/10 shrink-0">
@@ -143,12 +148,27 @@ const EmbedSettings = ({
             </div>
           </div>
 
-          <div className="space-y-4">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Esquema de Cores</Label>
-            <div className="flex flex-wrap gap-2">
-              {['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000'].map((color) => (
-                <button key={color} onClick={() => setThemeColor(color)} className={cn("w-8 h-8 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
-              ))}
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Palette className="w-3 h-3" /> Cor Principal
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((color) => (
+                  <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Palette className="w-3 h-3 opacity-60" /> Subcor (Apoio)
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((color) => (
+                  <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2", secondaryColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -186,6 +206,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [themeColor, setThemeColor] = useState('#f97316');
+  const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [isSaving, setIsSaving] = useState(false);
   const [isCodeDialogOpen, setIsCodeDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
@@ -202,6 +223,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       setSelectedIds(widgetData.selectedTestimonialIds || []);
       setLayout(widgetData.layout || 'mural');
       setThemeColor(widgetData.themeColor || '#f97316');
+      setSecondaryColor(widgetData.secondaryColor || '#ffffff');
     }
   }, [widgetData]);
 
@@ -266,6 +288,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       selectedTestimonialIds: selectedIds,
       layout,
       themeColor,
+      secondaryColor,
     })
       .then(() => {
         setIsSaving(false);
@@ -309,7 +332,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <SheetHeader className="px-4 pt-6 text-left sr-only">
                 <SheetTitle>Editor de Mural Embutido</SheetTitle>
               </SheetHeader>
-              <div className="flex-1 min-h-0"><EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} /></div>
+              <div className="flex-1 min-h-0"><EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} secondaryColor={secondaryColor} setSecondaryColor={setSecondaryColor} /></div>
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -332,7 +355,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
       <main className="flex-1 flex overflow-x-hidden w-full">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
-          <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} />
+          <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} secondaryColor={secondaryColor} setSecondaryColor={setSecondaryColor} />
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-8 space-y-8 w-full max-w-full">
@@ -347,7 +370,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 w-full">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
-                            <TestimonialCard t={t} themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
+                            <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} muralIndex={muralIndex} />
                           </div>
                         ))}
                       </div>
@@ -357,7 +380,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                           <CarouselContent>
                             {selectedTestimonials.map((t: any) => (
                               <CarouselItem key={t.id}>
-                                <TestimonialCard t={t} themeColor={themeColor} noAnim layout={layout} />
+                                <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} noAnim layout={layout} />
                               </CarouselItem>
                             ))}
                           </CarouselContent>
@@ -368,6 +391,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
                           themeColor={themeColor} 
+                          secondaryColor={secondaryColor}
                           isPopup={true} 
                           layout={layout}
                         />
@@ -376,7 +400,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {selectedTestimonials.slice(0, 4).map((t: any, i) => (
                           <div key={t.id} className="break-inside-avoid">
-                            <TestimonialCard t={t} themeColor={themeColor} index={i} layout={layout} />
+                            <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
                           </div>
                         ))}
                       </div>

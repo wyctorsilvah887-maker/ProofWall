@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -24,7 +23,8 @@ import {
   Play,
   Upload,
   Lock,
-  MapPin
+  MapPin,
+  Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,10 +59,11 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, themeColor: string, isPopup?: boolean, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
+const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, themeColor: string, secondaryColor: string, isPopup?: boolean, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
   const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
   const slideClass = layout === 'mural' 
     ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
@@ -85,14 +86,15 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
         borderLeftWidth: isPopup ? '4px' : '0',
         animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
         animationFillMode: 'both',
-        boxShadow: `0 10px 30px -15px ${themeColor}20`
+        boxShadow: `0 10px 30px -15px ${themeColor}20`,
+        backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
       }}
     >
       <div className="flex flex-col space-y-1.5">
         <div className="flex items-start justify-between w-full gap-2">
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5 mb-0.5">
-              <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: `${themeColor}10` }}>
+              <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
                 <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
               </div>
               <p className="font-bold text-gray-900 leading-tight truncate text-[9px]">{t.userName}</p>
@@ -113,6 +115,7 @@ const TestimonialCard = ({ t, themeColor, isPopup = false, index = 0, layout = '
 const PublicPageSettings = ({ 
   widgetName, setWidgetName,
   themeColor, setThemeColor,
+  secondaryColor, setSecondaryColor,
   whatsappEnabled, setWhatsappEnabled,
   whatsappNumber, setWhatsappNumber,
   googleMapsUrl, setGoogleMapsUrl,
@@ -146,6 +149,8 @@ const PublicPageSettings = ({
     const formatted = formatWhatsApp(e.target.value);
     setWhatsappNumber(formatted);
   };
+
+  const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden">
@@ -192,12 +197,27 @@ const PublicPageSettings = ({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Cor de Destaque</Label>
-                <div className="flex flex-wrap gap-2">
-                  {['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000'].map((color) => (
-                    <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
-                  ))}
+              <div className="space-y-6 pt-4 border-t">
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Palette className="w-3 h-3" /> Cor Principal (Destaque)
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map((color) => (
+                      <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Palette className="w-3 h-3 opacity-60" /> Subcor (Apoio/Fundo)
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map((color) => (
+                      <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2", secondaryColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </TabsContent>
@@ -309,6 +329,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [widgetName, setWidgetName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('#f97316');
+  const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
@@ -331,6 +352,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setWidgetName(widgetData.name || '');
       setSelectedIds(widgetData.selectedTestimonialIds || []);
       setThemeColor(widgetData.themeColor || '#f97316');
+      setSecondaryColor(widgetData.secondaryColor || '#ffffff');
       setLayout(widgetData.layout || 'mural');
       setCoverImageUrl(widgetData.coverImageUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
@@ -401,6 +423,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       name: widgetName.trim(),
       selectedTestimonialIds: selectedIds,
       themeColor,
+      secondaryColor,
       layout,
       coverImageUrl,
       whatsappEnabled,
@@ -438,6 +461,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const settingsProps = {
     widgetName, setWidgetName,
     themeColor, setThemeColor,
+    secondaryColor, setSecondaryColor,
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
     googleMapsUrl, setGoogleMapsUrl,
@@ -474,6 +498,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2 shrink-0">
+          <ThemeToggle />
           <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold text-[10px] sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
             {isSaving ? <Loader2 className="animate-spin mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
             <span className="hidden xs:inline">Salvar Página</span>
@@ -520,7 +545,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                       <div key={muralIndex} className="columns-1 sm:columns-2 gap-3 sm:gap-4 transition-all duration-700">
                         {visibleMuralTestimonials.map((t: any, i) => (
                           <div key={t.id + muralIndex} className="break-inside-avoid">
-                            <TestimonialCard t={t} themeColor={themeColor} index={i} layout={layout} muralIndex={muralIndex} />
+                            <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} muralIndex={muralIndex} />
                           </div>
                         ))}
                       </div>
@@ -530,7 +555,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                           <CarouselContent>
                             {selectedTestimonials.map((t: any, i) => (
                               <CarouselItem key={t.id}>
-                                <TestimonialCard t={t} themeColor={themeColor} noAnim layout={layout} />
+                                <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} noAnim layout={layout} />
                               </CarouselItem>
                             ))}
                           </CarouselContent>
@@ -541,6 +566,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         <TestimonialCard 
                           t={selectedTestimonials[previewIndex]} 
                           themeColor={themeColor} 
+                          secondaryColor={secondaryColor}
                           isPopup={true} 
                           layout={layout}
                         />
@@ -548,7 +574,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         {selectedTestimonials.slice(0, 4).map((t: any, i) => (
-                          <TestimonialCard key={t.id} t={t} themeColor={themeColor} index={i} layout={layout} />
+                          <TestimonialCard key={t.id} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
                         ))}
                       </div>
                     )
