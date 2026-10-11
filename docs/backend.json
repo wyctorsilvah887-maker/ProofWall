@@ -107,6 +107,14 @@
           "type": "string",
           "description": "Número para contato via WhatsApp."
         },
+        "googleMapsUrl": {
+          "type": "string",
+          "description": "Link do Perfil da Empresa no Google Maps."
+        },
+        "googleRedirectCount": {
+          "type": "integer",
+          "description": "Total de cliques para o Google Maps."
+        },
         "externalSiteUrl": {
           "type": "string",
           "description": "URL do site externo da empresa."

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -89,6 +90,18 @@ export default function DashPage() {
   }, [db, user]);
 
   const { data: testimonialsData, loading: testimonialsLoading } = useCollection(testimonialsQuery);
+
+  const widgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+
+  const { data: widgetsData } = useCollection(widgetsQuery);
+
+  const totalGoogleRedirects = useMemo(() => {
+    if (!widgetsData) return 0;
+    return widgetsData.reduce((acc: number, curr: any) => acc + (curr.googleRedirectCount || 0), 0);
+  }, [widgetsData]);
 
   const sortedTestimonials = useMemo(() => {
     if (!testimonialsData) return [];
@@ -269,16 +282,16 @@ export default function DashPage() {
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
-              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <MapPin className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold">--</div>
+                <div className="text-2xl font-bold">{totalGoogleRedirects}</div>
                 <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
-                  Em breve
+                  Ativo
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Redirecionados ao Google Maps</p>
+              <p className="text-xs text-muted-foreground text-gray-700 mt-1">Total de cliques para o seu Google Business.</p>
             </CardContent>
           </Card>
         </div>

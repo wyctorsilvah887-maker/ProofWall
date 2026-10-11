@@ -23,7 +23,8 @@ import {
   LayoutGrid,
   Play,
   Upload,
-  Lock
+  Lock,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -114,6 +115,7 @@ const PublicPageSettings = ({
   themeColor, setThemeColor,
   whatsappEnabled, setWhatsappEnabled,
   whatsappNumber, setWhatsappNumber,
+  googleMapsUrl, setGoogleMapsUrl,
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout
 }: any) => {
@@ -227,27 +229,45 @@ const PublicPageSettings = ({
             </TabsContent>
 
             <TabsContent value="social" className="mt-0 space-y-6">
-              <div className="flex items-center justify-between p-3 border rounded-xl bg-muted/10">
-                <div className="space-y-0.5">
-                  <Label className="text-xs font-bold">Botão de WhatsApp</Label>
-                  <p className="text-[10px] text-muted-foreground">Ativar botão flutuante</p>
+              <div className="space-y-4 border-b pb-6">
+                <div className="flex items-center justify-between p-3 border rounded-xl bg-muted/10">
+                  <div className="space-y-0.5">
+                    <Label className="text-xs font-bold">Botão de WhatsApp</Label>
+                    <p className="text-[10px] text-muted-foreground">Ativar botão flutuante</p>
+                  </div>
+                  <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
                 </div>
-                <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
+                {whatsappEnabled && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                    <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
+                    <Input 
+                      type="text"
+                      inputMode="numeric"
+                      value={whatsappNumber} 
+                      onChange={handleWhatsAppChange} 
+                      placeholder="+55 (11) 99999-9999" 
+                      className="h-12 text-base md:text-sm"
+                    />
+                  </div>
+                )}
               </div>
-              {whatsappEnabled && (
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Número do WhatsApp</Label>
-                  <Input 
-                    type="text"
-                    inputMode="numeric"
-                    value={whatsappNumber} 
-                    onChange={handleWhatsAppChange} 
-                    placeholder="+55 (11) 99999-9999" 
-                    className="h-12 text-base md:text-sm"
-                  />
-                  <p className="text-[9px] text-muted-foreground">Formato DDI + DDD + Número aplicado automaticamente.</p>
+
+              <div className="space-y-4 border-b pb-6">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do Google Business / Maps</Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3.5 h-4 w-4 text-primary" />
+                    <Input 
+                      value={googleMapsUrl} 
+                      onChange={(e) => setGoogleMapsUrl(e.target.value)} 
+                      placeholder="https://maps.google.com/..." 
+                      className="pl-9 h-12"
+                    />
+                  </div>
+                  <p className="text-[9px] text-muted-foreground uppercase font-black">Link para coletar avaliações no Google.</p>
                 </div>
-              )}
+              </div>
+
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do seu Site Externo</Label>
                 <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://meusite.com.br" />
@@ -293,6 +313,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
+  const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
@@ -314,6 +335,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setCoverImageUrl(widgetData.coverImageUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
+      setGoogleMapsUrl(widgetData.googleMapsUrl || '');
       setExternalSiteUrl(widgetData.externalSiteUrl || '');
     }
   }, [widgetData]);
@@ -383,6 +405,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       coverImageUrl,
       whatsappEnabled,
       whatsappNumber,
+      googleMapsUrl,
       externalSiteUrl,
     };
     updateDoc(widgetRef, updates)
@@ -417,6 +440,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     themeColor, setThemeColor,
     whatsappEnabled, setWhatsappEnabled,
     whatsappNumber, setWhatsappNumber,
+    googleMapsUrl, setGoogleMapsUrl,
     externalSiteUrl, setExternalSiteUrl,
     layout, setLayout
   };
@@ -535,6 +559,18 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                     </div>
                   )}
                 </div>
+
+                {googleMapsUrl && (
+                  <div className="flex justify-center pt-8">
+                    <Button 
+                      variant="outline"
+                      className="rounded-full px-8 py-6 gap-2 border-2 text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-muted/50 transition-all"
+                      style={{ borderColor: themeColor, color: themeColor }}
+                    >
+                      <MapPin className="w-4 h-4" /> Avalie no Google
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {whatsappEnabled && (

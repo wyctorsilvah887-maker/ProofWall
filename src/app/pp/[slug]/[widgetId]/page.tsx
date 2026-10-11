@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -9,10 +10,12 @@ import {
   getDocs, 
   limit, 
   doc, 
-  onSnapshot
+  onSnapshot,
+  updateDoc,
+  increment
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, MessageCircle, Globe } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, MessageCircle, Globe, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -103,7 +106,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const themeColor = widgetData?.themeColor || '#f97316';
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
+  const googleMapsUrl = widgetData?.googleMapsUrl || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
+
+  const handleGoogleRedirect = async () => {
+    if (!db || !targetUserId || !widgetId || !googleMapsUrl) return;
+    
+    // Incrementa o contador no Firestore
+    const widgetRef = doc(db, 'users', targetUserId, 'widgets', widgetId);
+    updateDoc(widgetRef, {
+      googleRedirectCount: increment(1)
+    });
+
+    // Abre o link em nova aba
+    window.open(googleMapsUrl.startsWith('http') ? googleMapsUrl : `https://${googleMapsUrl}`, '_blank');
+  };
 
   useEffect(() => {
     if (layout === 'popup' && filteredTestimonials.length > 1) {
@@ -236,7 +253,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           </header>
 
-          <main className="px-6 space-y-6 flex-1">
+          <main className="px-6 space-y-8 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-10 h-10" />
@@ -283,6 +300,19 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {googleMapsUrl && (
+              <div className="flex justify-center pt-8">
+                <Button 
+                  onClick={handleGoogleRedirect}
+                  variant="outline"
+                  className="rounded-full px-10 py-7 gap-3 border-2 text-[11px] font-black uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95 transition-all"
+                  style={{ borderColor: themeColor, color: themeColor }}
+                >
+                  <MapPin className="w-5 h-5" /> Avalie-nos no Google
+                </Button>
               </div>
             )}
           </main>
