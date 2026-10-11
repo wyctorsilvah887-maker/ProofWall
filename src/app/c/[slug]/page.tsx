@@ -12,6 +12,7 @@ import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc,
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -19,7 +20,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [rating, setRating] = useState(0); // Iniciando em 0 para estrelas desmarcadas
+  const [rating, setRating] = useState(0); 
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -112,7 +113,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleResetForm = () => {
     setUserName('');
     setUserEmail('');
-    setRating(0); // Resetando para 0
+    setRating(0);
     setText('');
     setIsSubmitting(false);
     setSubmitted(false);
@@ -180,7 +181,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   if (!targetUserId && !isLoadingCompany) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
-        <Card className="w-full max-w-md text-center shadow-xl border-none">
+        <Card className="w-full max-w-md text-center shadow-xl border-none bg-card text-card-foreground">
           <CardContent className="pt-10 pb-10 space-y-6">
             <Search className="w-12 h-12 text-muted-foreground mx-auto" />
             <div className="space-y-2">
@@ -196,11 +197,14 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
-        <Card className="w-full max-w-md text-center shadow-2xl border-none">
+      <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body text-foreground">
+        <div className="fixed top-8 right-8">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-md text-center shadow-2xl border-none bg-card text-card-foreground">
           <CardContent className="pt-10 pb-10 space-y-8">
-            <div className="mx-auto bg-green-100 p-4 rounded-full w-fit">
-              <CheckCircle2 className="w-12 h-12 text-green-600" />
+            <div className="mx-auto bg-green-100 dark:bg-green-900/30 p-4 rounded-full w-fit">
+              <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
@@ -210,7 +214,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             {googleMapsUrl && rating >= 4 && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-gray-800">Ficamos muito felizes com sua nota!</p>
+                  <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
                   <p className="text-xs text-muted-foreground">Você poderia nos ajudar replicando essa avaliação no nosso perfil do Google?</p>
                 </div>
                 <Button 
@@ -235,14 +239,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4 font-body">
+    <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4 font-body text-foreground">
+      <div className="fixed top-8 right-8">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-xl space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold font-headline tracking-tight">{displayCompanyName}</h1>
           <p className="text-muted-foreground">Gostaríamos de ouvir sua opinião sobre nossos serviços.</p>
         </div>
 
-        <Card className="shadow-2xl border-none overflow-hidden">
+        <Card className="shadow-2xl border-none overflow-hidden bg-card text-card-foreground">
           <div className="h-2 bg-primary w-full" />
           <CardHeader className="text-center pt-8">
             <CardTitle className="text-2xl font-headline flex items-center justify-center gap-2">
@@ -281,7 +288,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
                     required
-                    className="h-11 border-muted-foreground/20 focus:border-primary"
+                    className="h-11 bg-background"
                   />
                 </div>
                 <div className="space-y-2">
@@ -291,7 +298,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     placeholder="Ex: joao@email.com" 
                     value={userEmail}
                     onChange={(e) => setUserEmail(e.target.value)}
-                    className="h-11 border-muted-foreground/20 focus:border-primary"
+                    className="h-11 bg-background"
                   />
                 </div>
               </div>
@@ -300,7 +307,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                 <label className="text-sm font-medium">Sua Mensagem</label>
                 <Textarea 
                   placeholder="Conte-nos o que achou da nossa empresa..."
-                  className="min-h-[120px] resize-none border-muted-foreground/20 focus:border-primary"
+                  className="min-h-[120px] resize-none bg-background"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   required

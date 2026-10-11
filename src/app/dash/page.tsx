@@ -55,6 +55,7 @@ import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -204,7 +205,7 @@ export default function DashPage() {
       <div className="flex h-screen items-center justify-center bg-muted/30">
         <div className="text-center space-y-4">
           <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
-          <p className="text-muted-foreground font-medium text-gray-700">Autenticando perfil...</p>
+          <p className="text-muted-foreground font-medium">Autenticando perfil...</p>
         </div>
       </div>
     );
@@ -213,7 +214,7 @@ export default function DashPage() {
   const collectionLink = `${baseUrl}/c/${companySlug}`;
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
@@ -228,6 +229,7 @@ export default function DashPage() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <ThemeToggle />
           <div className="flex flex-col items-end mr-1 md:mr-2">
             <span className="text-xs md:text-sm font-semibold truncate max-w-[120px] md:max-w-none">
               {userData?.companyName || 'Minha Empresa'}
@@ -270,8 +272,8 @@ export default function DashPage() {
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight text-gray-900">Painel de Controle</h1>
-            <p className="text-sm md:text-base text-muted-foreground text-gray-600">Gestão de prova social dinâmica</p>
+            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
             <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
@@ -288,7 +290,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                <div className="text-2xl md:text-3xl font-bold text-gray-900">
+                <div className="text-2xl md:text-3xl font-bold">
                   {testimonialsData?.length || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
@@ -328,7 +330,7 @@ export default function DashPage() {
                     {userData?.googleMapsUrl ? 'Ativo' : 'Pendente'}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground text-gray-700 mt-1">Total de cliques para o seu Google Business.</p>
+                <p className="text-xs text-muted-foreground mt-1">Total de cliques para o seu Google Business.</p>
               </CardContent>
             </Card>
           </div>
@@ -343,7 +345,7 @@ export default function DashPage() {
             <Card className="border-none shadow-sm overflow-hidden group">
               <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
               <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2 text-gray-900">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
                   <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
                 </CardTitle>
               </CardHeader>
@@ -407,7 +409,7 @@ export default function DashPage() {
                               ))}
                             </div>
                           </div>
-                          <p className="text-xs text-gray-700 italic line-clamp-2 md:line-clamp-none">
+                          <p className="text-xs text-foreground italic line-clamp-2 md:line-clamp-none">
                             "{t.text}"
                           </p>
                         </div>
@@ -447,7 +449,7 @@ export default function DashPage() {
                     key={displayTestimonials[previewIndex].id}
                     className="w-full max-w-[280px] animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
                   >
-                    <div className="bg-background rounded-xl p-3 md:p-4 shadow-2xl border border-primary/20 text-left w-full">
+                    <div className="bg-card rounded-xl p-3 md:p-4 shadow-2xl border border-primary/20 text-left w-full">
                       <div className="flex flex-col space-y-1 mb-2">
                         <div className="flex items-center gap-2">
                           <div className="bg-primary/10 p-1 rounded-full shrink-0">
@@ -461,7 +463,7 @@ export default function DashPage() {
                           ))}
                         </div>
                       </div>
-                      <p className="text-[10px] md:text-xs text-gray-700 italic line-clamp-3 leading-relaxed">
+                      <p className="text-[10px] md:text-xs text-foreground italic line-clamp-3 leading-relaxed">
                         "{displayTestimonials[previewIndex].text}"
                       </p>
                       <div className="mt-3 pt-2 border-t border-muted flex items-center justify-between">

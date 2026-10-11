@@ -21,6 +21,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -144,7 +145,7 @@ export default function AdminPage() {
                 placeholder="Código"
                 value={accessCode}
                 onChange={(e) => setAccessCode(e.target.value)}
-                className="text-center text-2xl tracking-[0.5em] w-full border rounded-md p-2 h-12"
+                className="text-center text-2xl tracking-[0.5em] w-full border rounded-md p-2 h-12 bg-background text-foreground"
                 required
               />
               <Button type="submit" className="w-full h-12 text-lg">Desbloquear</Button>
@@ -264,12 +265,13 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 font-body">
+    <div className="min-h-screen bg-muted/30 font-body text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="ml-auto flex items-center gap-4">
+          <ThemeToggle />
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">
             <BadgeCheck className="w-3 h-3" /> Administrador
           </Badge>
@@ -283,7 +285,7 @@ export default function AdminPage() {
                 <User className="w-5 h-5 text-primary" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-48 bg-background border-border">
               <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">

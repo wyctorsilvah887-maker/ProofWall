@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from "react";
@@ -8,6 +9,7 @@ import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2 } from "lucide-react";
 import { useUser } from "@/firebase";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
   const { user, loading } = useUser();
@@ -62,6 +64,7 @@ export default function Home() {
           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link href="/login">
             <Button variant="ghost" size="sm">Entrar</Button>
           </Link>
@@ -78,13 +81,13 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
               <div className="flex flex-col justify-center space-y-8 text-center lg:text-left">
                 <div className="space-y-4">
-                  <div className="inline-block rounded-full bg-muted px-3 py-1 text-xs md:text-sm font-medium text-gray-700 border mx-auto lg:mx-0 w-fit">
+                  <div className="inline-block rounded-full bg-muted px-3 py-1 text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 border mx-auto lg:mx-0 w-fit">
                     🚀 Novo: Suporte a depoimentos em vídeo 4K
                   </div>
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl xl:text-7xl/none font-headline max-w-[800px] leading-[1.1]">
                     Transforme elogios de clientes em <span className="text-primary">vendas</span> no seu site.
                   </h1>
-                  <p className="max-w-[600px] text-gray-700 text-base md:text-lg lg:text-xl/relaxed mx-auto lg:mx-0">
+                  <p className="max-w-[600px] text-muted-foreground text-base md:text-lg lg:text-xl/relaxed mx-auto lg:mx-0">
                     Colete, modere e exiba depoimentos em texto ou vídeos em minutos com o domínio <strong>proova.io</strong>.
                   </p>
                 </div>
@@ -99,7 +102,7 @@ export default function Home() {
                     </Button>
                   </Link>
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-700 flex items-center justify-center lg:justify-start gap-1.5">
+                    <p className="text-xs text-muted-foreground flex items-center justify-center lg:justify-start gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                       Grátis para os primeiros 50 inscritos.
                     </p>
@@ -120,16 +123,16 @@ export default function Home() {
                       data-ai-hint={heroImage.imageHint}
                     />
                   )}
-                  <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-background/90 backdrop-blur-sm p-3 md:p-4 rounded-xl border shadow-lg">
+                  <div className="absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 bg-background/90 dark:bg-background/95 backdrop-blur-sm p-3 md:p-4 rounded-xl border shadow-lg">
                     <div className="flex gap-1 mb-1.5 md:mb-2">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star key={s} className="w-3 h-3 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-xs md:text-sm italic mb-1.5 md:mb-2 line-clamp-2">"Aumentamos nossa conversão em 25% na primeira semana usando a Proova!"</p>
+                    <p className="text-xs md:text-sm italic mb-1.5 md:mb-2 line-clamp-2 text-foreground">"Aumentamos nossa conversão em 25% na primeira semana usando a Proova!"</p>
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary/20 flex items-center justify-center text-[8px] md:text-[10px] font-bold">JD</div>
-                      <span className="text-[10px] md:text-xs font-semibold">João D., CEO da TechNova</span>
+                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary/20 flex items-center justify-center text-[8px] md:text-[10px] font-bold text-primary">JD</div>
+                      <span className="text-[10px] md:text-xs font-semibold text-foreground">João D., CEO da TechNova</span>
                     </div>
                   </div>
                 </div>
@@ -146,7 +149,7 @@ export default function Home() {
                 <h2 className="text-2xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">
                   Personalização sem esforço
                 </h2>
-                <p className="max-w-[900px] text-gray-700 text-sm md:text-lg lg:text-xl/relaxed">
+                <p className="max-w-[900px] text-muted-foreground text-sm md:text-lg lg:text-xl/relaxed">
                   Veja como o Proova se adapta perfeitamente ao design da sua marca.
                 </p>
               </div>
@@ -175,7 +178,7 @@ export default function Home() {
                             <Star key={s} className="w-3 h-3 md:w-3.5 md:h-3.5 fill-yellow-400 text-yellow-400" />
                           ))}
                         </div>
-                        <p className="text-xs md:text-sm text-gray-700 italic leading-relaxed">"{t.text}"</p>
+                        <p className="text-xs md:text-sm text-foreground italic leading-relaxed">"{t.text}"</p>
                       </div>
                       <div className="flex items-center gap-3 mt-4 md:mt-6 border-t pt-4">
                         <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-primary/10">
@@ -190,8 +193,8 @@ export default function Home() {
                           )}
                         </div>
                         <div>
-                          <p className="text-[10px] md:text-xs font-bold">{t.name}</p>
-                          <p className="text-[9px] md:text-[10px] text-gray-700">{t.company}</p>
+                          <p className="text-[10px] md:text-xs font-bold text-foreground">{t.name}</p>
+                          <p className="text-[9px] md:text-[10px] text-muted-foreground">{t.company}</p>
                         </div>
                       </div>
                     </div>
@@ -223,7 +226,7 @@ export default function Home() {
                   <Link2 className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Coleta sem atrito</h3>
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                   Envie um link <strong>proova.io</strong> direto para o seu cliente. Ele envia o depoimento em segundos.
                 </p>
               </div>
@@ -232,7 +235,7 @@ export default function Home() {
                   <ShieldCheck className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Moderação em um clique</h3>
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                   Escolha exatamente o que vai para o ar no seu painel centralizado antes de publicar no seu site.
                 </p>
               </div>
@@ -241,7 +244,7 @@ export default function Home() {
                   <Zap className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-bold font-headline">Widget ultra leve</h3>
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                   Snippet otimizado servido via CDN própria para garantir carregamento instantâneo.
                 </p>
               </div>
@@ -278,7 +281,7 @@ export default function Home() {
 
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-gray-700">© 2026 Proova - Prova Social de Verdade.</p>
+          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
         </div>
       </footer>
     </div>
