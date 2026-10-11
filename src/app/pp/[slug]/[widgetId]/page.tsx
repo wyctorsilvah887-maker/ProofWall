@@ -22,6 +22,7 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
   const { slug, widgetId } = use(params);
@@ -161,7 +162,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <MessageSquare className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold font-headline text-gray-900">Mural não encontrado</h2>
+              <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
               <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
@@ -176,7 +177,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-white rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden text-left",
+          "bg-card rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden text-left",
           isPopup ? "border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
@@ -188,7 +189,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderStyle: 'solid',
           animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
-          backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
+          backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
         }}
       >
         <div className="flex flex-col space-y-1">
@@ -196,7 +197,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             <div className="p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
               <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
             </div>
-            <span className="font-bold text-[10px] sm:text-xs text-gray-900 leading-tight truncate">{t.userName}</span>
+            <span className="font-bold text-[10px] sm:text-xs text-foreground leading-tight truncate">{t.userName}</span>
           </div>
           
           <div className="flex gap-0.5">
@@ -205,7 +206,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             ))}
           </div>
 
-          <p className="text-gray-700 italic text-[10px] sm:text-xs leading-relaxed">
+          <p className="text-foreground/80 italic text-[10px] sm:text-xs leading-relaxed">
             "{t.text}"
           </p>
         </div>
@@ -214,22 +215,25 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] font-body flex items-center justify-center p-0 md:p-8 relative" style={{ backgroundColor: secondaryColor ? `${secondaryColor}08` : '#F8F9FA' }}>
-      <div className="w-full max-w-2xl lg:max-w-4xl bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-gray-100 mx-auto z-10">
+    <div className="min-h-screen bg-muted/30 font-body flex items-center justify-center p-0 md:p-8 relative">
+      <div className="w-full max-w-2xl lg:max-w-4xl bg-background rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-border mx-auto z-10">
         
-        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-white/50 backdrop-blur-md z-20">
+        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">SOCIAL PROOF</span>
           </div>
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="text-[9px] font-bold uppercase tracking-widest">Início</Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="text-[9px] font-bold uppercase tracking-widest">Início</Button>
+            </Link>
+          </div>
         </nav>
 
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-gray-900">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-foreground">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
               <p className="text-muted-foreground font-medium text-[11px] sm:text-sm lg:text-base max-w-2xl mx-auto leading-relaxed">
