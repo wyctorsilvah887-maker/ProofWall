@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Correção de Conexão Firestore:** Ativado `experimentalForceLongPolling` na inicialização do Firebase para resolver erros de CORS e "Unsafe attempt to load URL" em ambientes de Cloud Workstation. Isso garante que o envio de depoimentos não fique travado em "Enviando...".
 - **Fluxo Google Maps Ajustado:** A funcionalidade de redirecionamento para o Google Business foi movida para a página de coleta (`/c`). Agora, após enviar um depoimento para o Proova, o cliente é convidado a replicar a avaliação no Google, aumentando o impacto de SEO local.
 - **Redirecionados Google:** Ativado sistema de rastreamento de cliques para o Google Maps. Agora o usuário pode configurar o link do Google Business e acompanhar os redirecionamentos no Dashboard.
 - **IDs Baseados em Slugs:** Widgets agora utilizam o nome (slugificado) como ID no Firestore. Isso resulta em URLs amigáveis como `/pp/[slug]/[nome-do-widget]` e buscas O(1) mais eficientes.
