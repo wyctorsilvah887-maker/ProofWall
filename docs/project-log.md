@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Fluxo Google Maps Ajustado:** A funcionalidade de redirecionamento para o Google Business foi movida para a página de coleta (`/c`). Agora, após enviar um depoimento para o Proova, o cliente é convidado a replicar a avaliação no Google, aumentando o impacto de SEO local.
 - **Redirecionados Google:** Ativado sistema de rastreamento de cliques para o Google Maps. Agora o usuário pode configurar o link do Google Business e acompanhar os redirecionamentos no Dashboard.
 - **IDs Baseados em Slugs:** Widgets agora utilizam o nome (slugificado) como ID no Firestore. Isso resulta em URLs amigáveis como `/pp/[slug]/[nome-do-widget]` e buscas O(1) mais eficientes.
 - **Adaptação Desktop (/pp):** Aumentada largura máxima do container central e ajustado o mural para 3 colunas em telas grandes, mantendo a experiência mobile intacta.

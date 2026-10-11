@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, use, useEffect } from 'react';
@@ -5,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search } from 'lucide-react';
+import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
@@ -24,6 +25,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [submitted, setSubmitted] = useState(false);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
+  const [googleMapsWidget, setGoogleMapsWidget] = useState<any>(null);
 
   const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
@@ -37,14 +39,26 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         const q = query(usersRef, where('companySlug', '==', slug), limit(1));
         const snapshot = await getDocs(q);
         
+        let foundUserId = null;
         if (!snapshot.empty) {
-          setTargetUserId(snapshot.docs[0].id);
+          foundUserId = snapshot.docs[0].id;
         } else {
           const slugAlt = slug.replace(/-/g, ' ');
           const qAlt = query(usersRef, where('companyName', '==', slugAlt), limit(1));
           const snapshotAlt = await getDocs(qAlt);
           if (!snapshotAlt.empty) {
-            setTargetUserId(snapshotAlt.docs[0].id);
+            foundUserId = snapshotAlt.docs[0].id;
+          }
+        }
+
+        if (foundUserId) {
+          setTargetUserId(foundUserId);
+          // Buscar se existe algum widget com link do Google Maps para exibir o convite depois
+          const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
+          const widgetsSnap = await getDocs(widgetsRef);
+          const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
+          if (gWidget) {
+            setGoogleMapsWidget({ id: gWidget.id, ...gWidget.data() });
           }
         }
       } catch (err) {
@@ -56,6 +70,18 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     
     findCompany();
   }, [db, slug]);
+
+  const handleGoogleRedirect = async () => {
+    if (!db || !targetUserId || !googleMapsWidget) return;
+    
+    const widgetRef = doc(db, 'users', targetUserId, 'widgets', googleMapsWidget.id);
+    updateDoc(widgetRef, {
+      googleRedirectCount: increment(1)
+    });
+
+    const url = googleMapsWidget.googleMapsUrl;
+    window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +105,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         setSubmitted(true);
         toast({
           title: "Depoimento Enviado!",
-          description: "Obrigado por compartilhar sua experiência. Seu feedback já está disponível!",
+          description: "Obrigado por compartilhar sua experiência.",
         });
       })
       .catch(async (err) => {
@@ -126,13 +152,32 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/20 px-4 font-body">
         <Card className="w-full max-w-md text-center shadow-2xl border-none">
-          <CardContent className="pt-10 pb-10 space-y-6">
+          <CardContent className="pt-10 pb-10 space-y-8">
             <div className="mx-auto bg-green-100 p-4 rounded-full w-fit">
               <CheckCircle2 className="w-12 h-12 text-green-600" />
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
-              <p className="text-muted-foreground">Sua avaliação foi enviada e aprovada automaticamente.</p>
+              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso e já nos ajuda muito.</p>
+            </div>
+
+            {googleMapsWidget && (
+              <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <p className="text-sm font-semibold text-gray-700">Pode nos dar uma força extra?</p>
+                <p className="text-xs text-muted-foreground">Replique sua avaliação no nosso perfil do Google para que outros clientes nos encontrem!</p>
+                <Button 
+                  onClick={handleGoogleRedirect}
+                  className="w-full h-14 rounded-xl gap-3 text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all bg-[#4285F4] hover:bg-[#357ae8]"
+                >
+                  <MapPin className="w-5 h-5" /> Avaliar no Google também
+                </Button>
+              </div>
+            )}
+            
+            <div className="pt-4">
+              <Button variant="ghost" onClick={() => setSubmitted(false)} className="text-xs text-muted-foreground">
+                Enviar outro depoimento
+              </Button>
             </div>
           </CardContent>
         </Card>

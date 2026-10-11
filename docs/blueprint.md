@@ -1,41 +1,21 @@
-# Proova - Inteligência Estratégica
 
-## 🎯 O Problema que Resolvemos
-O Proova cura a **"Morte Silenciosa"** das vendas causada pela falta de confiança imediata. Empresários perdem vendas não por falta de qualidade, mas por falta de **Prova Social** acessível no momento da decisão.
+# Proova - Blueprint Estratégico
 
-### As 4 Dores Principais:
-1.  **Elogio Invisível:** O elogio que fica preso no WhatsApp do dono não ajuda a vender para o próximo cliente.
-2.  **Fricção na Coleta:** Pedir depoimento é chato; o Proova transforma isso em uma "Experiência VIP".
-3.  **Site Estático:** Sites sem movimento parecem abandonados; o Proova traz "vida" com rostos e nomes reais.
-4.  **Incredulidade:** Depoimentos fixos em texto parecem falsos; páginas públicas e vídeos trazem a verdade.
+## 🎯 O Problema (A Dor)
+Empresas perdem vendas todos os dias porque novos clientes não confiam na marca. Elogios ficam "escondidos" em prints de WhatsApp ou perdidos no tempo. A prova social é o ativo de marketing mais barato e poderoso, mas é o mais difícil de organizar e exibir com estética.
 
-## ✅ Entrega 100% Garantida (Status Atual)
+## 💡 A Solução (O Produto)
+O Proova é o ecossistema definitivo para transformar a satisfação de clientes em uma vitrine de vendas. Ele remove a fricção da coleta, centraliza a gestão e entrega uma exibição profissional (widgets) em minutos.
 
-### 1. Máquina de Coleta de Autoridade
-- **Link de Coleta Profissional:** (/c/slug-da-empresa) exclusivo para captar feedback de forma elegante.
-- **QR Code de Balcão:** Gerado automaticamente para impressão e uso em pontos de venda físicos.
+## 🚀 Diferenciais Competitivos (O "Moat")
+1. **Coleta Híbrida:** Link direto + QR Code de Balcão para captura no PDV físico.
+2. **Double-Down Reviews:** Estratégia de convite para o Google Business após a avaliação interna, maximizando o SEO local do cliente.
+3. **Estética VIP:** Widgets que não parecem "gambiarras", mas sim extensões nativas do site do cliente.
+4. **Performance O(1):** Arquitetura baseada em Slugs amigáveis para carregamento instantâneo.
+5. **Conversão Focada:** Integração nativa com WhatsApp nos widgets para transformar visitantes em leads no ato.
 
-### 2. Gestão e Curadoria de Depoimentos
-- **Painel Administrativo:** Visualização centralizada de notas, textos e autores.
-- **Moderação Seletiva:** Controle total sobre quais depoimentos são selecionados para os widgets.
-
-### 3. Distribuição de Prova Social (Páginas VIP)
-- **URLs Amigáveis:** Links baseados em nomes (ex: `/pp/marca/mural-vip`) para máxima credibilidade.
-- **Layouts Dinâmicos:** Suporte a Mural Masonry, Carrossel, Grade ou Pop-up.
-- **Responsividade Híbrida:** Design otimizado para mobile e desktop.
-
-### 4. Gatilhos de Conversão Imediata
-- **Integração WhatsApp:** Botão flutuante para transformar visitantes em leads instantaneamente.
-- **Personalização de Marca:** Ajuste de cores de tema e identidade visual.
-
-### 5. Infraestrutura e Performance
-- **Segurança de Dados:** Multi-usuário com isolamento total via Firebase Auth.
-- **Busca de Alta Performance:** URLs baseadas em slugs que funcionam como IDs diretos no banco.
-
-## 🚀 Posicionamento
-O Proova não é uma ferramenta de "formulário", é uma **Plataforma de Aceleração de Vendas via Confiança**.
-
-## 🔮 Próximos Passos
-- Depoimentos em vídeo (Aumenta a confiança em 10x).
-- Widgets flutuantes tipo "social proof bubble" para sites externos.
-- Analytics de visualização dos widgets.
+## 🗺️ Roadmap de Valor
+- **Fase 1 (Atual):** Coleta, Gestão, Widgets Estéticos e Redirecionamento Google.
+- **Fase 2:** Depoimentos em Vídeo (UGC - User Generated Content).
+- **Fase 3:** Dashboards de métricas avançadas (views, cliques, conversão estimada).
+- **Fase 4:** Integrações via API para plataformas de E-commerce.
