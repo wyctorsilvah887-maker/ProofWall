@@ -3,23 +3,24 @@
 import { Resend } from 'resend';
 
 /**
- * Instancia o Resend usando a variável de ambiente.
- * No ambiente da Vercel, certifique-se de adicionar RESEND_API_KEY nas Environment Variables.
- */
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-/**
  * Envia um e-mail de recuperação de senha personalizado via Resend.
  * @param email - E-mail do destinatário.
  * @param resetLink - Link de redefinição (gerado pelo Firebase ou apontando para sua rota de reset).
  */
 export async function sendResetPasswordEmail(email: string, resetLink: string) {
-  if (!process.env.RESEND_API_KEY) {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
     console.error("ERRO: RESEND_API_KEY não configurada no ambiente.");
-    return { success: false, error: "Serviço de e-mail temporariamente indisponível." };
+    return { 
+      success: false, 
+      error: "O serviço de e-mail ainda não foi configurado pelo administrador (Variável RESEND_API_KEY ausente)." 
+    };
   }
 
   try {
+    const resend = new Resend(apiKey);
+
     const { data, error } = await resend.emails.send({
       from: 'Proova Social <onboarding@resend.dev>', // Em produção, altere para seu domínio verificado
       to: [email],
