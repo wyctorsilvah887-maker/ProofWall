@@ -103,6 +103,13 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+            
+            <div className="text-right">
+              <Link href="/forgot-password" size="sm" className="text-xs text-primary hover:underline font-medium">
+                Esqueceu sua senha?
+              </Link>
+            </div>
+
             <Button type="submit" className="w-full h-12 text-lg font-semibold" disabled={isLoading}>
               {isLoading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : null}
               {isLoading ? 'Autenticando...' : 'Entrar no Painel'}
