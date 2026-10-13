@@ -1,50 +1,58 @@
-
 'use server';
 
 import { Resend } from 'resend';
 
+/**
+ * Instancia o Resend usando a variável de ambiente.
+ * No ambiente da Vercel, certifique-se de adicionar RESEND_API_KEY nas Environment Variables.
+ */
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Envia um e-mail de recuperação de senha simulado ou real via Resend.
- * Nota: Como estamos usando Firebase Auth, o fluxo ideal é gerar o link via Firebase,
- * mas aqui demonstramos a integração com a API da Resend conforme solicitado.
+ * Envia um e-mail de recuperação de senha personalizado via Resend.
+ * @param email - E-mail do destinatário.
+ * @param resetLink - Link de redefinição (gerado pelo Firebase ou apontando para sua rota de reset).
  */
 export async function sendResetPasswordEmail(email: string, resetLink: string) {
   if (!process.env.RESEND_API_KEY) {
-    console.warn("RESEND_API_KEY não encontrada no .env");
-    return { success: false, error: "Serviço de e-mail não configurado." };
+    console.error("ERRO: RESEND_API_KEY não configurada no ambiente.");
+    return { success: false, error: "Serviço de e-mail temporariamente indisponível." };
   }
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Proova <onboarding@resend.dev>', // Em produção, use seu domínio verificado
+      from: 'Proova Social <onboarding@resend.dev>', // Em produção, altere para seu domínio verificado
       to: [email],
-      subject: 'Recuperação de Senha - Proova',
+      subject: '🔑 Redefinição de Senha - Proova',
       html: `
-        <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-          <h2 style="color: #f97316;">Recuperação de Senha</h2>
-          <p>Olá,</p>
-          <p>Recebemos uma solicitação para redefinir a senha da sua conta no Proova.</p>
-          <p>Clique no botão abaixo para escolher uma nova senha:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetLink}" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Redefinir Senha</a>
+        <div style="font-family: 'Inter', sans-serif; color: #1f2937; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; background-color: #ffffff;">
+          <div style="background-color: #f97316; padding: 32px 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em;">PROOVA</h1>
           </div>
-          <p style="font-size: 12px; color: #777;">Se você não solicitou isso, pode ignorar este e-mail com segurança.</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="font-size: 10px; color: #aaa; text-align: center;">© 2026 Proova Social Proof</p>
+          <div style="padding: 40px 32px;">
+            <h2 style="color: #111827; font-size: 20px; font-weight: 700; margin-top: 0;">Recuperação de Senha</h2>
+            <p style="line-height: 1.6; color: #4b5563;">Olá,</p>
+            <p style="line-height: 1.6; color: #4b5563;">Recebemos uma solicitação para redefinir a senha da sua conta no Proova. Se você não solicitou isso, ignore este e-mail.</p>
+            <div style="text-align: center; margin: 40px 0;">
+              <a href="${resetLink}" style="background-color: #f97316; color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.3);">Redefinir Minha Senha</a>
+            </div>
+            <p style="font-size: 14px; color: #6b7280; line-height: 1.6;">O link expirará em breve por motivos de segurança.</p>
+          </div>
+          <div style="background-color: #f9fafb; padding: 24px 32px; border-top: 1px solid #e5e7eb; text-align: center;">
+            <p style="font-size: 12px; color: #9ca3af; margin: 0;">© 2026 Proova Social Proof. Todos os direitos reservados.</p>
+          </div>
         </div>
       `,
     });
 
     if (error) {
-      console.error("Erro Resend:", error);
+      console.error("Resend API Error:", error);
       return { success: false, error: error.message };
     }
 
-    return { success: true, data };
+    return { success: true, id: data?.id };
   } catch (err: any) {
-    console.error("Erro ao enviar e-mail:", err);
-    return { success: false, error: err.message };
+    console.error("Falha crítica ao enviar e-mail:", err);
+    return { success: false, error: "Ocorreu um erro ao processar o envio." };
   }
 }

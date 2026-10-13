@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +10,7 @@ import { useAuth } from '@/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { sendResetPasswordEmail } from '@/app/actions/auth-actions';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function ForgotPasswordPage() {
   const auth = useAuth();
@@ -20,34 +20,40 @@ export default function ForgotPasswordPage() {
 
   const handleResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
+    const targetEmail = email.trim().toLowerCase();
+    
+    if (!targetEmail) return;
 
     setIsLoading(true);
 
     try {
-      // 1. Usamos o Firebase para processar a lógica de reset (envio padrão)
-      // Nota: O Firebase envia o e-mail automaticamente. 
-      // Se quisermos usar a API do Resend EXCLUSIVAMENTE, teríamos que usar o Admin SDK
-      // para gerar o link (Action Link). Como usamos o Client SDK, o Firebase cuida do disparo.
-      // Demonstramos aqui o chamado à nossa Server Action Resend como um "log" ou fluxo customizado.
+      /**
+       * 1. Usamos o Firebase para a lógica de autenticação.
+       * O Firebase enviará o e-mail padrão.
+       */
+      await sendPasswordResetEmail(auth, targetEmail);
       
-      await sendPasswordResetEmail(auth, email);
-      
-      // 2. Chamada demonstrativa da nossa API Resend (simulando um fluxo de notificação customizado)
-      // Em um cenário real com Resend, você geraria o link via Admin SDK no servidor.
-      await sendResetPasswordEmail(email, `${window.location.origin}/login`);
+      /**
+       * 2. Disparamos a notificação customizada via Resend API.
+       * Aqui usamos o link padrão de login para demonstração da capacidade do Resend.
+       */
+      const result = await sendResetPasswordEmail(targetEmail, `${window.location.origin}/login`);
 
-      setIsSent(true);
-      toast({
-        title: "E-mail Enviado",
-        description: "Verifique sua caixa de entrada para redefinir a senha.",
-      });
+      if (result.success) {
+        setIsSent(true);
+        toast({
+          title: "Instruções Enviadas",
+          description: "Verifique sua caixa de entrada (e pasta de spam) para prosseguir.",
+        });
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "Não foi possível processar sua solicitação. Verifique o e-mail informado.",
+        title: "Falha na Solicitação",
+        description: error.message || "Verifique se o e-mail está correto e tente novamente.",
       });
     } finally {
       setIsLoading(false);
@@ -55,55 +61,73 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Link href="/login" className="fixed top-8 left-8 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Voltar ao Login
-      </Link>
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 font-body text-foreground relative">
+      <div className="fixed top-8 left-8 flex items-center gap-4">
+        <Link href="/login" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
+          <ArrowLeft className="w-4 h-4" /> Voltar
+        </Link>
+      </div>
 
-      <Card className="w-full max-w-md shadow-2xl border-none">
-        <CardHeader className="text-center space-y-1">
-          <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
+      <div className="fixed top-8 right-8">
+        <ThemeToggle />
+      </div>
+
+      <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden bg-card">
+        <div className="h-2 bg-primary w-full" />
+        <CardHeader className="text-center space-y-4 pt-8">
+          <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit animate-in zoom-in duration-500">
             <KeyRound className="w-8 h-8 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-headline font-bold">Recuperar Senha</CardTitle>
-          <CardDescription>
-            {isSent 
-              ? "Instruções enviadas com sucesso." 
-              : "Insira seu e-mail para receber as instruções de redefinição."}
-          </CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-headline font-bold tracking-tight">Recuperar Senha</CardTitle>
+            <CardDescription className="text-sm font-medium">
+              {isSent 
+                ? "Siga as instruções enviadas para seu e-mail." 
+                : "Informe o e-mail associado à sua conta para receber o link de acesso."}
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 pb-10">
           {isSent ? (
-            <div className="space-y-6 text-center py-4">
+            <div className="space-y-8 text-center py-4 animate-in fade-in slide-in-from-bottom-4">
               <div className="flex justify-center">
-                <CheckCircle2 className="w-16 h-16 text-green-500 animate-in zoom-in" />
+                <div className="bg-green-100 dark:bg-green-900/30 p-4 rounded-full">
+                  <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Enviamos um link para <strong>{email}</strong>. Se não encontrar, verifique a pasta de spam.
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Um e-mail de recuperação foi enviado para <br />
+                <span className="font-bold text-foreground">{email}</span>.
               </p>
-              <Button asChild className="w-full h-12">
-                <Link href="/login">Ir para Login</Link>
+              <Button asChild className="w-full h-14 text-lg font-bold shadow-xl">
+                <Link href="/login">Voltar ao Login</Link>
               </Button>
             </div>
           ) : (
-            <form onSubmit={handleResetRequest} className="space-y-4">
+            <form onSubmit={handleResetRequest} className="space-y-6">
               <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">E-mail de Acesso</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                  <Mail className="absolute left-4 top-4 h-5 w-5 text-muted-foreground" />
                   <Input
+                    id="email"
                     type="email"
-                    placeholder="Seu e-mail cadastrado"
+                    placeholder="exemplo@empresa.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-12"
+                    className="pl-12 h-14 bg-muted/20 border-transparent focus:ring-primary/20 text-base"
                     required
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full h-12 text-lg font-semibold" disabled={isLoading}>
-                {isLoading ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : null}
-                {isLoading ? 'Processando...' : 'Enviar Link de Recuperação'}
+              <Button type="submit" className="w-full h-14 text-lg font-bold shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-0" disabled={isLoading}>
+                {isLoading ? (
+                  <><Loader2 className="animate-spin mr-2 h-5 w-5" /> Processando...</>
+                ) : 'Enviar Link via Resend'}
               </Button>
+              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
+                🚀 Powered by Resend API
+              </p>
             </form>
           )}
         </CardContent>
