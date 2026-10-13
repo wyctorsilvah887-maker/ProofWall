@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from "react";
@@ -282,6 +281,9 @@ export default function Home() {
       <footer className="py-8 border-t">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
           <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
+            Feito Pelo Grupo Synapse | Synapse Group
+          </p>
         </div>
       </footer>
     </div>
