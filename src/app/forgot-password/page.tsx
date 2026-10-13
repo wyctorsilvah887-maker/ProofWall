@@ -128,7 +128,7 @@ export default function ForgotPasswordPage() {
                 ) : 'Enviar Link de Recuperação'}
               </Button>
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
-                🚀 Powered by Resend API
+                🚀 Powered by Synapse Group
               </p>
             </form>
           )}
