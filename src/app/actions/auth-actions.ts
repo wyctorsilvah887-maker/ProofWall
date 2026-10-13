@@ -23,7 +23,7 @@ export async function sendResetPasswordEmail(email: string, resetLink: string) {
     const resend = new Resend(apiKey);
 
     // Usando o domínio verificado: proova.wsstudioscompany.com.br
-    // Alterado para proova@ para ser mais genérico
+    // Alterado para proova@ para ser mais genérico e evitar erro de mailbox inexistente
     const { data, error } = await resend.emails.send({
       from: 'Proova <proova@proova.wsstudioscompany.com.br>',
       to: [email],
