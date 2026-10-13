@@ -31,13 +31,11 @@ export default function ForgotPasswordPage() {
     try {
       /**
        * 1. Usamos o Firebase para a lógica de autenticação.
-       * O Firebase enviará o e-mail padrão.
        */
       await sendPasswordResetEmail(auth, targetEmail);
       
       /**
        * 2. Disparamos a notificação customizada via Resend API.
-       * Aqui usamos o link padrão de login para demonstração da capacidade do Resend.
        */
       const result = await sendResetPasswordEmail(targetEmail, `${window.location.origin}/login`);
 
@@ -45,7 +43,7 @@ export default function ForgotPasswordPage() {
         setIsSent(true);
         toast({
           title: "Instruções Enviadas",
-          description: "Verifique sua caixa de entrada (e pasta de spam) para prosseguir.",
+          description: "Verifique sua caixa de entrada para prosseguir.",
         });
       } else {
         throw new Error(result.error);
