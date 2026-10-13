@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -124,7 +125,7 @@ export default function ForgotPasswordPage() {
               <Button type="submit" className="w-full h-14 text-lg font-bold shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-0" disabled={isLoading}>
                 {isLoading ? (
                   <><Loader2 className="animate-spin mr-2 h-5 w-5" /> Processando...</>
-                ) : 'Enviar Link via Resend'}
+                ) : 'Enviar Link de Recuperação'}
               </Button>
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
                 🚀 Powered by Resend API
