@@ -75,7 +75,6 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
         <section className="w-full py-10 md:py-24 lg:py-32 xl:py-48 flex items-center justify-center overflow-hidden">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid gap-8 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
@@ -141,7 +140,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Feature Section: Mockup */}
         <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/30">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12 md:mb-16">
@@ -156,7 +154,6 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col items-center justify-center">
-              {/* Mockup Widget */}
               <div className="relative w-full max-w-5xl p-4 md:p-8 bg-card rounded-2xl md:rounded-3xl border shadow-2xl overflow-hidden min-h-[400px]">
                 <div className="hidden sm:block absolute top-0 right-0 p-4">
                   <div className="flex gap-2">
@@ -201,7 +198,6 @@ export default function Home() {
                   ))}
                 </div>
                 
-                {/* Decorative Elements */}
                 <div className="mt-8 flex justify-center">
                   <div className="px-3 py-1.5 bg-primary/5 rounded-full border border-primary/10 text-[9px] md:text-[10px] font-mono text-primary/60 text-center">
                     &lt;script src="https://proova.io/widget.js"&gt;&lt;/script&gt;
@@ -212,7 +208,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Benefits Section */}
         <section className="w-full py-16 md:py-24 lg:py-32 bg-background">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12 md:mb-16">
@@ -252,7 +247,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className="w-full py-16 md:py-24 lg:py-32 bg-primary text-primary-foreground">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-6 text-center">

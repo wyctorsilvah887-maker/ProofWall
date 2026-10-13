@@ -29,14 +29,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      /**
-       * 1. Usamos o Firebase para a lógica de autenticação.
-       */
       await sendPasswordResetEmail(auth, targetEmail);
-      
-      /**
-       * 2. Disparamos a notificação customizada via Resend API.
-       */
       const result = await sendResetPasswordEmail(targetEmail, `${window.location.origin}/login`);
 
       if (result.success) {
