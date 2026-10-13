@@ -21,9 +21,10 @@ export async function sendResetPasswordEmail(email: string, resetLink: string) {
   try {
     const resend = new Resend(apiKey);
 
-    // Usando o domínio verificado conforme o print: proova.wsstudioscompany.com.br
+    // Usando o domínio verificado: proova.wsstudioscompany.com.br
+    // Alterado para proova@ para ser mais genérico
     const { data, error } = await resend.emails.send({
-      from: 'Proova <suporte@proova.wsstudioscompany.com.br>',
+      from: 'Proova <proova@proova.wsstudioscompany.com.br>',
       to: [email],
       subject: '🔑 Redefinição de Senha - Proova',
       html: `
