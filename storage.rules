@@ -1,8 +1,8 @@
 
 rules_version = '2';
 
-// Regras de Segurança do Firebase Storage - Versão 2.1
-// Forçando redeploi para garantir propagação das permissões de escrita do usuário.
+// Regras de Segurança do Firebase Storage - Versão 2.2
+// Permite que usuários autenticados façam upload apenas para suas respectivas pastas.
 
 service firebase.storage {
   match /b/{bucket}/o {
@@ -13,11 +13,11 @@ service firebase.storage {
       // Permite leitura pública para exibição nos widgets e landing pages
       allow read: if true;
       
-      // Permite escrita se o usuário estiver autenticado e o UID bater com a pasta
+      // Permite escrita se o usuário estiver autenticado e o UID bater com o segmento da pasta
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Bloqueio padrão para outros caminhos não especificados
+    // Bloqueio padrão para segurança
     match /{allPaths=**} {
       allow read, write: if false;
     }
