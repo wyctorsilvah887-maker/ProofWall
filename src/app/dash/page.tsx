@@ -27,7 +27,9 @@ import {
   Edit3,
   ChevronRight,
   ArrowLeft,
-  FileDown
+  FileDown,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -71,6 +73,7 @@ export default function DashPage() {
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [pdfTheme, setPdfTheme] = useState<'light' | 'dark'>('light');
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -155,12 +158,16 @@ export default function DashPage() {
         format: 'a4',
       });
 
+      const isDark = pdfTheme === 'dark';
       const companyName = userData?.companyName || 'Sua Empresa';
-      const collectionLink = `${baseUrl}/c/${companySlug}`;
       const primaryColor = [249, 115, 22]; // Orange hex: #f97316
 
-      // Background accent
-      doc.setFillColor(250, 250, 250);
+      // Background
+      if (isDark) {
+        doc.setFillColor(17, 24, 39); // Gray-900
+      } else {
+        doc.setFillColor(250, 250, 250); // Light Gray
+      }
       doc.rect(0, 0, 210, 297, 'F');
 
       // Header Orange Bar
@@ -174,19 +181,32 @@ export default function DashPage() {
       doc.text('PROOVA', 105, 25, { align: 'center' });
 
       // Main Container
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(230, 230, 230);
+      if (isDark) {
+        doc.setFillColor(31, 41, 55); // Gray-800
+        doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      } else {
+        doc.setFillColor(255, 255, 255);
+        doc.setDrawColor(230, 230, 230);
+      }
       doc.roundedRect(20, 50, 170, 210, 10, 10, 'FD');
 
       // Company Name
-      doc.setTextColor(31, 41, 55); // Gray-800
+      if (isDark) {
+        doc.setTextColor(255, 255, 255);
+      } else {
+        doc.setTextColor(31, 41, 55); // Gray-800
+      }
       doc.setFontSize(24);
       doc.text(companyName.toUpperCase(), 105, 80, { align: 'center' });
 
       // Subtitle
+      if (isDark) {
+        doc.setTextColor(156, 163, 175); // Gray-400
+      } else {
+        doc.setTextColor(107, 114, 128); // Gray-500
+      }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(14);
-      doc.setTextColor(107, 114, 128); // Gray-500
       doc.text('A sua opinião é muito importante para nós!', 105, 95, { align: 'center' });
 
       // QR Code conversion
@@ -221,15 +241,19 @@ export default function DashPage() {
       doc.text('ESCANEIE PARA NOS AVALIAR', 105, 230, { align: 'center' });
 
       // Footer
-      doc.setTextColor(156, 163, 175); // Gray-400
+      if (isDark) {
+        doc.setTextColor(107, 114, 128);
+      } else {
+        doc.setTextColor(156, 163, 175); // Gray-400
+      }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.text('Tecnologia Proova', 105, 275, { align: 'center' });
       doc.setFont('helvetica', 'bold');
       doc.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
 
-      doc.save(`cartaz-proova-${companySlug}.pdf`);
-      toast({ title: "PDF Gerado!", description: "O seu cartaz de balcão foi baixado." });
+      doc.save(`cartaz-proova-${companySlug}-${pdfTheme}.pdf`);
+      toast({ title: "PDF Gerado!", description: `O seu cartaz (${pdfTheme === 'light' ? 'Claro' : 'Escuro'}) foi baixado.` });
     } catch (err) {
       console.error("Erro ao gerar PDF:", err);
       toast({ variant: "destructive", title: "Erro no PDF", description: "Não foi possível gerar o arquivo agora." });
@@ -569,6 +593,28 @@ export default function DashPage() {
           </DialogHeader>
           
           <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6">
+            <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo do Cartaz</Label>
+              <div className="flex justify-center gap-4">
+                <Button 
+                  variant={pdfTheme === 'light' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setPdfTheme('light')}
+                  className="gap-2 h-10 px-6 rounded-xl"
+                >
+                  <Sun className="w-4 h-4" /> Claro
+                </Button>
+                <Button 
+                  variant={pdfTheme === 'dark' ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setPdfTheme('dark')}
+                  className="gap-2 h-10 px-6 rounded-xl"
+                >
+                  <Moon className="w-4 h-4" /> Escuro
+                </Button>
+              </div>
+            </div>
+
             <div className="p-4 md:p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/20">
               <QRCodeSVG 
                 id="qr-code-svg"
@@ -588,7 +634,7 @@ export default function DashPage() {
                 {isGeneratingPdf ? (
                   <><Loader2 className="animate-spin" /> Preparando Cartaz...</>
                 ) : (
-                  <><FileDown className="w-6 h-6" /> Baixar PDF para Impressão</>
+                  <><FileDown className="w-6 h-6" /> Baixar PDF ({pdfTheme === 'light' ? 'Claro' : 'Escuro'})</>
                 )}
               </Button>
               <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-[0.2em] font-black">
