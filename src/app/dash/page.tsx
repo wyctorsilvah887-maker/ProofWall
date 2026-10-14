@@ -97,7 +97,7 @@ export default function DashPage() {
     return query(
       collection(db, 'users', user.uid, 'testimonials'),
       orderBy('createdAt', 'desc'),
-      limit(10)
+      limit(5)
     );
   }, [db, user]);
 
