@@ -601,15 +601,17 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 "p-12 space-y-12 flex-1 flex flex-col",
                 !hasValidCover && "pt-24"
               )}>
-                <div className="text-center space-y-6">
+                <div className="text-center space-y-10">
                   {hasValidLogo && (
-                    <div className="mx-auto w-24 h-24 mb-6 relative">
-                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2rem] shadow-xl border-4 border-background" alt="Logo" />
+                    <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-6 relative">
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>
                   )}
-                  <h1 className="text-4xl font-black tracking-tighter text-foreground leading-[1.1]">
-                    O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
-                  </h1>
+                  <div className="space-y-6">
+                    <h1 className="text-4xl font-black tracking-tighter text-foreground leading-[1.1]">
+                      O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
+                    </h1>
+                  </div>
                 </div>
 
                 <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">

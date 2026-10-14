@@ -252,23 +252,29 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
           <header className={cn(
-            "px-6 text-center space-y-8",
+            "px-6 text-center space-y-12", // increased space-y
             hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32"
           )}>
-            <div className="space-y-6">
-              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] text-foreground max-w-5xl mx-auto">
-                O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
-              </h1>
-              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-xl max-w-3xl mx-auto leading-relaxed px-4">
-                Experiências reais de clientes que confiam em nosso trabalho.
-              </p>
-
-              <div className="flex justify-center pt-8">
-                {hasValidLogo && (
-                  <div className="w-32 h-32 relative">
-                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
+            <div className="space-y-10">
+              {hasValidLogo && (
+                <div className="flex justify-center">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
+                    <img 
+                      src={logoUrl} 
+                      className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" 
+                      alt="Logo Empresa" 
+                    />
                   </div>
-                )}
+                </div>
+              )}
+              
+              <div className="space-y-6">
+                <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] text-foreground max-w-5xl mx-auto">
+                  O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
+                </h1>
+                <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-xl max-w-3xl mx-auto leading-relaxed px-4">
+                  Experiências reais de clientes que confiam em nosso trabalho.
+                </p>
               </div>
             </div>
           </header>
