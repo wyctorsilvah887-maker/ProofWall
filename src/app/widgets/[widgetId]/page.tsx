@@ -27,7 +27,8 @@ import {
   MapPin,
   Palette,
   ImageIcon,
-  X
+  X,
+  FileImage
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,6 +68,46 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
+/**
+ * Utilitário para compressão de imagem no lado do cliente usando Canvas.
+ */
+async function compressImage(file: File, maxWidth = 1200, quality = 0.7): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+            else reject(new Error('Falha na compressão: Canvas to Blob falhou.'));
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+    };
+    reader.onerror = (error) => reject(error);
+  });
+}
+
 const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, themeColor: string, secondaryColor: string, isPopup?: boolean, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
   const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
   const slideClass = layout === 'mural' 
@@ -87,7 +128,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
         borderTopColor: !isPopup ? themeColor : 'transparent',
         borderLeftColor: isPopup ? themeColor : 'transparent',
         borderTopWidth: !isPopup ? '3px' : '0',
-        borderLeftWidth: iisPopup ? '4px' : '0',
+        borderLeftWidth: isPopup ? '4px' : '0',
         animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
         animationFillMode: 'both',
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
@@ -127,7 +168,8 @@ const PublicPageSettings = ({
   layout, setLayout,
   logoUrl, setLogoUrl,
   coverImageUrl, setCoverImageUrl,
-  onUpload
+  onUpload,
+  isUploading
 }: any) => {
   
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -188,13 +230,21 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (JPG/PNG)</Label>
                 <div className="flex flex-col gap-3">
                   <div 
-                    onClick={() => logoInputRef.current?.click()}
-                    className="h-24 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20 overflow-hidden relative group"
+                    onClick={() => !isUploading && logoInputRef.current?.click()}
+                    className={cn(
+                      "h-24 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
+                      isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
+                    )}
                   >
-                    {logoUrl ? (
+                    {isUploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        <span className="text-[8px] font-bold uppercase text-primary">Processando...</span>
+                      </div>
+                    ) : logoUrl ? (
                       <>
                         <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo Preview" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -215,7 +265,7 @@ const PublicPageSettings = ({
                     accept="image/*"
                     onChange={(e) => onUpload(e, 'logo')} 
                   />
-                  {logoUrl && (
+                  {logoUrl && !isUploading && (
                     <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase" onClick={() => setLogoUrl('')}>
                       <X className="w-3 h-3 mr-1" /> Remover Logo
                     </Button>
@@ -224,13 +274,21 @@ const PublicPageSettings = ({
               </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (Otimizada)</Label>
                 <div className="flex flex-col gap-3">
                   <div 
-                    onClick={() => coverInputRef.current?.click()}
-                    className="h-32 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20 overflow-hidden relative group"
+                    onClick={() => !isUploading && coverInputRef.current?.click()}
+                    className={cn(
+                      "h-32 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
+                      isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
+                    )}
                   >
-                    {coverImageUrl ? (
+                    {isUploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <span className="text-[8px] font-bold uppercase text-primary">Comprimindo...</span>
+                      </div>
+                    ) : coverImageUrl ? (
                       <>
                         <img src={coverImageUrl} className="h-full w-full object-cover" alt="Cover Preview" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
@@ -251,7 +309,7 @@ const PublicPageSettings = ({
                     accept="image/*"
                     onChange={(e) => onUpload(e, 'cover')} 
                   />
-                  {coverImageUrl && (
+                  {coverImageUrl && !isUploading && (
                     <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase" onClick={() => setCoverImageUrl('')}>
                       <X className="w-3 h-3 mr-1" /> Remover Capa
                     </Button>
@@ -480,19 +538,27 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
+    
     setIsUploading(true);
     try {
-      const storageRef = ref(storage, `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}`);
-      const snapshot = await uploadBytes(storageRef, file);
+      // Aplicar compressão baseada no tipo (Logo menor, Capa maior)
+      const maxWidth = type === 'logo' ? 600 : 1200;
+      const compressedBlob = await compressImage(file, maxWidth, 0.75);
+
+      const storageRef = ref(storage, `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`);
+      const snapshot = await uploadBytes(storageRef, compressedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
+      
       if (type === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
-      toast({ title: "Imagem Enviada", description: "O arquivo foi processado com sucesso." });
+      
+      toast({ title: "Imagem Otimizada!", description: `Upload do arquivo finalizado via Storage.` });
     } catch (err) {
-      console.error("Erro no upload:", err);
-      toast({ variant: "destructive", title: "Erro no Upload", description: "Não foi possível enviar a imagem agora." });
+      console.error("Erro no processamento da imagem:", err);
+      toast({ variant: "destructive", title: "Falha no Upload", description: "Não foi possível processar ou enviar a imagem." });
     } finally {
       setIsUploading(false);
+      if (e.target) e.target.value = ''; // Limpa o input para novos uploads
     }
   };
 
@@ -546,7 +612,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     layout, setLayout,
     logoUrl, setLogoUrl,
     coverImageUrl, setCoverImageUrl,
-    onUpload: handleUpload
+    onUpload: handleUpload,
+    isUploading
   };
 
   return (
