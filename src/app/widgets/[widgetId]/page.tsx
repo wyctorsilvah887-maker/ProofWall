@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -16,17 +17,9 @@ import {
   Menu,
   Copy,
   ExternalLink,
-  Link2,
-  MessageCircle,
-  Layout,
-  LayoutGrid,
-  Play,
   Upload,
-  Lock,
-  MapPin,
-  Palette,
   ImageIcon,
-  X,
+  Palette,
   Settings,
   ChevronRight
 } from 'lucide-react';
@@ -59,17 +52,19 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-async function compressImage(file: File, maxWidth = 2560, quality = 0.92): Promise<Blob> {
+/**
+ * Comprime imagem com foco em altíssima fidelidade.
+ * Se a imagem for menor que 3MB, mantém o original.
+ */
+async function compressImage(file: File, maxWidth = 3840, quality = 1.0): Promise<Blob | File> {
+  if (file.size < 3 * 1024 * 1024) {
+    return file; // Mantém original se for pequeno o suficiente
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -120,7 +115,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
     <Card 
       className={cn(
         "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
-        "p-2.5",
+        "p-3",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
         !noAnim && "animate-in duration-1000 ease-out",
         !noAnim && slideClass,
@@ -137,23 +132,19 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
         backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
       }}
     >
-      <div className="flex flex-col space-y-1.5">
-        <div className="flex items-start justify-between w-full gap-2">
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
-                <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
-              </div>
-              <p className="font-bold text-foreground leading-tight truncate text-[9px]">{t.userName}</p>
-            </div>
-            <div className="flex gap-0.5 pl-5">
-              {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                <Star key={i} className="fill-primary text-primary w-2 h-2" style={{ color: themeColor, fill: themeColor }} />
-              ))}
-            </div>
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="bg-primary/5 p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
+            <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
+          <p className="font-bold text-foreground leading-tight truncate text-[10px]">{t.userName}</p>
         </div>
-        <p className="text-foreground/80 italic leading-relaxed text-[9px] line-clamp-3">"{t.text}"</p>
+        <div className="flex gap-0.5 pl-6">
+          {Array.from({ length: t.rating || 5 }).map((_, i) => (
+            <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
+          ))}
+        </div>
+        <p className="text-foreground/80 italic leading-relaxed text-[10px] line-clamp-3">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -177,7 +168,6 @@ const PublicPageSettings = ({
   
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
@@ -208,7 +198,7 @@ const PublicPageSettings = ({
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
-                    "aspect-square w-24 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
+                    "aspect-square w-24 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
                     isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                   )}
                 >
@@ -229,13 +219,11 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (2K HD)</Label>
-                </div>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (4K Ultra HD)</Label>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
-                    "h-28 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
+                    "h-32 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
                     isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                   )}
                 >
@@ -255,15 +243,15 @@ const PublicPageSettings = ({
                 <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'cover')} />
                 
                 {coverImageUrl && (
-                  <div className="space-y-3 p-3 rounded-xl bg-muted/10">
+                  <div className="space-y-4 p-4 rounded-xl bg-muted/5 border mt-2">
                     <div className="flex justify-between items-center">
                       <Label className="text-[9px] font-bold text-muted-foreground uppercase">Altura da Capa</Label>
-                      <span className="text-[9px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
+                      <span className="text-[10px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
                     </div>
                     <Slider 
                       value={[coverImageHeight]} 
-                      min={30} 
-                      max={85} 
+                      min={20} 
+                      max={90} 
                       step={1} 
                       onValueChange={(vals) => setCoverImageHeight(vals[0])}
                     />
@@ -316,9 +304,9 @@ const PublicPageSettings = ({
                 <div className="grid grid-cols-1 gap-2">
                   {[
                     { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
-                    { id: 'carousel', icon: Play, label: 'Carrossel Imersivo' },
+                    { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade Estática' },
-                    { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
+                    { id: 'popup', icon: MessageSquare, label: 'Notificação' },
                   ].map((item) => (
                     <button 
                       key={item.id}
@@ -334,11 +322,11 @@ const PublicPageSettings = ({
             </TabsContent>
 
             <TabsContent value="social" className="mt-0 space-y-6">
-              <div className="space-y-4 p-3 border rounded-xl bg-muted/10">
-                <div className="flex items-center justify-between mb-2">
+              <div className="space-y-4 p-4 border rounded-xl bg-muted/5">
+                <div className="flex items-center justify-between mb-3">
                   <div className="space-y-0.5">
-                    <Label className="text-xs font-bold">WhatsApp Flutuante</Label>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-tight">Ativar contato direto</p>
+                    <Label className="text-xs font-bold">Botão WhatsApp</Label>
+                    <p className="text-[9px] text-muted-foreground uppercase tracking-tight">Contato flutuante na página</p>
                   </div>
                   <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
                 </div>
@@ -353,13 +341,13 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Google Business URL</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">URL Google Business</Label>
                 <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil no Maps" />
               </div>
 
               <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Site Oficial</Label>
-                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://meusite.com.br" />
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do Site</Label>
+                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://www.exemplo.com" />
               </div>
             </TabsContent>
           </div>
@@ -405,7 +393,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isUploading, setIsUploading] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
-  const [muralIndex, setMuralIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -442,8 +429,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     
     setIsUploading(true);
     try {
-      const maxWidth = type === 'logo' ? 800 : 2560;
-      const compressedBlob = await compressImage(file, maxWidth, 0.92);
+      const maxWidth = type === 'logo' ? 1200 : 3840;
+      const compressedBlob = await compressImage(file, maxWidth, 1.0);
       const storagePath = `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`;
       const storageRef = ref(storage, storagePath);
       const snapshot = await uploadBytes(storageRef, compressedBlob);
@@ -452,9 +439,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       if (type === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
       
-      toast({ title: "Upload HD!", description: "Arquivo otimizado para alta fidelidade." });
+      toast({ title: "Upload Completo!", description: "Imagem processada com alta fidelidade." });
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Falha no Upload" });
+      toast({ variant: "destructive", title: "Erro no processamento" });
     } finally {
       setIsUploading(false);
     }
@@ -545,7 +532,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               </h2>
               <Link href={publicPageLink} target="_blank">
                 <Button variant="link" className="text-xs font-bold gap-1 p-0">
-                  Ver Link Real <ExternalLink className="w-3 h-3" />
+                  Ver Link Real
                 </Button>
               </Link>
             </div>
@@ -565,7 +552,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 <div className="text-center space-y-6">
                   {logoUrl && (
                     <div className="mx-auto w-24 h-24 mb-6 relative">
-                      <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-4 border-background" alt="Logo" />
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>
                   )}
                   <h1 className="text-4xl font-black tracking-tighter text-foreground leading-[1.1]">
@@ -579,7 +566,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                       <TestimonialCard key={t.id} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
                     ))
                   ) : (
-                    <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Nenhum depoimento selecionado abaixo.</div>
+                    <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Selecione depoimentos abaixo.</div>
                   )}
                 </div>
               </div>
@@ -620,8 +607,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <DialogContent className="rounded-3xl">
           <DialogHeader className="text-center">
             <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
-            <DialogTitle className="text-2xl font-black font-headline">Página VIP Publicada!</DialogTitle>
-            <DialogDescription>Suas alterações de design e conteúdo estão online.</DialogDescription>
+            <DialogTitle className="text-2xl font-black font-headline">Configuração Salva!</DialogTitle>
+            <DialogDescription>A página pública foi atualizada com alta qualidade.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
             <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>Entendido</Button>
