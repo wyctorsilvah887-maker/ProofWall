@@ -226,7 +226,12 @@ const PublicPageSettings = ({
             <TabsContent value="geral" className="mt-0 space-y-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título da Página</Label>
-                <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} placeholder="Ex: Nossos Elogios" />
+                <input 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={widgetName} 
+                  onChange={(e) => setWidgetName(e.target.value)} 
+                  placeholder="Ex: Nossos Elogios" 
+                />
               </div>
 
               <div className="space-y-4">
@@ -545,17 +550,25 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       const maxWidth = type === 'logo' ? 600 : 1200;
       const compressedBlob = await compressImage(file, maxWidth, 0.75);
 
-      const storageRef = ref(storage, `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`);
+      const storagePath = `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`;
+      const storageRef = ref(storage, storagePath);
+      
       const snapshot = await uploadBytes(storageRef, compressedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
       
       if (type === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
       
-      toast({ title: "Imagem Otimizada!", description: `Upload do arquivo finalizado via Storage.` });
-    } catch (err) {
+      toast({ title: "Imagem Otimizada!", description: `Upload do arquivo finalizado.` });
+    } catch (err: any) {
       console.error("Erro no processamento da imagem:", err);
-      toast({ variant: "destructive", title: "Falha no Upload", description: "Não foi possível processar ou enviar a imagem." });
+      toast({ 
+        variant: "destructive", 
+        title: "Falha no Upload", 
+        description: err.code === 'storage/unauthorized' 
+          ? "Permissão negada. Verifique as regras do Storage ou tente logar novamente." 
+          : "Não foi possível processar ou enviar a imagem." 
+      });
     } finally {
       setIsUploading(false);
       if (e.target) e.target.value = ''; // Limpa o input para novos uploads
