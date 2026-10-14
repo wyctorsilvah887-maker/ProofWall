@@ -16,12 +16,13 @@ import {
   CheckCircle2,
   Menu,
   Copy,
-  ExternalLink,
   Upload,
   ImageIcon,
   Palette,
-  Settings,
-  ChevronRight
+  ChevronRight,
+  LayoutGrid,
+  Play,
+  Layout
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -171,7 +172,7 @@ const PublicPageSettings = ({
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden bg-background">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-background border-r">
       <div className="p-4 border-b bg-muted/10 shrink-0">
         <Link href="/widgets" className="w-full">
           <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
@@ -219,7 +220,7 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (4K Ultra HD)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (4K Fidelity)</Label>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
