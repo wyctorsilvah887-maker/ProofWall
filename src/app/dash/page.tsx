@@ -24,7 +24,9 @@ import {
   MapPin,
   TrendingUp,
   Shield,
-  Edit3
+  Edit3,
+  ChevronRight,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -63,6 +65,9 @@ export default function DashPage() {
   const [baseUrl, setBaseUrl] = useState('');
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
+  
+  // States for the per-widget link configuration
+  const [selectedWidgetForLink, setSelectedWidgetForLink] = useState<any>(null);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
 
@@ -74,12 +79,6 @@ export default function DashPage() {
       setBaseUrl(window.location.origin);
     }
   }, []);
-
-  useEffect(() => {
-    if (userData?.googleMapsUrl) {
-      setNewGoogleMapsUrl(userData.googleMapsUrl);
-    }
-  }, [userData]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -108,7 +107,7 @@ export default function DashPage() {
     return collection(db, 'users', user.uid, 'widgets');
   }, [db, user]);
 
-  const { data: widgetsData } = useCollection(widgetsQuery);
+  const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
 
   const totalGoogleRedirects = useMemo(() => {
     if (!widgetsData) return 0;
@@ -124,14 +123,19 @@ export default function DashPage() {
   };
 
   const handleUpdateGoogleMapsUrl = async () => {
-    if (!userDocRef || isUpdatingUrl) return;
+    if (!db || !user || !selectedWidgetForLink || isUpdatingUrl) return;
+    
     setIsUpdatingUrl(true);
-    updateDoc(userDocRef, {
+    const widgetRef = doc(db, 'users', user.uid, 'widgets', selectedWidgetForLink.id);
+    
+    updateDoc(widgetRef, {
       googleMapsUrl: newGoogleMapsUrl.trim()
     })
       .then(() => {
-        toast({ title: "Link Atualizado", description: "O link do Google Maps foi salvo com sucesso." });
+        toast({ title: "Link Atualizado", description: `Link do Google Business salvo para o widget "${selectedWidgetForLink.name}".` });
         setIsGoogleMapsDialogOpen(false);
+        setSelectedWidgetForLink(null);
+        setNewGoogleMapsUrl('');
       })
       .catch((err) => {
         console.error("Erro ao atualizar URL:", err);
@@ -291,7 +295,11 @@ export default function DashPage() {
 
           <div className="relative group">
             <div 
-              onClick={() => setIsGoogleMapsDialogOpen(true)}
+              onClick={() => {
+                setSelectedWidgetForLink(null);
+                setNewGoogleMapsUrl('');
+                setIsGoogleMapsDialogOpen(true);
+              }}
               className="absolute -top-3 right-4 z-40 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
             >
               <Edit3 className="w-2.5 h-2.5" /> Configurar Link
@@ -305,7 +313,7 @@ export default function DashPage() {
                 <div className="flex items-center gap-2">
                   <div className="text-2xl font-bold">{totalGoogleRedirects}</div>
                   <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
-                    {userData?.googleMapsUrl ? 'Ativo' : 'Pendente'}
+                    Ativo
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">Total de cliques para o seu Google Business.</p>
@@ -415,30 +423,80 @@ export default function DashPage() {
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google Business
             </DialogTitle>
             <DialogDescription>
-              Insira o link direto do seu perfil no Google Maps para que os clientes possam replicar as avaliações.
+              {selectedWidgetForLink 
+                ? `Defina o link do Google para o mural "${selectedWidgetForLink.name}".`
+                : 'Selecione para qual mural você deseja configurar o link do Google Maps.'}
             </DialogDescription>
           </DialogHeader>
+          
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="google-url" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">URL do Perfil Google</Label>
-              <Input 
-                id="google-url"
-                placeholder="https://g.page/r/..." 
-                value={newGoogleMapsUrl} 
-                onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                className="h-12 border-primary/20 focus-visible:ring-primary/20"
-              />
-            </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta do formulário.
-            </p>
+            {!selectedWidgetForLink ? (
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Seus Murais Disponíveis</Label>
+                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2">
+                  {widgetsLoading ? (
+                    <div className="py-4 text-center"><Loader2 className="animate-spin h-6 w-6 text-primary mx-auto" /></div>
+                  ) : widgetsData && widgetsData.length > 0 ? (
+                    widgetsData.map((w: any) => (
+                      <Button 
+                        key={w.id} 
+                        variant="outline" 
+                        className="w-full justify-between h-14 rounded-xl px-4 border-muted hover:border-primary group transition-all"
+                        onClick={() => {
+                          setSelectedWidgetForLink(w);
+                          setNewGoogleMapsUrl(w.googleMapsUrl || '');
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary/5 p-2 rounded-lg group-hover:bg-primary/10">
+                            <Layout className="w-4 h-4 text-primary" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-bold">{w.name}</p>
+                            <p className="text-[10px] text-muted-foreground">{w.googleMapsUrl ? 'Link configurado' : 'Link pendente'}</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                      </Button>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center border-2 border-dashed rounded-xl">
+                      <p className="text-sm text-muted-foreground">Crie um mural primeiro.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setSelectedWidgetForLink(null)}
+                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-1"
+                >
+                  <ArrowLeft className="w-3 h-3 mr-1.5" /> Escolher outro mural
+                </Button>
+                <div className="space-y-2">
+                  <Label htmlFor="google-url" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">URL do Perfil Google</Label>
+                  <Input 
+                    id="google-url"
+                    placeholder="https://g.page/r/..." 
+                    value={newGoogleMapsUrl} 
+                    onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
+                    className="h-12 border-primary/20 focus-visible:ring-primary/20"
+                    autoFocus
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta do formulário.
+                </p>
+                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 shadow-lg">
+                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                  Salvar Link do Mural
+                </Button>
+              </div>
+            )}
           </div>
-          <DialogFooter>
-            <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 shadow-lg">
-              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
-              Salvar Link Global
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
