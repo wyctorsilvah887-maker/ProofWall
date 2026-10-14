@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect, use } from 'react';
+import { useState, useMemo, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -25,15 +26,17 @@ import {
   Lock,
   MapPin,
   Palette,
-  Image as ImageIcon
+  ImageIcon,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useStorage } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -61,7 +64,6 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { ThemeToggle } from '@/components/theme-toggle';
-import Image from 'next/image';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -85,7 +87,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index
         borderTopColor: !isPopup ? themeColor : 'transparent',
         borderLeftColor: isPopup ? themeColor : 'transparent',
         borderTopWidth: !isPopup ? '3px' : '0',
-        borderLeftWidth: isPopup ? '4px' : '0',
+        borderLeftWidth: iisPopup ? '4px' : '0',
         animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
         animationFillMode: 'both',
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
@@ -124,15 +126,17 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
   logoUrl, setLogoUrl,
-  coverImageUrl, setCoverImageUrl
+  coverImageUrl, setCoverImageUrl,
+  onUpload
 }: any) => {
   
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
   const formatWhatsApp = (value: string) => {
     const v = value.replace(/\D/g, '');
     if (!v) return '';
-    
     const len = v.length;
-    
     if (v.startsWith('55')) {
       if (len <= 2) return `+${v}`;
       if (len <= 4) return `+${v.slice(0, 2)} (${v.slice(2)}`;
@@ -140,7 +144,6 @@ const PublicPageSettings = ({
       if (len <= 13) return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
       return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9, 13)}`;
     }
-    
     if (len <= 2) return `(${v}`;
     if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
     if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
@@ -185,44 +188,81 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (URL)</Label>
-                <div className="flex gap-2">
-                  <Input 
-                    value={logoUrl} 
-                    onChange={(e) => setLogoUrl(e.target.value)} 
-                    placeholder="https://link-da-logo.png" 
-                    className="flex-1"
-                  />
-                  <div className="h-10 w-10 shrink-0 bg-muted rounded-md border flex items-center justify-center overflow-hidden">
-                    {logoUrl ? <img src={logoUrl} className="w-full h-full object-contain" /> : <ImageIcon className="w-4 h-4 text-muted-foreground" />}
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa</Label>
+                <div className="flex flex-col gap-3">
+                  <div 
+                    onClick={() => logoInputRef.current?.click()}
+                    className="h-24 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20 overflow-hidden relative group"
+                  >
+                    {logoUrl ? (
+                      <>
+                        <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo Preview" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <Upload className="w-6 h-6 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-muted-foreground" />
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground">Upload Logo</span>
+                      </>
+                    )}
                   </div>
+                  <input 
+                    type="file" 
+                    ref={logoInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={(e) => onUpload(e, 'logo')} 
+                  />
+                  {logoUrl && (
+                    <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase" onClick={() => setLogoUrl('')}>
+                      <X className="w-3 h-3 mr-1" /> Remover Logo
+                    </Button>
+                  )}
                 </div>
               </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (URL)</Label>
-                <Input 
-                  value={coverImageUrl} 
-                  onChange={(e) => setCoverImageUrl(e.target.value)} 
-                  placeholder="https://link-da-capa.jpg" 
-                />
-                <div className="relative group">
-                  <div className="border-2 border-dashed border-muted-foreground/20 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 bg-muted/5 opacity-60 cursor-not-allowed transition-all">
-                    <div className="bg-background p-3 rounded-full shadow-sm">
-                      <Upload className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Fazer Upload</p>
-                      <p className="text-[9px] font-bold text-primary mt-1 animate-pulse">EM BREVE</p>
-                    </div>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa</Label>
+                <div className="flex flex-col gap-3">
+                  <div 
+                    onClick={() => coverInputRef.current?.click()}
+                    className="h-32 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20 overflow-hidden relative group"
+                  >
+                    {coverImageUrl ? (
+                      <>
+                        <img src={coverImageUrl} className="h-full w-full object-cover" alt="Cover Preview" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <Upload className="w-8 h-8 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground">Upload Capa</span>
+                      </>
+                    )}
                   </div>
+                  <input 
+                    type="file" 
+                    ref={coverInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={(e) => onUpload(e, 'cover')} 
+                  />
+                  {coverImageUrl && (
+                    <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase" onClick={() => setCoverImageUrl('')}>
+                      <X className="w-3 h-3 mr-1" /> Remover Capa
+                    </Button>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-6 pt-4 border-t">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Palette className="w-3 h-3" /> Cor Principal (Destaque)
+                    <Palette className="w-3 h-3" /> Cor Principal
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
@@ -233,7 +273,7 @@ const PublicPageSettings = ({
 
                 <div className="space-y-3">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Palette className="w-3 h-3 opacity-60" /> Subcor (Apoio/Fundo)
+                    <Palette className="w-3 h-3 opacity-60" /> Subcor
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
@@ -257,10 +297,7 @@ const PublicPageSettings = ({
                     <button 
                       key={item.id}
                       onClick={() => setLayout(item.id as LayoutType)} 
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all",
-                        layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20"
-                      )}
+                      className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20")}
                     >
                       <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
                       <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
@@ -296,7 +333,7 @@ const PublicPageSettings = ({
 
               <div className="space-y-4 border-b pb-6">
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do Google Business / Maps</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do Google Business</Label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3.5 h-4 w-4 text-primary" />
                     <Input 
@@ -306,12 +343,11 @@ const PublicPageSettings = ({
                       className="pl-9 h-12"
                     />
                   </div>
-                  <p className="text-[9px] text-muted-foreground uppercase font-black">Link para coletar avaliações no Google.</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do seu Site Externo</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do seu Site Oficial</Label>
                 <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://meusite.com.br" />
               </div>
             </TabsContent>
@@ -326,6 +362,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const { widgetId } = use(params);
   const { user, loading: authLoading } = useUser();
   const db = useFirestore();
+  const storage = useStorage();
   const router = useRouter();
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
@@ -360,6 +397,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -412,7 +450,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       }, 5000);
       return () => clearInterval(interval);
     }
-
     if (layout === 'mural' && selectedTestimonials.length > 0) {
       const interval = setInterval(() => {
         setMuralIndex(prev => (prev + 1) % selectedTestimonials.length);
@@ -440,6 +477,25 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     return slice;
   }, [selectedTestimonials, muralIndex, layout]);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !storage) return;
+    setIsUploading(true);
+    try {
+      const storageRef = ref(storage, `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      if (type === 'logo') setLogoUrl(downloadURL);
+      else setCoverImageUrl(downloadURL);
+      toast({ title: "Imagem Enviada", description: "O arquivo foi processado com sucesso." });
+    } catch (err) {
+      console.error("Erro no upload:", err);
+      toast({ variant: "destructive", title: "Erro no Upload", description: "Não foi possível enviar a imagem agora." });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
     setIsSaving(true);
@@ -466,11 +522,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const toggleTestimonial = (id: string) => {
     if (takenIds.has(id)) {
-      toast({
-        variant: "destructive",
-        title: "Feedback Indisponível",
-        description: "Este depoimento já está sendo usado em outro widget.",
-      });
+      toast({ variant: "destructive", title: "Feedback Indisponível", description: "Este depoimento já está sendo usado em outro widget." });
       return;
     }
     setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
@@ -493,7 +545,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     externalSiteUrl, setExternalSiteUrl,
     layout, setLayout,
     logoUrl, setLogoUrl,
-    coverImageUrl, setCoverImageUrl
+    coverImageUrl, setCoverImageUrl,
+    onUpload: handleUpload
   };
 
   return (
@@ -526,8 +579,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
         <div className="ml-auto flex items-center gap-2 shrink-0">
           <ThemeToggle />
-          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg font-bold text-[10px] sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
-            {isSaving ? <Loader2 className="animate-spin mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
+          <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg font-bold text-[10px] sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
+            {isSaving || isUploading ? <Loader2 className="animate-spin mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> : <Save className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />}
             <span className="hidden xs:inline">Salvar Página</span>
             <span className="xs:hidden">Salvar</span>
           </Button>
@@ -638,7 +691,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </div>
               )}
             </div>
-
+            
             <div className="p-4 sm:p-6 bg-background rounded-2xl border shadow-sm space-y-4 w-full">
               <div className="flex items-center gap-2 text-primary">
                 <Link2 className="w-4 h-4 shrink-0" />
@@ -678,7 +731,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                           <p className="text-[8px] sm:text-[10px] text-muted-foreground italic line-clamp-2 mt-1 leading-relaxed">"{t.text}"</p>
                           {isTaken && (
                             <div className="mt-2 flex items-center gap-1 text-[7px] font-bold text-destructive uppercase tracking-widest">
-                              <Lock className="w-2.5 h-2.5" /> Já em uso em outro widget
+                              <Lock className="w-2.5 h-2.5" /> Já em uso
                             </div>
                           )}
                         </div>
@@ -700,7 +753,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
             <DialogTitle className="text-xl sm:text-2xl font-black font-headline tracking-tight">Página Publicada!</DialogTitle>
             <DialogDescription className="text-xs sm:text-sm font-medium leading-relaxed mt-2">
-              Suas alterações de design, links sociais e imagem de capa já estão no ar.
+              Suas alterações de design, imagens e links sociais já estão no ar.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">

@@ -2,6 +2,7 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { initializeFirestore, getFirestore, Firestore } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { firebaseConfig } from './config';
 
 /**
@@ -12,6 +13,7 @@ export function initializeFirebase(): {
   app: FirebaseApp;
   firestore: Firestore;
   auth: Auth;
+  storage: FirebaseStorage;
 } {
   let app: FirebaseApp;
   let firestore: Firestore;
@@ -28,8 +30,9 @@ export function initializeFirebase(): {
   }
 
   const auth = getAuth(app);
+  const storage = getStorage(app);
   
-  return { app, firestore, auth };
+  return { app, firestore, auth, storage };
 }
 
 export * from './provider';
