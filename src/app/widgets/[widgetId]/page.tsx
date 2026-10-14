@@ -72,9 +72,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
   });
 
 /**
- * Retorna a imagem cortada com altíssima qualidade.
- * Para capa: Usa PNG (Lossless) e resolução 4K para garantir "qualidade super incrível".
- * Para logo: Usa JPEG de alta qualidade.
+ * Retorna a imagem cortada com altíssima qualidade (4K Lossless).
  */
 async function getCroppedImg(
   imageSrc: string,
@@ -87,8 +85,7 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  // Define dimensões de saída Ultra High Definition (4K para capas)
-  const targetWidth = type === 'cover' ? 3840 : 1200;
+  const targetWidth = 3840; // 4K Resolution
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
 
@@ -111,7 +108,7 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // Para capa, PNG sem perdas. Para logo, JPEG de alta fidelidade.
+    // Capa sempre em PNG para zero compressão. Logo em JPEG alta qualidade.
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
     const quality = 1.0; 
 
@@ -182,7 +179,6 @@ const PublicPageSettings = ({
   layout, setLayout,
   logoUrl,
   coverImageUrl,
-  coverImageHeight, setCoverImageHeight,
   onFileSelect,
   isUploading
 }: any) => {
@@ -215,7 +211,7 @@ const PublicPageSettings = ({
           <div className="p-4 space-y-8 pb-10">
             <TabsContent value="geral" className="mt-0 space-y-8">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Corte 1:1)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Square 1:1)</Label>
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
@@ -240,7 +236,7 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Corte Panorama 21:9)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Panorama 21:9)</Label>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
@@ -495,6 +491,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   };
 
   const publicPageLink = `${baseUrl}/pp/${userData?.companySlug || ''}/${widgetId}`;
+  const hasValidCover = useMemo(() => coverImageUrl && coverImageUrl.startsWith('http'), [coverImageUrl]);
+  const hasValidLogo = useMemo(() => logoUrl && logoUrl.startsWith('http'), [logoUrl]);
 
   if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
@@ -520,7 +518,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
                 googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
                 layout, setLayout, logoUrl, coverImageUrl,
-                coverImageHeight, setCoverImageHeight, onFileSelect, isUploading
+                onFileSelect, isUploading
               })} />
             </SheetContent>
           </Sheet>
@@ -545,7 +543,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
             googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
             layout, setLayout, logoUrl, coverImageUrl,
-            coverImageHeight, setCoverImageHeight, onFileSelect, isUploading
+            onFileSelect, isUploading
           })} />
         </aside>
 
@@ -563,7 +561,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
 
             <div className="relative border shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
-              {coverImageUrl && (
+              {hasValidCover && (
                 <div 
                   className="w-full relative shrink-0 transition-all duration-500 overflow-hidden" 
                   style={{ height: `${coverImageHeight}vh` }}
@@ -573,9 +571,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </div>
               )}
               
-              <div className="p-12 space-y-12 flex-1 flex flex-col">
+              <div className={cn(
+                "p-12 space-y-12 flex-1 flex flex-col",
+                !hasValidCover && "pt-24"
+              )}>
                 <div className="text-center space-y-6">
-                  {logoUrl && (
+                  {hasValidLogo && (
                     <div className="mx-auto w-24 h-24 mb-6 relative">
                       <img src={logoUrl} className="w-full h-full object-cover rounded-[2rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>

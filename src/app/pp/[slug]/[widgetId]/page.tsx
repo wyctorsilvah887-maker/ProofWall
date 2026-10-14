@@ -111,6 +111,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const coverImageUrl = widgetData?.coverImageUrl || '';
   const coverHeight = widgetData?.coverImageHeight || 45;
 
+  const hasValidCover = useMemo(() => coverImageUrl && coverImageUrl.startsWith('http'), [coverImageUrl]);
+  const hasValidLogo = useMemo(() => logoUrl && logoUrl.startsWith('http'), [logoUrl]);
+
   useEffect(() => {
     if (layout === 'popup' && filteredTestimonials.length > 1) {
       const intervalId = setInterval(() => {
@@ -233,7 +236,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       </nav>
 
       <div className="flex-1 flex flex-col">
-        {coverImageUrl && (
+        {hasValidCover && (
           <div 
             className="w-full relative shrink-0 overflow-hidden transition-all duration-700"
             style={{ height: `${coverHeight}vh` }}
@@ -248,7 +251,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         )}
 
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
-          <header className="px-6 py-12 sm:py-24 text-center space-y-8">
+          <header className={cn(
+            "px-6 text-center space-y-8",
+            hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32"
+          )}>
             <div className="space-y-6">
               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] text-foreground max-w-5xl mx-auto">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
@@ -258,7 +264,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </p>
 
               <div className="flex justify-center pt-8">
-                {logoUrl && (
+                {hasValidLogo && (
                   <div className="w-32 h-32 relative">
                     <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
                   </div>
