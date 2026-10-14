@@ -217,62 +217,57 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 font-body flex items-center justify-center p-0 md:p-8 relative">
-      <div className="w-full max-w-2xl lg:max-w-4xl bg-background rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-border mx-auto z-10">
-        
-        <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
-          <div className="flex items-center gap-3">
-            {logoUrl ? (
-              <img src={logoUrl} className="h-9 w-9 rounded-xl object-cover shadow-sm border border-border/50" alt="Logo" />
-            ) : (
-              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="text-[9px] font-bold uppercase tracking-widest">Início</Button>
-            </Link>
-          </div>
-        </nav>
+    <div className="min-h-screen bg-background font-body flex flex-col relative">
+      <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <Link href="/">
+            <Button variant="ghost" size="sm" className="text-[9px] font-bold uppercase tracking-widest">Início</Button>
+          </Link>
+        </div>
+      </nav>
 
-        <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
-          {coverImageUrl && (
-            <div className="h-32 sm:h-48 w-full relative shrink-0">
-              <img src={coverImageUrl} className="w-full h-full object-cover" alt="Cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-            </div>
-          )}
+      <div className="flex-1 flex flex-col">
+        {coverImageUrl && (
+          <div className="h-48 sm:h-64 md:h-[40vh] w-full relative shrink-0">
+            <img src={coverImageUrl} className="w-full h-full object-cover" alt="Cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          </div>
+        )}
 
-          <header className="px-6 py-10 sm:py-16 text-center space-y-4">
-            <div className="space-y-3">
+        <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
+          <header className="px-6 py-12 sm:py-20 text-center space-y-6">
+            <div className="space-y-4">
               {logoUrl && (
-                <div className="mx-auto w-20 h-20 sm:w-28 sm:h-28 mb-6 relative">
-                  <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-transparent blur-md rounded-3xl" />
-                  <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-2 border-background relative z-10" alt="Logo Header" />
+                <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-8 relative">
+                  <div className="absolute -inset-2 bg-gradient-to-tr from-primary/20 to-transparent blur-xl rounded-[2rem]" />
+                  <img src={logoUrl} className="w-full h-full object-cover rounded-[1.5rem] shadow-2xl border-4 border-background relative z-10" alt="Logo Header" />
                 </div>
               )}
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-foreground">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[1.1] text-foreground">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
-              <p className="text-muted-foreground font-medium text-[11px] sm:text-sm lg:text-base max-w-2xl mx-auto leading-relaxed">
+              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-lg max-w-3xl mx-auto leading-relaxed">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
               </p>
             </div>
           </header>
 
-          <main className="px-6 space-y-8 flex-1">
+          <main className="px-6 pb-20 space-y-12 flex-1">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
-                <MessageSquare className="w-10 h-10" />
-                <p className="text-[9px] font-black uppercase tracking-widest">Aguardando depoimentos</p>
+                <MessageSquare className="w-12 h-12" />
+                <p className="text-[10px] font-black uppercase tracking-widest">Aguardando depoimentos</p>
               </div>
             ) : (
-              <div className="w-full space-y-4">
+              <div className="w-full">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4 transition-all duration-700">
+                  <div key={muralIndex} className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 transition-all duration-700">
                     {visibleMuralTestimonials.map((t, i) => (
-                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-3">
+                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-4 sm:mb-6">
                         <TestimonialCard t={t} index={i} />
                       </div>
                     ))}
@@ -280,7 +275,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
@@ -288,7 +283,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'carousel' && (
-                  <div className="w-full max-w-lg mx-auto py-4">
+                  <div className="w-full max-w-2xl mx-auto py-8">
                     <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                       <CarouselContent>
                         {filteredTestimonials.map((t, i) => (
@@ -302,8 +297,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'popup' && (
-                  <div className="flex justify-center py-4" key={filteredTestimonials[currentIndex]?.id}>
-                    <div className="w-full max-w-md">
+                  <div className="flex justify-center py-8" key={filteredTestimonials[currentIndex]?.id}>
+                    <div className="w-full max-w-xl">
                       <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                     </div>
                   </div>
@@ -312,25 +307,30 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
           </main>
 
-          <footer className="mt-auto px-6 py-10 text-center space-y-6">
+          <footer className="mt-auto px-6 py-16 text-center space-y-10 border-t bg-muted/5">
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-white text-[11px] font-black shadow-xl hover:scale-105 transition-all"
+                className="inline-flex items-center gap-2 px-10 py-5 rounded-full text-white text-[12px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all"
                 style={{ backgroundColor: themeColor }}
               >
-                Visitar Site Oficial <Globe className="w-4 h-4" />
+                Visitar Site Oficial <Globe className="w-5 h-5" />
               </a>
             )}
-            <div className="space-y-3">
-              <Link href="/signup" className="block text-[10px] font-black text-primary hover:underline uppercase tracking-widest animate-pulse">
+            <div className="space-y-4">
+              <Link href="/signup" className="block text-[11px] font-black text-primary hover:underline uppercase tracking-widest animate-pulse">
                 Quer faturar mais? Crie seu Proova
               </Link>
-              <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
-                © Proova
-              </p>
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold opacity-40">
+                  © Proova — Prova Social de Verdade
+                </p>
+                <p className="text-[8px] text-muted-foreground uppercase tracking-[0.2em] font-black opacity-30">
+                  Powered by Synapse Group
+                </p>
+              </div>
             </div>
           </footer>
         </div>
@@ -341,10 +341,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-[100] bg-green-500 text-white p-4 rounded-full shadow-[0_10px_40px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-10 duration-700"
+          className="fixed bottom-8 right-8 z-[100] bg-green-500 text-white p-5 rounded-full shadow-[0_15px_45px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-12 duration-700"
         >
-          <MessageCircle className="w-6 h-6 fill-current" />
-          <span className="absolute -top-1 -right-1 bg-red-500 w-2.5 h-2.5 rounded-full border-2 border-white animate-pulse" />
+          <MessageCircle className="w-8 h-8 fill-current" />
+          <span className="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white animate-pulse" />
         </a>
       )}
     </div>
