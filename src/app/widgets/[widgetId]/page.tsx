@@ -87,8 +87,7 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  // Define dimensões de saída Ultra High Definition
-  // Capa em 4K horizontal (3840px) | Logo em 1200px
+  // Define dimensões de saída Ultra High Definition (4K para capas)
   const targetWidth = type === 'cover' ? 3840 : 1200;
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
@@ -112,9 +111,9 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // Se for capa, usamos PNG para evitar QUALQUER artefato de compressão
+    // Para capa, PNG sem perdas. Para logo, JPEG de alta fidelidade.
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
-    const quality = 1.0; // Qualidade máxima
+    const quality = 1.0; 
 
     canvas.toBlob(
       (blob) => {
@@ -241,7 +240,7 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Corte Panorama)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Corte Panorama 21:9)</Label>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
@@ -263,22 +262,6 @@ const PublicPageSettings = ({
                   )}
                 </div>
                 <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'cover')} />
-                
-                {coverImageUrl && (
-                  <div className="space-y-4 p-4 rounded-xl bg-muted/5 border mt-2">
-                    <div className="flex justify-between items-center">
-                      <Label className="text-[9px] font-bold text-muted-foreground uppercase">Altura na Página</Label>
-                      <span className="text-[10px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
-                    </div>
-                    <Slider 
-                      value={[coverImageHeight]} 
-                      min={20} 
-                      max={90} 
-                      step={1} 
-                      onValueChange={(vals) => setCoverImageHeight(vals[0])}
-                    />
-                  </div>
-                )}
               </div>
 
               <div className="space-y-6 pt-4 border-t">
@@ -416,7 +399,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
 
-  // Estados do Cropper
   const [tempImage, setTempImage] = useState<string | null>(null);
   const [cropType, setCropType] = useState<'logo' | 'cover' | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -455,7 +437,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       setTempImage(reader.result as string);
@@ -470,26 +451,21 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const handleConfirmCrop = async () => {
     if (!tempImage || !cropType || !user || !storage || !croppedAreaPixels) return;
-
     setIsUploading(true);
-    setTempImage(null); // Fecha o modal de crop
-
+    setTempImage(null);
     try {
       const croppedBlob = await getCroppedImg(tempImage, croppedAreaPixels, cropType);
       const extension = cropType === 'cover' ? 'png' : 'jpg';
       const storagePath = `users/${user.uid}/widgets/${widgetId}/${cropType}_${Date.now()}.${extension}`;
       const storageRef = ref(storage, storagePath);
-      
       const snapshot = await uploadBytes(storageRef, croppedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
-
       if (cropType === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
-
-      toast({ title: "Imagem Salva!", description: "Processada com fidelidade máxima." });
+      toast({ title: "Sucesso!", description: "Imagem processada com alta fidelidade." });
     } catch (err: any) {
-      console.error("Erro no Crop/Upload:", err);
-      toast({ variant: "destructive", title: "Erro ao processar imagem" });
+      console.error(err);
+      toast({ variant: "destructive", title: "Erro no processamento" });
     } finally {
       setIsUploading(false);
       setCropType(null);
@@ -652,7 +628,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </main>
 
-      {/* Dialog de Crop Interativo */}
       <Dialog open={!!tempImage} onOpenChange={(open) => !open && setTempImage(null)}>
         <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-3xl">
           <DialogHeader className="p-6 border-b shrink-0 bg-background">
@@ -661,10 +636,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               {cropType === 'logo' ? 'Ajustar Logotipo' : 'Ajustar Imagem de Capa'}
             </DialogTitle>
             <DialogDescription>
-              {cropType === 'logo' ? 'O corte será quadrado (1:1).' : 'O corte será em formato panorama de alta qualidade.'}
+              {cropType === 'logo' ? 'O corte será quadrado (1:1).' : 'O corte será em formato panorama 21:9.'}
             </DialogDescription>
           </DialogHeader>
-
           <div className="flex-1 relative bg-muted/10 min-h-0">
             {tempImage && (
               <Cropper
@@ -678,25 +652,14 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               />
             )}
           </div>
-
           <div className="p-6 border-t shrink-0 bg-background space-y-6">
             <div className="flex items-center gap-4">
               <Maximize className="w-4 h-4 text-muted-foreground" />
-              <Slider 
-                value={[zoom]} 
-                min={1} 
-                max={3} 
-                step={0.1} 
-                onValueChange={(vals) => setZoom(vals[0])}
-                className="flex-1"
-              />
+              <Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(vals) => setZoom(vals[0])} className="flex-1" />
             </div>
-            
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => setTempImage(null)} className="rounded-xl px-6">Cancelar</Button>
-              <Button onClick={handleConfirmCrop} className="rounded-xl px-8 shadow-xl font-bold">
-                Confirmar e Processar
-              </Button>
+              <Button onClick={handleConfirmCrop} className="rounded-xl px-8 shadow-xl font-bold">Confirmar</Button>
             </DialogFooter>
           </div>
         </DialogContent>
@@ -707,11 +670,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           <DialogHeader className="text-center">
             <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
             <DialogTitle className="text-2xl font-black font-headline">Configuração Salva!</DialogTitle>
-            <DialogDescription>A página pública foi atualizada com fidelidade total.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
-            <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>Entendido</Button>
-            <Button variant="ghost" className="w-full font-bold text-[10px] uppercase tracking-widest" onClick={() => window.open(publicPageLink, '_blank')}>Abrir Link Direto</Button>
+            <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>OK</Button>
           </div>
         </DialogContent>
       </Dialog>
