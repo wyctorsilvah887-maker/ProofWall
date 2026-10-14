@@ -23,7 +23,9 @@ import {
   Play,
   Layout,
   Crop as CropIcon,
-  Maximize
+  Maximize,
+  Trash2,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -177,8 +179,8 @@ const PublicPageSettings = ({
   googleMapsUrl, setGoogleMapsUrl,
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
-  logoUrl,
-  coverImageUrl,
+  logoUrl, setLogoUrl,
+  coverImageUrl, setCoverImageUrl,
   onFileSelect,
   isUploading
 }: any) => {
@@ -211,7 +213,19 @@ const PublicPageSettings = ({
           <div className="p-4 space-y-8 pb-10">
             <TabsContent value="geral" className="mt-0 space-y-8">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Square 1:1)</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (1:1)</Label>
+                  {logoUrl && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                      onClick={() => setLogoUrl('')}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
@@ -236,7 +250,19 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Panorama 21:9)</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (21:9)</Label>
+                  {coverImageUrl && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
+                      onClick={() => setCoverImageUrl('')}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </Button>
+                  )}
+                </div>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
@@ -517,7 +543,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
                 whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
                 googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-                layout, setLayout, logoUrl, coverImageUrl,
+                layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
                 onFileSelect, isUploading
               })} />
             </SheetContent>
@@ -542,7 +568,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
             whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
             googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-            layout, setLayout, logoUrl, coverImageUrl,
+            layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
             onFileSelect, isUploading
           })} />
         </aside>
