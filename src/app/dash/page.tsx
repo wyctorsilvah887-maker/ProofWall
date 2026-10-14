@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -20,13 +21,13 @@ import {
   Plus,
   QrCode,
   Download,
-  Printer,
   MapPin,
   TrendingUp,
   Shield,
   Edit3,
   ChevronRight,
-  ArrowLeft
+  ArrowLeft,
+  FileDown
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -46,7 +47,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
@@ -56,6 +56,7 @@ import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { jsPDF } from 'jspdf';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -66,10 +67,10 @@ export default function DashPage() {
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   
-  // States for the per-widget link configuration
   const [selectedWidgetForLink, setSelectedWidgetForLink] = useState<any>(null);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -145,41 +146,96 @@ export default function DashPage() {
       });
   };
 
-  const handlePrintQr = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    
-    const svgElement = document.getElementById('qr-code-svg');
-    if (!svgElement) return;
+  const handleDownloadPdf = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Imprimir QR Code de Balcão - Proova</title>
-          <style>
-            body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-            h1 { margin-bottom: 20px; color: #f97316; font-size: 2.5rem; }
-            .container { text-align: center; border: 4px solid #f97316; padding: 60px; border-radius: 40px; }
-            p { margin-top: 30px; color: #333; font-size: 1.8rem; font-weight: bold; }
-            .logo { margin-bottom: 20px; color: #f97316; font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.2em; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="logo">Proova</div>
-            <h1>${userData?.companyName || 'Sua Empresa'}</h1>
-            ${svgData}
-            <p>Escaneie e deixe seu depoimento!</p>
-          </div>
-          <script>
-            window.onload = () => { window.print(); window.close(); };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+      const companyName = userData?.companyName || 'Sua Empresa';
+      const collectionLink = `${baseUrl}/c/${companySlug}`;
+      const primaryColor = [249, 115, 22]; // Orange hex: #f97316
+
+      // Background accent
+      doc.setFillColor(250, 250, 250);
+      doc.rect(0, 0, 210, 297, 'F');
+
+      // Header Orange Bar
+      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.rect(0, 0, 210, 40, 'F');
+
+      // App Name
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(28);
+      doc.text('PROOVA', 105, 25, { align: 'center' });
+
+      // Main Container
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(230, 230, 230);
+      doc.roundedRect(20, 50, 170, 210, 10, 10, 'FD');
+
+      // Company Name
+      doc.setTextColor(31, 41, 55); // Gray-800
+      doc.setFontSize(24);
+      doc.text(companyName.toUpperCase(), 105, 80, { align: 'center' });
+
+      // Subtitle
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(14);
+      doc.setTextColor(107, 114, 128); // Gray-500
+      doc.text('A sua opinião é muito importante para nós!', 105, 95, { align: 'center' });
+
+      // QR Code conversion
+      const svg = document.getElementById('qr-code-svg');
+      if (svg) {
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new (window as any).Image();
+        
+        await new Promise((resolve) => {
+          img.onload = () => {
+            canvas.width = img.width * 2;
+            canvas.height = img.height * 2;
+            if (ctx) {
+              ctx.fillStyle = 'white';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+            const pngUrl = canvas.toDataURL('image/png');
+            doc.addImage(pngUrl, 'PNG', 55, 110, 100, 100);
+            resolve(true);
+          };
+          img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+        });
+      }
+
+      // CTA
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text('ESCANEIE PARA NOS AVALIAR', 105, 230, { align: 'center' });
+
+      // Footer
+      doc.setTextColor(156, 163, 175); // Gray-400
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Tecnologia Proova Social Proof', 105, 275, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
+
+      doc.save(`cartaz-proova-${companySlug}.pdf`);
+      toast({ title: "PDF Gerado!", description: "O seu cartaz de balcão foi baixado." });
+    } catch (err) {
+      console.error("Erro ao gerar PDF:", err);
+      toast({ variant: "destructive", title: "Erro no PDF", description: "Não foi possível gerar o arquivo agora." });
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   if (authLoading || userDataLoading || (user && !userData)) {
@@ -356,7 +412,7 @@ export default function DashPage() {
                     onClick={() => setIsQrDialogOpen(true)}
                   >
                     <QrCode className="h-4 w-4" />
-                    <span>QR Code</span>
+                    <span>Gerar Cartaz</span>
                   </Button>
                 </div>
               </div>
@@ -505,10 +561,10 @@ export default function DashPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl">
               <QrCode className="w-6 h-6 text-primary" />
-              QR Code de Balcão
+              Cartaz de Balcão VIP
             </DialogTitle>
             <DialogDescription className="text-sm md:text-base">
-              Seus clientes podem escanear este código para deixar um depoimento rapidamente.
+              Gere um cartaz profissional em PDF para seus clientes avaliarem sua empresa no local.
             </DialogDescription>
           </DialogHeader>
           
@@ -523,40 +579,21 @@ export default function DashPage() {
               />
             </div>
             
-            <div className="flex flex-col gap-3 w-full">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  variant="outline" 
-                  className="flex-1 h-12 border-primary text-primary hover:bg-primary/5"
-                  onClick={handlePrintQr}
-                >
-                  <Printer className="w-5 h-5 mr-2" /> Imprimir
-                </Button>
-                <Button 
-                  className="flex-1 h-12 shadow-lg"
-                  onClick={() => {
-                    const svg = document.getElementById('qr-code-svg');
-                    if (!svg) return;
-                    const svgData = new XMLSerializer().serializeToString(svg);
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const img = new (window as any).Image();
-                    img.onload = () => {
-                      canvas.width = img.width;
-                      canvas.height = img.height;
-                      ctx?.drawImage(img, 0, 0);
-                      const pngUrl = canvas.toDataURL('image/png');
-                      const downloadLink = document.createElement('a');
-                      downloadLink.href = pngUrl;
-                      downloadLink.download = `qrcode-proova-${companySlug}.png`;
-                      downloadLink.click();
-                    };
-                    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
-                  }}
-                >
-                  <Download className="w-5 h-5 mr-2" /> Baixar PNG
-                </Button>
-              </div>
+            <div className="w-full">
+              <Button 
+                className="w-full h-14 shadow-xl font-bold text-lg gap-3"
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
+              >
+                {isGeneratingPdf ? (
+                  <><Loader2 className="animate-spin" /> Preparando Cartaz...</>
+                ) : (
+                  <><FileDown className="w-6 h-6" /> Baixar PDF para Impressão</>
+                )}
+              </Button>
+              <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-[0.2em] font-black">
+                Powered by Synapse Group
+              </p>
             </div>
           </div>
         </DialogContent>
