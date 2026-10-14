@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -107,6 +106,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappEnabled = widgetData?.whatsappEnabled || false;
   const whatsappNumber = widgetData?.whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
+  const logoUrl = widgetData?.logoUrl || '';
+  const coverImageUrl = widgetData?.coverImageUrl || '';
 
   useEffect(() => {
     if (layout === 'popup' && filteredTestimonials.length > 1) {
@@ -220,8 +221,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <div className="w-full max-w-2xl lg:max-w-4xl bg-background rounded-[2rem] md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col h-screen md:h-[90vh] overflow-hidden relative border border-border mx-auto z-10">
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
+          <div className="flex items-center gap-3">
+            {logoUrl ? (
+              <img src={logoUrl} className="h-8 w-auto object-contain" alt="Logo" />
+            ) : (
+              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
+            )}
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -232,6 +237,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         </nav>
 
         <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar pb-24">
+          {coverImageUrl && (
+            <div className="h-32 sm:h-48 w-full relative shrink-0">
+              <img src={coverImageUrl} className="w-full h-full object-cover" alt="Cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+            </div>
+          )}
+
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-foreground">

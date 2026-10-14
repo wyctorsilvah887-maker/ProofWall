@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -25,7 +24,8 @@ import {
   Upload,
   Lock,
   MapPin,
-  Palette
+  Palette,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,6 +61,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { ThemeToggle } from '@/components/theme-toggle';
+import Image from 'next/image';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -121,7 +122,9 @@ const PublicPageSettings = ({
   whatsappNumber, setWhatsappNumber,
   googleMapsUrl, setGoogleMapsUrl,
   externalSiteUrl, setExternalSiteUrl,
-  layout, setLayout
+  layout, setLayout,
+  logoUrl, setLogoUrl,
+  coverImageUrl, setCoverImageUrl
 }: any) => {
   
   const formatWhatsApp = (value: string) => {
@@ -130,7 +133,6 @@ const PublicPageSettings = ({
     
     const len = v.length;
     
-    // Se começar com 55 (DDI Brasil)
     if (v.startsWith('55')) {
       if (len <= 2) return `+${v}`;
       if (len <= 4) return `+${v.slice(0, 2)} (${v.slice(2)}`;
@@ -139,7 +141,6 @@ const PublicPageSettings = ({
       return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9, 13)}`;
     }
     
-    // Formato padrão brasileiro sem DDI (DDD) 9XXXX-XXXX
     if (len <= 2) return `(${v}`;
     if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
     if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
@@ -182,9 +183,29 @@ const PublicPageSettings = ({
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título da Página</Label>
                 <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} placeholder="Ex: Nossos Elogios" />
               </div>
+
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (URL)</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    value={logoUrl} 
+                    onChange={(e) => setLogoUrl(e.target.value)} 
+                    placeholder="https://link-da-logo.png" 
+                    className="flex-1"
+                  />
+                  <div className="h-10 w-10 shrink-0 bg-muted rounded-md border flex items-center justify-center overflow-hidden">
+                    {logoUrl ? <img src={logoUrl} className="w-full h-full object-contain" /> : <ImageIcon className="w-4 h-4 text-muted-foreground" />}
+                  </div>
+                </div>
+              </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (URL)</Label>
+                <Input 
+                  value={coverImageUrl} 
+                  onChange={(e) => setCoverImageUrl(e.target.value)} 
+                  placeholder="https://link-da-capa.jpg" 
+                />
                 <div className="relative group">
                   <div className="border-2 border-dashed border-muted-foreground/20 rounded-2xl p-6 flex flex-col items-center justify-center gap-3 bg-muted/5 opacity-60 cursor-not-allowed transition-all">
                     <div className="bg-background p-3 rounded-full shadow-sm">
@@ -333,6 +354,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
@@ -356,6 +378,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setSecondaryColor(widgetData.secondaryColor || '#ffffff');
       setLayout(widgetData.layout || 'mural');
       setCoverImageUrl(widgetData.coverImageUrl || '');
+      setLogoUrl(widgetData.logoUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
       setGoogleMapsUrl(widgetData.googleMapsUrl || '');
@@ -427,6 +450,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       secondaryColor,
       layout,
       coverImageUrl,
+      logoUrl,
       whatsappEnabled,
       whatsappNumber,
       googleMapsUrl,
@@ -467,7 +491,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     whatsappNumber, setWhatsappNumber,
     googleMapsUrl, setGoogleMapsUrl,
     externalSiteUrl, setExternalSiteUrl,
-    layout, setLayout
+    layout, setLayout,
+    logoUrl, setLogoUrl,
+    coverImageUrl, setCoverImageUrl
   };
 
   return (
@@ -532,6 +558,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
+                  {logoUrl && (
+                    <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24 mb-4">
+                      <img src={logoUrl} className="w-full h-full object-contain" alt="Logo" />
+                    </div>
+                  )}
                   <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-foreground">
                     O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                   </h1>

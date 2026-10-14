@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "User": {
@@ -109,7 +108,11 @@
         },
         "coverImageUrl": {
           "type": "string",
-          "description": "URL ou Base64 da imagem de capa da página pública."
+          "description": "URL da imagem de capa da página pública."
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL da logo da empresa."
         },
         "whatsappEnabled": {
           "type": "boolean",
