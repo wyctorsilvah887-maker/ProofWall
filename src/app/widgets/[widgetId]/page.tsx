@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, use, useRef } from 'react';
+import { useState, useMemo, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -19,10 +19,11 @@ import {
   Upload,
   ImageIcon,
   Palette,
-  ChevronRight,
   LayoutGrid,
   Play,
-  Layout
+  Layout,
+  Crop as CropIcon,
+  Maximize
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,56 +54,70 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import Cropper from 'react-easy-crop';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
 /**
- * Comprime imagem com foco em altíssima fidelidade.
- * Se a imagem for menor que 3MB, mantém o original.
+ * Cria uma imagem a partir de uma URL.
  */
-async function compressImage(file: File, maxWidth = 3840, quality = 1.0): Promise<Blob | File> {
-  if (file.size < 3 * 1024 * 1024) {
-    return file; // Mantém original se for pequeno o suficiente
-  }
+const createImage = (url: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', (error) => reject(error));
+    image.setAttribute('crossOrigin', 'anonymous');
+    image.src = url;
+  });
+
+/**
+ * Retorna a imagem cortada baseada nas coordenadas do Cropper.
+ */
+async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: { x: number; y: number; width: number; height: number },
+  type: 'logo' | 'cover'
+): Promise<Blob> {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) throw new Error('Falha ao obter contexto 2D');
+
+  // Define dimensões de saída de alta fidelidade
+  // Para capa: 4K horizontal | Para logo: 1200px quadrado
+  const targetWidth = type === 'cover' ? 3840 : 1200;
+  const aspectRatio = pixelCrop.width / pixelCrop.height;
+  const targetHeight = targetWidth / aspectRatio;
+
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    targetWidth,
+    targetHeight
+  );
 
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      const img = new Image();
-      img.src = event.target?.result as string;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, width, height);
-        }
-
-        canvas.toBlob(
-          (blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error('Falha na compressão.'));
-          },
-          'image/jpeg',
-          quality
-        );
-      };
-    };
-    reader.onerror = (error) => reject(error);
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) reject(new Error('Canvas vazio'));
+        else resolve(blob);
+      },
+      'image/jpeg',
+      0.95
+    );
   });
 }
 
@@ -160,10 +175,10 @@ const PublicPageSettings = ({
   googleMapsUrl, setGoogleMapsUrl,
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
-  logoUrl, setLogoUrl,
-  coverImageUrl, setCoverImageUrl,
+  logoUrl,
+  coverImageUrl,
   coverImageHeight, setCoverImageHeight,
-  onUpload,
+  onFileSelect,
   isUploading
 }: any) => {
   
@@ -195,7 +210,7 @@ const PublicPageSettings = ({
           <div className="p-4 space-y-8 pb-10">
             <TabsContent value="geral" className="mt-0 space-y-8">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Maskable)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Corte 1:1)</Label>
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
@@ -209,18 +224,18 @@ const PublicPageSettings = ({
                     <>
                       <img src={logoUrl} className="h-full w-full object-cover" alt="Logo" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <Upload className="w-6 h-6 text-white" />
+                        <CropIcon className="w-6 h-6 text-white" />
                       </div>
                     </>
                   ) : (
                     <Upload className="w-6 h-6 text-muted-foreground" />
                   )}
                 </div>
-                <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'logo')} />
+                <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'logo')} />
               </div>
 
               <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (4K Fidelity)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (Corte Panorama)</Label>
                 <div 
                   onClick={() => !isUploading && coverInputRef.current?.click()}
                   className={cn(
@@ -234,19 +249,19 @@ const PublicPageSettings = ({
                     <>
                       <img src={coverImageUrl} className="h-full w-full object-cover" alt="Capa" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <Upload className="w-8 h-8 text-white" />
+                        <CropIcon className="w-8 h-8 text-white" />
                       </div>
                     </>
                   ) : (
                     <ImageIcon className="w-8 h-8 text-muted-foreground" />
                   )}
                 </div>
-                <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'cover')} />
+                <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'cover')} />
                 
                 {coverImageUrl && (
                   <div className="space-y-4 p-4 rounded-xl bg-muted/5 border mt-2">
                     <div className="flex justify-between items-center">
-                      <Label className="text-[9px] font-bold text-muted-foreground uppercase">Altura da Capa</Label>
+                      <Label className="text-[9px] font-bold text-muted-foreground uppercase">Altura na Página</Label>
                       <span className="text-[10px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
                     </div>
                     <Slider 
@@ -395,6 +410,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
 
+  // Estados do Cropper
+  const [tempImage, setTempImage] = useState<string | null>(null);
+  const [cropType, setCropType] = useState<'logo' | 'cover' | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
   }, []);
@@ -424,27 +446,44 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
-    if (!file || !user || !storage) return;
-    
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      setTempImage(reader.result as string);
+      setCropType(type);
+    });
+    reader.readAsDataURL(file);
+  };
+
+  const onCropComplete = useCallback((_croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleConfirmCrop = async () => {
+    if (!tempImage || !cropType || !user || !storage || !croppedAreaPixels) return;
+
     setIsUploading(true);
+    setTempImage(null); // Fecha o modal de crop
+
     try {
-      const maxWidth = type === 'logo' ? 1200 : 3840;
-      const compressedBlob = await compressImage(file, maxWidth, 1.0);
-      const storagePath = `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`;
+      const croppedBlob = await getCroppedImg(tempImage, croppedAreaPixels, cropType);
+      const storagePath = `users/${user.uid}/widgets/${widgetId}/${cropType}_${Date.now()}.jpg`;
       const storageRef = ref(storage, storagePath);
-      const snapshot = await uploadBytes(storageRef, compressedBlob);
+      const snapshot = await uploadBytes(storageRef, croppedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
-      
-      if (type === 'logo') setLogoUrl(downloadURL);
+
+      if (cropType === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
-      
-      toast({ title: "Upload Completo!", description: "Imagem processada com alta fidelidade." });
+
+      toast({ title: "Upload Completo!", description: "Imagem processada com alta fidelidade e corte personalizado." });
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Erro no processamento" });
+      toast({ variant: "destructive", title: "Erro no processamento do corte" });
     } finally {
       setIsUploading(false);
+      setCropType(null);
     }
   };
 
@@ -495,8 +534,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
                 whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
                 googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-                layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
-                coverImageHeight, setCoverImageHeight, onUpload: handleUpload, isUploading
+                layout, setLayout, logoUrl, coverImageUrl,
+                coverImageHeight, setCoverImageHeight, onFileSelect, isUploading
               })} />
             </SheetContent>
           </Sheet>
@@ -520,8 +559,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
             whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
             googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-            layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
-            coverImageHeight, setCoverImageHeight, onUpload: handleUpload, isUploading
+            layout, setLayout, logoUrl, coverImageUrl,
+            coverImageHeight, setCoverImageHeight, onFileSelect, isUploading
           })} />
         </aside>
 
@@ -603,6 +642,56 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </div>
         </div>
       </main>
+
+      {/* Dialog de Crop Interativo */}
+      <Dialog open={!!tempImage} onOpenChange={(open) => !open && setTempImage(null)}>
+        <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-3xl">
+          <DialogHeader className="p-6 border-b shrink-0 bg-background">
+            <DialogTitle className="flex items-center gap-2">
+              <CropIcon className="w-5 h-5 text-primary" />
+              {cropType === 'logo' ? 'Ajustar Logotipo' : 'Ajustar Imagem de Capa'}
+            </DialogTitle>
+            <DialogDescription>
+              {cropType === 'logo' ? 'Enquadre o logo no centro. O corte será quadrado (1:1).' : 'Selecione a melhor área da foto. O corte será em formato panorama.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 relative bg-muted/10 min-h-0">
+            {tempImage && (
+              <Cropper
+                image={tempImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={cropType === 'logo' ? 1 : 21 / 9}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            )}
+          </div>
+
+          <div className="p-6 border-t shrink-0 bg-background space-y-6">
+            <div className="flex items-center gap-4">
+              <Maximize className="w-4 h-4 text-muted-foreground" />
+              <Slider 
+                value={[zoom]} 
+                min={1} 
+                max={3} 
+                step={0.1} 
+                onValueChange={(vals) => setZoom(vals[0])}
+                className="flex-1"
+              />
+            </div>
+            
+            <DialogFooter className="gap-2">
+              <Button variant="outline" onClick={() => setTempImage(null)} className="rounded-xl px-6">Cancelar</Button>
+              <Button onClick={handleConfirmCrop} className="rounded-xl px-8 shadow-xl font-bold">
+                Confirmar e Processar
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
         <DialogContent className="rounded-3xl">
