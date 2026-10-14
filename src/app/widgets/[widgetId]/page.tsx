@@ -72,7 +72,9 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
   });
 
 /**
- * Retorna a imagem cortada baseada nas coordenadas do Cropper.
+ * Retorna a imagem cortada com altíssima qualidade.
+ * Para capa: Usa PNG (Lossless) e resolução 4K para garantir "qualidade super incrível".
+ * Para logo: Usa JPEG de alta qualidade.
  */
 async function getCroppedImg(
   imageSrc: string,
@@ -85,8 +87,8 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  // Define dimensões de saída de alta fidelidade
-  // Para capa: 4K horizontal | Para logo: 1200px quadrado
+  // Define dimensões de saída Ultra High Definition
+  // Capa em 4K horizontal (3840px) | Logo em 1200px
   const targetWidth = type === 'cover' ? 3840 : 1200;
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
@@ -110,13 +112,17 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
+    // Se for capa, usamos PNG para evitar QUALQUER artefato de compressão
+    const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
+    const quality = 1.0; // Qualidade máxima
+
     canvas.toBlob(
       (blob) => {
         if (!blob) reject(new Error('Canvas vazio'));
         else resolve(blob);
       },
-      'image/jpeg',
-      0.95
+      mimeType,
+      quality
     );
   });
 }
@@ -214,7 +220,7 @@ const PublicPageSettings = ({
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
-                    "aspect-square w-24 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
+                    "aspect-square w-24 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
                     isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                   )}
                 >
@@ -470,17 +476,20 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
     try {
       const croppedBlob = await getCroppedImg(tempImage, croppedAreaPixels, cropType);
-      const storagePath = `users/${user.uid}/widgets/${widgetId}/${cropType}_${Date.now()}.jpg`;
+      const extension = cropType === 'cover' ? 'png' : 'jpg';
+      const storagePath = `users/${user.uid}/widgets/${widgetId}/${cropType}_${Date.now()}.${extension}`;
       const storageRef = ref(storage, storagePath);
+      
       const snapshot = await uploadBytes(storageRef, croppedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       if (cropType === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
 
-      toast({ title: "Upload Completo!", description: "Imagem processada com alta fidelidade e corte personalizado." });
+      toast({ title: "Imagem Salva!", description: "Processada com fidelidade máxima." });
     } catch (err: any) {
-      toast({ variant: "destructive", title: "Erro no processamento do corte" });
+      console.error("Erro no Crop/Upload:", err);
+      toast({ variant: "destructive", title: "Erro ao processar imagem" });
     } finally {
       setIsUploading(false);
       setCropType(null);
@@ -652,7 +661,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               {cropType === 'logo' ? 'Ajustar Logotipo' : 'Ajustar Imagem de Capa'}
             </DialogTitle>
             <DialogDescription>
-              {cropType === 'logo' ? 'Enquadre o logo no centro. O corte será quadrado (1:1).' : 'Selecione a melhor área da foto. O corte será em formato panorama.'}
+              {cropType === 'logo' ? 'O corte será quadrado (1:1).' : 'O corte será em formato panorama de alta qualidade.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -698,7 +707,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           <DialogHeader className="text-center">
             <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
             <DialogTitle className="text-2xl font-black font-headline">Configuração Salva!</DialogTitle>
-            <DialogDescription>A página pública foi atualizada com alta qualidade.</DialogDescription>
+            <DialogDescription>A página pública foi atualizada com fidelidade total.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
             <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>Entendido</Button>

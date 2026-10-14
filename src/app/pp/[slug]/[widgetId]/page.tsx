@@ -167,7 +167,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-bold font-headline">Mural não encontrado</h2>
-              <p className="text-muted-foreground">O link acessado é inválido ou as permissões de acesso foram negadas.</p>
+              <p className="text-muted-foreground">O link acessado é inválido.</p>
             </div>
             <Button variant="outline" onClick={() => window.location.href = '/'}>Voltar ao Início</Button>
           </CardContent>
@@ -189,7 +189,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderTopColor: !isPopup ? themeColor : 'transparent',
           borderLeftColor: isPopup ? themeColor : 'transparent',
           borderTopWidth: !isPopup ? '4px' : '0',
-          borderLeftWidth: isPopup ? '4px' : '0',
+          borderLeftWidth: iPopup ? '4px' : '0',
           borderStyle: 'solid',
           animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
           animationFillMode: 'both',
@@ -250,28 +250,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
           <header className="px-6 py-12 sm:py-24 text-center space-y-8">
             <div className="space-y-6">
-              {/* Logo removida do cabeçalho conforme solicitado para Desktop, mantendo apenas mobile ou body se necessário */}
-              <div className="hidden sm:block">
-                 {/* Espaço reservado para manter o equilíbrio visual sem a logo no topo do desktop */}
-              </div>
-              
-              <div className="sm:hidden">
-                {logoUrl && (
-                  <div className="mx-auto w-24 h-24 mb-8 relative">
-                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2rem] shadow-2xl border-2 border-background" alt="Logo Mobile" />
-                  </div>
-                )}
-              </div>
-
               <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] text-foreground max-w-5xl mx-auto">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
               <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-xl max-w-3xl mx-auto leading-relaxed px-4">
-                {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
+                Experiências reais de clientes que confiam em nosso trabalho.
               </p>
 
-              {/* Logo no corpo da página apenas abaixo do título principal se não estiver em desktop */}
-              <div className="hidden sm:flex justify-center pt-8">
+              <div className="flex justify-center pt-8">
                 {logoUrl && (
                   <div className="w-32 h-32 relative">
                     <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
