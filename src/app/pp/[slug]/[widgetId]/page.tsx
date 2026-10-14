@@ -217,7 +217,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-background font-body flex flex-col relative">
+    <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden">
       <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
@@ -232,31 +232,29 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
       <div className="flex-1 flex flex-col">
         {coverImageUrl && (
-          <div className="h-48 sm:h-64 md:h-[40vh] w-full relative shrink-0">
-            <img src={coverImageUrl} className="w-full h-full object-cover" alt="Cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div className="h-48 sm:h-72 lg:h-[45vh] w-full relative shrink-0 overflow-hidden">
+            <img 
+              src={coverImageUrl} 
+              className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105" 
+              alt="Cover Image" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
           </div>
         )}
 
-        <div className="max-w-7xl mx-auto w-full flex-1 flex flex-col">
+        <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
           <header className="px-6 py-12 sm:py-20 text-center space-y-6">
             <div className="space-y-4">
-              {logoUrl && (
-                <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-8 relative">
-                  <div className="absolute -inset-2 bg-gradient-to-tr from-primary/20 to-transparent blur-xl rounded-[2rem]" />
-                  <img src={logoUrl} className="w-full h-full object-cover rounded-[1.5rem] shadow-2xl border-4 border-background relative z-10" alt="Logo Header" />
-                </div>
-              )}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[1.1] text-foreground">
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tighter leading-[1.1] text-foreground">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
-              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-lg max-w-3xl mx-auto leading-relaxed">
+              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-lg max-w-3xl mx-auto leading-relaxed px-4">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
               </p>
             </div>
           </header>
 
-          <main className="px-6 pb-20 space-y-12 flex-1">
+          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-7xl mx-auto">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-12 h-12" />
@@ -283,7 +281,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'carousel' && (
-                  <div className="w-full max-w-2xl mx-auto py-8">
+                  <div className="w-full max-w-3xl mx-auto py-8 px-4">
                     <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                       <CarouselContent>
                         {filteredTestimonials.map((t, i) => (
@@ -297,8 +295,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'popup' && (
-                  <div className="flex justify-center py-8" key={filteredTestimonials[currentIndex]?.id}>
-                    <div className="w-full max-w-xl">
+                  <div className="flex justify-center py-8 px-4" key={filteredTestimonials[currentIndex]?.id}>
+                    <div className="w-full max-w-2xl">
                       <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                     </div>
                   </div>

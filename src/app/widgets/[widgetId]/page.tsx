@@ -69,8 +69,9 @@ type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
 /**
  * Utilitário para compressão de imagem no lado do cliente usando Canvas.
+ * Otimizado para manter alta qualidade em resoluções maiores.
  */
-async function compressImage(file: File, maxWidth = 1200, quality = 0.7): Promise<Blob> {
+async function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -234,12 +235,12 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (Formato Quadrado)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (Quadrada/Arredondada)</Label>
                 <div className="flex flex-col gap-3">
                   <div 
                     onClick={() => !isUploading && logoInputRef.current?.click()}
                     className={cn(
-                      "aspect-square w-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto",
+                      "aspect-square w-32 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto",
                       isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                     )}
                   >
@@ -278,7 +279,7 @@ const PublicPageSettings = ({
               </div>
               
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (Otimizada)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (Otimizada 2K)</Label>
                 <div className="flex flex-col gap-3">
                   <div 
                     onClick={() => !isUploading && coverInputRef.current?.click()}
@@ -545,9 +546,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     
     setIsUploading(true);
     try {
-      // Aplicar compressão baseada no tipo (Logo menor, Capa maior)
-      const maxWidth = type === 'logo' ? 600 : 1200;
-      const compressedBlob = await compressImage(file, maxWidth, 0.75);
+      // Aplicar compressão: Logo (600px), Capa (2048px para Alta Qualidade)
+      const maxWidth = type === 'logo' ? 600 : 2048;
+      const compressedBlob = await compressImage(file, maxWidth, 0.8);
 
       const storagePath = `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`;
       const storageRef = ref(storage, storagePath);
@@ -558,19 +559,17 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       if (type === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
       
-      toast({ title: "Imagem Otimizada!", description: `Upload do arquivo finalizado.` });
+      toast({ title: "Imagem Otimizada!", description: `Upload do arquivo finalizado em alta qualidade.` });
     } catch (err: any) {
       console.error("Erro no processamento da imagem:", err);
       toast({ 
         variant: "destructive", 
         title: "Falha no Upload", 
-        description: err.code === 'storage/unauthorized' 
-          ? "Permissão negada. Verifique as regras do Storage ou tente logar novamente." 
-          : "Não foi possível processar ou enviar a imagem." 
+        description: "Não foi possível processar ou enviar a imagem." 
       });
     } finally {
       setIsUploading(false);
-      if (e.target) e.target.value = ''; // Limpa o input para novos uploads
+      if (e.target) e.target.value = ''; 
     }
   };
 
@@ -682,9 +681,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
             <div className="relative border-none shadow-2xl bg-background rounded-2xl sm:rounded-[2.5rem] min-h-[400px] sm:min-h-[700px] flex flex-col overflow-hidden ring-1 ring-primary/5 w-full">
               {coverImageUrl && (
-                <div className="h-24 sm:h-64 w-full relative">
+                <div className="h-32 sm:h-72 w-full relative shrink-0">
                   <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
                 </div>
               )}
               
@@ -692,8 +691,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
                   {logoUrl && (
                     <div className="mx-auto w-20 h-20 sm:w-28 sm:h-28 mb-6 relative">
-                      <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-transparent blur-md rounded-3xl" />
-                      <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-2 border-background relative z-10" alt="Logo Preview" />
+                      <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-transparent blur-md rounded-[2.5rem]" />
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-2 border-background relative z-10" alt="Logo Preview" />
                     </div>
                   )}
                   <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-foreground">
