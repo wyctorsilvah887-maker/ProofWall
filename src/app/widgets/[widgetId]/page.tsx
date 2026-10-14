@@ -28,7 +28,8 @@ import {
   Palette,
   ImageIcon,
   X,
-  Settings
+  Settings,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,11 +70,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-/**
- * Utilitário para compressão de imagem no lado do cliente usando Canvas.
- * Aumentado para 2560px (Quad HD) para capas e qualidade superior (0.9).
- */
-async function compressImage(file: File, maxWidth = 1200, quality = 0.9): Promise<Blob> {
+async function compressImage(file: File, maxWidth = 2560, quality = 0.92): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -182,149 +179,128 @@ const PublicPageSettings = ({
   const logoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  const formatWhatsApp = (value: string) => {
-    const v = value.replace(/\D/g, '');
-    if (!v) return '';
-    const len = v.length;
-    if (v.startsWith('55')) {
-      if (len <= 2) return `+${v}`;
-      if (len <= 4) return `+${v.slice(0, 2)} (${v.slice(2)}`;
-      if (len <= 9) return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4)}`;
-      if (len <= 13) return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9)}`;
-      return `+${v.slice(0, 2)} (${v.slice(2, 4)}) ${v.slice(4, 9)}-${v.slice(9, 13)}`;
-    }
-    if (len <= 2) return `(${v}`;
-    if (len <= 6) return `(${v.slice(0, 2)}) ${v.slice(2)}`;
-    if (len <= 10) return `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`;
-    return `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7, 11)}`;
-  };
-
-  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatWhatsApp(e.target.value);
-    setWhatsappNumber(formatted);
-  };
-
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden">
+    <div className="flex flex-col w-full h-full overflow-hidden bg-background">
       <div className="p-4 border-b bg-muted/10 shrink-0">
-        <div className="flex items-center gap-2 w-full">
-          <Link href="/widgets" className="flex-1">
-            <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
-              <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                <ArrowLeft className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar</span>
-            </Button>
-          </Link>
-        </div>
+        <Link href="/widgets" className="w-full">
+          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
+            <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar</span>
+          </Button>
+        </Link>
       </div>
 
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0 overflow-x-auto no-scrollbar">
-          <TabsTrigger value="geral" className="text-xs shrink-0">Identidade</TabsTrigger>
-          <TabsTrigger value="design" className="text-xs shrink-0">Layout</TabsTrigger>
-          <TabsTrigger value="social" className="text-xs shrink-0">Social</TabsTrigger>
+          <TabsTrigger value="geral" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Identidade</TabsTrigger>
+          <TabsTrigger value="design" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Estilo</TabsTrigger>
+          <TabsTrigger value="social" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Social</TabsTrigger>
         </TabsList>
         
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-6 pb-10">
-            <TabsContent value="geral" className="mt-0 space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Título da Página</Label>
-                <Input 
-                  value={widgetName} 
-                  onChange={(e) => setWidgetName(e.target.value)} 
-                  placeholder="Ex: Nossos Elogios" 
-                />
+          <div className="p-4 space-y-8 pb-10">
+            <TabsContent value="geral" className="mt-0 space-y-8">
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (Maskable)</Label>
+                <div 
+                  onClick={() => !isUploading && logoInputRef.current?.click()}
+                  className={cn(
+                    "aspect-square w-24 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
+                    isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
+                  )}
+                >
+                  {isUploading ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  ) : logoUrl ? (
+                    <>
+                      <img src={logoUrl} className="h-full w-full object-cover" alt="Logo" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <Upload className="w-6 h-6 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <Upload className="w-6 h-6 text-muted-foreground" />
+                  )}
+                </div>
+                <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'logo')} />
               </div>
 
-              <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa</Label>
-                <div className="flex flex-col gap-3">
-                  <div 
-                    onClick={() => !isUploading && logoInputRef.current?.click()}
-                    className={cn(
-                      "aspect-square w-24 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto",
-                      isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
-                    )}
-                  >
-                    {isUploading ? (
-                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    ) : logoUrl ? (
-                      <>
-                        <img src={logoUrl} className="h-full w-full object-cover" alt="Logo" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <Upload className="w-6 h-6 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <Upload className="w-6 h-6 text-muted-foreground" />
-                    )}
-                  </div>
-                  <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'logo')} />
-                </div>
-              </div>
-              
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Imagem de Capa (2K HD)</Label>
-                  {coverImageUrl && (
-                    <div className="flex items-center gap-1 text-[9px] font-bold text-primary uppercase">
-                      <Settings className="w-3 h-3" /> Ajustável
-                    </div>
-                  )}
                 </div>
-                <div className="flex flex-col gap-4">
-                  <div 
-                    onClick={() => !isUploading && coverInputRef.current?.click()}
-                    className={cn(
-                      "h-32 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
-                      isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
-                    )}
-                  >
-                    {isUploading ? (
-                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    ) : coverImageUrl ? (
-                      <>
-                        <img src={coverImageUrl} className="h-full w-full object-cover" alt="Capa" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <Upload className="w-8 h-8 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                    )}
-                  </div>
-                  <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'cover')} />
-                  
-                  {coverImageUrl && (
-                    <div className="space-y-3 pt-2">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase">Altura da Capa</Label>
-                        <span className="text-[10px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
+                <div 
+                  onClick={() => !isUploading && coverInputRef.current?.click()}
+                  className={cn(
+                    "h-28 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
+                    isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
+                  )}
+                >
+                  {isUploading ? (
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  ) : coverImageUrl ? (
+                    <>
+                      <img src={coverImageUrl} className="h-full w-full object-cover" alt="Capa" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <Upload className="w-8 h-8 text-white" />
                       </div>
-                      <Slider 
-                        value={[coverImageHeight]} 
-                        min={30} 
-                        max={80} 
-                        step={5} 
-                        onValueChange={(vals) => setCoverImageHeight(vals[0])}
-                      />
-                    </div>
+                    </>
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-muted-foreground" />
                   )}
                 </div>
+                <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onUpload(e, 'cover')} />
+                
+                {coverImageUrl && (
+                  <div className="space-y-3 p-3 rounded-xl bg-muted/10">
+                    <div className="flex justify-between items-center">
+                      <Label className="text-[9px] font-bold text-muted-foreground uppercase">Altura da Capa</Label>
+                      <span className="text-[9px] font-mono font-bold text-primary">{coverImageHeight}vh</span>
+                    </div>
+                    <Slider 
+                      value={[coverImageHeight]} 
+                      min={30} 
+                      max={85} 
+                      step={1} 
+                      onValueChange={(vals) => setCoverImageHeight(vals[0])}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-6 pt-4 border-t">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                    <Palette className="w-3 h-3" /> Cor Principal
+                    <Palette className="w-3 h-3 text-primary" /> Cor do Tema
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2", themeColor === color ? "border-foreground" : "border-transparent")} style={{ backgroundColor: color }} />
+                      <button 
+                        key={color} 
+                        onClick={() => setThemeColor(color)} 
+                        className={cn("w-7 h-7 rounded-full border-2 transition-transform active:scale-90", themeColor === color ? "border-foreground scale-110 shadow-md" : "border-transparent opacity-80 hover:opacity-100")} 
+                        style={{ backgroundColor: color }} 
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Palette className="w-3 h-3 text-muted-foreground" /> Cor Secundária
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {colors.map((color) => (
+                      <button 
+                        key={color} 
+                        onClick={() => setSecondaryColor(color)} 
+                        className={cn("w-7 h-7 rounded-full border-2 transition-transform active:scale-90", secondaryColor === color ? "border-foreground scale-110 shadow-md" : "border-transparent opacity-80 hover:opacity-100")} 
+                        style={{ backgroundColor: color }} 
+                      />
                     ))}
                   </div>
                 </div>
@@ -333,12 +309,16 @@ const PublicPageSettings = ({
 
             <TabsContent value="design" className="mt-0 space-y-6">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Estilo da Página</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Nome do Mural</Label>
+                <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} />
+              </div>
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Formato de Exibição</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
                     { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
-                    { id: 'carousel', icon: Play, label: 'Carrossel' },
-                    { id: 'grid', icon: Layout, label: 'Grade (Grid)' },
+                    { id: 'carousel', icon: Play, label: 'Carrossel Imersivo' },
+                    { id: 'grid', icon: Layout, label: 'Grade Estática' },
                     { id: 'popup', icon: MessageSquare, label: 'Notificação VIP' },
                   ].map((item) => (
                     <button 
@@ -355,11 +335,11 @@ const PublicPageSettings = ({
             </TabsContent>
 
             <TabsContent value="social" className="mt-0 space-y-6">
-              <div className="space-y-4 border-b pb-6">
-                <div className="flex items-center justify-between p-3 border rounded-xl bg-muted/10">
+              <div className="space-y-4 p-3 border rounded-xl bg-muted/10">
+                <div className="flex items-center justify-between mb-2">
                   <div className="space-y-0.5">
-                    <Label className="text-xs font-bold">Botão de WhatsApp</Label>
-                    <p className="text-[10px] text-muted-foreground">Ativar botão flutuante</p>
+                    <Label className="text-xs font-bold">WhatsApp Flutuante</Label>
+                    <p className="text-[9px] text-muted-foreground uppercase tracking-tight">Ativar contato direto</p>
                   </div>
                   <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
                 </div>
@@ -367,30 +347,25 @@ const PublicPageSettings = ({
                   <Input 
                     type="text"
                     value={whatsappNumber} 
-                    onChange={handleWhatsAppChange} 
-                    placeholder="+55 (11) 99999-9999" 
+                    onChange={(e) => setWhatsappNumber(e.target.value)} 
+                    placeholder="+55 11 99999-9999" 
                   />
                 )}
               </div>
 
-              <div className="space-y-4 border-b pb-6">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Google Business</Label>
-                <Input 
-                  value={googleMapsUrl} 
-                  onChange={(e) => setGoogleMapsUrl(e.target.value)} 
-                  placeholder="https://maps.google.com/..." 
-                />
+              <div className="space-y-3">
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Google Business URL</Label>
+                <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil no Maps" />
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Site Oficial</Label>
                 <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://meusite.com.br" />
               </div>
             </TabsContent>
           </div>
         </ScrollArea>
-      </Tabs>
-    </div>
+      </div>
   );
 };
 
@@ -401,18 +376,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const storage = useStorage();
   const router = useRouter();
 
-  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
-  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
-
   const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
   const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
 
-  const widgetsQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return collection(db, 'users', user.uid, 'widgets');
-  }, [db, user]);
-
-  const { data: allWidgets, loading: allWidgetsLoading } = useCollection(widgetsQuery);
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -437,9 +405,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isUploading, setIsUploading] = useState(false);
   const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
-  const [previewIndex, setPreviewIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -470,51 +436,23 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
 
-  const takenIds = useMemo(() => {
-    if (!allWidgets) return new Set<string>();
-    const ids = new Set<string>();
-    allWidgets.forEach((w: any) => {
-      if (w.id !== widgetId && w.selectedTestimonialIds) {
-        w.selectedTestimonialIds.forEach((id: string) => ids.add(id));
-      }
-    });
-    return ids;
-  }, [allWidgets, widgetId]);
-
-  useEffect(() => {
-    if (layout === 'popup' && selectedTestimonials.length > 1) {
-      const interval = setInterval(() => {
-        setPreviewIndex(prev => (prev + 1) % selectedTestimonials.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-    if (layout === 'mural' && selectedTestimonials.length > 0) {
-      const interval = setInterval(() => {
-        setMuralIndex(prev => (prev + 1) % selectedTestimonials.length);
-      }, 6000);
-      return () => clearInterval(interval);
-    }
-  }, [layout, selectedTestimonials]);
-
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
     if (!file || !user || !storage) return;
     
     setIsUploading(true);
     try {
-      const maxWidth = type === 'logo' ? 600 : 2560; // 2K Ultra HD para capas
+      const maxWidth = type === 'logo' ? 800 : 2560;
       const compressedBlob = await compressImage(file, maxWidth, 0.92);
-
       const storagePath = `users/${user.uid}/widgets/${widgetId}/${type}_${Date.now()}.jpg`;
       const storageRef = ref(storage, storagePath);
-      
       const snapshot = await uploadBytes(storageRef, compressedBlob);
       const downloadURL = await getDownloadURL(snapshot.ref);
       
       if (type === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
       
-      toast({ title: "Imagem HD!", description: "Arquivo otimizado para alta fidelidade." });
+      toast({ title: "Upload HD!", description: "Arquivo otimizado para alta fidelidade." });
     } catch (err: any) {
       toast({ variant: "destructive", title: "Falha no Upload" });
     } finally {
@@ -525,7 +463,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const handleSave = async () => {
     if (!widgetRef || !widgetName.trim()) return;
     setIsSaving(true);
-    const updates = {
+    updateDoc(widgetRef, {
       name: widgetName.trim(),
       selectedTestimonialIds: selectedIds,
       themeColor,
@@ -538,54 +476,57 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       whatsappNumber,
       googleMapsUrl,
       externalSiteUrl,
-    };
-    updateDoc(widgetRef, updates).then(() => {
+    }).then(() => {
       setIsSaving(false);
       setIsLinkDialogOpen(true);
     }).catch(() => setIsSaving(false));
   };
 
-  const toggleTestimonial = (id: string) => {
-    if (takenIds.has(id)) {
-      toast({ variant: "destructive", title: "Já em uso" });
-      return;
-    }
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-  };
-
   const publicPageLink = `${baseUrl}/pp/${userData?.companySlug || ''}/${widgetId}`;
 
-  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading || allWidgetsLoading) {
+  if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body overflow-x-hidden w-full">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm w-full">
-        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-          <Link href="/widgets" className="hidden sm:block shrink-0">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <Link href="/widgets" className="hidden lg:block">
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <Monitor className="w-5 h-5 sm:w-6 sm:h-6 text-primary hidden xs:block shrink-0" />
-            <div className="flex flex-col min-w-0">
-              <h1 className="text-xs sm:text-sm font-bold tracking-tight truncate max-w-[100px] sm:max-w-[200px]">{widgetName || 'Página Pública'}</h1>
-              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-black">Editor VIP</span>
-            </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-80">
+              <SheetHeader className="sr-only"><SheetTitle>Ajustes</SheetTitle></SheetHeader>
+              <PublicPageSettings {...({ 
+                widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
+                whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
+                googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
+                layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
+                coverImageHeight, setCoverImageHeight, onUpload: handleUpload, isUploading
+              })} />
+            </SheetContent>
+          </Sheet>
+          <div className="flex items-center gap-2">
+            <Monitor className="w-5 h-5 text-primary" />
+            <h1 className="text-sm font-bold tracking-tight truncate max-w-[150px] uppercase font-black">{widgetName || 'Public VIP'}</h1>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
-          <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg font-bold text-[10px] sm:text-sm h-9 sm:h-10 px-3 sm:px-4">
-            {isSaving || isUploading ? <Loader2 className="animate-spin h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+          <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg h-10 px-6 font-bold">
+            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             Salvar
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-x-hidden relative w-full">
+      <main className="flex-1 flex overflow-hidden relative w-full">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
           <PublicPageSettings {...({ 
             widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
@@ -596,9 +537,20 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           })} />
         </aside>
 
-        <div className="flex-1 overflow-y-auto bg-muted/30 p-3 sm:p-4 md:p-8 w-full">
-          <div className="max-w-5xl mx-auto space-y-8 w-full">
-            <div className="relative border-none shadow-2xl bg-background rounded-3xl min-h-[600px] flex flex-col overflow-hidden w-full ring-1 ring-primary/5">
+        <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
+          <div className="max-w-5xl mx-auto space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Eye className="w-4 h-4" /> Preview do Layout
+              </h2>
+              <Link href={publicPageLink} target="_blank">
+                <Button variant="link" className="text-xs font-bold gap-1 p-0">
+                  Ver Link Real <ExternalLink className="w-3 h-3" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="relative border shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               {coverImageUrl && (
                 <div 
                   className="w-full relative shrink-0 transition-all duration-500 overflow-hidden" 
@@ -610,30 +562,54 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               )}
               
               <div className="p-12 space-y-12 flex-1 flex flex-col">
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-6">
                   {logoUrl && (
                     <div className="mx-auto w-24 h-24 mb-6 relative">
-                      <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-2 border-background relative z-10" alt="Logo" />
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-4 border-background" alt="Logo" />
                     </div>
                   )}
-                  <h1 className="text-3xl font-black tracking-tighter text-foreground">
+                  <h1 className="text-4xl font-black tracking-tighter text-foreground leading-[1.1]">
                     O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                   </h1>
                 </div>
 
-                <div className="w-full max-w-4xl mx-auto">
+                <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
                   {selectedTestimonials.length > 0 ? (
-                    <div className="columns-1 md:columns-2 gap-4">
-                      {selectedTestimonials.slice(0, 4).map((t, i) => (
-                        <div key={t.id} className="mb-4">
-                          <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
-                        </div>
-                      ))}
-                    </div>
+                    selectedTestimonials.slice(0, 4).map((t, i) => (
+                      <TestimonialCard key={t.id} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
+                    ))
                   ) : (
-                    <div className="py-20 text-center opacity-20">Nenhum depoimento selecionado.</div>
+                    <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Nenhum depoimento selecionado abaixo.</div>
                   )}
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-6 pt-12 border-t">
+              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" /> Selecionar Depoimentos
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {approvedTestimonials?.map((t: any) => (
+                  <div 
+                    key={t.id} 
+                    onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
+                    className={cn(
+                      "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
+                      selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
+                    )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                        {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold text-xs block truncate">{t.userName}</span>
+                        <p className="text-[10px] text-muted-foreground italic line-clamp-2 mt-1">"{t.text}"</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -641,17 +617,19 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       </main>
 
       <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
-        <DialogContent className="rounded-2xl">
+        <DialogContent className="rounded-3xl">
           <DialogHeader className="text-center">
-            <DialogTitle className="text-2xl font-black font-headline">Publicado!</DialogTitle>
-            <DialogDescription>Sua página VIP foi atualizada com sucesso.</DialogDescription>
+            <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
+            <DialogTitle className="text-2xl font-black font-headline">Página VIP Publicada!</DialogTitle>
+            <DialogDescription>Suas alterações de design e conteúdo estão online.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
-            <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>OK</Button>
-            <Button variant="ghost" className="w-full font-bold text-[10px] uppercase tracking-widest" onClick={() => window.open(publicPageLink, '_blank')}>Ver Link Real</Button>
+            <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>Entendido</Button>
+            <Button variant="ghost" className="w-full font-bold text-[10px] uppercase tracking-widest" onClick={() => window.open(publicPageLink, '_blank')}>Abrir Link Direto</Button>
           </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
