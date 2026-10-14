@@ -1,16 +1,25 @@
+
 rules_version = '2';
+
+// Regras de Segurança do Firebase Storage - Versão 2.1
+// Forçando redeploi para garantir propagação das permissões de escrita do usuário.
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Regras de acesso para ativos de widgets (Logos e Capas)
-    // Caminho esperado: users/{userId}/widgets/{widgetId}/{fileName}
+    
+    // Caminho: users/{userId}/widgets/{widgetId}/{fileName}
     match /users/{userId}/widgets/{widgetId}/{allPaths=**} {
       
-      // Permite leitura pública para que as imagens apareçam nos widgets e páginas públicas
+      // Permite leitura pública para exibição nos widgets e landing pages
       allow read: if true;
       
-      // Permite escrita (upload/delete) apenas se o usuário estiver autenticado e for o dono da pasta
+      // Permite escrita se o usuário estiver autenticado e o UID bater com a pasta
       allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Bloqueio padrão para outros caminhos não especificados
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }
