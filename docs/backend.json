@@ -33,7 +33,7 @@
         },
         "testimonialsCount": {
           "type": "integer",
-          "description": "Total de depoimentos recebidos (Counter Pattern)."
+          "description": "Total de depoimentos recebidos (Counter Pattern para performance)."
         },
         "createdAt": {
           "type": "string",
