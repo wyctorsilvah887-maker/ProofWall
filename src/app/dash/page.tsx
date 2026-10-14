@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -17,7 +16,6 @@ import {
   Link2,
   Star,
   Clock,
-  Eye,
   Layout,
   Plus,
   QrCode,
@@ -63,7 +61,6 @@ export default function DashPage() {
   const auth = useAuth();
   const router = useRouter();
   const [baseUrl, setBaseUrl] = useState('');
-  const [previewIndex, setPreviewIndex] = useState(0);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
@@ -95,13 +92,12 @@ export default function DashPage() {
     return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
   }, [userData]);
 
-  // Query otimizada: Apenas os 5 depoimentos mais recentes para o preview do Dashboard
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(
       collection(db, 'users', user.uid, 'testimonials'),
       orderBy('createdAt', 'desc'),
-      limit(5)
+      limit(10)
     );
   }, [db, user]);
 
@@ -118,15 +114,6 @@ export default function DashPage() {
     if (!widgetsData) return 0;
     return widgetsData.reduce((acc: number, curr: any) => acc + (curr.googleRedirectCount || 0), 0);
   }, [widgetsData]);
-
-  useEffect(() => {
-    if (displayTestimonials && displayTestimonials.length > 1) {
-      const interval = setInterval(() => {
-        setPreviewIndex((prev) => (prev + 1) % displayTestimonials.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [displayTestimonials]);
 
   const copyToClipboard = (text: string, description: string) => {
     navigator.clipboard.writeText(text);
@@ -282,7 +269,6 @@ export default function DashPage() {
             <CardContent>
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold">
-                  {/* Agora usamos o contador denormalizado no usuário para fluidez instantânea */}
                   {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
@@ -333,151 +319,91 @@ export default function DashPage() {
             <Share2 className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
           </div>
-          <div className="grid gap-6 md:grid-cols-1">
-            <Card className="border-none shadow-sm overflow-hidden group">
-              <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Input 
-                    readOnly 
-                    value={collectionLink} 
-                    className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1"
-                  />
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="secondary" 
-                      className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0"
-                      onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-                    >
-                      <Copy className="h-4 w-4 sm:mr-0 mr-2" />
-                      <span className="sm:hidden font-bold">Copiar</span>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4"
-                      onClick={() => setIsQrDialogOpen(true)}
-                    >
-                      <QrCode className="h-4 w-4" />
-                      <span>QR Code</span>
-                    </Button>
-                  </div>
+          <Card className="border-none shadow-sm overflow-hidden group">
+            <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input 
+                  readOnly 
+                  value={collectionLink} 
+                  className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1"
+                />
+                <div className="flex gap-2">
+                  <Button 
+                    variant="secondary" 
+                    className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0"
+                    onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
+                  >
+                    <Copy className="h-4 w-4 sm:mr-0 mr-2" />
+                    <span className="sm:hidden font-bold">Copiar</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4"
+                    onClick={() => setIsQrDialogOpen(true)}
+                  >
+                    <QrCode className="h-4 w-4" />
+                    <span>QR Code</span>
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
-            </div>
-            
-            <div className="grid gap-4">
-              {testimonialsLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
-                </div>
-              ) : displayTestimonials && displayTestimonials.length > 0 ? (
-                displayTestimonials.map((t: any) => (
-                  <Card key={t.id} className="border-none shadow-sm overflow-hidden">
-                    <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-start gap-4">
-                        <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
-                          <User className="w-4 h-4 text-primary" />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex flex-col space-y-0.5 mb-1">
-                            <span className="font-bold text-xs">{t.userName}</span>
-                            <div className="flex gap-0.5">
-                              {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                                <Star key={i} className="w-3 h-3 fill-primary text-primary" />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-xs text-foreground italic line-clamp-2 md:line-clamp-none">
-                            "{t.text}"
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
-                  <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">Nenhum depoimento ainda.</p>
-                </div>
-              )}
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
           </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold font-headline tracking-tight">Visualização</h2>
-            </div>
-            
-            <Card className="border-none shadow-xl bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative min-h-[350px] md:min-h-[400px] flex flex-col items-center justify-center p-4 md:p-6 text-center">
-              <div className="absolute top-4 left-4">
-                <Layout className="w-4 h-4 text-primary/40" />
+          
+          <div className="grid gap-4">
+            {testimonialsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
               </div>
-
-              <div className="relative w-full flex-1 flex items-center justify-center py-8">
-                {displayTestimonials && displayTestimonials.length > 0 ? (
-                  <div 
-                    key={displayTestimonials[previewIndex].id}
-                    className="w-full max-w-[280px] animate-in slide-in-from-bottom-8 duration-500 fade-in-0"
-                  >
-                    <div className="bg-card rounded-xl p-3 md:p-4 shadow-2xl border border-primary/20 text-left w-full">
-                      <div className="flex flex-col space-y-1 mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="bg-primary/10 p-1 rounded-full shrink-0">
-                            <User className="w-3 h-3 text-primary" />
-                          </div>
-                          <p className="text-[10px] md:text-xs font-bold leading-tight truncate">{displayTestimonials[previewIndex].userName}</p>
-                        </div>
-                        <div className="flex gap-0.5 pl-6">
-                          {Array.from({ length: displayTestimonials[previewIndex].rating || 5 }).map((_, i) => (
-                            <Star key={i} className="w-2.5 h-2.5 fill-primary text-primary" />
-                          ))}
-                        </div>
+            ) : displayTestimonials && displayTestimonials.length > 0 ? (
+              displayTestimonials.map((t: any) => (
+                <Card key={t.id} className="border-none shadow-sm overflow-hidden">
+                  <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
+                        <User className="w-4 h-4 text-primary" />
                       </div>
-                      <p className="text-[10px] md:text-xs text-foreground italic line-clamp-3 leading-relaxed">
-                        "{displayTestimonials[previewIndex].text}"
-                      </p>
-                      <div className="mt-3 pt-2 border-t border-muted flex items-center justify-between">
-                        <span className="text-[8px] text-muted-foreground uppercase font-semibold tracking-tighter">
-                          Proova Social Proof
-                        </span>
+                      <div className="space-y-1">
+                        <div className="flex flex-col space-y-0.5 mb-1">
+                          <span className="font-bold text-xs">{t.userName}</span>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                              <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-foreground italic line-clamp-2 md:line-clamp-none">
+                          "{t.text}"
+                        </p>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="bg-muted/20 border-2 border-dashed rounded-2xl p-8 text-muted-foreground flex flex-col items-center gap-3">
-                    <MessageSquare className="w-8 h-8 opacity-20" />
-                  </div>
-                )}
+                    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
+                <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Nenhum depoimento ainda.</p>
               </div>
-
-              <div className="mt-auto w-full">
-                <Button variant="outline" className="w-full text-xs h-9 border-primary/20 text-primary hover:bg-primary/5" onClick={() => router.push('/widgets')}>
-                  Personalizar
-                </Button>
-              </div>
-            </Card>
+            )}
           </div>
         </div>
       </main>
