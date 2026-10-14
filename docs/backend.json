@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -109,6 +110,10 @@
         "coverImageUrl": {
           "type": "string",
           "description": "URL da imagem de capa da página pública."
+        },
+        "coverImageHeight": {
+          "type": "integer",
+          "description": "Altura customizada da capa em porcentagem da tela (vh)."
         },
         "logoUrl": {
           "type": "string",

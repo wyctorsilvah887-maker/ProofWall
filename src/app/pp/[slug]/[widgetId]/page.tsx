@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -108,6 +109,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
   const logoUrl = widgetData?.logoUrl || '';
   const coverImageUrl = widgetData?.coverImageUrl || '';
+  const coverHeight = widgetData?.coverImageHeight || 45;
 
   useEffect(() => {
     if (layout === 'popup' && filteredTestimonials.length > 1) {
@@ -136,7 +138,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     const slice = [];
-    const countToShow = Math.min(6, filteredTestimonials.length);
+    const countToShow = Math.min(8, filteredTestimonials.length);
     for (let i = 0; i < countToShow; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -179,7 +181,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-card rounded-xl p-3 sm:p-5 space-y-2 transition-all duration-700 shadow-sm overflow-hidden text-left",
+          "bg-card rounded-xl p-4 sm:p-6 space-y-3 transition-all duration-700 shadow-sm overflow-hidden text-left",
           isPopup ? "border-l-4" : "border-t-4",
           !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
         )}
@@ -194,21 +196,21 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
         }}
       >
-        <div className="flex flex-col space-y-1">
-          <div className="flex items-center gap-1.5">
-            <div className="p-1 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
-              <User className="w-2.5 h-2.5" style={{ color: themeColor }} />
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}10` }}>
+              <User className="w-3.5 h-3.5" style={{ color: themeColor }} />
             </div>
-            <span className="font-bold text-[10px] sm:text-xs text-foreground leading-tight truncate">{t.userName}</span>
+            <span className="font-bold text-xs sm:text-sm text-foreground leading-tight truncate">{t.userName}</span>
           </div>
           
           <div className="flex gap-0.5">
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-              <Star key={i} className="w-2.5 h-2.5 fill-current" style={{ color: themeColor }} />
+              <Star key={i} className="w-3 h-3 fill-current" style={{ color: themeColor }} />
             ))}
           </div>
 
-          <p className="text-foreground/80 italic text-[10px] sm:text-xs leading-relaxed">
+          <p className="text-foreground/80 italic text-xs sm:text-sm leading-relaxed">
             "{t.text}"
           </p>
         </div>
@@ -232,29 +234,54 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
       <div className="flex-1 flex flex-col">
         {coverImageUrl && (
-          <div className="h-48 sm:h-72 lg:h-[45vh] w-full relative shrink-0 overflow-hidden">
+          <div 
+            className="w-full relative shrink-0 overflow-hidden transition-all duration-700"
+            style={{ height: `${coverHeight}vh` }}
+          >
             <img 
               src={coverImageUrl} 
-              className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105" 
-              alt="Cover Image" 
+              className="w-full h-full object-cover transition-transform duration-1000" 
+              alt="Capa" 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
           </div>
         )}
 
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
-          <header className="px-6 py-12 sm:py-20 text-center space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tighter leading-[1.1] text-foreground">
+          <header className="px-6 py-12 sm:py-24 text-center space-y-8">
+            <div className="space-y-6">
+              {/* Logo removida do cabeçalho conforme solicitado para Desktop, mantendo apenas mobile ou body se necessário */}
+              <div className="hidden sm:block">
+                 {/* Espaço reservado para manter o equilíbrio visual sem a logo no topo do desktop */}
+              </div>
+              
+              <div className="sm:hidden">
+                {logoUrl && (
+                  <div className="mx-auto w-24 h-24 mb-8 relative">
+                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2rem] shadow-2xl border-2 border-background" alt="Logo Mobile" />
+                  </div>
+                )}
+              </div>
+
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.05] text-foreground max-w-5xl mx-auto">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>
-              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-lg max-w-3xl mx-auto leading-relaxed px-4">
+              <p className="text-muted-foreground font-medium text-xs sm:text-sm lg:text-xl max-w-3xl mx-auto leading-relaxed px-4">
                 {widgetData?.name} — Experiências reais de clientes satisfeitos que confiam em nosso trabalho.
               </p>
+
+              {/* Logo no corpo da página apenas abaixo do título principal se não estiver em desktop */}
+              <div className="hidden sm:flex justify-center pt-8">
+                {logoUrl && (
+                  <div className="w-32 h-32 relative">
+                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
+                  </div>
+                )}
+              </div>
             </div>
           </header>
 
-          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-7xl mx-auto">
+          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1400px] mx-auto">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-12 h-12" />
@@ -263,9 +290,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             ) : (
               <div className="w-full">
                 {layout === 'mural' && (
-                  <div key={muralIndex} className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 sm:gap-6 transition-all duration-700">
+                  <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
                     {visibleMuralTestimonials.map((t, i) => (
-                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-4 sm:mb-6">
+                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-6">
                         <TestimonialCard t={t} index={i} />
                       </div>
                     ))}
@@ -273,7 +300,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredTestimonials.map((t, i) => (
                       <TestimonialCard key={t.id} t={t} index={i} />
                     ))}
@@ -281,11 +308,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'carousel' && (
-                  <div className="w-full max-w-3xl mx-auto py-8 px-4">
+                  <div className="w-full max-w-4xl mx-auto py-12 px-4">
                     <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
                       <CarouselContent>
                         {filteredTestimonials.map((t, i) => (
-                          <CarouselItem key={t.id} className="p-2">
+                          <CarouselItem key={t.id} className="p-4 md:basis-1/2">
                             <TestimonialCard t={t} noAnim index={i} />
                           </CarouselItem>
                         ))}
@@ -295,8 +322,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 )}
 
                 {layout === 'popup' && (
-                  <div className="flex justify-center py-8 px-4" key={filteredTestimonials[currentIndex]?.id}>
-                    <div className="w-full max-w-2xl">
+                  <div className="flex justify-center py-12 px-4" key={filteredTestimonials[currentIndex]?.id}>
+                    <div className="w-full max-w-3xl">
                       <TestimonialCard t={filteredTestimonials[currentIndex]} index={0} />
                     </div>
                   </div>
@@ -305,20 +332,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
           </main>
 
-          <footer className="mt-auto px-6 py-16 text-center space-y-10 border-t bg-muted/5">
+          <footer className="mt-auto px-6 py-20 text-center space-y-12 border-t bg-muted/5">
             {externalSiteUrl && (
               <a 
                 href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-10 py-5 rounded-full text-white text-[12px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all"
+                className="inline-flex items-center gap-3 px-12 py-6 rounded-full text-white text-[14px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all"
                 style={{ backgroundColor: themeColor }}
               >
                 Visitar Site Oficial <Globe className="w-5 h-5" />
               </a>
             )}
             <div className="space-y-4">
-              <Link href="/signup" className="block text-[11px] font-black text-primary hover:underline uppercase tracking-widest animate-pulse">
+              <Link href="/signup" className="block text-[11px] font-black text-primary hover:underline uppercase tracking-widest">
                 Quer faturar mais? Crie seu Proova
               </Link>
               <div className="flex flex-col items-center gap-2">
@@ -339,7 +366,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="fixed bottom-8 right-8 z-[100] bg-green-500 text-white p-5 rounded-full shadow-[0_15px_45px_rgba(34,197,94,0.4)] hover:scale-110 active:scale-95 transition-all animate-in zoom-in slide-in-from-bottom-12 duration-700"
+          className="fixed bottom-8 right-8 z-[100] bg-green-500 text-white p-6 rounded-full shadow-[0_15px_45px_rgba(34,197,94,0.5)] hover:scale-110 active:scale-95 transition-all"
         >
           <MessageCircle className="w-8 h-8 fill-current" />
           <span className="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white animate-pulse" />
