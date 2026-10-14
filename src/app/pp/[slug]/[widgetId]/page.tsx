@@ -223,7 +223,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} className="h-8 w-auto object-contain" alt="Logo" />
+              <img src={logoUrl} className="h-9 w-9 rounded-xl object-cover shadow-sm border border-border/50" alt="Logo" />
             ) : (
               <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
             )}
@@ -246,6 +246,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
           <header className="px-6 py-10 sm:py-16 text-center space-y-4">
             <div className="space-y-3">
+              {logoUrl && (
+                <div className="mx-auto w-20 h-20 sm:w-28 sm:h-28 mb-6 relative">
+                  <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-transparent blur-md rounded-3xl" />
+                  <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-2 border-background relative z-10" alt="Logo Header" />
+                </div>
+              )}
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tighter leading-tight text-foreground">
                 O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
               </h1>

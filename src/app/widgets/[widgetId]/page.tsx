@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -235,12 +234,12 @@ const PublicPageSettings = ({
               </div>
 
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (JPG/PNG)</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logo da Empresa (Formato Quadrado)</Label>
                 <div className="flex flex-col gap-3">
                   <div 
                     onClick={() => !isUploading && logoInputRef.current?.click()}
                     className={cn(
-                      "h-24 w-full border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group",
+                      "aspect-square w-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto",
                       isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                     )}
                   >
@@ -251,7 +250,7 @@ const PublicPageSettings = ({
                       </div>
                     ) : logoUrl ? (
                       <>
-                        <img src={logoUrl} className="h-full w-full object-contain p-2" alt="Logo Preview" />
+                        <img src={logoUrl} className="h-full w-full object-cover" alt="Logo Preview" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                           <Upload className="w-6 h-6 text-white" />
                         </div>
@@ -259,7 +258,7 @@ const PublicPageSettings = ({
                     ) : (
                       <>
                         <Upload className="w-6 h-6 text-muted-foreground" />
-                        <span className="text-[9px] font-bold uppercase text-muted-foreground">Upload Logo</span>
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground text-center px-2">Upload Logo</span>
                       </>
                     )}
                   </div>
@@ -271,7 +270,7 @@ const PublicPageSettings = ({
                     onChange={(e) => onUpload(e, 'logo')} 
                   />
                   {logoUrl && !isUploading && (
-                    <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase" onClick={() => setLogoUrl('')}>
+                    <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold text-destructive uppercase w-full" onClick={() => setLogoUrl('')}>
                       <X className="w-3 h-3 mr-1" /> Remover Logo
                     </Button>
                   )}
@@ -692,8 +691,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="p-4 sm:p-12 space-y-6 sm:space-y-12 flex-1 flex flex-col w-full">
                 <div className="text-center space-y-2 sm:space-y-4 w-full">
                   {logoUrl && (
-                    <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24 mb-4">
-                      <img src={logoUrl} className="w-full h-full object-contain" alt="Logo" />
+                    <div className="mx-auto w-20 h-20 sm:w-28 sm:h-28 mb-6 relative">
+                      <div className="absolute -inset-1 bg-gradient-to-tr from-primary/20 to-transparent blur-md rounded-3xl" />
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-3xl shadow-xl border-2 border-background relative z-10" alt="Logo Preview" />
                     </div>
                   )}
                   <h1 className="text-xl sm:text-2xl font-black tracking-tighter leading-tight text-foreground">
