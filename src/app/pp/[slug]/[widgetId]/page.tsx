@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -220,7 +221,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         
         <nav className="h-16 border-b flex items-center px-6 justify-between shrink-0 bg-background/50 backdrop-blur-md z-20">
           <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">SOCIAL PROOF</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA APP</span>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -310,7 +311,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 Quer faturar mais? Crie seu Proova
               </Link>
               <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-bold opacity-30">
-                © Proova Social Proof
+                © Proova
               </p>
             </div>
           </footer>

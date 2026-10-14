@@ -42,7 +42,7 @@ export async function sendResetPasswordEmail(email: string, resetLink: string) {
             <p style="font-size: 14px; color: #6b7280; line-height: 1.6;">O link expirará em breve por motivos de segurança.</p>
           </div>
           <div style="background-color: #f9fafb; padding: 24px 32px; border-top: 1px solid #e5e7eb; text-align: center;">
-            <p style="font-size: 12px; color: #9ca3af; margin: 0;">© 2026 Proova Social Proof. Todos os direitos reservados.</p>
+            <p style="font-size: 12px; color: #9ca3af; margin: 0;">© 2026 Proova. Todos os direitos reservados.</p>
           </div>
         </div>
       `,

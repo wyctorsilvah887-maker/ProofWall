@@ -224,7 +224,7 @@ export default function DashPage() {
       doc.setTextColor(156, 163, 175); // Gray-400
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.text('Tecnologia Proova Social Proof', 105, 275, { align: 'center' });
+      doc.text('Tecnologia Proova', 105, 275, { align: 'center' });
       doc.setFont('helvetica', 'bold');
       doc.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
 
