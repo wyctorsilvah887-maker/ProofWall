@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -365,7 +364,8 @@ const PublicPageSettings = ({
             </TabsContent>
           </div>
         </ScrollArea>
-      </div>
+      </Tabs>
+    </div>
   );
 };
 
@@ -632,4 +632,3 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
-
