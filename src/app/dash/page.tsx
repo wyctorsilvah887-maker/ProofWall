@@ -50,7 +50,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, updateDoc } from 'firebase/firestore';
+import { doc, collection, query, updateDoc, orderBy, limit } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -95,14 +95,17 @@ export default function DashPage() {
     return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
   }, [userData]);
 
+  // Query otimizada: Apenas os 5 depoimentos mais recentes para o preview do Dashboard
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
     return query(
-      collection(db, 'users', user.uid, 'testimonials')
+      collection(db, 'users', user.uid, 'testimonials'),
+      orderBy('createdAt', 'desc'),
+      limit(5)
     );
   }, [db, user]);
 
-  const { data: testimonialsData, loading: testimonialsLoading } = useCollection(testimonialsQuery);
+  const { data: displayTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
   const widgetsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -116,20 +119,8 @@ export default function DashPage() {
     return widgetsData.reduce((acc: number, curr: any) => acc + (curr.googleRedirectCount || 0), 0);
   }, [widgetsData]);
 
-  const sortedTestimonials = useMemo(() => {
-    if (!testimonialsData) return [];
-    return [...testimonialsData]
-      .sort((a: any, b: any) => {
-        const dateA = a.createdAt?.toDate?.() || new Date(0);
-        const dateB = b.createdAt?.toDate?.() || new Date(0);
-        return dateB.getTime() - dateA.getTime();
-      });
-  }, [testimonialsData]);
-
-  const displayTestimonials = useMemo(() => sortedTestimonials.slice(0, 5), [sortedTestimonials]);
-
   useEffect(() => {
-    if (displayTestimonials.length > 1) {
+    if (displayTestimonials && displayTestimonials.length > 1) {
       const interval = setInterval(() => {
         setPreviewIndex((prev) => (prev + 1) % displayTestimonials.length);
       }, 5000);
@@ -291,7 +282,8 @@ export default function DashPage() {
             <CardContent>
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold">
-                  {testimonialsData?.length || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
+                  {/* Agora usamos o contador denormalizado no usuário para fluidez instantânea */}
+                  {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
                   <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-none text-[10px] h-5 px-1.5">
@@ -392,7 +384,7 @@ export default function DashPage() {
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
                 </div>
-              ) : displayTestimonials.length > 0 ? (
+              ) : displayTestimonials && displayTestimonials.length > 0 ? (
                 displayTestimonials.map((t: any) => (
                   <Card key={t.id} className="border-none shadow-sm overflow-hidden">
                     <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -444,7 +436,7 @@ export default function DashPage() {
               </div>
 
               <div className="relative w-full flex-1 flex items-center justify-center py-8">
-                {displayTestimonials.length > 0 ? (
+                {displayTestimonials && displayTestimonials.length > 0 ? (
                   <div 
                     key={displayTestimonials[previewIndex].id}
                     className="w-full max-w-[280px] animate-in slide-in-from-bottom-8 duration-500 fade-in-0"

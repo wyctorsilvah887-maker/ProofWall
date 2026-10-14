@@ -148,6 +148,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
     addDoc(testimonialsRef, testimonialData)
       .then(() => {
+        // Incrementa o contador de depoimentos no documento do usuário
+        const userRef = doc(db, 'users', targetUserId);
+        updateDoc(userRef, {
+          testimonialsCount: increment(1)
+        });
+
         setSubmitted(true);
         setIsSubmitting(false);
         toast({

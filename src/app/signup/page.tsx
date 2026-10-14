@@ -52,6 +52,7 @@ export default function SignupPage() {
         companySlug: slug,
         email: email.trim().toLowerCase(),
         isAdmin: false,
+        testimonialsCount: 0,
         createdAt: serverTimestamp(),
       };
 
