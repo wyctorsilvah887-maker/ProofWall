@@ -29,7 +29,8 @@ import {
   ArrowLeft,
   FileDown,
   Sun,
-  Moon
+  Moon,
+  TrendingDown
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -89,6 +90,28 @@ export default function DashPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  // Lógica de Comparação Mensal
+  const trendMetrics = useMemo(() => {
+    const current = userData?.testimonialsCount || 0;
+    const last = userData?.lastMonthCount || 0;
+    
+    if (last === 0) {
+      return { 
+        percentage: current > 0 ? 100 : 0, 
+        isPositive: true,
+        label: current > 0 ? `+${current} novos` : 'Sem dados'
+      };
+    }
+    
+    const diff = current - last;
+    const percent = Math.round((diff / last) * 100);
+    return { 
+      percentage: Math.abs(percent), 
+      isPositive: percent >= 0,
+      label: `${percent >= 0 ? '+' : ''}${percent}%`
+    };
+  }, [userData]);
 
   const companySlug = useMemo(() => {
     if (!userData) return '';
@@ -348,7 +371,11 @@ export default function DashPage() {
           <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
-              <TrendingUp className="h-4 w-4 text-green-500" />
+              {trendMetrics.isPositive ? (
+                <TrendingUp className="h-4 w-4 text-green-500" />
+              ) : (
+                <TrendingDown className="h-4 w-4 text-destructive" />
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
@@ -356,8 +383,14 @@ export default function DashPage() {
                   {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
-                  <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-none text-[10px] h-5 px-1.5">
-                    +100%
+                  <Badge 
+                    variant="secondary" 
+                    className={cn(
+                      "border-none text-[10px] h-5 px-1.5 font-black",
+                      trendMetrics.isPositive ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"
+                    )}
+                  >
+                    {trendMetrics.label}
                   </Badge>
                   <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
                 </div>

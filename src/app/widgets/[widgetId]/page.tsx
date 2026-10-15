@@ -245,10 +245,10 @@ const PublicPageSettings = ({
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Estilo de Exibição</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
-                    { id: 'mural', icon: LayoutGrid, label: 'Mural Slide' },
+                    { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
                     { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade Estática' },
-                    { id: 'popup', icon: MessageSquare, label: 'Notificação Solo' },
+                    { id: 'popup', icon: MessageSquare, label: 'Notificação' },
                   ].map((item) => (
                     <button 
                       key={item.id}

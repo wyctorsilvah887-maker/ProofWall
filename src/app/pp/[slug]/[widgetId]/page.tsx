@@ -34,7 +34,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [widgetData, setWidgetData] = useState<any>(null);
   const [allTestimonials, setAllTestimonials] = useState<any[]>([]);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [muralIndex, setMuralIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
 

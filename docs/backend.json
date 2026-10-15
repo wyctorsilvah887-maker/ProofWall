@@ -35,6 +35,10 @@
           "type": "integer",
           "description": "Total de depoimentos recebidos (Counter Pattern para performance)."
         },
+        "lastMonthCount": {
+          "type": "integer",
+          "description": "Total de depoimentos no final do mês anterior para comparação de métricas."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
