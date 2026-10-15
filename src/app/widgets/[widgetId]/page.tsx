@@ -123,19 +123,19 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
     <Card 
       key={`${t.id}-${muralIndex}`}
       className={cn(
-        "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700 p-4",
+        "bg-card shadow-lg border-none text-left overflow-hidden transition-all duration-700 p-4",
         "border-t-4 animate-in duration-700 ease-out fill-both",
         side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
       )} 
       style={{ 
         borderTopColor: themeColor,
         boxShadow: `0 10px 30px -15px ${themeColor}30`,
-        backgroundColor: secondaryColor ? `${secondaryColor}15` : undefined
+        backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}20` : undefined
       }}
     >
       <div className="flex flex-col space-y-3">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/5 p-2 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}20` : `${themeColor}15` }}>
+          <div className="p-2 rounded-full shrink-0" style={{ backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}30` : `${themeColor}15` }}>
             <User className="w-4 h-4" style={{ color: themeColor }} />
           </div>
           <span className="font-bold text-foreground leading-tight truncate text-xs">{t.userName}</span>
@@ -461,7 +461,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 transition-all p-1">
+              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 transition-all h-12 w-12 flex items-center justify-center">
                 <Monitor className="h-8 w-8" />
               </Button>
             </SheetTrigger>

@@ -153,12 +153,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderTopColor: !isPopup ? themeColor : 'transparent',
           borderLeftWidth: isPopup ? '4px' : '0',
           borderLeftColor: isPopup ? themeColor : 'transparent',
-          backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
+          backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}20` : undefined,
+          boxShadow: `0 10px 30px -15px ${themeColor}30`
         }}
       >
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="bg-primary/5 p-2 rounded-full" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
+            <div className="p-2 rounded-full shrink-0" style={{ backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}30` : `${themeColor}15` }}>
               <User className="w-4 h-4" style={{ color: themeColor }} />
             </div>
             <span className="font-bold text-sm text-foreground">{t.userName}</span>

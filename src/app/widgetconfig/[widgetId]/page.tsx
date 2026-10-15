@@ -56,19 +56,19 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
   return (
     <Card 
       className={cn(
-        "bg-background shadow-xl border-none text-left overflow-hidden p-4 transition-all duration-700",
+        "bg-card shadow-xl border-none text-left overflow-hidden p-4 transition-all duration-700",
         "border-t-4 animate-in duration-700 ease-out fill-both",
         side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
       )} 
       style={{ 
         borderTopColor: themeColor,
-        boxShadow: `0 10px 30px -15px ${themeColor}20`,
-        backgroundColor: secondaryColor ? `${secondaryColor}15` : undefined
+        boxShadow: `0 10px 30px -15px ${themeColor}30`,
+        backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}20` : undefined
       }}
     >
       <div className="flex flex-col space-y-3">
         <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: secondaryColor ? `${secondaryColor}20` : `${themeColor}15` }}>
+          <div className="p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}30` : `${themeColor}15` }}>
             <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
           <p className="font-bold text-[10px] truncate">{t.userName}</p>
@@ -127,7 +127,9 @@ const EmbedSettings = ({
 
           <div className="space-y-6 pt-4 border-t">
             <div className="space-y-4">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cor do Tema</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Palette className="w-3 h-3 text-primary" /> Cor Principal
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
                   <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80 shadow-inner")} style={{ backgroundColor: color }} />
@@ -138,7 +140,9 @@ const EmbedSettings = ({
 
           <div className="space-y-6 pt-4 border-t">
             <div className="space-y-4">
-              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cor Secundária</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Palette className="w-3 h-3 text-primary" /> Cor Secundária
+              </Label>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
                   <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80 shadow-inner")} style={{ backgroundColor: color }} />
@@ -244,7 +248,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 transition-all p-1">
+              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 transition-all h-12 w-12 flex items-center justify-center">
                 <Monitor className="h-8 w-8" />
               </Button>
             </SheetTrigger>
