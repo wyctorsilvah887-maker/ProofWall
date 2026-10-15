@@ -191,7 +191,7 @@ export default function DashPage() {
       const primaryColor = [249, 115, 22];
 
       if (isDark) {
-        doc.setFillColor(17, 24, 39);
+        doc.setFillColor(0, 0, 0);
       } else {
         doc.setFillColor(250, 250, 250);
       }
@@ -596,7 +596,7 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
+        <DialogContent className="sm:max-w-md w-[95vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
           <DialogHeader className="p-6 pb-2 shrink-0">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
@@ -608,11 +608,11 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="p-6 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+          <div className="p-6 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
             {!selectedWidgetForLink ? (
-              <div className="space-y-3">
+              <div className="space-y-3 min-w-0">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
-                <div className="grid gap-2 pr-1">
+                <div className="grid gap-2 pr-1 min-w-0">
                   {widgetsLoading ? (
                     <div className="py-8 text-center"><Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" /></div>
                   ) : widgetsData && widgetsData.length > 0 ? (
@@ -620,22 +620,22 @@ export default function DashPage() {
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all"
+                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
-                        <div className="flex items-center gap-4 text-left">
+                        <div className="flex items-center gap-4 text-left flex-1 min-w-0">
                           <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10 shrink-0">
                             <Layout className="w-5 h-5 text-primary" />
                           </div>
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold leading-tight truncate">{w.name}</p>
                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-0.5">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
                       </Button>
                     ))
                   ) : (
@@ -646,7 +646,7 @@ export default function DashPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 min-w-0">
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -655,14 +655,14 @@ export default function DashPage() {
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" /> Voltar à lista
                 </Button>
-                <div className="space-y-3">
+                <div className="space-y-3 min-w-0">
                   <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL do Perfil Google Business</Label>
                   <Input 
                     id="google-url"
                     placeholder="https://g.page/r/..." 
                     value={newGoogleMapsUrl} 
                     onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                    className="h-14 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-base"
+                    className="h-14 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-base w-full"
                     autoFocus
                   />
                   <p className="text-[11px] text-muted-foreground leading-relaxed px-1">
@@ -680,7 +680,7 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] rounded-[3rem] border-none shadow-2xl">
+        <DialogContent className="sm:max-w-md w-[90vw] max-w-[95vw] rounded-[3rem] border-none shadow-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
               <QrCode className="w-6 h-6 text-primary" />
