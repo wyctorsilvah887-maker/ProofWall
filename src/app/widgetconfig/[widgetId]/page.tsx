@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -15,7 +14,7 @@ import {
   LayoutGrid,
   Play,
   CheckCircle2,
-  Menu,
+  Monitor,
   Terminal,
   Copy,
   Layout,
@@ -63,12 +62,12 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
       style={{ 
         borderTopColor: themeColor,
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
-        backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
+        backgroundColor: secondaryColor ? `${secondaryColor}15` : undefined
       }}
     >
       <div className="flex flex-col space-y-3">
         <div className="flex items-center gap-2">
-          <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
+          <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: secondaryColor ? `${secondaryColor}20` : `${themeColor}15` }}>
             <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
           <p className="font-bold text-[10px] truncate">{t.userName}</p>
@@ -131,6 +130,17 @@ const EmbedSettings = ({
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
                   <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 pt-4 border-t">
+            <div className="space-y-4">
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cor Secundária</Label>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((color) => (
+                  <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
                 ))}
               </div>
             </div>
@@ -258,7 +268,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden text-primary">
-                <Menu className="h-6 w-6" />
+                <Monitor className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 border-none">
