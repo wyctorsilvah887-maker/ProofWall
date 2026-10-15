@@ -40,6 +40,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
+    // Tenta encontrar o usuário pelo ID direto (slug pode ser o UID) ou pelo companySlug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -102,6 +103,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const logoUrl = widgetData?.logoUrl || '';
   const coverImageUrl = widgetData?.coverImageUrl || '';
 
+  // Efeito de rotação para o Mural
   useEffect(() => {
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 6000);
@@ -109,6 +111,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
+  // Efeito para o Carrossel
   useEffect(() => {
     if (!api || layout !== 'carousel') return;
     const interval = setInterval(() => api.scrollNext(), 5000);
@@ -118,7 +121,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     const slice = [];
-    const count = Math.min(8, filteredTestimonials.length);
+    const count = Math.min(12, filteredTestimonials.length); // Mostra mais no desktop
     for (let i = 0; i < count; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -139,15 +142,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const TestimonialCard = ({ t, index = 0 }: { t: any, index?: number }) => {
     const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+    const isPopup = layout === 'popup';
+    
     return (
       <Card 
         key={`${t.id}-${muralIndex}`}
         className={cn(
-          "bg-card rounded-xl p-6 border-t-4 shadow-sm animate-in duration-700 ease-out fill-both",
+          "bg-card rounded-xl p-6 shadow-sm animate-in duration-700 ease-out",
           side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
         )}
         style={{ 
-          borderTopColor: themeColor,
+          borderTopWidth: !isPopup ? '4px' : '0',
+          borderTopColor: !isPopup ? themeColor : 'transparent',
+          borderLeftWidth: isPopup ? '4px' : '0',
+          borderLeftColor: isPopup ? themeColor : 'transparent',
           backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
         }}
       >
@@ -205,7 +213,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           </header>
 
-          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1400px] mx-auto">
+          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1600px] mx-auto">
             {filteredTestimonials.length === 0 ? (
               <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
                 <MessageSquare className="w-12 h-12" />
@@ -228,15 +236,20 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   </div>
                 )}
                 {layout === 'carousel' && (
-                  <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-4xl mx-auto">
+                  <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-5xl mx-auto">
                     <CarouselContent>
                       {filteredTestimonials.map((t, i) => (
-                        <CarouselItem key={t.id} className="p-4 md:basis-1/2">
+                        <CarouselItem key={t.id} className="p-4 md:basis-1/2 lg:basis-1/3">
                           <TestimonialCard t={t} index={i} />
                         </CarouselItem>
                       ))}
                     </CarouselContent>
                   </Carousel>
+                )}
+                {layout === 'popup' && (
+                  <div className="max-w-md mx-auto">
+                    <TestimonialCard t={filteredTestimonials[muralIndex % filteredTestimonials.length]} />
+                  </div>
                 )}
               </div>
             )}

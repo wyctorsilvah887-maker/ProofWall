@@ -92,7 +92,7 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  // Lógica de Comparação Mensal
+  // Lógica de Comparação Mensal (Counter Pattern)
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
     const last = userData?.lastMonthCount || 0;

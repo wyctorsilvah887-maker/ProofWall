@@ -25,7 +25,8 @@ import {
   Terminal,
   Settings2,
   Globe,
-  Crop as CropIcon
+  Crop as CropIcon,
+  Menu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +48,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Slider } from '@/components/ui/slider';
 import Cropper from 'react-easy-crop';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -455,10 +463,28 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const hasValidCover = coverImageUrl && coverImageUrl.startsWith('http');
   const hasValidLogo = logoUrl && logoUrl.startsWith('http');
 
+  const sidebarProps = { 
+    widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
+    whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
+    googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
+    layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
+    onFileSelect, isUploading
+  };
+
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden text-primary">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-80 border-none">
+              <PublicPageSettings {...sidebarProps} />
+            </SheetContent>
+          </Sheet>
           <Link href="/widgets" className="hidden lg:block">
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
@@ -477,15 +503,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       </header>
 
       <main className="flex-1 flex overflow-hidden relative w-full flex-row">
-        {/* Menu Lateral Restaurado */}
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
-          <PublicPageSettings {...({ 
-            widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
-            whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
-            googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-            layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
-            onFileSelect, isUploading
-          })} />
+          <PublicPageSettings {...sidebarProps} />
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/10 p-4 sm:p-8">

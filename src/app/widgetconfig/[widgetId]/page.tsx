@@ -249,10 +249,22 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
+  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor };
+
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden text-primary">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 w-80 border-none">
+              <EmbedSettings {...sidebarProps} />
+            </SheetContent>
+          </Sheet>
           <Link href="/widgets" className="hidden lg:block">
             <Button variant="ghost" size="icon" className="text-primary"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
@@ -272,7 +284,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
       <main className="flex-1 flex overflow-hidden relative w-full">
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
-          <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} secondaryColor={secondaryColor} setSecondaryColor={setSecondaryColor} />
+          <EmbedSettings {...sidebarProps} />
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
