@@ -22,8 +22,7 @@ import {
   Play,
   Layout,
   Trash2,
-  Terminal,
-  Settings2,
+  ArrowLeft as ArrowLeftIcon,
   Globe,
   Crop as CropIcon,
   Menu
@@ -163,12 +162,10 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
   logoUrl, setLogoUrl,
-  coverImageUrl, setCoverImageUrl,
   onFileSelect,
   isUploading
 }: any) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
@@ -208,24 +205,6 @@ const PublicPageSettings = ({
                   {isUploading ? <Loader2 className="animate-spin text-primary" /> : (logoUrl ? <img src={logoUrl} className="w-full h-full object-cover rounded-xl" /> : <Upload className="text-muted-foreground" />)}
                 </div>
                 <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'logo')} />
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Capa (Ultra 4K PNG)</Label>
-                  {coverImageUrl && (
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setCoverImageUrl('')}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  )}
-                </div>
-                <div 
-                  onClick={() => !isUploading && coverInputRef.current?.click()}
-                  className="h-24 w-full border-2 border-dashed rounded-xl flex items-center justify-center bg-muted/20 overflow-hidden relative group cursor-pointer"
-                >
-                  {isUploading ? <Loader2 className="animate-spin text-primary" /> : (coverImageUrl ? <img src={coverImageUrl} className="w-full h-full object-cover" /> : <ImageIcon className="text-muted-foreground" />)}
-                </div>
-                <input type="file" ref={coverInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'cover')} />
               </div>
 
               <div className="space-y-6 pt-4 border-t">
@@ -322,7 +301,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [layout, setLayout] = useState<LayoutType>('mural');
-  const [coverImageUrl, setCoverImageUrl] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -345,7 +323,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setThemeColor(widgetData.themeColor || '#f97316');
       setSecondaryColor(widgetData.secondaryColor || '#ffffff');
       setLayout(widgetData.layout || 'mural');
-      setCoverImageUrl(widgetData.coverImageUrl || '');
       setLogoUrl(widgetData.logoUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
@@ -420,7 +397,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       const snapshot = await uploadBytes(storageRef, croppedBlob);
       const url = await getDownloadURL(snapshot.ref);
       if (cropType === 'logo') setLogoUrl(url);
-      else setCoverImageUrl(url);
     } catch (err) {
       toast({ variant: "destructive", title: "Erro no processamento" });
     } finally {
@@ -438,7 +414,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       themeColor,
       secondaryColor,
       layout,
-      coverImageUrl,
       logoUrl,
       whatsappEnabled,
       whatsappNumber,
@@ -458,14 +433,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
-  const hasValidCover = coverImageUrl && coverImageUrl.startsWith('http');
   const hasValidLogo = logoUrl && logoUrl.startsWith('http');
 
   const sidebarProps = { 
     widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
     whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
     googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
-    layout, setLayout, logoUrl, setLogoUrl, coverImageUrl, setCoverImageUrl,
+    layout, setLayout, logoUrl, setLogoUrl,
     onFileSelect, isUploading
   };
 
@@ -515,14 +489,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </h2>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
-              {hasValidCover && (
-                <div className="w-full relative shrink-0 h-[45vh] overflow-hidden">
-                  <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                </div>
-              )}
-              
-              <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", !hasValidCover && "pt-24")}>
+              <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24")}>
                 <div className="text-center space-y-10">
                   {hasValidLogo && (
                     <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
@@ -609,3 +576,4 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
+
