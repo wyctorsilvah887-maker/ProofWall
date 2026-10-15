@@ -273,7 +273,7 @@ const PublicPageSettings = ({
                 )}
               </div>
               <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Site Oficial URL</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">URL do Site Oficial</Label>
                 <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://seusite.com.br" />
               </div>
               <div className="space-y-3 pt-4 border-t">
@@ -496,6 +496,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <SheetContent side="left" className="p-0 w-80 border-none">
               <SheetHeader className="sr-only">
                 <SheetTitle>Configurações da Página Pública</SheetTitle>
+                <DialogDescription>Ajuste o visual e as redes sociais da sua página.</DialogDescription>
               </SheetHeader>
               <PublicPageSettings {...sidebarProps} />
             </SheetContent>
@@ -663,7 +664,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
                 <p className="text-sm font-bold">Aba Social (Interação e Site Oficial)</p>
-                <p className="text-xs text-muted-foreground">Ative o botão de WhatsApp, configure o *Site Oficial* e o link do Google Business.</p>
+                <p className="text-xs text-muted-foreground">Ative o botão de WhatsApp e configure o *Site Oficial*. **Dica:** Copie o link da sua página pública e use-o no seu perfil do WhatsApp ou na bio do Instagram!</p>
               </div>
             </div>
           </div>

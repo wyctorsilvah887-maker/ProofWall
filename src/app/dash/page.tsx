@@ -97,7 +97,6 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  // Lógica de Comparação Mensal (Counter Pattern)
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
     const last = userData?.lastMonthCount || 0;
@@ -189,29 +188,25 @@ export default function DashPage() {
 
       const isDark = pdfTheme === 'dark';
       const companyName = userData?.companyName || 'Sua Empresa';
-      const primaryColor = [249, 115, 22]; // Orange hex: #f97316
+      const primaryColor = [249, 115, 22];
 
-      // Background
       if (isDark) {
-        doc.setFillColor(17, 24, 39); // Gray-900
+        doc.setFillColor(17, 24, 39);
       } else {
-        doc.setFillColor(250, 250, 250); // Light Gray
+        doc.setFillColor(250, 250, 250);
       }
       doc.rect(0, 0, 210, 297, 'F');
 
-      // Header Orange Bar
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(0, 0, 210, 40, 'F');
 
-      // App Name
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(28);
       doc.text('PROOVA', 105, 25, { align: 'center' });
 
-      // Main Container
       if (isDark) {
-        doc.setFillColor(31, 41, 55); // Gray-800
+        doc.setFillColor(31, 41, 55);
         doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       } else {
         doc.setFillColor(255, 255, 255);
@@ -219,26 +214,23 @@ export default function DashPage() {
       }
       doc.roundedRect(20, 50, 170, 210, 10, 10, 'FD');
 
-      // Company Name
       if (isDark) {
         doc.setTextColor(255, 255, 255);
       } else {
-        doc.setTextColor(31, 41, 55); // Gray-800
+        doc.setTextColor(31, 41, 55);
       }
       doc.setFontSize(24);
       doc.text(companyName.toUpperCase(), 105, 80, { align: 'center' });
 
-      // Subtitle
       if (isDark) {
-        doc.setTextColor(156, 163, 175); // Gray-400
+        doc.setTextColor(156, 163, 175);
       } else {
-        doc.setTextColor(107, 114, 128); // Gray-500
+        doc.setTextColor(107, 114, 128);
       }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(14);
       doc.text('A sua opinião é muito importante para nós!', 105, 95, { align: 'center' });
 
-      // QR Code conversion
       const svg = document.getElementById('qr-code-svg');
       if (svg) {
         const svgData = new XMLSerializer().serializeToString(svg);
@@ -263,17 +255,15 @@ export default function DashPage() {
         });
       }
 
-      // CTA
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
       doc.text('ESCANEIE PARA NOS AVALIAR', 105, 230, { align: 'center' });
 
-      // Footer
       if (isDark) {
         doc.setTextColor(107, 114, 128);
       } else {
-        doc.setTextColor(156, 163, 175); // Gray-400
+        doc.setTextColor(156, 163, 175);
       }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
@@ -552,7 +542,6 @@ export default function DashPage() {
         </div>
       </footer>
 
-      {/* Tutorial Dialog */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-3xl sm:max-w-md">
           <DialogHeader>
