@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -44,6 +43,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -576,7 +576,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </main>
 
-      {/* Tutorial Dialog */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-3xl sm:max-w-md">
           <DialogHeader>
