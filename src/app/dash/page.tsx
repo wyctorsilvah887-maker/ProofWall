@@ -595,81 +595,81 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] rounded-[2.5rem] border-none shadow-2xl">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-2">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               {selectedWidgetForLink 
                 ? `Defina o link do Google para o mural "${selectedWidgetForLink.name}".`
                 : 'Selecione para qual mural você deseja configurar o link do Google Maps.'}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4 py-4">
+          <div className="p-6 pt-2 space-y-4">
             {!selectedWidgetForLink ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
-                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="grid gap-2 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
                   {widgetsLoading ? (
-                    <div className="py-4 text-center"><Loader2 className="animate-spin h-6 w-6 text-primary mx-auto" /></div>
+                    <div className="py-8 text-center"><Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" /></div>
                   ) : widgetsData && widgetsData.length > 0 ? (
                     widgetsData.map((w: any) => (
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-14 rounded-2xl px-4 border-muted hover:border-primary group transition-all"
+                        className="w-full justify-between h-16 rounded-2xl px-5 border-muted hover:border-primary group transition-all"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10">
-                            <Layout className="w-4 h-4 text-primary" />
+                            <Layout className="w-5 h-5 text-primary" />
                           </div>
                           <div className="text-left">
-                            <p className="text-sm font-bold">{w.name}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
+                            <p className="text-sm font-bold leading-tight">{w.name}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-0.5">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                       </Button>
                     ))
                   ) : (
-                    <div className="py-8 text-center border-2 border-dashed rounded-2xl">
+                    <div className="py-12 text-center border-2 border-dashed rounded-3xl">
                       <p className="text-sm text-muted-foreground">Crie um mural primeiro.</p>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setSelectedWidgetForLink(null)}
-                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-1 font-bold text-xs"
+                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-2 font-bold text-sm"
                 >
-                  <ArrowLeft className="w-3 h-3 mr-1.5" /> Voltar à seleção
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Voltar à lista
                 </Button>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL do Perfil Google Business</Label>
                   <Input 
                     id="google-url"
                     placeholder="https://g.page/r/..." 
                     value={newGoogleMapsUrl} 
                     onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                    className="h-12 rounded-xl border-primary/20 focus-visible:ring-primary/20"
+                    className="h-14 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-base"
                     autoFocus
                   />
+                  <p className="text-[11px] text-muted-foreground leading-relaxed px-1">
+                    Dica: Use o link "Receber mais avaliações" no seu painel Google Business para obter a URL direta.
+                  </p>
                 </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed px-1">
-                  Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta.
-                </p>
-                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 rounded-xl shadow-lg font-black">
-                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-14 rounded-2xl shadow-xl font-black text-base transition-all hover:translate-y-[-2px]">
+                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
                   Salvar Configuração
                 </Button>
               </div>
