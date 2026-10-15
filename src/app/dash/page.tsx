@@ -312,7 +312,7 @@ export default function DashPage() {
               variant="ghost" 
               size="icon" 
               onClick={() => setIsTutorialOpen(true)} 
-              className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+              className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all active:bg-primary/10 active:scale-95"
             >
               <HelpCircle className="w-5 h-5" />
             </Button>
@@ -320,7 +320,7 @@ export default function DashPage() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-10 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all">
+              <Button variant="ghost" className="h-10 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end hidden md:flex">
                   <span className="text-xs font-bold truncate max-w-[120px]">{userData?.companyName || 'Minha Empresa'}</span>
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Membro Gold</span>
