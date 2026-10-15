@@ -293,6 +293,7 @@ export default function DashPage() {
   }
 
   const collectionLink = `${baseUrl}/c/${companySlug}`;
+  const membershipLabel = userData?.membershipStatus === 'gold' ? 'Membro Gold' : (userData?.membershipStatus === 'standard' ? 'Membro Standard' : 'Membro Gold');
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
@@ -321,11 +322,13 @@ export default function DashPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-10 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
-                <div className="flex flex-col items-end hidden md:flex">
-                  <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary">
+                <div className="flex flex-col items-end">
+                  <span className="text-[10px] md:text-xs font-bold truncate max-w-[80px] md:max-w-[120px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Membro Gold</span>
+                  <span className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                    {membershipLabel}
+                  </span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                   <User className="w-4 h-4" />

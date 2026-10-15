@@ -13,8 +13,7 @@
         "companyName": {
           "type": "string",
           "description": "Nome da empresa ou marca."
-        },
-        "companySlug": {
+"companySlug": {
           "type": "string",
           "description": "Slug único da empresa para URLs."
         },
@@ -30,6 +29,11 @@
         "isAdmin": {
           "type": "boolean",
           "description": "Define se o usuário tem privilégios administrativos."
+        },
+        "membershipStatus": {
+          "type": "string",
+          "enum": ["gold", "standard"],
+          "description": "Status da assinatura ou nível de membro."
         },
         "testimonialsCount": {
           "type": "integer",
