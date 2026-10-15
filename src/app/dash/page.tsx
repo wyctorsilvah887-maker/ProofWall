@@ -30,7 +30,10 @@ import {
   FileDown,
   Sun,
   Moon,
-  TrendingDown
+  TrendingDown,
+  HelpCircle,
+  Info,
+  Monitor
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -50,6 +53,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
@@ -70,6 +74,7 @@ export default function DashPage() {
   const [baseUrl, setBaseUrl] = useState('');
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   
   const [selectedWidgetForLink, setSelectedWidgetForLink] = useState<any>(null);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
@@ -316,6 +321,9 @@ export default function DashPage() {
 
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <ThemeToggle />
+          <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
+            <HelpCircle className="w-5 h-5" />
+          </Button>
           <div className="flex flex-col items-end mr-1 md:mr-2">
             <span className="text-xs md:text-sm font-semibold truncate max-w-[120px] md:max-w-none">
               {userData?.companyName || 'Minha Empresa'}
@@ -358,7 +366,12 @@ export default function DashPage() {
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
+              <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
+                <Info className="w-3 h-3" /> Tutorial
+              </Button>
+            </div>
             <p className="text-sm md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
@@ -538,6 +551,46 @@ export default function DashPage() {
           </p>
         </div>
       </footer>
+
+      {/* Tutorial Dialog */}
+      <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+              <HelpCircle className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
+            </DialogTitle>
+            <DialogDescription>
+              Aprenda a dominar seu painel de prova social em 3 passos.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
+              <div>
+                <p className="text-sm font-bold">Acompanhe sua Performance</p>
+                <p className="text-xs text-muted-foreground">Monitore o crescimento dos seus depoimentos e cliques no Google em tempo real através dos cards de métricas.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
+              <div>
+                <p className="text-sm font-bold">Crie e Customize Murais</p>
+                <p className="text-xs text-muted-foreground">No menu <strong>Widgets</strong>, você cria novos murais e usa o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para editar o visual.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
+              <div>
+                <p className="text-sm font-bold">Capture e Compartilhe</p>
+                <p className="text-xs text-muted-foreground">Copie seu link exclusivo ou gere o <strong>Cartaz de Balcão</strong> em PDF para coletar novos elogios no seu estabelecimento.</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
         <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">
