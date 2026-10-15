@@ -296,57 +296,84 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+      <header className="bg-background border-b h-16 md:h-20 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center gap-3 md:gap-4">
+          <Link href="/dash" className="flex items-center gap-2 group">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
+              <Image src="/maskable_icon_x512 (3).png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
+            </div>
+            <span className="hidden md:block font-headline font-black text-xl tracking-tighter text-primary">PROOVA</span>
+          </Link>
+          
+          <nav className="ml-4 md:ml-8 hidden sm:flex items-center gap-1 md:gap-2">
+            <Link href="/dash">
+              <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/5">
+                Dash
+              </Button>
+            </Link>
+            <Link href="/widgets">
+              <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+                Widgets
+              </Button>
+            </Link>
+            {userData?.isAdmin && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+                  Adm
+                </Button>
+              </Link>
+            )}
+          </nav>
         </div>
-        
-        <nav className="ml-8 hidden md:flex items-center gap-6">
-          <Link href="/dash" className="text-sm font-medium text-primary transition-colors">Dash</Link>
-          <Link href="/widgets" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Widgets</Link>
-          {userData?.isAdmin && (
-            <Link href="/admin" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Administração</Link>
-          )}
-        </nav>
 
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
-            <HelpCircle className="w-5 h-5" />
-          </Button>
-          <div className="flex flex-col items-end mr-1 md:mr-2">
-            <span className="text-xs md:text-sm font-semibold truncate max-w-[120px] md:max-w-none">
-              {userData?.companyName || 'Minha Empresa'}
-            </span>
+          <div className="flex items-center gap-1 md:gap-2 border-r pr-2 md:pr-4 mr-1 md:mr-2">
+            <ThemeToggle />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsTutorialOpen(true)} 
+              className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </Button>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/40 bg-background/50 backdrop-blur-sm">
-                <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              <Button variant="ghost" className="h-10 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all">
+                <div className="flex flex-col items-end hidden md:flex">
+                  <span className="text-xs font-bold truncate max-w-[120px]">{userData?.companyName || 'Minha Empresa'}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Membro Gold</span>
+                </div>
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <User className="w-4 h-4" />
+                </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl">
-              <DropdownMenuLabel className="font-headline">Minha Conta</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => router.push('/dash')} className="cursor-pointer md:hidden font-medium">
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
+              <DropdownMenuLabel className="px-3 py-2">
+                <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer sm:hidden font-bold py-2.5">
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/widgets')} className="cursor-pointer font-medium">
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Layout className="mr-2 h-4 w-4 text-primary" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
               {userData?.isAdmin && (
-                <DropdownMenuItem onClick={() => router.push('/admin')} className="cursor-pointer md:hidden font-medium">
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
                   <Shield className="mr-2 h-4 w-4 text-primary" />
                   <span>Administração</span>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer font-medium">
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
-                <span>Sair</span>
+                <span>Sair do Sistema</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -365,14 +392,14 @@ export default function DashPage() {
             <p className="text-sm md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
-            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all" size="lg">
+            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all h-12 rounded-xl" size="lg">
               <Plus className="w-5 h-5 mr-2" /> Novo Mural
             </Button>
           </Link>
         </header>
 
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
-          <Card className="border-none shadow-sm group cursor-default relative overflow-visible">
+          <Card className="border-none shadow-sm group cursor-default relative overflow-visible rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
               {trendMetrics.isPositive ? (
@@ -421,7 +448,7 @@ export default function DashPage() {
             >
               <Edit3 className="w-2.5 h-2.5" /> Configurar Link
             </div>
-            <Card className="border-none shadow-sm relative overflow-hidden">
+            <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
                 <MapPin className="h-4 w-4 text-primary" />
@@ -444,7 +471,7 @@ export default function DashPage() {
             <Share2 className="w-5 h-5 text-primary" />
             <h2 className="text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
           </div>
-          <Card className="border-none shadow-sm overflow-hidden group">
+          <Card className="border-none shadow-sm overflow-hidden group rounded-2xl">
             <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -456,12 +483,12 @@ export default function DashPage() {
                 <Input 
                   readOnly 
                   value={collectionLink} 
-                  className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1"
+                  className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1 rounded-xl"
                 />
                 <div className="flex gap-2">
                   <Button 
                     variant="secondary" 
-                    className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0"
+                    className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0 rounded-xl"
                     onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                   >
                     <Copy className="h-4 w-4 sm:mr-0 mr-2" />
@@ -469,7 +496,7 @@ export default function DashPage() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4"
+                    className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4 rounded-xl"
                     onClick={() => setIsQrDialogOpen(true)}
                   >
                     <QrCode className="h-4 w-4" />
@@ -494,10 +521,10 @@ export default function DashPage() {
               </div>
             ) : displayTestimonials && displayTestimonials.length > 0 ? (
               displayTestimonials.map((t: any) => (
-                <Card key={t.id} className="border-none shadow-sm overflow-hidden">
+                <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-2xl">
                   <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="bg-primary/10 p-2 rounded-full hidden sm:block">
+                      <div className="bg-primary/10 p-2 rounded-xl hidden sm:block">
                         <User className="w-4 h-4 text-primary" />
                       </div>
                       <div className="space-y-1">
@@ -515,7 +542,7 @@ export default function DashPage() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
                         <Clock className="w-3 h-3" />
                         {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
                       </div>
@@ -543,7 +570,7 @@ export default function DashPage() {
       </footer>
 
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
+        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
               <HelpCircle className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
@@ -553,39 +580,39 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
               <div>
                 <p className="text-sm font-bold">Acompanhe sua Performance</p>
-                <p className="text-xs text-muted-foreground">Monitore o crescimento dos seus depoimentos e cliques no Google em tempo real através dos cards de métricas.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Monitore o crescimento dos seus depoimentos e cliques no Google em tempo real através dos cards de métricas inteligentes.</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
               <div>
                 <p className="text-sm font-bold">Crie e Customize Murais</p>
-                <p className="text-xs text-muted-foreground">No menu <strong>Widgets</strong>, você cria novos murais e usa o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para editar o visual.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">No menu <strong>Widgets</strong>, você cria novos murais e usa o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para editar o visual e layout.</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">3</div>
               <div>
                 <p className="text-sm font-bold">Capture e Compartilhe</p>
-                <p className="text-xs text-muted-foreground">Copie seu link exclusivo ou gere o <strong>Cartaz de Balcão</strong> em PDF para coletar novos elogios no seu estabelecimento.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Copie seu link exclusivo ou gere o <strong>Cartaz de Balcão</strong> em PDF para coletar novos elogios no seu estabelecimento físico.</p>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">
+        <DialogContent className="sm:max-w-md w-[90vw] rounded-[2.5rem] border-none shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <MapPin className="w-6 h-6 text-primary" /> Configurar Google Business
+            <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
+              <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
             <DialogDescription>
               {selectedWidgetForLink 
@@ -597,8 +624,8 @@ export default function DashPage() {
           <div className="space-y-4 py-4">
             {!selectedWidgetForLink ? (
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Seus Murais Disponíveis</Label>
-                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
+                <div className="grid gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                   {widgetsLoading ? (
                     <div className="py-4 text-center"><Loader2 className="animate-spin h-6 w-6 text-primary mx-auto" /></div>
                   ) : widgetsData && widgetsData.length > 0 ? (
@@ -606,26 +633,26 @@ export default function DashPage() {
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-14 rounded-xl px-4 border-muted hover:border-primary group transition-all"
+                        className="w-full justify-between h-14 rounded-2xl px-4 border-muted hover:border-primary group transition-all"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="bg-primary/5 p-2 rounded-lg group-hover:bg-primary/10">
+                          <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10">
                             <Layout className="w-4 h-4 text-primary" />
                           </div>
                           <div className="text-left">
                             <p className="text-sm font-bold">{w.name}</p>
-                            <p className="text-[10px] text-muted-foreground">{w.googleMapsUrl ? 'Link configurado' : 'Link pendente'}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                       </Button>
                     ))
                   ) : (
-                    <div className="py-8 text-center border-2 border-dashed rounded-xl">
+                    <div className="py-8 text-center border-2 border-dashed rounded-2xl">
                       <p className="text-sm text-muted-foreground">Crie um mural primeiro.</p>
                     </div>
                   )}
@@ -637,27 +664,27 @@ export default function DashPage() {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setSelectedWidgetForLink(null)}
-                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-1"
+                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-1 font-bold text-xs"
                 >
-                  <ArrowLeft className="w-3 h-3 mr-1.5" /> Escolher outro mural
+                  <ArrowLeft className="w-3 h-3 mr-1.5" /> Voltar à seleção
                 </Button>
                 <div className="space-y-2">
-                  <Label htmlFor="google-url" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">URL do Perfil Google</Label>
+                  <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL do Perfil Google Business</Label>
                   <Input 
                     id="google-url"
                     placeholder="https://g.page/r/..." 
                     value={newGoogleMapsUrl} 
                     onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                    className="h-12 border-primary/20 focus-visible:ring-primary/20"
+                    className="h-12 rounded-xl border-primary/20 focus-visible:ring-primary/20"
                     autoFocus
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta do formulário.
+                <p className="text-[10px] text-muted-foreground leading-relaxed px-1">
+                  Dica: Use o link "Receber mais avaliações" no painel do seu Google Business para obter a URL direta.
                 </p>
-                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 shadow-lg">
+                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 rounded-xl shadow-lg font-black">
                   {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
-                  Salvar Link do Mural
+                  Salvar Configuração
                 </Button>
               </div>
             )}
@@ -666,26 +693,26 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] rounded-2xl">
+        <DialogContent className="sm:max-w-md w-[90vw] rounded-[3rem] border-none shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl">
+            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
               <QrCode className="w-6 h-6 text-primary" />
               Cartaz de Balcão VIP
             </DialogTitle>
-            <DialogDescription className="text-sm md:text-base">
-              Gere um cartaz profissional em PDF para seus clientes avaliarem sua empresa no local.
+            <DialogDescription className="text-sm md:text-base font-medium">
+              Gere um cartaz profissional para seus clientes avaliarem sua empresa no local.
             </DialogDescription>
           </DialogHeader>
           
           <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6">
             <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo do Cartaz</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo Visual do Cartaz</Label>
               <div className="flex justify-center gap-4">
                 <Button 
                   variant={pdfTheme === 'light' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('light')}
-                  className="gap-2 h-10 px-6 rounded-xl"
+                  className="gap-2 h-11 px-8 rounded-2xl font-bold transition-all"
                 >
                   <Sun className="w-4 h-4" /> Claro
                 </Button>
@@ -693,18 +720,18 @@ export default function DashPage() {
                   variant={pdfTheme === 'dark' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('dark')}
-                  className="gap-2 h-10 px-6 rounded-xl"
+                  className="gap-2 h-11 px-8 rounded-2xl font-bold transition-all"
                 >
                   <Moon className="w-4 h-4" /> Escuro
                 </Button>
               </div>
             </div>
 
-            <div className="p-4 md:p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/20">
+            <div className="p-4 md:p-8 bg-white rounded-[2.5rem] shadow-2xl border-8 border-primary/5 transition-transform hover:scale-105">
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={200} 
+                size={220} 
                 level="H"
                 includeMargin={true}
               />
@@ -712,17 +739,17 @@ export default function DashPage() {
             
             <div className="w-full">
               <Button 
-                className="w-full h-14 shadow-xl font-bold text-lg gap-3"
+                className="w-full h-16 shadow-2xl font-black text-lg gap-3 rounded-[1.25rem] transition-all hover:translate-y-[-2px]"
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
               >
                 {isGeneratingPdf ? (
-                  <><Loader2 className="animate-spin" /> Preparando Cartaz...</>
+                  <><Loader2 className="animate-spin" /> Preparando Arquivo...</>
                 ) : (
                   <><FileDown className="w-6 h-6" /> Baixar PDF ({pdfTheme === 'light' ? 'Claro' : 'Escuro'})</>
                 )}
               </Button>
-              <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-[0.2em] font-black">
+              <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-[0.2em] font-black opacity-40">
                 Powered by Synapse Group
               </p>
             </div>
