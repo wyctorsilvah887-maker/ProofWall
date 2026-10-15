@@ -22,7 +22,10 @@ import {
   Trash2,
   Globe,
   HelpCircle,
-  Info
+  Info,
+  Link2,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -325,12 +328,19 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isUploading, setIsUploading] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [muralIndex, setMuralIndex] = useState(0);
+  const [baseUrl, setBaseUrl] = useState('');
 
   const [tempImage, setTempImage] = useState<string | null>(null);
   const [cropType, setCropType] = useState<'logo' | 'cover' | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     if (widgetData) {
@@ -357,6 +367,20 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       return () => clearInterval(interval);
     }
   }, [layout, selectedIds]);
+
+  const publicPageLink = useMemo(() => {
+    if (!baseUrl || !userData || !widgetId) return '';
+    const slug = userData.companySlug || userData.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
+    return `${baseUrl}/pp/${slug}/${widgetId}`;
+  }, [baseUrl, userData, widgetId]);
+
+  const copyToClipboard = (text: string, description: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copiado!",
+      description: `${description} copiado para a área de transferência.`,
+    });
+  };
 
   const takenTestimonialIds = useMemo(() => {
     if (!allWidgets) return new Set<string>();
@@ -500,12 +524,45 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <div className="flex-1 overflow-y-auto bg-muted/10 p-4 sm:p-8">
           <div className="max-w-none mx-auto space-y-8 pb-20">
             
-            <Link href="/widgets" className="inline-block group">
-              <Button variant="ghost" className="gap-2 px-0 hover:bg-transparent text-muted-foreground hover:text-primary transition-colors">
-                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Voltar para a Lista de Murais</span>
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <Link href="/widgets" className="inline-block group">
+                <Button variant="ghost" className="gap-2 px-0 hover:bg-transparent text-muted-foreground hover:text-primary transition-colors">
+                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Voltar para a Lista</span>
+                </Button>
+              </Link>
+              
+              <div className="flex items-center gap-2 bg-background border rounded-xl p-1.5 shadow-sm max-w-md w-full">
+                <div className="flex-1 px-3">
+                  <p className="text-[9px] font-black uppercase text-muted-foreground tracking-tighter mb-0.5">Link da Página Pública</p>
+                  <Input 
+                    readOnly 
+                    value={publicPageLink} 
+                    className="h-6 border-none bg-transparent p-0 text-[11px] font-mono focus-visible:ring-0"
+                  />
+                </div>
+                <div className="flex gap-1 pr-1">
+                  <Button 
+                    variant="secondary" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg"
+                    onClick={() => copyToClipboard(publicPageLink, "Link da Página Pública")}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg border-primary/20 text-primary"
+                    asChild
+                  >
+                    <a href={publicPageLink} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
 
             <div className="flex items-center justify-between">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
