@@ -322,7 +322,9 @@ export default function DashPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-10 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end hidden md:flex">
-                  <span className="text-xs font-bold truncate max-w-[120px]">{userData?.companyName || 'Minha Empresa'}</span>
+                  <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary">
+                    {userData?.companyName || 'Minha Empresa'}
+                  </span>
                   <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Membro Gold</span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
