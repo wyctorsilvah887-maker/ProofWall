@@ -184,9 +184,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return (
       <Card 
         className={cn(
-          "bg-card rounded-xl p-4 sm:p-6 space-y-3 transition-all duration-700 shadow-sm overflow-hidden text-left",
+          "bg-card rounded-xl p-4 sm:p-6 space-y-3 shadow-sm overflow-hidden text-left",
           isPopup ? "border-l-4" : "border-t-4",
-          !noAnim && "animate-in fade-in zoom-in-95 slide-in-from-bottom-4"
+          !noAnim && "animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both"
         )}
         style={{ 
           borderTopColor: !isPopup ? themeColor : 'transparent',
@@ -194,8 +194,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           borderTopWidth: !isPopup ? '4px' : '0',
           borderLeftWidth: isPopup ? '4px' : '0',
           borderStyle: 'solid',
-          animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
-          animationFillMode: 'both',
+          animationDelay: noAnim ? '0ms' : `${index * 150}ms`,
           backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
         }}
       >
@@ -238,12 +237,12 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <div className="flex-1 flex flex-col">
         {hasValidCover && (
           <div 
-            className="w-full relative shrink-0 overflow-hidden transition-all duration-700"
+            className="w-full relative shrink-0 overflow-hidden"
             style={{ height: `${coverHeight}vh` }}
           >
             <img 
               src={coverImageUrl} 
-              className="w-full h-full object-cover transition-transform duration-1000" 
+              className="w-full h-full object-cover" 
               alt="Capa" 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
@@ -252,7 +251,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
           <header className={cn(
-            "px-6 text-center space-y-12", // increased space-y
+            "px-6 text-center space-y-12",
             hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32"
           )}>
             <div className="space-y-10">
@@ -290,7 +289,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                 {layout === 'mural' && (
                   <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
                     {visibleMuralTestimonials.map((t, i) => (
-                      <div key={t.id + muralIndex + i} className="break-inside-avoid mb-6">
+                      <div key={`${t.id}-${muralIndex}-${i}`} className="break-inside-avoid mb-6">
                         <TestimonialCard t={t} index={i} />
                       </div>
                     ))}

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -57,29 +58,21 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, small = true, isPopup = false, themeColor, secondaryColor, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, small?: boolean, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
-  const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
-  const slideClass = layout === 'mural' 
-    ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
-    : (isPopup ? "slide-in-from-bottom-8 fade-in zoom-in duration-700" : "fade-in zoom-in-95 slide-in-from-bottom-4");
-
+const TestimonialCard = ({ t, isPopup = false, themeColor, secondaryColor, index = 0, noAnim = false }: { t: any, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, noAnim?: boolean }) => {
   return (
     <Card 
       className={cn(
-        "bg-background shadow-xl border-none text-left overflow-hidden transition-all duration-700",
+        "bg-background shadow-xl border-none text-left overflow-hidden",
         "p-3",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
-        !noAnim && "animate-in duration-1000 ease-out",
-        !noAnim && slideClass,
-        "mb-0"
+        !noAnim && "animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both"
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent', 
         borderLeftColor: isPopup ? themeColor : 'transparent',
         borderTopWidth: !isPopup ? '3px' : '0', 
         borderLeftWidth: isPopup ? '4px' : '0',
-        animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
-        animationFillMode: 'both',
+        animationDelay: noAnim ? '0ms' : `${index * 150}ms`,
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
         backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
       }}
@@ -329,7 +322,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                 {selectedTestimonials.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(layout === 'mural' ? visibleMuralTestimonials : selectedTestimonials.slice(0, 4)).map((t: any, i) => (
-                      <TestimonialCard key={t.id + muralIndex + i} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} muralIndex={muralIndex} />
+                      <div key={`${t.id}-${muralIndex}-${i}`} className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both">
+                        <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} />
+                      </div>
                     ))}
                   </div>
                 ) : (
