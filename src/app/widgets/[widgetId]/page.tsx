@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -21,7 +22,6 @@ import {
   Play,
   Layout,
   Trash2,
-  ArrowLeft as ArrowLeftIcon,
   Globe,
   Crop as CropIcon,
   Menu
@@ -213,7 +213,7 @@ const PublicPageSettings = ({
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
+                      <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80 shadow-inner")} style={{ backgroundColor: color }} />
                     ))}
                   </div>
                 </div>
@@ -226,7 +226,7 @@ const PublicPageSettings = ({
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
+                      <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80 shadow-inner")} style={{ backgroundColor: color }} />
                     ))}
                   </div>
                 </div>
@@ -461,8 +461,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-primary">
-                <Monitor className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5 transition-all p-1">
+                <Monitor className="h-8 w-8" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 border-none">
@@ -476,7 +476,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
           <div className="flex items-center gap-2">
-            <Monitor className="w-5 h-5 text-primary" />
             <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[150px]">{widgetName || 'Editor'}</h1>
           </div>
         </div>
