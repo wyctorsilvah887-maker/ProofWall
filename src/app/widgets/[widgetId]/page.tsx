@@ -24,7 +24,9 @@ import {
   Trash2,
   Globe,
   Crop as CropIcon,
-  Menu
+  Menu,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -320,6 +322,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [muralIndex, setMuralIndex] = useState(0);
 
   const [tempImage, setTempImage] = useState<string | null>(null);
@@ -472,15 +475,15 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <PublicPageSettings {...sidebarProps} />
             </SheetContent>
           </Sheet>
-          <Link href="/widgets" className="hidden lg:block">
-            <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5"><ArrowLeft className="h-5 w-5" /></Button>
-          </Link>
           <div className="flex items-center gap-2">
             <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[150px]">{widgetName || 'Editor'}</h1>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
           <ThemeToggle />
+          <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
+            <HelpCircle className="w-5 h-5" />
+          </Button>
           <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg h-10 px-6 font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             Salvar Tudo
@@ -494,10 +497,23 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/10 p-4 sm:p-8">
-          <div className="max-w-none mx-auto space-y-8">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <Eye className="w-4 h-4" /> Preview Dinâmico
-            </h2>
+          <div className="max-w-none mx-auto space-y-8 pb-20">
+            
+            <Link href="/widgets" className="inline-block group">
+              <Button variant="ghost" className="gap-2 px-0 hover:bg-transparent text-muted-foreground hover:text-primary transition-colors">
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Voltar para a Lista de Murais</span>
+              </Button>
+            </Link>
+
+            <div className="flex items-center justify-between">
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                <Eye className="w-4 h-4" /> Preview Dinâmico
+              </h2>
+              <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
+                <Info className="w-3 h-3" /> Ver Tutorial
+              </Button>
+            </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24")}>
@@ -559,6 +575,46 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </div>
         </div>
       </main>
+
+      {/* Tutorial Dialog */}
+      <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+              <HelpCircle className="w-6 h-6 text-primary" /> Como configurar sua Página Pública
+            </DialogTitle>
+            <DialogDescription>
+              Crie um destino VIP para sua marca em 3 passos rápidos.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
+              <div>
+                <p className="text-sm font-bold">Design e Identidade</p>
+                <p className="text-xs text-muted-foreground">Use o ícone de <strong>Monitor</strong> para subir sua logo e definir as cores que combinam com seu branding.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
+              <div>
+                <p className="text-sm font-bold">Conteúdo Exclusivo</p>
+                <p className="text-xs text-muted-foreground">Selecione os feedbacks. O sistema bloqueia depoimentos já usados em outros murais para garantir exclusividade.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
+              <div>
+                <p className="text-sm font-bold">Compartilhe o Link</p>
+                <p className="text-xs text-muted-foreground">Após <strong>Salvar</strong>, você poderá usar o link da Página Pública no seu Instagram, Bio ou WhatsApp.</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!tempImage} onOpenChange={(open) => !open && setTempImage(null)}>
         <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none">

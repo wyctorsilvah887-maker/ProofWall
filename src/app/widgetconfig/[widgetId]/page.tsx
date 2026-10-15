@@ -19,7 +19,9 @@ import {
   Terminal,
   Copy,
   Layout,
-  Palette
+  Palette,
+  HelpCircle,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +57,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
 
   return (
     <Card 
+      key={`${t.id}-${muralIndex}`}
       className={cn(
         "bg-card shadow-xl border-none text-left overflow-hidden p-4 transition-all duration-700",
         "border-t-4 animate-in duration-700 ease-out fill-both",
@@ -178,6 +181,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [isSaving, setIsSaving] = useState(false);
   const [isCodeDialogOpen, setIsCodeDialogOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
   const [muralIndex, setMuralIndex] = useState(0);
 
@@ -259,15 +263,15 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <EmbedSettings {...sidebarProps} />
             </SheetContent>
           </Sheet>
-          <Link href="/widgets" className="hidden lg:block">
-            <Button variant="ghost" size="icon" className="text-primary"><ArrowLeft className="h-5 w-5" /></Button>
-          </Link>
           <div className="flex items-center gap-2">
             <h1 className="text-sm font-black uppercase tracking-tight truncate">{widgetData?.name || 'Mural Embed'}</h1>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
           <ThemeToggle />
+          <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
+            <HelpCircle className="w-5 h-5" />
+          </Button>
           <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-10 px-6 font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             Salvar
@@ -281,8 +285,21 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Preview do Mural</h2>
+          <div className="max-w-4xl mx-auto space-y-8 pb-20">
+            
+            <Link href="/widgets" className="inline-block group">
+              <Button variant="ghost" className="gap-2 px-0 hover:bg-transparent text-muted-foreground hover:text-primary transition-colors">
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Voltar para a Lista de Murais</span>
+              </Button>
+            </Link>
+
+            <div className="flex items-center justify-between">
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Preview do Mural</h2>
+              <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
+                <Info className="w-3 h-3" /> Ver Tutorial
+              </Button>
+            </div>
             
             <div className="relative border shadow-xl bg-muted/20 p-8 rounded-[2rem] min-h-[400px] flex items-center justify-center ring-1 ring-primary/5">
               <div className="w-full max-w-2xl">
@@ -326,6 +343,46 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
           </div>
         </div>
       </main>
+
+      {/* Tutorial Dialog */}
+      <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+              <HelpCircle className="w-6 h-6 text-primary" /> Como configurar seu Mural
+            </DialogTitle>
+            <DialogDescription>
+              Siga estes 3 passos simples para turbinar seu site com prova social.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
+              <div>
+                <p className="text-sm font-bold">Defina o Visual</p>
+                <p className="text-xs text-muted-foreground">Clique no ícone de <strong>Monitor</strong> para escolher o layout e as cores da sua marca.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
+              <div>
+                <p className="text-sm font-bold">Selecione os Depoimentos</p>
+                <p className="text-xs text-muted-foreground">Marque os feedbacks aprovados que você deseja exibir nesta configuração específica.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
+              <div>
+                <p className="text-sm font-bold">Salve e Publique</p>
+                <p className="text-xs text-muted-foreground">Clique em <strong>Salvar</strong> e copie o código para colar no HTML do seu site.</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isCodeDialogOpen} onOpenChange={setIsCodeDialogOpen}>
         <DialogContent className="rounded-3xl">
