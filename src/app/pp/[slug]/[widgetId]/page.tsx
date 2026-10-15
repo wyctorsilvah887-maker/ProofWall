@@ -40,7 +40,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   useEffect(() => {
     if (!db || !slug) return;
 
-    // Tenta encontrar o usuário pelo ID direto (slug pode ser o UID) ou pelo companySlug
     const userRef = doc(db, 'users', slug);
     const unsubUser = onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
@@ -103,7 +102,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const logoUrl = widgetData?.logoUrl || '';
   const coverImageUrl = widgetData?.coverImageUrl || '';
 
-  // Efeito de rotação para o Mural
   useEffect(() => {
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 6000);
@@ -111,7 +109,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     }
   }, [layout, filteredTestimonials]);
 
-  // Efeito para o Carrossel
   useEffect(() => {
     if (!api || layout !== 'carousel') return;
     const interval = setInterval(() => api.scrollNext(), 5000);
@@ -121,7 +118,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const visibleMuralTestimonials = useMemo(() => {
     if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
     const slice = [];
-    const count = Math.min(12, filteredTestimonials.length); // Mostra mais no desktop
+    const count = Math.min(12, filteredTestimonials.length);
     for (let i = 0; i < count; i++) {
       const idx = (muralIndex + i) % filteredTestimonials.length;
       slice.push(filteredTestimonials[idx]);
@@ -148,7 +145,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       <Card 
         key={`${t.id}-${muralIndex}`}
         className={cn(
-          "bg-card rounded-xl p-6 shadow-sm animate-in duration-700 ease-out",
+          "bg-card rounded-xl p-6 shadow-sm animate-in duration-700 ease-out fill-both",
           side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
         )}
         style={{ 

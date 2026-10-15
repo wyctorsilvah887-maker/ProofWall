@@ -81,7 +81,6 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  // Qualidade Ultra 4K para capas (3840px)
   const targetWidth = type === 'cover' ? 3840 : 1024; 
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
@@ -105,7 +104,6 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // PNG Lossless (Qualidade Máxima) para Capa, JPEG para Logo
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
     const quality = type === 'cover' ? 1.0 : 0.92;
 
@@ -482,6 +480,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 border-none">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Configurações da Página Pública</SheetTitle>
+              </SheetHeader>
               <PublicPageSettings {...sidebarProps} />
             </SheetContent>
           </Sheet>

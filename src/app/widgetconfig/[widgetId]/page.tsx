@@ -262,6 +262,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80 border-none">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Configurações do Mural</SheetTitle>
+              </SheetHeader>
               <EmbedSettings {...sidebarProps} />
             </SheetContent>
           </Sheet>
