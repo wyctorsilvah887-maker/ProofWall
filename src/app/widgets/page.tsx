@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -20,7 +19,8 @@ import {
   Terminal,
   CheckCircle2,
   Globe,
-  Monitor
+  Monitor,
+  HelpCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -168,46 +168,56 @@ export default function WidgetsPage() {
     );
   }
 
-  if (!widgetsLoading && (!widgetsList || widgetsList.length === 0)) {
-    return (
-      <div className="min-h-screen bg-muted/20 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-2xl border-none overflow-hidden">
-          <div className="h-2 bg-primary w-full" />
-          <CardHeader className="text-center pt-8">
-            <Layout className="w-12 h-12 text-primary mx-auto mb-4" />
-            <CardTitle className="text-2xl font-headline">Crie seu Primeiro Mural</CardTitle>
-            <CardDescription>Dê um nome e comece a exibir sua prova social.</CardDescription>
-          </CardHeader>
-          <CardContent className="pb-8">
-            <form onSubmit={handleCreateWidget} className="space-y-4">
-              <Input placeholder="Nome do Mural (ex: Site Principal)" value={newWidgetName} onChange={(e) => setNewWidgetName(e.target.value)} required />
-              <Button type="submit" className="w-full h-12 font-bold" disabled={isCreating}>
-                {isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
-                Criar Mural
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const membershipLabel = userData?.membershipStatus === 'gold' 
+    ? 'Membro Gold' 
+    : userData?.membershipStatus === 'standard' 
+      ? 'Membro Standard' 
+      : null;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
-          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center gap-3 md:gap-4">
+          <Link href="/dash" className="flex items-center gap-2 group">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
+              <Image src="/maskable_icon_x512 (3).png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
+            </div>
+          </Link>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 md:h-10 md:w-10 border border-primary/20">
-                <User className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
+                <div className="flex flex-col items-end">
+                  <span className="text-[10px] md:text-xs font-bold truncate max-w-[100px] md:max-w-[150px] transition-colors group-hover:text-primary leading-tight">
+                    {userData?.companyName || 'Minha Empresa'}
+                  </span>
+                  {membershipLabel && (
+                    <span className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                      {membershipLabel}
+                    </span>
+                  )}
+                </div>
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <User className="w-4 h-4" />
+                </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive"><LogOut className="mr-2 h-4 w-4" /> Sair</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <TrendingUp className="mr-2 h-4 w-4 text-primary" />
+                <span>Dash</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Layout className="mr-2 h-4 w-4 text-primary" />
+                <span>Meus Widgets</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair do Sistema</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

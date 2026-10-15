@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -294,7 +293,6 @@ export default function DashPage() {
 
   const collectionLink = `${baseUrl}/c/${companySlug}`;
   
-  // Lógica dinâmica de status: se não houver status no banco, não assume "Gold" incorretamente.
   const membershipLabel = userData?.membershipStatus === 'gold' 
     ? 'Membro Gold' 
     : userData?.membershipStatus === 'standard' 
@@ -315,14 +313,6 @@ export default function DashPage() {
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-1 md:gap-2 border-r pr-2 md:pr-4 mr-1 md:mr-2">
             <ThemeToggle />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsTutorialOpen(true)} 
-              className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all active:bg-primary/10 active:scale-95"
-            >
-              <HelpCircle className="w-5 h-5" />
-            </Button>
           </div>
 
           <DropdownMenu>
@@ -355,6 +345,10 @@ export default function DashPage() {
               <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Layout className="mr-2 h-4 w-4 text-primary" />
                 <span>Meus Widgets</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsTutorialOpen(true)} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <HelpCircle className="mr-2 h-4 w-4 text-primary" />
+                <span>Tutorial</span>
               </DropdownMenuItem>
               {userData?.isAdmin && (
                 <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
