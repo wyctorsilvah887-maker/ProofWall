@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -595,8 +596,8 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-2">
+        <DialogContent className="sm:max-w-md w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
+          <DialogHeader className="p-6 pb-2 shrink-0">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
@@ -607,11 +608,11 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="p-6 pt-2 space-y-4">
+          <div className="p-6 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1">
             {!selectedWidgetForLink ? (
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
-                <div className="grid gap-2 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="grid gap-2 pr-1">
                   {widgetsLoading ? (
                     <div className="py-8 text-center"><Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" /></div>
                   ) : widgetsData && widgetsData.length > 0 ? (
@@ -619,22 +620,22 @@ export default function DashPage() {
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-16 rounded-2xl px-5 border-muted hover:border-primary group transition-all"
+                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
-                        <div className="flex items-center gap-4">
-                          <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10">
+                        <div className="flex items-center gap-4 text-left">
+                          <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10 shrink-0">
                             <Layout className="w-5 h-5 text-primary" />
                           </div>
-                          <div className="text-left">
-                            <p className="text-sm font-bold leading-tight">{w.name}</p>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold leading-tight truncate">{w.name}</p>
                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-0.5">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
                       </Button>
                     ))
                   ) : (
