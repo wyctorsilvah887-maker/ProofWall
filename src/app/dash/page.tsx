@@ -60,6 +60,7 @@ import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { jsPDF } from 'jspdf';
+import { cn } from '@/lib/utils';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
