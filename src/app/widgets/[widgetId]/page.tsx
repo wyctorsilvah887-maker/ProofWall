@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -269,6 +270,10 @@ const PublicPageSettings = ({
                 )}
               </div>
               <div className="space-y-3">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Site Oficial URL</Label>
+                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://seusite.com.br" />
+              </div>
+              <div className="space-y-3 pt-4 border-t">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Google Business URL</Label>
                 <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil Google" />
               </div>
@@ -455,7 +460,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   };
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
@@ -579,7 +584,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <HelpCircle className="w-6 h-6 text-primary" /> Como configurar sua Página Pública
             </DialogTitle>
             <DialogDescription>
-              Crie um destino VIP para sua marca seguindo estes passos rápidos nas abas laterais.
+              Crie um destino VIP para sua marca em 3 passos rápidos.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
@@ -587,28 +592,21 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
                 <p className="text-sm font-bold">Aba Visual (Design e Identidade)</p>
-                <p className="text-xs text-muted-foreground">Use o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores primária e secundária da sua marca.</p>
+                <p className="text-xs text-muted-foreground">Use o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores da marca.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
                 <p className="text-sm font-bold">Aba Layout (Estilo de Exibição)</p>
-                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha entre os formatos de Mural, Grade, Carrossel ou Notificação Popup.</p>
+                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha o formato do mural (Masonry, Grade, etc).</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
-                <p className="text-sm font-bold">Aba Social (Interação Direct)</p>
-                <p className="text-xs text-muted-foreground">Ative o botão flutuante de WhatsApp e configure o link do seu Google Business para redirecionar avaliações 5 estrelas.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">4</div>
-              <div>
-                <p className="text-sm font-bold">Conteúdo e Publicação</p>
-                <p className="text-xs text-muted-foreground">Selecione os feedbacks exclusivos e clique em <strong>Salvar Tudo</strong> para aplicar as mudanças.</p>
+                <p className="text-sm font-bold">Aba Social (Interação e Site Oficial)</p>
+                <p className="text-xs text-muted-foreground">Ative o botão de WhatsApp, configure o **Site Oficial** e o link do Google Business.</p>
               </div>
             </div>
           </div>

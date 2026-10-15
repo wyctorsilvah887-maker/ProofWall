@@ -139,7 +139,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const TestimonialCard = ({ t, index = 0 }: { t: any, index?: number }) => {
     const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
-    const isPopup = layout === 'popup';
     
     return (
       <Card 
@@ -149,10 +148,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
           side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
         )}
         style={{ 
-          borderTopWidth: !isPopup ? '4px' : '0',
-          borderTopColor: !isPopup ? themeColor : 'transparent',
-          borderLeftWidth: isPopup ? '4px' : '0',
-          borderLeftColor: isPopup ? themeColor : 'transparent',
+          borderTopWidth: layout !== 'popup' ? '4px' : '0',
+          borderTopColor: layout !== 'popup' ? themeColor : 'transparent',
+          borderLeftWidth: layout === 'popup' ? '4px' : '0',
+          borderLeftColor: layout === 'popup' ? themeColor : 'transparent',
           backgroundColor: secondaryColor && secondaryColor !== '#ffffff' ? `${secondaryColor}20` : undefined,
           boxShadow: `0 10px 30px -15px ${themeColor}30`
         }}
@@ -176,7 +175,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   };
 
   return (
-    <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden text-foreground">
       <nav className="h-16 border-b flex items-center px-6 justify-between bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA</span>
@@ -255,7 +254,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
           <footer className="mt-auto px-6 py-20 text-center space-y-12 border-t bg-muted/5">
             {externalSiteUrl && (
-              <a href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`} target="_blank" className="inline-flex items-center gap-3 px-12 py-6 rounded-full text-white text-[14px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all" style={{ backgroundColor: themeColor }}>
+              <a 
+                href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-12 py-6 rounded-full text-white text-[14px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all" 
+                style={{ backgroundColor: themeColor }}
+              >
                 Visitar Site Oficial <Globe className="w-5 h-5" />
               </a>
             )}
@@ -267,7 +272,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       </div>
 
       {whatsappEnabled && whatsappNumber && (
-        <a href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} target="_blank" className="fixed bottom-8 right-8 z-[100] bg-green-500 text-white p-6 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all">
+        <a href={`https://wa.me/${whatsappNumber.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="fixed bottom-8 right-8 z-[100] bg-green-500 text-white p-6 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all">
           <MessageCircle className="w-8 h-8 fill-current" />
         </a>
       )}
