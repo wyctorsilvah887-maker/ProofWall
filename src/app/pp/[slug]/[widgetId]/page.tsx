@@ -12,7 +12,7 @@ import {
   doc, 
   onSnapshot,
 } from 'firebase/firestore';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Star, User, Loader2, MessageSquare, MessageCircle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -104,10 +104,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const coverImageUrl = widgetData?.coverImageUrl || '';
 
   useEffect(() => {
-    if (layout === 'popup' && filteredTestimonials.length > 1) {
-      const interval = setInterval(() => setCurrentIndex(prev => (prev + 1) % filteredTestimonials.length), 5000); 
-      return () => clearInterval(interval);
-    }
     if (layout === 'mural' && filteredTestimonials.length > 0) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 6000);
       return () => clearInterval(interval);
@@ -146,6 +142,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
     return (
       <Card 
+        key={`${t.id}-${muralIndex}`}
         className={cn(
           "bg-card rounded-xl p-6 border-t-4 shadow-sm animate-in duration-700 ease-out fill-both",
           side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"

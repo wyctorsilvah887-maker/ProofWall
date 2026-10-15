@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, use, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -14,7 +14,6 @@ import {
   User,
   Monitor,
   CheckCircle2,
-  Menu,
   Copy,
   Upload,
   ImageIcon,
@@ -22,18 +21,17 @@ import {
   LayoutGrid,
   Play,
   Layout,
-  Crop as CropIcon,
   Trash2,
-  X,
+  Terminal,
+  Settings2,
   Globe,
-  Settings2
+  Crop as CropIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
 import { useUser, useFirestore, useDoc, useCollection, useStorage } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -43,20 +41,13 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Slider } from '@/components/ui/slider';
 import Cropper from 'react-easy-crop';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -82,7 +73,7 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  // Qualidade Ultra 4K para capas e High para Logos
+  // Qualidade Ultra 4K para capas (3840px)
   const targetWidth = type === 'cover' ? 3840 : 1024; 
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
@@ -106,7 +97,7 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // PNG Lossless para Capa (Qualidade Máxima), JPEG para Logo
+    // PNG Lossless (Qualidade Máxima) para Capa, JPEG para Logo
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
     const quality = type === 'cover' ? 1.0 : 0.92;
 
@@ -126,6 +117,7 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
   
   return (
     <Card 
+      key={`${t.id}-${muralIndex}`}
       className={cn(
         "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700 p-4",
         "border-t-4 animate-in duration-700 ease-out fill-both",
@@ -196,7 +188,7 @@ const PublicPageSettings = ({
             <TabsContent value="geral" className="mt-0 space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Logotipo (1:1)</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Logotipo (Square)</Label>
                   {logoUrl && (
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setLogoUrl('')}>
                       <Trash2 className="w-3.5 h-3.5" />
@@ -207,14 +199,14 @@ const PublicPageSettings = ({
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className="aspect-square w-24 border-2 border-dashed rounded-2xl flex items-center justify-center bg-muted/20 overflow-hidden relative group mx-auto cursor-pointer"
                 >
-                  {isUploading ? <Loader2 className="animate-spin text-primary" /> : (logoUrl ? <img src={logoUrl} className="w-full h-full object-cover" /> : <Upload className="text-muted-foreground" />)}
+                  {isUploading ? <Loader2 className="animate-spin text-primary" /> : (logoUrl ? <img src={logoUrl} className="w-full h-full object-cover rounded-xl" /> : <Upload className="text-muted-foreground" />)}
                 </div>
                 <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'logo')} />
               </div>
 
               <div className="space-y-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Capa (21:9 4K)</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Capa (Ultra 4K PNG)</Label>
                   {coverImageUrl && (
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setCoverImageUrl('')}>
                       <Trash2 className="w-3.5 h-3.5" />
@@ -241,29 +233,19 @@ const PublicPageSettings = ({
                     ))}
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                    <Palette className="w-3 h-3 text-muted-foreground" /> Cor Secundária
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {colors.map((color) => (
-                      <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </TabsContent>
 
             <TabsContent value="design" className="mt-0 space-y-6">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nome do Mural</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nome da Página</Label>
                 <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} />
               </div>
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Layout da Página</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Estilo de Exibição</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
-                    { id: 'mural', icon: LayoutGrid, label: 'Mural Animado' },
+                    { id: 'mural', icon: LayoutGrid, label: 'Mural Slide' },
                     { id: 'carousel', icon: Play, label: 'Carrossel' },
                     { id: 'grid', icon: Layout, label: 'Grade Estática' },
                     { id: 'popup', icon: MessageSquare, label: 'Notificação Solo' },
@@ -292,12 +274,8 @@ const PublicPageSettings = ({
                 )}
               </div>
               <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Google Maps URL</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Google Business URL</Label>
                 <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil Google" />
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Site Externo</Label>
-                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://seu-site.com" />
               </div>
             </TabsContent>
           </div>
@@ -466,6 +444,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     }).catch(() => setIsSaving(false));
   };
 
+  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
   if (authLoading || widgetLoading || testimonialsLoading || userDataLoading) {
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
@@ -494,7 +476,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden relative w-full">
+      <main className="flex-1 flex overflow-hidden relative w-full flex-row">
+        {/* Menu Lateral Restaurado */}
         <aside className="hidden lg:flex w-80 bg-background border-r flex-col shrink-0">
           <PublicPageSettings {...({ 
             widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
@@ -508,7 +491,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <div className="flex-1 overflow-y-auto bg-muted/10 p-4 sm:p-8">
           <div className="max-w-none mx-auto space-y-8">
             <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-              <Eye className="w-4 h-4" /> Preview Dinâmico em Tempo Real
+              <Eye className="w-4 h-4" /> Preview Dinâmico
             </h2>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
@@ -534,17 +517,24 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 <div className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {visibleTestimonials.length > 0 ? (
                     visibleTestimonials.map((t, i) => (
-                      <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} muralIndex={muralIndex} />
+                      <TestimonialCard 
+                        key={`${t.id}-${muralIndex}-${i}`} 
+                        t={t} 
+                        themeColor={themeColor} 
+                        secondaryColor={secondaryColor} 
+                        index={i} 
+                        muralIndex={muralIndex} 
+                      />
                     ))
                   ) : (
-                    <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Selecione depoimentos abaixo para o preview.</div>
+                    <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Selecione depoimentos para o preview.</div>
                   )}
                 </div>
               </div>
             </div>
 
             <div className="space-y-6 pt-12 border-t">
-              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Escolher Depoimentos Exclusivos</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Depoimentos Disponíveis</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {selectableTestimonials.map((t: any) => (
                   <div 
@@ -591,7 +581,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(vals) => setZoom(vals[0])} />
             <DialogFooter className="gap-2">
               <Button variant="outline" onClick={() => setTempImage(null)}>Cancelar</Button>
-              <Button onClick={handleConfirmCrop} className="font-bold">Finalizar Corte em Alta Definição</Button>
+              <Button onClick={handleConfirmCrop} className="font-bold">Salvar Corte 4K</Button>
             </DialogFooter>
           </div>
         </DialogContent>
