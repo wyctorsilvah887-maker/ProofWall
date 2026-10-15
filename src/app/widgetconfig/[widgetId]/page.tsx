@@ -38,7 +38,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/sheet";
+} from "@/components/ui/sheet";
 import {
   Dialog,
   DialogContent,
@@ -359,7 +359,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
                 <p className="text-sm font-bold">Defina o Visual</p>
-                <p className="text-xs text-muted-foreground">Clique no ícone de <strong>Monitor</strong> para escolher o layout e as cores da sua marca.</p>
+                <p className="text-xs text-muted-foreground">Clique no ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> para escolher o layout e as cores da sua marca.</p>
               </div>
             </div>
             <div className="flex gap-4">

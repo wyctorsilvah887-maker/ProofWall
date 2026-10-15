@@ -591,7 +591,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
                 <p className="text-sm font-bold">Design e Identidade</p>
-                <p className="text-xs text-muted-foreground">Use o ícone de <strong>Monitor</strong> para subir sua logo e definir as cores que combinam com seu branding.</p>
+                <p className="text-xs text-muted-foreground">Use o ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores que combinam com seu branding.</p>
               </div>
             </div>
             <div className="flex gap-4">
