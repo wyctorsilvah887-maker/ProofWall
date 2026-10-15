@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -197,10 +198,6 @@ export default function WidgetsPage() {
         <div className="flex items-center gap-2 font-bold text-lg md:text-xl">
           <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
-        <nav className="ml-8 hidden md:flex items-center gap-6">
-          <Link href="/dash" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Dash</Link>
-          <Link href="/widgets" className="text-sm font-medium text-primary transition-colors">Widgets</Link>
-        </nav>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
           <DropdownMenu>

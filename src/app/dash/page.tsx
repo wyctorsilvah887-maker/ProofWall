@@ -302,28 +302,7 @@ export default function DashPage() {
             <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
               <Image src="/maskable_icon_x512 (3).png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
             </div>
-            <span className="hidden md:block font-headline font-black text-xl tracking-tighter text-primary">PROOVA</span>
           </Link>
-          
-          <nav className="ml-4 md:ml-8 hidden sm:flex items-center gap-1 md:gap-2">
-            <Link href="/dash">
-              <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-primary bg-primary/5">
-                Dash
-              </Button>
-            </Link>
-            <Link href="/widgets">
-              <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-                Widgets
-              </Button>
-            </Link>
-            {userData?.isAdmin && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-                  Adm
-                </Button>
-              </Link>
-            )}
-          </nav>
         </div>
 
         <div className="ml-auto flex items-center gap-2 md:gap-4">
@@ -356,7 +335,7 @@ export default function DashPage() {
                 <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="mx-1" />
-              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer sm:hidden font-bold py-2.5">
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
@@ -591,7 +570,7 @@ export default function DashPage() {
               <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
               <div>
                 <p className="text-sm font-bold">Crie e Customize Murais</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">No menu <strong>Widgets</strong>, você cria novos murais e usa o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para editar o visual e layout.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Clique no ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> nos editores para subir sua logo e definir as cores da sua marca.</p>
               </div>
             </div>
             <div className="flex gap-4 group">
