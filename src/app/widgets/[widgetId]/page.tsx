@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef, useCallback } from 'react';
@@ -61,9 +60,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-/**
- * Cria uma imagem a partir de uma URL.
- */
 const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -73,9 +69,6 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
     image.src = url;
   });
 
-/**
- * Retorna a imagem cortada com altíssima qualidade (4K Lossless).
- */
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: { x: number; y: number; width: number; height: number },
@@ -87,7 +80,7 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  const targetWidth = 3840; // 4K Resolution
+  const targetWidth = 3840; 
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
 
@@ -110,7 +103,6 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
-    // Capa sempre em PNG para zero compressão. Logo em JPEG alta qualidade.
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
     const quality = 1.0; 
 
@@ -404,6 +396,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
+  const allWidgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+  const { data: allWidgets } = useCollection(allWidgetsQuery);
+
   const [widgetName, setWidgetName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('#f97316');
@@ -451,6 +449,24 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
+
+  const takenTestimonialIds = useMemo(() => {
+    if (!allWidgets) return new Set<string>();
+    const set = new Set<string>();
+    allWidgets.forEach((w: any) => {
+      if (w.id !== widgetId && w.selectedTestimonialIds) {
+        w.selectedTestimonialIds.forEach((id: string) => set.add(id));
+      }
+    });
+    return set;
+  }, [allWidgets, widgetId]);
+
+  const selectableTestimonials = useMemo(() => {
+    if (!approvedTestimonials) return [];
+    return approvedTestimonials.filter((t: any) => 
+      !takenTestimonialIds.has(t.id) || selectedIds.includes(t.id)
+    );
+  }, [approvedTestimonials, takenTestimonialIds, selectedIds]);
 
   const selectedTestimonials = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
@@ -603,7 +619,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               )}>
                 <div className="text-center space-y-10">
                   {hasValidLogo && (
-                    <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-6 relative">
+                    <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
                       <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>
                   )}
@@ -630,8 +646,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" /> Selecionar Depoimentos
               </h2>
+              <p className="text-[10px] text-muted-foreground italic -mt-4">Nota: Depoimentos usados em outros murais estão ocultos para manter a exclusividade.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {approvedTestimonials?.map((t: any) => (
+                {selectableTestimonials.map((t: any) => (
                   <div 
                     key={t.id} 
                     onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 

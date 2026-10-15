@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -195,6 +194,12 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
+  const allWidgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+  const { data: allWidgets } = useCollection(allWidgetsQuery);
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutType>('mural');
   const [themeColor, setThemeColor] = useState('#f97316');
@@ -220,6 +225,24 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
+
+  const takenTestimonialIds = useMemo(() => {
+    if (!allWidgets) return new Set<string>();
+    const set = new Set<string>();
+    allWidgets.forEach((w: any) => {
+      if (w.id !== widgetId && w.selectedTestimonialIds) {
+        w.selectedTestimonialIds.forEach((id: string) => set.add(id));
+      }
+    });
+    return set;
+  }, [allWidgets, widgetId]);
+
+  const selectableTestimonials = useMemo(() => {
+    if (!approvedTestimonials) return [];
+    return approvedTestimonials.filter((t: any) => 
+      !takenTestimonialIds.has(t.id) || selectedIds.includes(t.id)
+    );
+  }, [approvedTestimonials, takenTestimonialIds, selectedIds]);
 
   const selectedTestimonials = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
@@ -317,11 +340,12 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
             <div className="space-y-6 pt-12 border-t">
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Gerenciar Mural</h2>
+              <p className="text-[10px] text-muted-foreground italic -mt-4">Nota: Depoimentos usados em outros murais estão ocultos para manter a exclusividade.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {approvedTestimonials?.map((t: any) => (
+                {selectableTestimonials.map((t: any) => (
                   <div 
                     key={t.id} 
-                    onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, id])} 
+                    onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
                     className={cn(
                       "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
                       selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
