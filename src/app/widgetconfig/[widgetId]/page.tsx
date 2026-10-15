@@ -50,40 +50,35 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, isPopup = false, themeColor, secondaryColor, index = 0, noAnim = false, muralIndex = 0 }: { t: any, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, noAnim?: boolean, muralIndex?: number }) => {
+const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex = 0 }: { t: any, themeColor: string, secondaryColor: string, index?: number, muralIndex?: number }) => {
   const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
 
   return (
     <Card 
       className={cn(
-        "bg-background shadow-xl border-none text-left overflow-hidden p-3 transition-all duration-1000",
-        isPopup ? "max-w-full border-l-4" : "border-t-4",
-        !noAnim && "animate-in duration-1000 ease-out fill-both",
-        !noAnim && (side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in")
+        "bg-background shadow-xl border-none text-left overflow-hidden p-4 transition-all duration-700",
+        "border-t-4 animate-in duration-700 ease-out fill-both",
+        side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in"
       )} 
       style={{ 
-        borderTopColor: !isPopup ? themeColor : 'transparent', 
-        borderLeftColor: isPopup ? themeColor : 'transparent',
-        borderTopWidth: !isPopup ? '3px' : '0', 
-        borderLeftWidth: isPopup ? '4px' : '0',
-        animationDelay: noAnim ? '0ms' : `${index * 150}ms`,
+        borderTopColor: themeColor,
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
-        backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
+        backgroundColor: secondaryColor ? `${secondaryColor}08` : undefined
       }}
     >
-      <div className="flex flex-col space-y-2">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
+      <div className="flex flex-col space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="bg-primary/10 p-1.5 rounded-full" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
             <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
-          <p className="font-bold leading-tight truncate text-[10px] text-foreground">{t.userName}</p>
+          <p className="font-bold text-[10px] truncate">{t.userName}</p>
         </div>
-        <div className="flex gap-0.5 pl-6">
+        <div className="flex gap-0.5">
           {Array.from({ length: t.rating || 5 }).map((_, i) => (
             <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
           ))}
         </div>
-        <p className="italic leading-relaxed text-[10px] line-clamp-3 text-foreground/80">"{t.text}"</p>
+        <p className="italic text-[10px] line-clamp-3 text-foreground/80">"{t.text}"</p>
       </div>
     </Card>
   );
@@ -110,13 +105,13 @@ const EmbedSettings = ({
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-8 pb-10">
           <div className="space-y-4">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Formato</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Formato do Mural</Label>
             <div className="grid grid-cols-1 gap-2">
               {[
                 { id: 'mural', icon: LayoutGrid, label: 'Mural lateral' },
                 { id: 'carousel', icon: Play, label: 'Carrossel' },
                 { id: 'grid', icon: Layout, label: 'Grade' },
-                { id: 'popup', icon: MessageSquare, label: 'Popup' },
+                { id: 'popup', icon: MessageSquare, label: 'Popup Solo' },
               ].map((item) => (
                 <button 
                   key={item.id}
@@ -132,12 +127,10 @@ const EmbedSettings = ({
 
           <div className="space-y-6 pt-4 border-t">
             <div className="space-y-4">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Palette className="w-3 h-3 text-primary" /> Cor Principal
-              </Label>
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cor do Tema</Label>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
-                  <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
+                  <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
                 ))}
               </div>
             </div>
@@ -221,9 +214,20 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     );
   }, [approvedTestimonials, takenTestimonialIds, selectedIds]);
 
-  const selectedTestimonials = useMemo(() => {
+  const currentSelection = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
+
+  const visibleTestimonials = useMemo(() => {
+    if (layout !== 'mural' || currentSelection.length === 0) return currentSelection.slice(0, 4);
+    const slice = [];
+    const count = Math.min(4, currentSelection.length);
+    for (let i = 0; i < count; i++) {
+      const idx = (muralIndex + i) % currentSelection.length;
+      slice.push(currentSelection[idx]);
+    }
+    return slice;
+  }, [currentSelection, muralIndex, layout]);
 
   const handleSave = async () => {
     if (!widgetRef) return;
@@ -248,19 +252,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-3 flex-1">
           <Link href="/widgets" className="hidden lg:block">
             <Button variant="ghost" size="icon" className="text-primary"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-80">
-              <SheetHeader className="sr-only"><SheetTitle>Ajustes</SheetTitle></SheetHeader>
-              <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} secondaryColor={secondaryColor} setSecondaryColor={setSecondaryColor} />
-            </SheetContent>
-          </Sheet>
           <div className="flex items-center gap-2">
             <Terminal className="w-5 h-5 text-primary" />
             <h1 className="text-sm font-black uppercase tracking-tight truncate">{widgetData?.name || 'Mural Embed'}</h1>
@@ -282,24 +277,24 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
           <div className="max-w-4xl mx-auto space-y-8">
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Preview Dinâmico</h2>
+            <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Preview do Mural</h2>
             
             <div className="relative border shadow-xl bg-muted/20 p-8 rounded-[2rem] min-h-[400px] flex items-center justify-center ring-1 ring-primary/5">
               <div className="w-full max-w-2xl">
-                {selectedTestimonials.length > 0 ? (
+                {visibleTestimonials.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {selectedTestimonials.slice(0, 4).map((t: any, i) => (
+                    {visibleTestimonials.map((t: any, i) => (
                       <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} muralIndex={muralIndex} />
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center opacity-30 italic">Selecione depoimentos abaixo.</div>
+                  <div className="text-center opacity-30 italic text-sm">Selecione depoimentos abaixo para ativar o mural.</div>
                 )}
               </div>
             </div>
 
             <div className="space-y-6 pt-12 border-t">
-              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Escolher Conteúdo</h2>
+              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Conteúdo do Mural</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {selectableTestimonials.map((t: any) => (
                   <div 
@@ -315,7 +310,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                         {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className="font-bold text-xs block truncate">{t.userName}</span>
+                        <span className="font-bold text-[11px] block truncate">{t.userName}</span>
                         <p className="text-[10px] text-muted-foreground italic line-clamp-1 mt-1">"{t.text}"</p>
                       </div>
                     </div>
@@ -331,10 +326,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
         <DialogContent className="rounded-3xl">
           <DialogHeader className="text-center">
             <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
-            <DialogTitle className="text-2xl font-black font-headline">Mural Embutido!</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline">Configuração Salva!</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Snippet HTML</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Snippet de Instalação</Label>
             <div className="relative bg-muted/50 rounded-xl p-4 border border-primary/20">
               <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap">{embedCode}</pre>
               <Button size="icon" variant="secondary" className="absolute top-2 right-2 h-8 w-8" onClick={() => { navigator.clipboard.writeText(embedCode); toast({ title: "Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
