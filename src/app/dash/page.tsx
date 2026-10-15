@@ -558,7 +558,7 @@ export default function DashPage() {
 
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl">
-          <DialogHeader>
+          <DialogHeader className="pt-10 px-6">
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
               <HelpCircle className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
             </DialogTitle>
@@ -566,7 +566,7 @@ export default function DashPage() {
               Aprenda a dominar seu painel de prova social em 3 passos.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-4 px-6">
             <div className="flex gap-4 group">
               <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
               <div>
@@ -589,7 +589,7 @@ export default function DashPage() {
               </div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="px-6 pb-6">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
           </DialogFooter>
         </DialogContent>
@@ -597,7 +597,7 @@ export default function DashPage() {
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
         <DialogContent className="sm:max-w-md w-[95vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
-          <DialogHeader className="p-6 pb-2 shrink-0">
+          <DialogHeader className="p-6 pt-12 pb-2 shrink-0">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
@@ -681,7 +681,7 @@ export default function DashPage() {
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
         <DialogContent className="sm:max-w-md w-[90vw] max-w-[95vw] rounded-[3rem] border-none shadow-2xl">
-          <DialogHeader>
+          <DialogHeader className="pt-12 px-6">
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
               <QrCode className="w-6 h-6 text-primary" />
               Cartaz de Balcão VIP
@@ -691,7 +691,7 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6">
+          <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6 px-6">
             <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
               <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo Visual do Cartaz</Label>
               <div className="flex justify-center gap-4">
@@ -724,7 +724,7 @@ export default function DashPage() {
               />
             </div>
             
-            <div className="w-full">
+            <div className="w-full pb-6">
               <Button 
                 className="w-full h-16 shadow-2xl font-black text-lg gap-3 rounded-[1.25rem] transition-all hover:translate-y-[-2px]"
                 onClick={handleDownloadPdf}
