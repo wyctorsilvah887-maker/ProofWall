@@ -13,17 +13,13 @@ import {
   User,
   Monitor,
   CheckCircle2,
-  Copy,
   Upload,
-  ImageIcon,
   Palette,
   LayoutGrid,
   Play,
   Layout,
   Trash2,
   Globe,
-  Crop as CropIcon,
-  Menu,
   HelpCircle,
   Info
 } from 'lucide-react';
@@ -583,29 +579,36 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <HelpCircle className="w-6 h-6 text-primary" /> Como configurar sua Página Pública
             </DialogTitle>
             <DialogDescription>
-              Crie um destino VIP para sua marca em 3 passos rápidos.
+              Crie um destino VIP para sua marca seguindo estes passos rápidos nas abas laterais.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
-                <p className="text-sm font-bold">Design e Identidade</p>
-                <p className="text-xs text-muted-foreground">Use o ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores que combinam com seu branding.</p>
+                <p className="text-sm font-bold">Aba Visual (Design e Identidade)</p>
+                <p className="text-xs text-muted-foreground">Use o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores primária e secundária da sua marca.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
-                <p className="text-sm font-bold">Conteúdo Exclusivo</p>
-                <p className="text-xs text-muted-foreground">Selecione os feedbacks. O sistema bloqueia depoimentos já usados em outros murais para garantir exclusividade.</p>
+                <p className="text-sm font-bold">Aba Layout (Estilo de Exibição)</p>
+                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha entre os formatos de Mural, Grade, Carrossel ou Notificação Popup.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
-                <p className="text-sm font-bold">Compartilhe o Link</p>
-                <p className="text-xs text-muted-foreground">Após <strong>Salvar</strong>, você poderá usar o link da Página Pública no seu Instagram, Bio ou WhatsApp.</p>
+                <p className="text-sm font-bold">Aba Social (Interação Direct)</p>
+                <p className="text-xs text-muted-foreground">Ative o botão flutuante de WhatsApp e configure o link do seu Google Business para redirecionar avaliações 5 estrelas.</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">4</div>
+              <div>
+                <p className="text-sm font-bold">Conteúdo e Publicação</p>
+                <p className="text-xs text-muted-foreground">Selecione os feedbacks exclusivos e clique em <strong>Salvar Tudo</strong> para aplicar as mudanças.</p>
               </div>
             </div>
           </div>
