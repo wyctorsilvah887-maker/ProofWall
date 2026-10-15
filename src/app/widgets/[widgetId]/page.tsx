@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef, useCallback } from 'react';
@@ -80,7 +81,8 @@ async function getCroppedImg(
 
   if (!ctx) throw new Error('Falha ao obter contexto 2D');
 
-  const targetWidth = 3840; 
+  // Força 4K para capas e alta resolução para logos
+  const targetWidth = type === 'cover' ? 3840 : 1024; 
   const aspectRatio = pixelCrop.width / pixelCrop.height;
   const targetHeight = targetWidth / aspectRatio;
 
@@ -103,8 +105,9 @@ async function getCroppedImg(
   );
 
   return new Promise((resolve, reject) => {
+    // Lossless para capa, high quality para logo
     const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
-    const quality = 1.0; 
+    const quality = type === 'cover' ? 1.0 : 0.95;
 
     canvas.toBlob(
       (blob) => {
@@ -118,28 +121,23 @@ async function getCroppedImg(
 }
 
 const TestimonialCard = ({ t, themeColor, secondaryColor, isPopup = false, index = 0, layout = 'mural', muralIndex = 0, noAnim = false }: { t: any, themeColor: string, secondaryColor: string, isPopup?: boolean, index?: number, layout?: string, muralIndex?: number, noAnim?: boolean }) => {
-  const slideSide = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
-  const slideClass = layout === 'mural' 
-    ? (slideSide === 'left' ? "slide-in-from-left-full" : "slide-in-from-right-full") 
-    : (isPopup ? "slide-in-from-bottom-8 fade-in zoom-in duration-700" : "fade-in zoom-in-95 slide-in-from-bottom-4");
-
+  const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+  
   return (
     <Card 
       className={cn(
-        "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-700",
+        "bg-background shadow-lg border-none text-left overflow-hidden transition-all duration-1000",
         "p-3",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
-        !noAnim && "animate-in duration-1000 ease-out",
-        !noAnim && slideClass,
-        "mb-0"
+        !noAnim && "animate-in duration-1000 ease-out fill-both",
+        !noAnim && (side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in")
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent',
         borderLeftColor: isPopup ? themeColor : 'transparent',
         borderTopWidth: !isPopup ? '3px' : '0',
         borderLeftWidth: isPopup ? '4px' : '0',
-        animationDelay: isPopup || noAnim ? '0ms' : `${index * 100}ms`,
-        animationFillMode: 'both',
+        animationDelay: noAnim ? '0ms' : `${index * 100}ms`,
         boxShadow: `0 10px 30px -15px ${themeColor}20`,
         backgroundColor: secondaryColor ? `${secondaryColor}05` : undefined
       }}
@@ -196,9 +194,9 @@ const PublicPageSettings = ({
 
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0 overflow-x-auto no-scrollbar">
-          <TabsTrigger value="geral" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Identidade</TabsTrigger>
-          <TabsTrigger value="design" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Estilo</TabsTrigger>
-          <TabsTrigger value="social" className="text-xs shrink-0 data-[state=active]:bg-primary/5">Social</TabsTrigger>
+          <TabsTrigger value="geral" className="text-xs shrink-0">Identidade</TabsTrigger>
+          <TabsTrigger value="design" className="text-xs shrink-0">Estilo</TabsTrigger>
+          <TabsTrigger value="social" className="text-xs shrink-0">Social</TabsTrigger>
         </TabsList>
         
         <ScrollArea className="flex-1">
@@ -208,12 +206,7 @@ const PublicPageSettings = ({
                 <div className="flex items-center justify-between">
                   <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Logotipo (1:1)</Label>
                   {logoUrl && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                      onClick={() => setLogoUrl('')}
-                    >
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setLogoUrl('')}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   )}
@@ -221,7 +214,7 @@ const PublicPageSettings = ({
                 <div 
                   onClick={() => !isUploading && logoInputRef.current?.click()}
                   className={cn(
-                    "aspect-square w-24 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto ring-offset-4 ring-primary/20 hover:ring-2",
+                    "aspect-square w-24 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-colors bg-muted/20 overflow-hidden relative group mx-auto",
                     isUploading ? "cursor-wait" : "cursor-pointer hover:bg-muted/50"
                   )}
                 >
@@ -243,14 +236,9 @@ const PublicPageSettings = ({
 
               <div className="space-y-4 pt-4 border-t">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (21:9)</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Capa (21:9 - 4K)</Label>
                   {coverImageUrl && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 text-destructive hover:bg-destructive/10"
-                      onClick={() => setCoverImageUrl('')}
-                    >
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setCoverImageUrl('')}>
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
                   )}
@@ -285,12 +273,7 @@ const PublicPageSettings = ({
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <button 
-                        key={color} 
-                        onClick={() => setThemeColor(color)} 
-                        className={cn("w-7 h-7 rounded-full border-2 transition-transform active:scale-90", themeColor === color ? "border-foreground scale-110 shadow-md" : "border-transparent opacity-80 hover:opacity-100")} 
-                        style={{ backgroundColor: color }} 
-                      />
+                      <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
                     ))}
                   </div>
                 </div>
@@ -301,12 +284,7 @@ const PublicPageSettings = ({
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     {colors.map((color) => (
-                      <button 
-                        key={color} 
-                        onClick={() => setSecondaryColor(color)} 
-                        className={cn("w-7 h-7 rounded-full border-2 transition-transform active:scale-90", secondaryColor === color ? "border-foreground scale-110 shadow-md" : "border-transparent opacity-80 hover:opacity-100")} 
-                        style={{ backgroundColor: color }} 
-                      />
+                      <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
                     ))}
                   </div>
                 </div>
@@ -319,7 +297,7 @@ const PublicPageSettings = ({
                 <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} />
               </div>
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Formato de Exibição</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Layout</Label>
                 <div className="grid grid-cols-1 gap-2">
                   {[
                     { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
@@ -330,7 +308,7 @@ const PublicPageSettings = ({
                     <button 
                       key={item.id}
                       onClick={() => setLayout(item.id as LayoutType)} 
-                      className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20")}
+                      className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/20")}
                     >
                       <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
                       <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
@@ -342,31 +320,21 @@ const PublicPageSettings = ({
 
             <TabsContent value="social" className="mt-0 space-y-6">
               <div className="space-y-4 p-4 border rounded-xl bg-muted/5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="space-y-0.5">
-                    <Label className="text-xs font-bold">Botão WhatsApp</Label>
-                    <p className="text-[9px] text-muted-foreground uppercase tracking-tight">Contato flutuante na página</p>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold">Botão WhatsApp</Label>
                   <Switch checked={whatsappEnabled} onCheckedChange={setWhatsappEnabled} />
                 </div>
                 {whatsappEnabled && (
-                  <Input 
-                    type="text"
-                    value={whatsappNumber} 
-                    onChange={(e) => setWhatsappNumber(e.target.value)} 
-                    placeholder="+55 11 99999-9999" 
-                  />
+                  <Input type="text" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="Número WhatsApp" />
                 )}
               </div>
-
               <div className="space-y-3">
-                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">URL Google Business</Label>
-                <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil no Maps" />
+                <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link Google Maps</Label>
+                <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="URL do Maps" />
               </div>
-
               <div className="space-y-3">
                 <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Link do Site</Label>
-                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://www.exemplo.com" />
+                <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="URL do Site" />
               </div>
             </TabsContent>
           </div>
@@ -424,6 +392,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [muralIndex, setMuralIndex] = useState(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -449,6 +418,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   useEffect(() => {
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (layout === 'mural' && selectedIds.length > 0) {
+      const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % selectedIds.length), 6000);
+      return () => clearInterval(interval);
+    }
+  }, [layout, selectedIds]);
 
   const takenTestimonialIds = useMemo(() => {
     if (!allWidgets) return new Set<string>();
@@ -500,10 +476,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       const downloadURL = await getDownloadURL(snapshot.ref);
       if (cropType === 'logo') setLogoUrl(downloadURL);
       else setCoverImageUrl(downloadURL);
-      toast({ title: "Sucesso!", description: "Imagem processada com alta fidelidade." });
+      toast({ title: "Imagem processada!" });
     } catch (err: any) {
       console.error(err);
-      toast({ variant: "destructive", title: "Erro no processamento" });
+      toast({ variant: "destructive", title: "Erro no corte" });
     } finally {
       setIsUploading(false);
       setCropType(null);
@@ -554,7 +530,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80">
-              <SheetHeader className="sr-only"><SheetTitle>Ajustes</SheetTitle></SheetHeader>
+              <SheetHeader className="sr-only"><SheetTitle>Configurações</SheetTitle></SheetHeader>
               <PublicPageSettings {...({ 
                 widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
                 whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
@@ -566,14 +542,14 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </Sheet>
           <div className="flex items-center gap-2">
             <Monitor className="w-5 h-5 text-primary" />
-            <h1 className="text-sm font-bold tracking-tight truncate max-w-[150px] uppercase font-black">{widgetName || 'Public VIP'}</h1>
+            <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[150px]">{widgetName || 'Página Pública'}</h1>
           </div>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
           <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg h-10 px-6 font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar
+            Salvar Tudo
           </Button>
         </div>
       </header>
@@ -590,19 +566,14 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </aside>
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
-          <div className="max-w-5xl mx-auto space-y-8">
+          <div className="max-w-none mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Eye className="w-4 h-4" /> Preview do Layout
+                <Eye className="w-4 h-4" /> Preview Full Layout
               </h2>
-              <Link href={publicPageLink} target="_blank">
-                <Button variant="link" className="text-xs font-bold gap-1 p-0">
-                  Ver Link Real
-                </Button>
-              </Link>
             </div>
 
-            <div className="relative border shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
+            <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               {hasValidCover && (
                 <div 
                   className="w-full relative shrink-0 transition-all duration-500 overflow-hidden" 
@@ -624,16 +595,16 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                     </div>
                   )}
                   <div className="space-y-6">
-                    <h1 className="text-4xl font-black tracking-tighter text-foreground leading-[1.1]">
+                    <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.1]">
                       O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
                     </h1>
                   </div>
                 </div>
 
-                <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {selectedTestimonials.length > 0 ? (
-                    selectedTestimonials.slice(0, 4).map((t, i) => (
-                      <TestimonialCard key={t.id} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} />
+                    selectedTestimonials.slice(0, 8).map((t, i) => (
+                      <TestimonialCard key={t.id} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} layout={layout} muralIndex={muralIndex} />
                     ))
                   ) : (
                     <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Selecione depoimentos abaixo.</div>
@@ -644,10 +615,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
             <div className="space-y-6 pt-12 border-t">
               <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" /> Selecionar Depoimentos
+                <MessageSquare className="w-4 h-4" /> Escolher Conteúdo Exclusivo
               </h2>
-              <p className="text-[10px] text-muted-foreground italic -mt-4">Nota: Depoimentos usados em outros murais estão ocultos para manter a exclusividade.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {selectableTestimonials.map((t: any) => (
                   <div 
                     key={t.id} 
@@ -679,11 +649,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           <DialogHeader className="p-6 border-b shrink-0 bg-background">
             <DialogTitle className="flex items-center gap-2">
               <CropIcon className="w-5 h-5 text-primary" />
-              {cropType === 'logo' ? 'Ajustar Logotipo' : 'Ajustar Imagem de Capa'}
+              Ajustar {cropType === 'logo' ? 'Logotipo' : 'Foto de Capa 4K'}
             </DialogTitle>
-            <DialogDescription>
-              {cropType === 'logo' ? 'O corte será quadrado (1:1).' : 'O corte será em formato panorama 21:9.'}
-            </DialogDescription>
           </DialogHeader>
           <div className="flex-1 relative bg-muted/10 min-h-0">
             {tempImage && (
@@ -700,12 +667,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
           </div>
           <div className="p-6 border-t shrink-0 bg-background space-y-6">
             <div className="flex items-center gap-4">
-              <Maximize className="w-4 h-4 text-muted-foreground" />
               <Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(vals) => setZoom(vals[0])} className="flex-1" />
             </div>
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setTempImage(null)} className="rounded-xl px-6">Cancelar</Button>
-              <Button onClick={handleConfirmCrop} className="rounded-xl px-8 shadow-xl font-bold">Confirmar</Button>
+              <Button variant="outline" onClick={() => setTempImage(null)}>Cancelar</Button>
+              <Button onClick={handleConfirmCrop}>Processar Alta Qualidade</Button>
             </DialogFooter>
           </div>
         </DialogContent>
@@ -715,7 +681,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         <DialogContent className="rounded-3xl">
           <DialogHeader className="text-center">
             <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
-            <DialogTitle className="text-2xl font-black font-headline">Configuração Salva!</DialogTitle>
+            <DialogTitle className="text-2xl font-black font-headline">Design Salvo!</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
             <Button className="w-full font-black h-12" onClick={() => setIsLinkDialogOpen(false)}>OK</Button>

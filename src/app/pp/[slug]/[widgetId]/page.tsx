@@ -181,12 +181,15 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   const TestimonialCard = ({ t, index = 0, noAnim = false }: { t: any, index?: number, noAnim?: boolean }) => {
     const isPopup = layout === 'popup';
+    const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+    
     return (
       <Card 
         className={cn(
           "bg-card rounded-xl p-4 sm:p-6 space-y-3 shadow-sm overflow-hidden text-left",
           isPopup ? "border-l-4" : "border-t-4",
-          !noAnim && "animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both"
+          !noAnim && "animate-in duration-1000 ease-out fill-both",
+          !noAnim && (side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in")
         )}
         style={{ 
           borderTopColor: !isPopup ? themeColor : 'transparent',

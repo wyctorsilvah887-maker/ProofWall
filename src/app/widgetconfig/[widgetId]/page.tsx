@@ -19,9 +19,7 @@ import {
   Terminal,
   Copy,
   Layout,
-  Lock,
-  Palette,
-  ChevronRight
+  Palette
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,24 +46,20 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const TestimonialCard = ({ t, isPopup = false, themeColor, secondaryColor, index = 0, noAnim = false }: { t: any, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, noAnim?: boolean }) => {
+const TestimonialCard = ({ t, isPopup = false, themeColor, secondaryColor, index = 0, noAnim = false, muralIndex = 0 }: { t: any, isPopup?: boolean, themeColor: string, secondaryColor: string, index?: number, noAnim?: boolean, muralIndex?: number }) => {
+  const side = (index + muralIndex) % 2 === 0 ? 'left' : 'right';
+
   return (
     <Card 
       className={cn(
-        "bg-background shadow-xl border-none text-left overflow-hidden",
-        "p-3",
+        "bg-background shadow-xl border-none text-left overflow-hidden p-3 transition-all duration-1000",
         isPopup ? "max-w-full border-l-4" : "border-t-4",
-        !noAnim && "animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both"
+        !noAnim && "animate-in duration-1000 ease-out fill-both",
+        !noAnim && (side === 'left' ? "slide-in-from-left-full fade-in" : "slide-in-from-right-full fade-in")
       )} 
       style={{ 
         borderTopColor: !isPopup ? themeColor : 'transparent', 
@@ -78,20 +72,16 @@ const TestimonialCard = ({ t, isPopup = false, themeColor, secondaryColor, index
       }}
     >
       <div className="flex flex-col space-y-2">
-        <div className="flex items-start justify-between w-full gap-2">
-          <div className="flex flex-col min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
-                <User className="w-3 h-3" style={{ color: themeColor }} />
-              </div>
-              <p className="font-bold leading-tight truncate text-[10px] text-foreground">{t.userName}</p>
-            </div>
-            <div className="flex gap-0.5 pl-6">
-              {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
-              ))}
-            </div>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="bg-primary/10 p-1.5 rounded-full shrink-0" style={{ backgroundColor: secondaryColor ? `${secondaryColor}15` : `${themeColor}15` }}>
+            <User className="w-3 h-3" style={{ color: themeColor }} />
           </div>
+          <p className="font-bold leading-tight truncate text-[10px] text-foreground">{t.userName}</p>
+        </div>
+        <div className="flex gap-0.5 pl-6">
+          {Array.from({ length: t.rating || 5 }).map((_, i) => (
+            <Star key={i} className="fill-primary text-primary w-2.5 h-2.5" style={{ color: themeColor, fill: themeColor }} />
+          ))}
         </div>
         <p className="italic leading-relaxed text-[10px] line-clamp-3 text-foreground/80">"{t.text}"</p>
       </div>
@@ -110,10 +100,8 @@ const EmbedSettings = ({
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
       <div className="p-4 border-b bg-muted/10 shrink-0">
         <Link href="/widgets" className="w-full">
-          <Button variant="ghost" className="w-full justify-start gap-3 text-muted-foreground hover:text-primary transition-colors h-10 px-2 group">
-            <div className="bg-muted p-1.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </div>
+          <Button variant="ghost" className="w-full justify-start gap-3 h-10 px-2 group">
+            <ArrowLeft className="w-4 h-4" />
             <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar</span>
           </Button>
         </Link>
@@ -122,18 +110,18 @@ const EmbedSettings = ({
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-8 pb-10">
           <div className="space-y-4">
-            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Tipo de Layout</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Formato</Label>
             <div className="grid grid-cols-1 gap-2">
               {[
-                { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry' },
-                { id: 'carousel', icon: Play, label: 'Carrossel Slider' },
-                { id: 'grid', icon: Layout, label: 'Grade Estática' },
-                { id: 'popup', icon: MessageSquare, label: 'Notificação' },
+                { id: 'mural', icon: LayoutGrid, label: 'Mural lateral' },
+                { id: 'carousel', icon: Play, label: 'Carrossel' },
+                { id: 'grid', icon: Layout, label: 'Grade' },
+                { id: 'popup', icon: MessageSquare, label: 'Popup' },
               ].map((item) => (
                 <button 
                   key={item.id}
                   onClick={() => setLayout(item.id as LayoutType)} 
-                  className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted hover:border-muted-foreground/20")}
+                  className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/20")}
                 >
                   <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
                   <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
@@ -145,22 +133,11 @@ const EmbedSettings = ({
           <div className="space-y-6 pt-4 border-t">
             <div className="space-y-4">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Palette className="w-3 h-3 text-primary" /> Cor do Tema
+                <Palette className="w-3 h-3 text-primary" /> Cor Principal
               </Label>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
-                  <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Palette className="w-3 h-3 text-muted-foreground" /> Cor Secundária
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {colors.map((color) => (
-                  <button key={color} onClick={() => setSecondaryColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", secondaryColor === color ? "border-foreground scale-110" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
+                  <button key={color} onClick={() => setThemeColor(color)} className={cn("w-7 h-7 rounded-full border-2 transition-transform", themeColor === color ? "border-foreground scale-110 shadow-sm" : "border-transparent opacity-80")} style={{ backgroundColor: color }} />
                 ))}
               </div>
             </div>
@@ -219,6 +196,13 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     if (!authLoading && !user) router.replace('/login');
   }, [user, authLoading, router]);
 
+  useEffect(() => {
+    if (layout === 'mural' && selectedIds.length > 0) {
+      const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % selectedIds.length), 6000);
+      return () => clearInterval(interval);
+    }
+  }, [layout, selectedIds]);
+
   const takenTestimonialIds = useMemo(() => {
     if (!allWidgets) return new Set<string>();
     const set = new Set<string>();
@@ -240,23 +224,6 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const selectedTestimonials = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
-
-  useEffect(() => {
-    if (layout === 'mural' && selectedTestimonials.length > 0) {
-      const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % selectedTestimonials.length), 6000);
-      return () => clearInterval(interval);
-    }
-  }, [layout, selectedTestimonials]);
-
-  const visibleMuralTestimonials = useMemo(() => {
-    if (layout !== 'mural' || selectedTestimonials.length === 0) return [];
-    const slice = [];
-    const countToShow = Math.min(4, selectedTestimonials.length);
-    for (let i = 0; i < countToShow; i++) {
-      slice.push(selectedTestimonials[(muralIndex + i) % selectedTestimonials.length]);
-    }
-    return slice;
-  }, [selectedTestimonials, muralIndex, layout]);
 
   const handleSave = async () => {
     if (!widgetRef) return;
@@ -281,29 +248,29 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
-        <div className="flex items-center gap-3 flex-1">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <Link href="/widgets" className="hidden lg:block">
-            <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/5"><ArrowLeft className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="text-primary"><ArrowLeft className="h-5 w-5" /></Button>
           </Link>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden text-primary"><Menu className="h-6 w-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80">
-              <SheetHeader className="sr-only"><SheetTitle>Ajustes Mural</SheetTitle></SheetHeader>
+              <SheetHeader className="sr-only"><SheetTitle>Ajustes</SheetTitle></SheetHeader>
               <EmbedSettings layout={layout} setLayout={setLayout} themeColor={themeColor} setThemeColor={setThemeColor} secondaryColor={secondaryColor} setSecondaryColor={setSecondaryColor} />
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2">
             <Terminal className="w-5 h-5 text-primary" />
-            <h1 className="text-sm font-bold tracking-tight truncate uppercase font-black">{widgetData?.name || 'Mural Embed'}</h1>
+            <h1 className="text-sm font-black uppercase tracking-tight truncate">{widgetData?.name || 'Mural Embed'}</h1>
           </div>
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
           <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-10 px-6 font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar Código
+            Salvar
           </Button>
         </div>
       </header>
@@ -315,27 +282,24 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
         <div className="flex-1 overflow-y-auto bg-muted/30 p-4 sm:p-8">
           <div className="max-w-4xl mx-auto space-y-8">
-            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Prévia do Mural</h2>
+            <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Eye className="w-4 h-4" /> Preview Dinâmico</h2>
             
-            <div className="relative border-none shadow-xl bg-muted/20 p-8 rounded-[2rem] min-h-[400px] flex items-center justify-center ring-1 ring-primary/5">
+            <div className="relative border shadow-xl bg-muted/20 p-8 rounded-[2rem] min-h-[400px] flex items-center justify-center ring-1 ring-primary/5">
               <div className="w-full max-w-2xl">
                 {selectedTestimonials.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(layout === 'mural' ? visibleMuralTestimonials : selectedTestimonials.slice(0, 4)).map((t: any, i) => (
-                      <div key={`${t.id}-${muralIndex}-${i}`} className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out fill-both">
-                        <TestimonialCard t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} />
-                      </div>
+                    {selectedTestimonials.slice(0, 4).map((t: any, i) => (
+                      <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} muralIndex={muralIndex} />
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center opacity-30 italic">Selecione depoimentos abaixo para visualizar.</div>
+                  <div className="text-center opacity-30 italic">Selecione depoimentos abaixo.</div>
                 )}
               </div>
             </div>
 
             <div className="space-y-6 pt-12 border-t">
-              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Gerenciar Mural</h2>
-              <p className="text-[10px] text-muted-foreground italic -mt-4">Nota: Depoimentos usados em outros murais estão ocultos para manter a exclusividade.</p>
+              <h2 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Escolher Conteúdo</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {selectableTestimonials.map((t: any) => (
                   <div 
@@ -366,9 +330,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       <Dialog open={isCodeDialogOpen} onOpenChange={setIsCodeDialogOpen}>
         <DialogContent className="rounded-3xl">
           <DialogHeader className="text-center">
-            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4 text-primary"><CheckCircle2 className="w-8 h-8" /></div>
-            <DialogTitle className="text-2xl font-black font-headline">Código Gerado!</DialogTitle>
-            <DialogDescription>As configurações de design e conteúdo estão ativas via script.</DialogDescription>
+            <div className="mx-auto bg-green-100 p-3 rounded-full w-fit mb-4 text-green-600"><CheckCircle2 className="w-8 h-8" /></div>
+            <DialogTitle className="text-2xl font-black font-headline">Mural Embutido!</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 block">Snippet HTML</Label>
@@ -377,7 +340,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <Button size="icon" variant="secondary" className="absolute top-2 right-2 h-8 w-8" onClick={() => { navigator.clipboard.writeText(embedCode); toast({ title: "Copiado!" }); }}><Copy className="h-4 w-4" /></Button>
             </div>
           </div>
-          <DialogFooter><Button className="w-full font-black h-12" onClick={() => setIsCodeDialogOpen(false)}>Concluir</Button></DialogFooter>
+          <DialogFooter><Button className="w-full font-black h-12" onClick={() => setIsCodeDialogOpen(false)}>Fechar</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
