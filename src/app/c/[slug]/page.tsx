@@ -27,7 +27,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
   const [googleMapsUrl, setGoogleMapsUrl] = useState<string | null>(null);
-  const [activeWidgetId, setActiveWidgetId] = useState<string | null>(null);
 
   const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
@@ -62,19 +61,13 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           
           if (foundUserDoc?.googleMapsUrl) {
             setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
-          }
-          
-          const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
-          const widgetsSnap = await getDocs(widgetsRef);
-          
-          if (!widgetsSnap.empty) {
-            setActiveWidgetId(widgetsSnap.docs[0].id);
-            if (!foundUserDoc?.googleMapsUrl) {
-              const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
-              if (gWidget) {
-                setGoogleMapsUrl(gWidget.data().googleMapsUrl);
-                setActiveWidgetId(gWidget.id);
-              }
+          } else {
+            // Tenta buscar o link do google em algum widget se não estiver no perfil
+            const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
+            const widgetsSnap = await getDocs(widgetsRef);
+            const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
+            if (gWidget) {
+              setGoogleMapsUrl(gWidget.data().googleMapsUrl);
             }
           }
         }
@@ -91,12 +84,11 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
     
-    if (activeWidgetId) {
-      const widgetRef = doc(db, 'users', targetUserId, 'widgets', activeWidgetId);
-      updateDoc(widgetRef, {
-        googleRedirectCount: increment(1)
-      });
-    }
+    // Incrementa no documento do usuário (centralizado)
+    const userRef = doc(db, 'users', targetUserId);
+    updateDoc(userRef, {
+      googleRedirectCount: increment(1)
+    });
 
     let finalUrl = googleMapsUrl.trim();
     const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
@@ -144,7 +136,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       createdAt: serverTimestamp(),
     };
 
-    // Lógica de armazenamento: < 4 estrelas vai para o Inbox Privado
     const collectionName = rating < 4 ? 'private_feedbacks' : 'testimonials';
     const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
 

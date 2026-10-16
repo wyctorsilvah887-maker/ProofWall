@@ -141,10 +141,8 @@ export default function DashPage() {
 
   const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
 
-  const totalGoogleRedirects = useMemo(() => {
-    if (!widgetsData) return 0;
-    return widgetsData.reduce((acc: number, curr: any) => acc + (curr.googleRedirectCount || 0), 0);
-  }, [widgetsData]);
+  // Agora buscamos diretamente do documento do usuário para evitar leituras de widgets apenas para métricas
+  const totalGoogleRedirects = userData?.googleRedirectCount || 0;
 
   const copyToClipboard = (text: string, description: string) => {
     navigator.clipboard.writeText(text);

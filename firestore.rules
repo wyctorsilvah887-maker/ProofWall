@@ -8,8 +8,14 @@ service cloud.firestore {
     match /users/{userId} {
       allow create: if true;
       allow get, list: if true;
-      allow update, delete: if request.auth != null && request.auth.uid == userId;
       
+      // Permite que o dono edite seu perfil OU permite incrementos públicos de contadores específicos
+      allow update: if (request.auth != null && request.auth.uid == userId) || 
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['testimonialsCount', 'googleRedirectCount']));
+      
+      allow delete: if request.auth != null && request.auth.uid == userId;
+      
+      // Admin global bypass
       allow read, write: if request.auth != null && 
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
