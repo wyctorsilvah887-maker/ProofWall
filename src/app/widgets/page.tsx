@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -21,7 +20,8 @@ import {
   Monitor,
   TrendingUp,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Search
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,6 +57,7 @@ export default function WidgetsPage() {
   const router = useRouter();
   
   const [newWidgetName, setNewWidgetName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -72,6 +73,14 @@ export default function WidgetsPage() {
   }, [db, user]);
 
   const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
+
+  const filteredWidgets = useMemo(() => {
+    if (!widgetsList) return [];
+    if (!searchTerm.trim()) return widgetsList;
+    return widgetsList.filter((w: any) => 
+      w.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [widgetsList, searchTerm]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -246,14 +255,26 @@ export default function WidgetsPage() {
           </Button>
         </div>
 
+        {/* Sistema de Busca */}
+        <div className="relative w-full max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            type="text"
+            placeholder="Buscar mural pelo nome..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-11 rounded-xl bg-background border-muted-foreground/10 focus-visible:ring-primary/20"
+          />
+        </div>
+
         <div className="grid gap-4 md:gap-6">
           {widgetsLoading ? (
             <div className="py-20 text-center">
               <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
               <p className="text-muted-foreground">Sincronizando seus murais...</p>
             </div>
-          ) : widgetsList && widgetsList.length > 0 ? (
-            widgetsList.map((w: any) => (
+          ) : filteredWidgets.length > 0 ? (
+            filteredWidgets.map((w: any) => (
               <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-all overflow-hidden group rounded-2xl">
                 <div className="flex flex-col p-5 md:p-6 gap-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -314,14 +335,29 @@ export default function WidgetsPage() {
             ))
           ) : (
             <div className="py-24 text-center border-2 border-dashed rounded-3xl bg-muted/5 space-y-4">
-              <Layout className="w-12 h-12 text-muted-foreground/20 mx-auto" />
-              <div className="space-y-1">
-                <p className="font-bold text-lg">Nenhum mural criado</p>
-                <p className="text-sm text-muted-foreground">Comece criando seu primeiro mural de depoimentos.</p>
-              </div>
-              <Button onClick={() => setIsCreateDialogOpen(true)} variant="outline" className="rounded-xl font-bold">
-                Criar Agora
-              </Button>
+              {searchTerm ? (
+                <>
+                  <Search className="w-12 h-12 text-muted-foreground/20 mx-auto" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-lg">Nenhum mural encontrado</p>
+                    <p className="text-sm text-muted-foreground">Não encontramos resultados para "{searchTerm}".</p>
+                  </div>
+                  <Button onClick={() => setSearchTerm('')} variant="link" className="font-bold text-primary">
+                    Limpar busca
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Layout className="w-12 h-12 text-muted-foreground/20 mx-auto" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-lg">Nenhum mural criado</p>
+                    <p className="text-sm text-muted-foreground">Comece criando seu primeiro mural de depoimentos.</p>
+                  </div>
+                  <Button onClick={() => setIsCreateDialogOpen(true)} variant="outline" className="rounded-xl font-bold">
+                    Criar Agora
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>
