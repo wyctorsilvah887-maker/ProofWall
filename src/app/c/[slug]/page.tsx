@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, use, useEffect } from 'react';
@@ -281,19 +280,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                         onMouseLeave={() => setHoverRating(0)}
                         className={cn(
                           "relative transition-all duration-300 focus:outline-none p-1",
-                          isActive ? "scale-110" : "scale-100 opacity-50",
-                          isSelected && "drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]"
+                          isActive ? "scale-110" : "scale-100 opacity-40",
+                          isSelected ? "scale-110 drop-shadow-[0_0_12px_rgba(249,115,22,0.5)]" : "hover:scale-125",
+                          "active:scale-150 transition-transform cubic-bezier(0.34, 1.56, 0.64, 1)"
                         )}
                       >
                         <Star 
                           className={cn(
-                            "w-10 h-10 transition-all duration-300",
-                            isActive ? 'fill-primary text-primary' : 'text-muted-foreground/30'
+                            "w-10 h-10 transition-colors duration-300",
+                            isActive ? 'fill-primary text-primary' : 'text-muted-foreground/40'
                           )} 
                         />
-                        {isSelected && (
-                          <span className="absolute inset-0 animate-ping rounded-full bg-primary/20 -z-10" />
-                        )}
                       </button>
                     );
                   })}
