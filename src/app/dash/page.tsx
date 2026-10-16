@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -62,7 +63,7 @@ import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { jsPDF } from 'jsPDF';
+import { jsPDF } from 'jspdf';
 import { cn } from '@/lib/utils';
 
 export default function DashPage() {
