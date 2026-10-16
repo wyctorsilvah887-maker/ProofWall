@@ -101,6 +101,8 @@ export default function AdminPage() {
           companySlug: slug,
           email: email.trim().toLowerCase(),
           isAdmin: true,
+          testimonialsCount: 0,
+          googleRedirectCount: 0,
           createdAt: serverTimestamp(),
         };
 

@@ -84,11 +84,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
     
-    // Incrementa no documento do usuário (centralizado)
-    const userRef = doc(db, 'users', targetUserId);
-    updateDoc(userRef, {
-      googleRedirectCount: increment(1)
-    });
+    try {
+      // Incrementa no documento do usuário (centralizado para evitar múltiplas leituras)
+      const userRef = doc(db, 'users', targetUserId);
+      await updateDoc(userRef, {
+        googleRedirectCount: increment(1)
+      });
+    } catch (err) {
+      console.error("Erro ao rastrear redirecionamento:", err);
+    }
 
     let finalUrl = googleMapsUrl.trim();
     const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
@@ -140,11 +144,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
 
     addDoc(feedbacksRef, testimonialData)
-      .then(() => {
-        const userRef = doc(db, 'users', targetUserId);
-        updateDoc(userRef, {
-          testimonialsCount: increment(1)
-        });
+      .then(async () => {
+        try {
+          const userRef = doc(db, 'users', targetUserId);
+          await updateDoc(userRef, {
+            testimonialsCount: increment(1)
+          });
+        } catch (e) {
+          console.error("Erro ao incrementar testimonialsCount:", e);
+        }
 
         setSubmitted(true);
         setIsSubmitting(false);

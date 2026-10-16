@@ -53,6 +53,7 @@ export default function SignupPage() {
         email: email.trim().toLowerCase(),
         isAdmin: false,
         testimonialsCount: 0,
+        googleRedirectCount: 0,
         createdAt: serverTimestamp(),
       };
 

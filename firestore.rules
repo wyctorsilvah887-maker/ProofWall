@@ -10,8 +10,10 @@ service cloud.firestore {
       allow get, list: if true;
       
       // Permite que o dono edite seu perfil OU permite incrementos públicos de contadores específicos
+      // Usamos hasOnly para garantir que APENAS os contadores sejam alterados por visitantes
       allow update: if (request.auth != null && request.auth.uid == userId) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['testimonialsCount', 'googleRedirectCount']));
+        (request.resource.data.diff(resource.data).affectedKeys().hasAny(['testimonialsCount', 'googleRedirectCount']) &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['testimonialsCount', 'googleRedirectCount']));
       
       allow delete: if request.auth != null && request.auth.uid == userId;
       
