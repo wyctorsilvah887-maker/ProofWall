@@ -180,7 +180,7 @@ export default function DashPage() {
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     try {
-      const doc = new jsPDF({
+      const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
@@ -191,45 +191,45 @@ export default function DashPage() {
       const primaryColor = [249, 115, 22];
 
       if (isDark) {
-        doc.setFillColor(0, 0, 0);
+        pdf.setFillColor(0, 0, 0);
       } else {
-        doc.setFillColor(250, 250, 250);
+        pdf.setFillColor(250, 250, 250);
       }
-      doc.rect(0, 0, 210, 297, 'F');
+      pdf.rect(0, 0, 210, 297, 'F');
 
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, 0, 210, 40, 'F');
+      pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      pdf.rect(0, 0, 210, 40, 'F');
 
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(28);
-      doc.text('PROOVA', 105, 25, { align: 'center' });
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(28);
+      pdf.text('PROOVA', 105, 25, { align: 'center' });
 
       if (isDark) {
-        doc.setFillColor(31, 41, 55);
-        doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        pdf.setFillColor(31, 41, 55);
+        pdf.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       } else {
-        doc.setFillColor(255, 255, 255);
-        doc.setDrawColor(230, 230, 230);
+        pdf.setFillColor(255, 255, 255);
+        pdf.setDrawColor(230, 230, 230);
       }
-      doc.roundedRect(20, 50, 170, 210, 10, 10, 'FD');
+      pdf.roundedRect(20, 50, 170, 210, 10, 10, 'FD');
 
       if (isDark) {
-        doc.setTextColor(255, 255, 255);
+        pdf.setTextColor(255, 255, 255);
       } else {
-        doc.setTextColor(31, 41, 55);
+        pdf.setTextColor(31, 41, 55);
       }
-      doc.setFontSize(24);
-      doc.text(companyName.toUpperCase(), 105, 80, { align: 'center' });
+      pdf.setFontSize(24);
+      pdf.text(companyName.toUpperCase(), 105, 80, { align: 'center' });
 
       if (isDark) {
-        doc.setTextColor(156, 163, 175);
+        pdf.setTextColor(156, 163, 175);
       } else {
-        doc.setTextColor(107, 114, 128);
+        pdf.setTextColor(107, 114, 128);
       }
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(14);
-      doc.text('A sua opinião é muito importante para nós!', 105, 95, { align: 'center' });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(14);
+      pdf.text('A sua opinião é muito importante para nós!', 105, 95, { align: 'center' });
 
       const svg = document.getElementById('qr-code-svg');
       if (svg) {
@@ -248,30 +248,30 @@ export default function DashPage() {
               ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             }
             const pngUrl = canvas.toDataURL('image/png');
-            doc.addImage(pngUrl, 'PNG', 55, 110, 100, 100);
+            pdf.addImage(pngUrl, 'PNG', 55, 110, 100, 100);
             resolve(true);
           };
           img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
         });
       }
 
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.text('ESCANEIE PARA NOS AVALIAR', 105, 230, { align: 'center' });
+      pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(16);
+      pdf.text('ESCANEIE PARA NOS AVALIAR', 105, 230, { align: 'center' });
 
       if (isDark) {
-        doc.setTextColor(107, 114, 128);
+        pdf.setTextColor(107, 114, 128);
       } else {
-        doc.setTextColor(156, 163, 175);
+        pdf.setTextColor(156, 163, 175);
       }
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text('Tecnologia Proova', 105, 275, { align: 'center' });
-      doc.setFont('helvetica', 'bold');
-      doc.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(10);
+      pdf.text('Tecnologia Proova', 105, 275, { align: 'center' });
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
 
-      doc.save(`cartaz-proova-${companySlug}-${pdfTheme}.pdf`);
+      pdf.save(`cartaz-proova-${companySlug}-${pdfTheme}.pdf`);
       toast({ title: "PDF Gerado!", description: `O seu cartaz (${pdfTheme === 'light' ? 'Claro' : 'Escuro'}) foi baixado.` });
     } catch (err) {
       console.error("Erro ao gerar PDF:", err);
