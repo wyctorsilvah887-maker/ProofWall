@@ -320,6 +320,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                     onChange={(e) => setUserEmail(e.target.value)}
                     className="h-11 bg-background"
                   />
+                  <p className="text-[10px] text-muted-foreground mt-1 px-1">
+                    Usado apenas para identificação e contato se necessário.
+                  </p>
                 </div>
               </div>
 
