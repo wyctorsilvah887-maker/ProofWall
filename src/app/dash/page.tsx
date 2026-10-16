@@ -595,78 +595,78 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-sm w-[92vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[90vh] flex flex-col">
-          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
-            <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
-              <MapPin className="w-6 h-6 text-primary" /> Configurar Google
+        <DialogContent className="sm:max-w-xs w-[92vw] max-w-[95vw] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[85vh] flex flex-col">
+          <DialogHeader className="p-6 pt-12 pb-3 shrink-0 bg-background relative">
+            <DialogTitle className="flex items-center gap-2 text-lg font-headline font-black">
+              <MapPin className="w-5 h-5 text-primary" /> Configurar Google
             </DialogTitle>
-            <DialogDescription className="text-xs">
+            <DialogDescription className="text-[10px]">
               {selectedWidgetForLink 
-                ? `Defina o link do Google para o mural "${selectedWidgetForLink.name}".`
+                ? `Defina o link para "${selectedWidgetForLink.name}".`
                 : 'Selecione um mural para configurar.'}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="p-8 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+          <div className="p-6 pt-0 space-y-3 overflow-y-auto flex-1 min-h-0">
             {!selectedWidgetForLink ? (
-              <div className="space-y-3 min-w-0">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais</Label>
-                <div className="grid gap-2 pr-1 min-w-0">
+              <div className="space-y-2 min-w-0">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais</Label>
+                <div className="grid gap-1.5 pr-1 min-w-0">
                   {widgetsLoading ? (
-                    <div className="py-8 text-center"><Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" /></div>
+                    <div className="py-4 text-center"><Loader2 className="animate-spin h-6 w-6 text-primary mx-auto" /></div>
                   ) : widgetsData && widgetsData.length > 0 ? (
                     widgetsData.map((w: any) => (
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
+                        className="w-full justify-between h-auto py-3 rounded-xl px-4 border-muted hover:border-primary group transition-all min-w-0"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
-                        <div className="flex items-center gap-3 text-left flex-1 min-w-0">
-                          <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10 shrink-0">
-                            <Layout className="w-4 h-4 text-primary" />
+                        <div className="flex items-center gap-2.5 text-left flex-1 min-w-0">
+                          <div className="bg-primary/5 p-1.5 rounded-lg group-hover:bg-primary/10 shrink-0">
+                            <Layout className="w-3.5 h-3.5 text-primary" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-bold leading-tight truncate">{w.name}</p>
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mt-1">{w.googleMapsUrl ? 'Ativo' : 'Pendente'}</p>
+                            <p className="text-[11px] font-bold leading-tight truncate">{w.name}</p>
+                            <p className="text-[8px] text-muted-foreground uppercase tracking-widest font-black mt-0.5">{w.googleMapsUrl ? 'Ativo' : 'Pendente'}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+                        <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-1.5" />
                       </Button>
                     ))
                   ) : (
-                    <div className="py-12 text-center border-2 border-dashed rounded-3xl">
-                      <p className="text-xs text-muted-foreground">Nenhum mural criado.</p>
+                    <div className="py-8 text-center border-2 border-dashed rounded-2xl">
+                      <p className="text-[10px] text-muted-foreground">Nenhum mural criado.</p>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 min-w-0">
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-200 min-w-0">
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setSelectedWidgetForLink(null)}
-                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-2 font-bold text-xs"
+                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-1 font-bold text-[10px]"
                 >
-                  <ArrowLeft className="w-3 h-3 mr-2" /> Voltar à lista
+                  <ArrowLeft className="w-3 h-3 mr-1.5" /> Voltar
                 </Button>
-                <div className="space-y-3 min-w-0">
-                  <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL Google Business</Label>
+                <div className="space-y-2 min-w-0">
+                  <Label htmlFor="google-url" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL Google Business</Label>
                   <Input 
                     id="google-url"
                     placeholder="https://g.page/..." 
                     value={newGoogleMapsUrl} 
                     onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                    className="h-12 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-sm w-full"
+                    className="h-10 rounded-xl border-primary/20 focus-visible:ring-primary/20 text-xs w-full"
                     autoFocus
                   />
                 </div>
-                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 rounded-2xl shadow-xl font-black text-sm transition-all hover:translate-y-[-2px]">
-                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-11 rounded-xl shadow-xl font-black text-xs transition-all hover:translate-y-[-1px]">
+                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-3.5 w-3.5" /> : <CheckCircle2 className="mr-2 h-3.5 w-3.5" />}
                   Salvar
                 </Button>
               </div>
@@ -676,45 +676,45 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] max-w-[95vw] rounded-[3rem] border-none shadow-2xl overflow-hidden p-0 flex flex-col">
-          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
-            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
-              <QrCode className="w-6 h-6 text-primary" />
+        <DialogContent className="sm:max-w-xs w-[90vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="p-6 pt-12 pb-3 shrink-0 bg-background relative">
+            <DialogTitle className="flex items-center gap-2 text-lg font-black font-headline">
+              <QrCode className="w-5 h-5 text-primary" />
               Cartaz VIP
             </DialogTitle>
-            <DialogDescription className="text-sm">
-              Gere um cartaz profissional para coleta local.
+            <DialogDescription className="text-[10px]">
+              Gere um cartaz profissional de balcão.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto p-8 pt-2 flex flex-col items-center space-y-6">
-            <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tema do Cartaz</Label>
-              <div className="flex justify-center gap-4">
+          <div className="flex-1 overflow-y-auto p-6 pt-0 flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center gap-2 w-full border-b pb-4">
+              <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Tema do Cartaz</Label>
+              <div className="flex justify-center gap-3">
                 <Button 
                   variant={pdfTheme === 'light' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('light')}
-                  className="gap-2 h-10 px-6 rounded-xl font-bold transition-all"
+                  className="gap-1.5 h-8 px-4 rounded-lg font-bold text-[10px] transition-all"
                 >
-                  <Sun className="w-4 h-4" /> Claro
+                  <Sun className="w-3 h-3" /> Claro
                 </Button>
                 <Button 
                   variant={pdfTheme === 'dark' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('dark')}
-                  className="gap-2 h-10 px-6 rounded-xl font-bold transition-all"
+                  className="gap-1.5 h-8 px-4 rounded-lg font-bold text-[10px] transition-all"
                 >
-                  <Moon className="w-4 h-4" /> Escuro
+                  <Moon className="w-3 h-3" /> Escuro
                 </Button>
               </div>
             </div>
 
-            <div className="p-6 bg-white rounded-[2rem] shadow-2xl border-4 border-primary/5 transition-transform hover:scale-105">
+            <div className="p-4 bg-white rounded-2xl shadow-xl border-2 border-primary/5 transition-transform hover:scale-105">
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={200} 
+                size={160} 
                 level="H"
                 includeMargin={true}
               />
@@ -722,14 +722,14 @@ export default function DashPage() {
             
             <div className="w-full pb-6">
               <Button 
-                className="w-full h-14 shadow-2xl font-black text-base gap-3 rounded-[1.25rem] transition-all hover:translate-y-[-2px]"
+                className="w-full h-12 shadow-xl font-black text-xs gap-2 rounded-xl transition-all hover:translate-y-[-1px]"
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
               >
                 {isGeneratingPdf ? (
                   <><Loader2 className="animate-spin" /> Gerando...</>
                 ) : (
-                  <><FileDown className="w-5 h-5" /> Baixar PDF</>
+                  <><FileDown className="w-4 h-4" /> Baixar PDF</>
                 )}
               </Button>
             </div>
