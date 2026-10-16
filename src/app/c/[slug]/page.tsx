@@ -281,14 +281,14 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                         className={cn(
                           "relative transition-all duration-300 focus:outline-none p-1",
                           isActive ? "scale-110" : "scale-100 opacity-40",
-                          isSelected ? "scale-110 drop-shadow-[0_0_12px_rgba(249,115,22,0.5)]" : "hover:scale-125",
+                          isSelected ? "scale-110 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" : "hover:scale-125",
                           "active:scale-150 transition-transform cubic-bezier(0.34, 1.56, 0.64, 1)"
                         )}
                       >
                         <Star 
                           className={cn(
                             "w-10 h-10 transition-colors duration-300",
-                            isActive ? 'fill-primary text-primary' : 'text-muted-foreground/40'
+                            isActive ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/40'
                           )} 
                         />
                       </button>
