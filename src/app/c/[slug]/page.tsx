@@ -21,6 +21,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [text, setText] = useState('');
   const [rating, setRating] = useState(0); 
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
