@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { cn } from '@/lib/utils';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -21,7 +22,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [rating, setRating] = useState(0); 
-  const [text, setText] = useState('');
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
@@ -62,7 +63,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           if (foundUserDoc?.googleMapsUrl) {
             setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
           } else {
-            // Tenta buscar o link do google em algum widget se não estiver no perfil
             const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
             const widgetsSnap = await getDocs(widgetsRef);
             const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
@@ -85,7 +85,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     if (!db || !targetUserId || !googleMapsUrl) return;
     
     try {
-      // Incrementa no documento do usuário (centralizado para evitar múltiplas leituras)
       const userRef = doc(db, 'users', targetUserId);
       await updateDoc(userRef, {
         googleRedirectCount: increment(1)
@@ -267,19 +266,36 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-3 text-center">
                 <label className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sua Nota</label>
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setRating(star)}
-                      className="transition-transform hover:scale-125 focus:outline-none"
-                    >
-                      <Star 
-                        className={`w-10 h-10 ${star <= rating ? 'fill-primary text-primary' : 'text-muted-foreground/30'}`} 
-                      />
-                    </button>
-                  ))}
+                <div className="flex justify-center gap-1 sm:gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const isActive = star <= (hoverRating || rating);
+                    const isSelected = star <= rating;
+                    
+                    return (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className={cn(
+                          "relative transition-all duration-300 focus:outline-none p-1",
+                          isActive ? "scale-110" : "scale-100 opacity-50",
+                          isSelected && "drop-shadow-[0_0_8px_rgba(249,115,22,0.4)]"
+                        )}
+                      >
+                        <Star 
+                          className={cn(
+                            "w-10 h-10 transition-all duration-300",
+                            isActive ? 'fill-primary text-primary' : 'text-muted-foreground/30'
+                          )} 
+                        />
+                        {isSelected && (
+                          <span className="absolute inset-0 animate-ping rounded-full bg-primary/20 -z-10" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
                 {rating === 0 && (
                   <p className="text-[10px] text-destructive font-bold uppercase animate-pulse">Clique em uma estrela para avaliar</p>
