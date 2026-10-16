@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -63,7 +62,7 @@ import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jsPDF';
 import { cn } from '@/lib/utils';
 
 export default function DashPage() {
@@ -320,11 +319,11 @@ export default function DashPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] md:text-xs font-bold truncate max-w-[100px] md:max-w-[150px] transition-colors group-hover:text-primary leading-tight">
+                  <span className="text-xs font-bold truncate max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
-                    <span className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
                       {membershipLabel}
                     </span>
                   )}
@@ -433,7 +432,7 @@ export default function DashPage() {
               }}
               className="absolute -top-3 right-4 z-40 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
             >
-              <Edit3 className="w-2.5 h-2.5" /> Configurar Link
+              <span className="flex items-center gap-1.5"><Edit3 className="w-2.5 h-2.5" /> Configurar Link</span>
             </div>
             <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -557,8 +556,8 @@ export default function DashPage() {
       </footer>
 
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl">
-          <DialogHeader className="pt-10 px-6">
+        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background">
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
               <HelpCircle className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
             </DialogTitle>
@@ -566,7 +565,7 @@ export default function DashPage() {
               Aprenda a dominar seu painel de prova social em 3 passos.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4 px-6">
+          <div className="space-y-6 py-6 px-8 overflow-y-auto">
             <div className="flex gap-4 group">
               <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
               <div>
@@ -589,7 +588,7 @@ export default function DashPage() {
               </div>
             </div>
           </div>
-          <DialogFooter className="px-6 pb-6">
+          <DialogFooter className="p-8 pt-4 pb-8 bg-background">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
           </DialogFooter>
         </DialogContent>
@@ -597,18 +596,18 @@ export default function DashPage() {
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
         <DialogContent className="sm:max-w-md w-[95vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
-          <DialogHeader className="p-6 pt-12 pb-2 shrink-0">
+          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
             <DialogDescription className="text-sm">
               {selectedWidgetForLink 
                 ? `Defina o link do Google para o mural "${selectedWidgetForLink.name}".`
-                : 'Selecione para qual mural você deseja configurar o link do Google Maps.'}
+                : 'Selecione para qual mural deseja configurar o link do Google Maps.'}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="p-6 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+          <div className="p-8 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
             {!selectedWidgetForLink ? (
               <div className="space-y-3 min-w-0">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
@@ -620,7 +619,7 @@ export default function DashPage() {
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
+                        className="w-full justify-between h-auto py-5 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
@@ -632,7 +631,7 @@ export default function DashPage() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold leading-tight truncate">{w.name}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-0.5">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-1">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
                           </div>
                         </div>
                         <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
@@ -665,9 +664,6 @@ export default function DashPage() {
                     className="h-14 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-base w-full"
                     autoFocus
                   />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed px-1">
-                    Dica: Use o link "Receber mais avaliações" no seu painel Google Business para obter a URL direta.
-                  </p>
                 </div>
                 <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-14 rounded-2xl shadow-xl font-black text-base transition-all hover:translate-y-[-2px]">
                   {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
@@ -680,18 +676,18 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[90vw] max-w-[95vw] rounded-[3rem] border-none shadow-2xl">
-          <DialogHeader className="pt-12 px-6">
+        <DialogContent className="sm:max-w-md w-[90vw] max-w-[95vw] rounded-[3rem] border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
               <QrCode className="w-6 h-6 text-primary" />
               Cartaz de Balcão VIP
             </DialogTitle>
-            <DialogDescription className="text-sm md:text-base font-medium">
+            <DialogDescription className="text-sm">
               Gere um cartaz profissional para seus clientes avaliarem sua empresa no local.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="flex flex-col items-center justify-center py-4 md:py-6 space-y-6 px-6">
+          <div className="flex-1 overflow-y-auto p-8 pt-2 flex flex-col items-center space-y-6">
             <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
               <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo Visual do Cartaz</Label>
               <div className="flex justify-center gap-4">
