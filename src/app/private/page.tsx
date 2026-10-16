@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -16,8 +15,8 @@ import {
   MessageSquareOff,
   Inbox,
   Trash2,
-  MoreVertical,
-  Mail
+  Mail,
+  ArrowLeft
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -153,11 +152,18 @@ export default function PrivateInboxPage() {
 
       <main className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight flex items-center gap-3">
-              <Inbox className="w-8 h-8 text-primary" /> Inbox Privado
-            </h1>
-            <p className="text-sm text-muted-foreground">Críticas e feedbacks (1-3 estrelas) recebidos em sigilo.</p>
+          <div className="flex items-center gap-3">
+            <Link href="/dash">
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="space-y-1">
+              <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight flex items-center gap-3">
+                <Inbox className="w-8 h-8 text-primary" /> Inbox Privado
+              </h1>
+              <p className="text-sm text-muted-foreground">Críticas e feedbacks (1-3 estrelas) recebidos em sigilo.</p>
+            </div>
           </div>
           <Badge variant="outline" className="w-fit h-8 px-4 rounded-full border-primary/20 text-primary font-black uppercase tracking-widest text-[10px]">
             {privateFeedbacks?.length || 0} Mensagens
