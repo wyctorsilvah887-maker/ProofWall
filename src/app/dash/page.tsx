@@ -32,7 +32,8 @@ import {
   Moon,
   TrendingDown,
   Info,
-  Monitor
+  Monitor,
+  Inbox
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -346,6 +347,10 @@ export default function DashPage() {
                 <Layout className="mr-2 h-4 w-4 text-primary" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Inbox className="mr-2 h-4 w-4 text-primary" />
+                <span>Inbox Privado</span>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsTutorialOpen(true)} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Info className="mr-2 h-4 w-4 text-primary" />
                 <span>Tutorial</span>
@@ -495,9 +500,16 @@ export default function DashPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+            </div>
+            <Link href="/private">
+              <Button variant="outline" size="sm" className="rounded-full gap-2 text-xs border-primary/20 text-primary hover:bg-primary/5">
+                <Inbox className="w-3.5 h-3.5" /> Inbox Privado
+              </Button>
+            </Link>
           </div>
           
           <div className="grid gap-4">

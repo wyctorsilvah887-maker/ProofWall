@@ -144,11 +144,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       createdAt: serverTimestamp(),
     };
 
-    const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
+    // Lógica de armazenamento: < 4 estrelas vai para o Inbox Privado
+    const collectionName = rating < 4 ? 'private_feedbacks' : 'testimonials';
+    const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
 
-    addDoc(testimonialsRef, testimonialData)
+    addDoc(feedbacksRef, testimonialData)
       .then(() => {
-        // Incrementa o contador de depoimentos no documento do usuário
         const userRef = doc(db, 'users', targetUserId);
         updateDoc(userRef, {
           testimonialsCount: increment(1)
@@ -163,7 +164,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       })
       .catch(async (err) => {
         const permissionError = new FirestorePermissionError({
-          path: testimonialsRef.path,
+          path: feedbacksRef.path,
           operation: 'create',
           requestResourceData: testimonialData,
         } satisfies SecurityRuleContext);
