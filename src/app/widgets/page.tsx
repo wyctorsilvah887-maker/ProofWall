@@ -19,7 +19,9 @@ import {
   Terminal,
   CheckCircle2,
   Monitor,
-  TrendingUp
+  TrendingUp,
+  ExternalLink,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -174,8 +176,8 @@ export default function WidgetsPage() {
       : null;
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-background/95">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
+      <header className="bg-background border-b h-16 md:h-20 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
@@ -183,17 +185,17 @@ export default function WidgetsPage() {
             </div>
           </Link>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] md:text-xs font-bold truncate max-w-[100px] md:max-w-[150px] transition-colors group-hover:text-primary leading-tight">
+                  <span className="text-xs font-bold truncate max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
-                    <span className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
                       {membershipLabel}
                     </span>
                   )}
@@ -203,7 +205,11 @@ export default function WidgetsPage() {
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
+              <DropdownMenuLabel className="px-3 py-2">
+                <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
@@ -222,74 +228,173 @@ export default function WidgetsPage() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/dash"><Button variant="ghost" size="icon"><ArrowLeft className="w-5 h-5" /></Button></Link>
-            <h1 className="text-2xl font-bold font-headline tracking-tight">Gerenciamento de Murais</h1>
+            <Link href="/dash" className="hidden sm:block">
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+            </Link>
+            <div className="space-y-0.5">
+              <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Meus Murais</h1>
+              <p className="text-sm text-muted-foreground hidden sm:block">Gerencie e publique suas provas sociais</p>
+            </div>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)} className="shadow-lg"><Plus className="w-4 h-4 mr-2" /> Novo Mural</Button>
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="w-full sm:w-auto h-12 rounded-xl shadow-lg font-bold gap-2" size="lg">
+            <Plus className="w-5 h-5" /> Novo Mural
+          </Button>
         </div>
 
-        <div className="grid gap-6">
-          {widgetsList?.map((w: any) => (
-            <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between p-6 gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="bg-primary/10 p-4 rounded-2xl"><Layout className="w-8 h-8 text-primary" /></div>
-                  <div>
-                    <h3 className="font-bold text-xl">{w.name}</h3>
-                    <div className="flex gap-2 mt-1">
-                      <Badge variant="secondary" className="text-[9px] h-4">{w.selectedTestimonialIds?.length || 0} Depoimentos</Badge>
-                      <Badge variant="outline" className="text-[9px] h-4 uppercase">{w.layout}</Badge>
+        <div className="grid gap-4 md:gap-6">
+          {widgetsLoading ? (
+            <div className="py-20 text-center">
+              <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+              <p className="text-muted-foreground">Sincronizando seus murais...</p>
+            </div>
+          ) : widgetsList && widgetsList.length > 0 ? (
+            widgetsList.map((w: any) => (
+              <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-all overflow-hidden group rounded-2xl">
+                <div className="flex flex-col p-5 md:p-6 gap-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-primary/10 p-4 rounded-2xl hidden sm:block">
+                        <Layout className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="font-black font-headline text-lg md:text-xl truncate group-hover:text-primary transition-colors">{w.name}</h3>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="secondary" className="text-[9px] h-5 bg-primary/5 text-primary border-none px-2 font-black">
+                            {w.selectedTestimonialIds?.length || 0} AVALIAÇÕES
+                          </Badge>
+                          <Badge variant="outline" className="text-[9px] h-5 uppercase tracking-widest font-black px-2 opacity-60">
+                            {w.layout || 'Mural'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-destructive h-10 w-10 hover:bg-destructive/10 rounded-xl"
+                        onClick={() => handleDeleteWidget(w.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center bg-muted/30 p-1 rounded-lg gap-1">
-                    <Button variant="ghost" size="sm" className="h-8 text-xs font-bold gap-2 text-primary" onClick={() => router.push(`/widgets/${w.id}`)}>
-                      <Monitor className="w-3.5 h-3.5" /> Página Pública
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
+                    <Button 
+                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
+                      onClick={() => router.push(`/widgets/${w.id}`)}
+                    >
+                      <Monitor className="w-4 h-4" /> Página Pública
+                      <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-30" />
                     </Button>
-                    <div className="w-[1px] h-4 bg-border mx-1" />
-                    <Button variant="ghost" size="sm" className="h-8 text-xs font-bold gap-2" onClick={() => router.push(`/widgetconfig/${w.id}`)}>
-                      <Settings2 className="w-3.5 h-3.5" /> Mural Embutido
+                    <Button 
+                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
+                      onClick={() => router.push(`/widgetconfig/${w.id}`)}
+                    >
+                      <Settings2 className="w-4 h-4" /> Mural Embutido
+                      <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-30" />
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-muted/50 hover:bg-muted shadow-sm"
+                      onClick={() => { setSelectedWidget(w); setIsDialogOpen(true); }}
+                    >
+                      <Code className="w-4 h-4" /> Obter Código
                     </Button>
                   </div>
-                  <Button variant="secondary" size="sm" className="font-bold h-9" onClick={() => { setSelectedWidget(w); setIsDialogOpen(true); }}>
-                    <Code className="w-4 h-4 mr-2" /> Código
-                  </Button>
-                  <Button variant="ghost" size="icon" className="text-destructive h-9 w-9" onClick={() => handleDeleteWidget(w.id)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
+              </Card>
+            ))
+          ) : (
+            <div className="py-24 text-center border-2 border-dashed rounded-3xl bg-muted/5 space-y-4">
+              <Layout className="w-12 h-12 text-muted-foreground/20 mx-auto" />
+              <div className="space-y-1">
+                <p className="font-bold text-lg">Nenhum mural criado</p>
+                <p className="text-sm text-muted-foreground">Comece criando seu primeiro mural de depoimentos.</p>
               </div>
-            </Card>
-          ))}
+              <Button onClick={() => setIsCreateDialogOpen(true)} variant="outline" className="rounded-xl font-bold">
+                Criar Agora
+              </Button>
+            </div>
+          )}
         </div>
       </main>
 
+      <footer className="py-8 border-t mt-auto">
+        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
+          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
+            Feito Pelo Grupo Synapse | Synapse Group
+          </p>
+        </div>
+      </footer>
+
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader><DialogTitle>Criar Novo Mural</DialogTitle></DialogHeader>
-          <form onSubmit={handleCreateWidget} className="space-y-4 py-4">
-            <Input placeholder="Nome do Mural (ex: Site Principal)" value={newWidgetName} onChange={(e) => setNewWidgetName(e.target.value)} required autoFocus />
-            <DialogFooter><Button type="submit" disabled={isCreating} className="w-full">{isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />} Criar e Configurar</Button></DialogFooter>
+        <DialogContent className="sm:max-w-sm rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="p-8 pt-12 pb-4 shrink-0 bg-background text-center">
+            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
+              <Plus className="w-6 h-6 text-primary" />
+            </div>
+            <DialogTitle className="text-xl font-black font-headline">Novo Mural</DialogTitle>
+            <DialogDescription className="text-xs">
+              Dê um nome identificador para seu mural.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateWidget} className="p-8 pt-0 space-y-6">
+            <div className="space-y-2">
+              <Input 
+                placeholder="Ex: Site Principal" 
+                value={newWidgetName} 
+                onChange={(e) => setNewWidgetName(e.target.value)} 
+                required 
+                autoFocus 
+                className="h-12 rounded-xl border-primary/20 focus-visible:ring-primary/20 text-sm"
+              />
+            </div>
+            <Button type="submit" disabled={isCreating} className="w-full h-12 rounded-xl shadow-xl font-black text-xs uppercase tracking-widest">
+              {isCreating ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+              Criar e Configurar
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Terminal className="w-5 h-5 text-primary" /> Código de Instalação</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <p className="text-sm text-muted-foreground">Copie o código abaixo e cole antes da tag <code>&lt;/body&gt;</code> do seu site para exibir este mural.</p>
-            <div className="relative bg-muted/50 rounded-lg p-4 border border-primary/20">
-              <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap">{selectedWidget ? getWidgetCode(selectedWidget.id) : ''}</pre>
-              <Button size="icon" variant="secondary" className="absolute top-2 right-2 h-8 w-8 shadow-sm" onClick={() => selectedWidget && copyToClipboard(getWidgetCode(selectedWidget.id))}><Copy className="h-4 w-4" /></Button>
+        <DialogContent className="sm:max-w-md rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+          <DialogHeader className="p-8 pt-12 pb-4 shrink-0 bg-background text-center">
+            <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
+              <Terminal className="w-6 h-6 text-primary" />
             </div>
+            <DialogTitle className="text-xl font-black font-headline">Instalação</DialogTitle>
+            <DialogDescription className="text-xs">
+              Cole este código antes da tag final <code>&lt;/body&gt;</code> do seu site.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="p-8 pt-0 space-y-6">
+            <div className="relative bg-muted/30 rounded-2xl p-4 border border-primary/10 group">
+              <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap leading-relaxed">
+                {selectedWidget ? getWidgetCode(selectedWidget.id) : ''}
+              </pre>
+              <Button 
+                size="icon" 
+                variant="secondary" 
+                className="absolute top-2 right-2 h-8 w-8 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" 
+                onClick={() => selectedWidget && copyToClipboard(getWidgetCode(selectedWidget.id))}
+              >
+                <Copy className="h-3.5 h-3.5" />
+              </Button>
+            </div>
+            <Button onClick={() => setIsDialogOpen(false)} className="w-full h-12 rounded-xl font-black text-xs uppercase tracking-widest">
+              Concluído
+            </Button>
           </div>
-          <div className="flex justify-end"><Button onClick={() => setIsDialogOpen(false)}>Concluído</Button></div>
         </DialogContent>
       </Dialog>
     </div>
