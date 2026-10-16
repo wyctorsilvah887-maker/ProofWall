@@ -31,7 +31,6 @@ import {
   Sun,
   Moon,
   TrendingDown,
-  HelpCircle,
   Info,
   Monitor
 } from 'lucide-react';
@@ -348,7 +347,7 @@ export default function DashPage() {
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsTutorialOpen(true)} className="rounded-xl cursor-pointer font-bold py-2.5">
-                <HelpCircle className="mr-2 h-4 w-4 text-primary" />
+                <Info className="mr-2 h-4 w-4 text-primary" />
                 <span>Tutorial</span>
               </DropdownMenuItem>
               {userData?.isAdmin && (
@@ -560,7 +559,7 @@ export default function DashPage() {
         <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col">
           <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background">
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
-              <HelpCircle className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
+              <Info className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
             </DialogTitle>
             <DialogDescription>
               Aprenda a dominar seu painel de prova social em 3 passos.
@@ -596,22 +595,22 @@ export default function DashPage() {
       </Dialog>
 
       <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
-        <DialogContent className="sm:max-w-md w-[95vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[95vh] flex flex-col">
+        <DialogContent className="sm:max-w-sm w-[92vw] max-w-[95vw] rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden h-auto max-h-[90vh] flex flex-col">
           <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
             <DialogTitle className="flex items-center gap-2 text-xl font-headline font-black">
               <MapPin className="w-6 h-6 text-primary" /> Configurar Google
             </DialogTitle>
-            <DialogDescription className="text-sm">
+            <DialogDescription className="text-xs">
               {selectedWidgetForLink 
                 ? `Defina o link do Google para o mural "${selectedWidgetForLink.name}".`
-                : 'Selecione para qual mural deseja configurar o link do Google Maps.'}
+                : 'Selecione um mural para configurar.'}
             </DialogDescription>
           </DialogHeader>
           
           <div className="p-8 pt-2 space-y-4 overflow-y-auto custom-scrollbar flex-1 min-h-0">
             {!selectedWidgetForLink ? (
               <div className="space-y-3 min-w-0">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais Disponíveis</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seus Murais</Label>
                 <div className="grid gap-2 pr-1 min-w-0">
                   {widgetsLoading ? (
                     <div className="py-8 text-center"><Loader2 className="animate-spin h-8 w-8 text-primary mx-auto" /></div>
@@ -620,27 +619,27 @@ export default function DashPage() {
                       <Button 
                         key={w.id} 
                         variant="outline" 
-                        className="w-full justify-between h-auto py-5 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
+                        className="w-full justify-between h-auto py-4 rounded-2xl px-5 border-muted hover:border-primary group transition-all min-w-0"
                         onClick={() => {
                           setSelectedWidgetForLink(w);
                           setNewGoogleMapsUrl(w.googleMapsUrl || '');
                         }}
                       >
-                        <div className="flex items-center gap-4 text-left flex-1 min-w-0">
+                        <div className="flex items-center gap-3 text-left flex-1 min-w-0">
                           <div className="bg-primary/5 p-2 rounded-xl group-hover:bg-primary/10 shrink-0">
-                            <Layout className="w-5 h-5 text-primary" />
+                            <Layout className="w-4 h-4 text-primary" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-bold leading-tight truncate">{w.name}</p>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black mt-1">{w.googleMapsUrl ? 'Configurado' : 'Pendente'}</p>
+                            <p className="text-xs font-bold leading-tight truncate">{w.name}</p>
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black mt-1">{w.googleMapsUrl ? 'Ativo' : 'Pendente'}</p>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0 ml-2" />
                       </Button>
                     ))
                   ) : (
                     <div className="py-12 text-center border-2 border-dashed rounded-3xl">
-                      <p className="text-sm text-muted-foreground">Crie um mural primeiro.</p>
+                      <p className="text-xs text-muted-foreground">Nenhum mural criado.</p>
                     </div>
                   )}
                 </div>
@@ -651,24 +650,24 @@ export default function DashPage() {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setSelectedWidgetForLink(null)}
-                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-2 font-bold text-sm"
+                  className="px-0 text-primary hover:bg-transparent -ml-1 h-auto py-2 font-bold text-xs"
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Voltar à lista
+                  <ArrowLeft className="w-3 h-3 mr-2" /> Voltar à lista
                 </Button>
                 <div className="space-y-3 min-w-0">
-                  <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL do Perfil Google Business</Label>
+                  <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">URL Google Business</Label>
                   <Input 
                     id="google-url"
-                    placeholder="https://g.page/r/..." 
+                    placeholder="https://g.page/..." 
                     value={newGoogleMapsUrl} 
                     onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
-                    className="h-14 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-base w-full"
+                    className="h-12 rounded-2xl border-primary/20 focus-visible:ring-primary/20 text-sm w-full"
                     autoFocus
                   />
                 </div>
-                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-14 rounded-2xl shadow-xl font-black text-base transition-all hover:translate-y-[-2px]">
-                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-5 w-5" /> : <CheckCircle2 className="mr-2 h-5 w-5" />}
-                  Salvar Configuração
+                <Button onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl} className="w-full h-12 rounded-2xl shadow-xl font-black text-sm transition-all hover:translate-y-[-2px]">
+                  {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                  Salvar
                 </Button>
               </div>
             )}
@@ -681,22 +680,22 @@ export default function DashPage() {
           <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background relative">
             <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl font-black font-headline">
               <QrCode className="w-6 h-6 text-primary" />
-              Cartaz de Balcão VIP
+              Cartaz VIP
             </DialogTitle>
             <DialogDescription className="text-sm">
-              Gere um cartaz profissional para seus clientes avaliarem sua empresa no local.
+              Gere um cartaz profissional para coleta local.
             </DialogDescription>
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto p-8 pt-2 flex flex-col items-center space-y-6">
             <div className="flex flex-col items-center gap-3 w-full border-b pb-6">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Estilo Visual do Cartaz</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tema do Cartaz</Label>
               <div className="flex justify-center gap-4">
                 <Button 
                   variant={pdfTheme === 'light' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('light')}
-                  className="gap-2 h-11 px-8 rounded-2xl font-bold transition-all"
+                  className="gap-2 h-10 px-6 rounded-xl font-bold transition-all"
                 >
                   <Sun className="w-4 h-4" /> Claro
                 </Button>
@@ -704,18 +703,18 @@ export default function DashPage() {
                   variant={pdfTheme === 'dark' ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setPdfTheme('dark')}
-                  className="gap-2 h-11 px-8 rounded-2xl font-bold transition-all"
+                  className="gap-2 h-10 px-6 rounded-xl font-bold transition-all"
                 >
                   <Moon className="w-4 h-4" /> Escuro
                 </Button>
               </div>
             </div>
 
-            <div className="p-4 md:p-8 bg-white rounded-[2.5rem] shadow-2xl border-8 border-primary/5 transition-transform hover:scale-105">
+            <div className="p-6 bg-white rounded-[2rem] shadow-2xl border-4 border-primary/5 transition-transform hover:scale-105">
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={220} 
+                size={200} 
                 level="H"
                 includeMargin={true}
               />
@@ -723,19 +722,16 @@ export default function DashPage() {
             
             <div className="w-full pb-6">
               <Button 
-                className="w-full h-16 shadow-2xl font-black text-lg gap-3 rounded-[1.25rem] transition-all hover:translate-y-[-2px]"
+                className="w-full h-14 shadow-2xl font-black text-base gap-3 rounded-[1.25rem] transition-all hover:translate-y-[-2px]"
                 onClick={handleDownloadPdf}
                 disabled={isGeneratingPdf}
               >
                 {isGeneratingPdf ? (
-                  <><Loader2 className="animate-spin" /> Preparando Arquivo...</>
+                  <><Loader2 className="animate-spin" /> Gerando...</>
                 ) : (
-                  <><FileDown className="w-6 h-6" /> Baixar PDF ({pdfTheme === 'light' ? 'Claro' : 'Escuro'})</>
+                  <><FileDown className="w-5 h-5" /> Baixar PDF</>
                 )}
               </Button>
-              <p className="text-[10px] text-center text-muted-foreground mt-4 uppercase tracking-[0.2em] font-black opacity-40">
-                Powered by Synapse Group
-              </p>
             </div>
           </div>
         </DialogContent>
