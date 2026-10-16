@@ -379,7 +379,7 @@ export default function DashPage() {
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
             <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all h-12 rounded-xl" size="lg">
-              <Plus className="w-5 h-5 mr-2" /> Novo Mural
+              Meus Murais
             </Button>
           </Link>
         </header>
