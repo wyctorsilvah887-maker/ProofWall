@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from "react";
@@ -63,7 +64,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body overflow-x-hidden">
       <header className="px-4 lg:px-6 h-20 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <Image src="/Logotipo PROOVA app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+          <Image src="/Logotipo%20PROOVA%20app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
@@ -296,7 +297,7 @@ export default function Home() {
       <footer className="py-12 border-t bg-background relative z-10">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
           <div className="flex items-center gap-2 opacity-50">
-             <Image src="/Logotipo PROOVA app.png" alt="Logo Small" width={32} height={32} className="rounded-lg grayscale" />
+             <Image src="/Logotipo%20PROOVA%20app.png" alt="Logo Small" width={32} height={32} className="rounded-lg grayscale" />
           </div>
           <div className="space-y-2">
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
