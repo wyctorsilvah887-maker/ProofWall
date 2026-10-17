@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -273,10 +272,10 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground">
-      <header className="bg-background border-b h-20 flex items-center px-6 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl relative w-[56px] h-[56px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm dark:hidden" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm hidden dark:block" />
+      <header className="bg-background border-b h-20 md:h-24 flex items-center px-6 sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-2 font-bold text-xl relative w-[64px] h-[64px] md:w-[72px] md:h-[72px]">
+          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
@@ -372,6 +371,16 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       </main>
+      
+      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-12 bg-background/50">
+        <div className="flex items-center gap-2 relative w-[48px] h-[48px] md:w-[56px] md:h-[56px]">
+          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block object-contain" />
+        </div>
+        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
+          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Administração Segura.</p>
+        </div>
+      </footer>
     </div>
   );
 }
