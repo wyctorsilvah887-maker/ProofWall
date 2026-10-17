@@ -192,7 +192,8 @@ export default function WidgetsPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20app.png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
+              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-xl shadow-sm object-cover dark:hidden" />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-xl shadow-sm object-cover hidden dark:block" />
             </div>
           </Link>
         </div>

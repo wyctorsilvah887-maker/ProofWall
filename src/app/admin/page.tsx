@@ -274,8 +274,9 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-6 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl">
-          <Image src="/Logotipo%20PROOVA%20app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+        <div className="flex items-center gap-2 font-bold text-xl relative w-[56px] h-[56px]">
+          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm dark:hidden" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm hidden dark:block" />
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
