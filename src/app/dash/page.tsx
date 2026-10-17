@@ -120,7 +120,14 @@ export default function DashPage() {
 
   const companySlug = useMemo(() => {
     if (!userData) return '';
-    return userData.companySlug || userData?.companyName?.toLowerCase().replace(/\s+/g, '-') || '';
+    if (userData.companySlug) return userData.companySlug;
+    
+    // Fallback de limpeza de slug
+    return userData?.companyName?.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-') || '';
   }, [userData]);
 
   const testimonialsQuery = useMemo(() => {
@@ -141,7 +148,6 @@ export default function DashPage() {
 
   const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
 
-  // Agora buscamos diretamente do documento do usuário para evitar leituras de widgets apenas para métricas
   const totalGoogleRedirects = userData?.googleRedirectCount || 0;
 
   const copyToClipboard = (text: string, description: string) => {
@@ -469,11 +475,9 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3">
-                <Input 
-                  readOnly 
-                  value={collectionLink} 
-                  className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border-none focus-visible:ring-1 focus-visible:ring-primary/20 flex-1 rounded-xl"
-                />
+                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide">
+                  {collectionLink}
+                </div>
                 <div className="flex gap-2">
                   <Button 
                     variant="secondary" 

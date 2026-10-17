@@ -93,7 +93,12 @@ export default function AdminPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const newUser = userCredential.user;
         
-        const slug = companyName.trim().toLowerCase().replace(/\s+/g, '-');
+        // Geração de slug limpo (sem acentos)
+        const slug = companyName.trim().toLowerCase()
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
 
         const adminData = {
           name: name.trim(),
@@ -326,7 +331,7 @@ export default function AdminPage() {
                 <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
                 <p className="text-muted-foreground">Carregando leads...</p>
               </div>
-            ) : sortedLeads.length > 0 ? (
+            ) : leadsList && leadsList.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>

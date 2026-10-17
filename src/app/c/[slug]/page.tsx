@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, use, useEffect } from 'react';
@@ -15,7 +16,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
+  const { slug: rawSlug } = use(params);
   const db = useFirestore();
 
   const [userName, setUserName] = useState('');
@@ -28,49 +29,62 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
   const [googleMapsUrl, setGoogleMapsUrl] = useState<string | null>(null);
-
-  const displayCompanyName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const [companyNameDisplay, setCompanyNameDisplay] = useState('');
 
   useEffect(() => {
     async function findCompany() {
-      if (!db || !slug) return;
+      if (!db || !rawSlug) return;
       
       try {
         setIsLoadingCompany(true);
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('companySlug', '==', slug), limit(1));
-        const snapshot = await getDocs(q);
+        const decodedSlug = decodeURIComponent(rawSlug);
         
-        let foundUserId = null;
-        let foundUserDoc = null;
+        // Slug normalizado (sem acentos)
+        const normalizedSlug = decodedSlug.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-        if (!snapshot.empty) {
-          foundUserId = snapshot.docs[0].id;
-          foundUserDoc = snapshot.docs[0].data();
-        } else {
-          const slugAlt = slug.replace(/-/g, ' ');
-          const qAlt = query(usersRef, where('companyName', '==', slugAlt), limit(1));
-          const snapshotAlt = await getDocs(qAlt);
-          if (!snapshotAlt.empty) {
-            foundUserId = snapshotAlt.docs[0].id;
-            foundUserDoc = snapshotAlt.docs[0].data();
-          }
+        const usersRef = collection(db, 'users');
+        
+        // Tentativa 1: Busca pelo companySlug limpo (ex: tia-dora)
+        const q1 = query(usersRef, where('companySlug', '==', normalizedSlug), limit(1));
+        const snap1 = await getDocs(q1);
+        
+        if (!snap1.empty) {
+          const data = snap1.docs[0].data();
+          setTargetUserId(snap1.docs[0].id);
+          setCompanyNameDisplay(data.companyName);
+          setGoogleMapsUrl(data.googleMapsUrl || null);
+          setIsLoadingCompany(false);
+          return;
         }
 
-        if (foundUserId) {
-          setTargetUserId(foundUserId);
-          
-          if (foundUserDoc?.googleMapsUrl) {
-            setGoogleMapsUrl(foundUserDoc.googleMapsUrl);
-          } else {
-            const widgetsRef = collection(db, 'users', foundUserId, 'widgets');
-            const widgetsSnap = await getDocs(widgetsRef);
-            const gWidget = widgetsSnap.docs.find(d => d.data().googleMapsUrl);
-            if (gWidget) {
-              setGoogleMapsUrl(gWidget.data().googleMapsUrl);
-            }
-          }
+        // Tentativa 2: Busca pelo slug original da URL (ex: tia-dôra)
+        const q2 = query(usersRef, where('companySlug', '==', decodedSlug.toLowerCase()), limit(1));
+        const snap2 = await getDocs(q2);
+
+        if (!snap2.empty) {
+          const data = snap2.docs[0].data();
+          setTargetUserId(snap2.docs[0].id);
+          setCompanyNameDisplay(data.companyName);
+          setGoogleMapsUrl(data.googleMapsUrl || null);
+          setIsLoadingCompany(false);
+          return;
         }
+
+        // Tentativa 3: Busca pelo nome da empresa (Slug formatado de volta para nome)
+        const probableName = decodedSlug.replace(/-/g, ' ');
+        const q3 = query(usersRef, where('companyName', '>=', probableName), limit(5));
+        const snap3 = await getDocs(q3);
+        
+        // Como o Firestore não tem busca case-insensitive, filtramos localmente se necessário
+        const match = snap3.docs.find(d => d.data().companyName.toLowerCase() === probableName.toLowerCase());
+        
+        if (match) {
+          const data = match.data();
+          setTargetUserId(match.id);
+          setCompanyNameDisplay(data.companyName);
+          setGoogleMapsUrl(data.googleMapsUrl || null);
+        }
+
       } catch (err) {
         console.error("Erro ao localizar empresa:", err);
       } finally {
@@ -79,7 +93,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     }
     
     findCompany();
-  }, [db, slug]);
+  }, [db, rawSlug]);
 
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
@@ -213,7 +227,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             </div>
             <div className="space-y-2">
               <h2 className="text-3xl font-bold font-headline">Obrigado!</h2>
-              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {displayCompanyName}.</p>
+              <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {companyNameDisplay}.</p>
             </div>
 
             {googleMapsUrl && rating >= 4 && (
@@ -250,7 +264,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       </div>
       <div className="w-full max-w-xl space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold font-headline tracking-tight">{displayCompanyName}</h1>
+          <h1 className="text-3xl font-bold font-headline tracking-tight">{companyNameDisplay}</h1>
           <p className="text-muted-foreground">Gostaríamos de ouvir sua opinião sobre nossos serviços.</p>
         </div>
 

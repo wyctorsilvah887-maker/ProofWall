@@ -44,7 +44,12 @@ export default function SignupPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser = userCredential.user;
       
-      const slug = company.trim().toLowerCase().replace(/\s+/g, '-');
+      // Geração de slug limpo (sem acentos)
+      const slug = company.trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
 
       const userData = {
         name: name.trim(),
