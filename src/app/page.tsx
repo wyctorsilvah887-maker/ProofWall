@@ -297,7 +297,6 @@ export default function Home() {
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
           <div className="flex items-center gap-2 opacity-50">
              <Image src="/Logotipo PROOVA app.png" alt="Logo Small" width={32} height={32} className="rounded-lg grayscale" />
-             <span className="text-xs font-black uppercase tracking-widest">PROOVA</span>
           </div>
           <div className="space-y-2">
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
