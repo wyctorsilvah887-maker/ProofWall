@@ -7,6 +7,18 @@
       "imageHint": "saas dashboard testimonials"
     },
     {
+      "id": "hero-bg-photo",
+      "description": "Imagem de fundo profissional para a seção principal",
+      "imageUrl": "https://picsum.photos/seed/herobg99/1920/1080",
+      "imageHint": "modern office space"
+    },
+    {
+      "id": "cta-bg-photo",
+      "description": "Imagem de fundo para a seção de fechamento",
+      "imageUrl": "https://picsum.photos/seed/ctabg88/1920/1080",
+      "imageHint": "tech abstract pattern"
+    },
+    {
       "id": "brand-design",
       "description": "Exemplo de customização de marca e design",
       "imageUrl": "https://picsum.photos/seed/design1/800/600",
