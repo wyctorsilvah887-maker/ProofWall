@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -93,7 +92,7 @@ export default function PrivateInboxPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-105">
-              <Image src="/Logotipo POOVA app.png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
+              <Image src="/Logotipo PROOVA app.png" alt="Logo" fill className="rounded-xl shadow-sm object-cover" />
             </div>
           </Link>
         </div>

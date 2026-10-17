@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from "react";
@@ -64,7 +63,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body overflow-x-hidden">
       <header className="px-4 lg:px-6 h-20 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
         <div className="flex items-center font-bold text-xl tracking-tight">
-          <Image src="/Logotipo POOVA app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+          <Image src="/Logotipo PROOVA app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
@@ -105,7 +104,7 @@ export default function Home() {
                     Transforme elogios em <span className="text-primary italic">Máquinas de Vendas</span>.
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground text-lg md:text-xl lg:text-2xl/relaxed mx-auto lg:mx-0 font-medium">
-                    Colete, modere e exiba depoimentos reais em minutos com o domínio premium <strong>proova.io</strong>.
+                    Colete, modere e exiba depoimentos reais em minutos com o domínio premium <strong>proova.wsstudioscompany.com.br</strong>.
                   </p>
                 </div>
                 
@@ -212,7 +211,7 @@ export default function Home() {
                 
                 <div className="mt-12 flex justify-center">
                   <div className="px-6 py-3 bg-primary/5 rounded-full border border-primary/10 text-[10px] md:text-xs font-mono text-primary font-bold shadow-sm">
-                    &lt;script src="https://proova.io/widget.js"&gt;&lt;/script&gt;
+                    &lt;script src="https://proova.wsstudioscompany.com.br/widget.js"&gt;&lt;/script&gt;
                   </div>
                 </div>
               </div>
@@ -229,7 +228,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-black font-headline tracking-tight">Coleta Viral</h3>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
-                  Envie um link <strong>proova.io</strong> direto no WhatsApp. Seu cliente avalia em 30 segundos.
+                  Envie um link <strong>proova</strong> direto no WhatsApp. Seu cliente avalia em 30 segundos.
                 </p>
               </div>
               <div className="flex flex-col items-center text-center space-y-6 p-8 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all duration-300 group">
@@ -276,7 +275,7 @@ export default function Home() {
                   Seja um Membro Fundador da <span className="italic">Proova</span>.
                 </h2>
                 <p className="max-w-[700px] text-primary-foreground/90 text-lg md:text-2xl font-medium mx-auto">
-                  Garanta <strong>50% de desconto perpétuo</strong> ao se inscrever hoje em <strong>proova.io</strong>.
+                  Garanta <strong>50% de desconto perpétuo</strong> ao se inscrever hoje no Proova.
                 </p>
               </div>
               <div className="w-full max-w-sm mx-auto space-y-4 px-4">
@@ -297,7 +296,7 @@ export default function Home() {
       <footer className="py-12 border-t bg-background relative z-10">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
           <div className="flex items-center gap-2 opacity-50">
-             <Image src="/Logotipo POOVA app.png" alt="Logo Small" width={32} height={32} className="rounded-lg grayscale" />
+             <Image src="/Logotipo PROOVA app.png" alt="Logo Small" width={32} height={32} className="rounded-lg grayscale" />
              <span className="text-xs font-black uppercase tracking-widest">PROOVA</span>
           </div>
           <div className="space-y-2">
