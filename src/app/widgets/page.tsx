@@ -23,7 +23,9 @@ import {
   ExternalLink,
   ChevronRight,
   Search,
-  Inbox
+  Inbox,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,13 +52,14 @@ import { collection, setDoc, serverTimestamp, doc, deleteDoc, getDoc } from 'fir
 import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
   const db = useFirestore();
   const auth = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   
   const [newWidgetName, setNewWidgetName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -198,7 +201,6 @@ export default function WidgetsPage() {
           </Link>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -234,6 +236,20 @@ export default function WidgetsPage() {
                 <Inbox className="mr-2 h-4 w-4 text-primary" />
                 <span>Inbox Privado</span>
               </DropdownMenuItem>
+              
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-pointer font-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -266,12 +282,12 @@ export default function WidgetsPage() {
         {/* ... Search and List */}
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
+          <input 
             type="text"
             placeholder="Buscar mural pelo nome..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-11 rounded-xl bg-background border-muted-foreground/10 focus-visible:ring-primary/20"
+            className="flex h-11 w-full rounded-xl border border-input bg-background pl-10 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transition-all"
           />
         </div>
 
@@ -368,8 +384,6 @@ export default function WidgetsPage() {
           </p>
         </div>
       </footer>
-
-      {/* Dialogs... */}
     </div>
   );
 }

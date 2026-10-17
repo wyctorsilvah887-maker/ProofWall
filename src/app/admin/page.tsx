@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -20,12 +21,13 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } f
 import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 
 export default function AdminPage() {
   const auth = useAuth();
   const db = useFirestore();
   const { user, loading: authLoading } = useUser();
+  const { theme, setTheme } = useTheme();
   
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -278,7 +280,6 @@ export default function AdminPage() {
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <ThemeToggle />
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">
             <BadgeCheck className="w-3 h-3" /> Administrador
           </Badge>
@@ -292,10 +293,24 @@ export default function AdminPage() {
                 <User className="w-5 h-5 text-primary" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-background border-border">
-              <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive cursor-pointer">
+            <DropdownMenuContent align="end" className="w-48 bg-background border-border shadow-xl rounded-2xl p-2">
+              <DropdownMenuLabel className="px-3 py-2">Opções de Admin</DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-1" />
+              
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-pointer font-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="text-destructive focus:text-destructive rounded-xl cursor-pointer font-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>

@@ -62,7 +62,7 @@ import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 import { jsPDF } from 'jspdf';
 import { cn } from '@/lib/utils';
 
@@ -71,6 +71,7 @@ export default function DashPage() {
   const db = useFirestore();
   const auth = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [baseUrl, setBaseUrl] = useState('');
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
@@ -317,10 +318,6 @@ export default function DashPage() {
         </div>
 
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <div className="flex items-center gap-1 md:gap-2 border-r pr-2 md:pr-4 mr-1 md:mr-2">
-            <ThemeToggle />
-          </div>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -360,6 +357,20 @@ export default function DashPage() {
                 <Info className="mr-2 h-4 w-4 text-primary" />
                 <span>Tutorial</span>
               </DropdownMenuItem>
+              
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-pointer font-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
               {userData?.isAdmin && (
                 <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
                   <Shield className="mr-2 h-4 w-4 text-primary" />
@@ -613,7 +624,6 @@ export default function DashPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* ... Other Dialogs */}
     </div>
   );
 }
