@@ -275,7 +275,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-muted/30 font-body text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
-          <Image src="/maskable_icon_x512 (3).png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
+          <Image src="/Logotipo POOVA app.png" alt="Logo" width={56} height={56} className="rounded-2xl shadow-sm" />
         </div>
         <div className="ml-auto flex items-center gap-4">
           <ThemeToggle />
