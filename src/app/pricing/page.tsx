@@ -51,10 +51,9 @@ export default function PricingPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
-  // Lógica refinada para status do plano
   const status = useMemo(() => {
-    if (!user) return 'guest'; // Visitante não logado
-    return userData?.membershipStatus || 'base'; // Logado: status do banco ou base por padrão
+    if (!user) return 'guest';
+    return userData?.membershipStatus || 'base';
   }, [user, userData]);
 
   const membershipLabel = useMemo(() => {
@@ -67,7 +66,8 @@ export default function PricingPage() {
   }, [status]);
 
   const checkoutLinks = useMemo(() => {
-    const uidParam = user ? `&ext_id=${user.uid}` : '';
+    // Corrigido: Usando ? em vez de & pois é o primeiro parâmetro da URL
+    const uidParam = user ? `?ext_id=${user.uid}` : '';
     return {
       gold: `https://pay.cakto.com.br/8c7bbit_1215637${uidParam}`,
       enterprise: `https://pay.cakto.com.br/yhtkwz4_1215645${uidParam}`
