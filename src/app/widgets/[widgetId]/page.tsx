@@ -835,6 +835,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4" /> Preview Dinâmico
               </h2>
+              <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
+                <Info className="w-3 h-3" /> Ver Tutorial
+              </Button>
             </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
