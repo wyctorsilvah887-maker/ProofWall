@@ -4,7 +4,7 @@ import { initializeFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
- * Endpoint de Webhook para Cakto.
+ * Endpoint de Webhook para Cakto (Versão Individual JSON).
  * Registra eventos de pagamento (cancelamentos, aprovações) no Firestore para auditoria admin.
  */
 export async function POST(request: Request) {
@@ -12,20 +12,31 @@ export async function POST(request: Request) {
     const payload = await request.json();
     const { firestore } = initializeFirebase();
 
-    // Log para depuração no console
+    // Extraindo dados conforme o modelo enviado pela Cakto (Individual)
+    const eventType = payload.event || 'unknown_event';
+    const data = payload.data || {};
+    
+    const customerEmail = data.customer?.email || 'unknown@email.com';
+    const status = data.status || eventType; // Usa o status ou o próprio nome do evento
+    const productName = data.product?.name || 'Plano Proova';
+    const externalId = data.external_id || data.refId || 'unknown'; // UID que enviamos no ext_id
+
+    // Log para depuração no console do servidor
     console.log('--- CAKTO WEBHOOK EVENT ---');
-    console.log('Status:', payload.status);
-    console.log('Email Cliente:', payload.customer_email);
-    console.log('ID Externo (UID):', payload.external_id);
+    console.log('Evento:', eventType);
+    console.log('Status Real:', status);
+    console.log('Email Cliente:', customerEmail);
+    console.log('ID Externo (UID):', externalId);
     console.log('---------------------------');
 
     // Registra o evento no Firestore para o Painel Admin
     await addDoc(collection(firestore, 'payment_events'), {
-      externalId: payload.external_id || 'unknown',
-      customerEmail: payload.customer_email || 'unknown',
-      status: payload.status || 'unknown',
-      productName: payload.product_name || 'unknown',
-      payload: payload,
+      externalId: externalId,
+      customerEmail: customerEmail,
+      status: status,
+      productName: productName,
+      eventType: eventType,
+      payload: payload, // Salva o JSON completo para auditoria profunda se necessário
       createdAt: serverTimestamp()
     });
     

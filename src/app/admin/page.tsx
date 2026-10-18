@@ -459,19 +459,20 @@ export default function AdminPage() {
                     </TableHeader>
                     <TableBody>
                       {paymentEvents.map((evt: any) => (
-                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' || evt.status === 'refunded' ? "bg-destructive/5" : "")}>
+                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? "bg-destructive/5" : "")}>
                           <TableCell>
                             <div className="flex flex-col">
                               <Badge 
                                 variant={
-                                  evt.status === 'approved' || evt.status === 'renewed' || evt.status === 'subscription_renewed' || evt.status === 'active' 
+                                  evt.status === 'approved' || evt.status === 'paid' || evt.status === 'renewed' || evt.eventType?.includes('approve') 
                                     ? 'default' 
-                                    : (evt.status === 'canceled' || evt.status === 'refunded' ? 'destructive' : 'outline')
+                                    : (evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? 'destructive' : 'outline')
                                 } 
                                 className="w-fit uppercase text-[9px] font-black"
                               >
                                 {evt.status}
                               </Badge>
+                              <span className="text-[8px] text-muted-foreground font-mono mt-1">{evt.eventType}</span>
                             </div>
                           </TableCell>
                           <TableCell>
