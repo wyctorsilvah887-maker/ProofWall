@@ -66,42 +66,42 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
       <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link href="/" className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Voltar</span>
           </Link>
-          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
+          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[120px] h-[35px] sm:w-[160px] sm:h-[45px] md:w-[200px] md:h-[55px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
             <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" />
           </Link>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
-          <Link href="/login" className="hidden sm:block">
-            <Button variant="ghost" size="sm" className="font-bold">Entrar</Button>
+          <Link href="/login" className="hidden xs:block">
+            <Button variant="ghost" size="sm" className="font-bold text-xs sm:text-sm">Entrar</Button>
           </Link>
           <Link href="/signup">
-            <Button size="sm" className="font-bold shadow-lg">Começar Grátis</Button>
+            <Button size="sm" className="font-bold shadow-lg text-[10px] sm:text-xs h-9 px-3 sm:h-10 sm:px-4">Começar Grátis</Button>
           </Link>
         </div>
       </header>
 
       <main className="flex-1">
-        <section className="py-20 md:py-32 px-4 container mx-auto text-center space-y-6">
-          <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
+        <section className="py-12 md:py-24 lg:py-32 px-4 container mx-auto text-center space-y-6">
+          <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
             💎 Oferta especial: 50% OFF vitalício nos planos pagos
           </div>
-          <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter max-w-4xl mx-auto leading-[1.1]">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black font-headline tracking-tighter max-w-4xl mx-auto leading-[1.1]">
             Escolha o plano perfeito para sua <span className="text-primary italic">Autoridade</span>.
           </h1>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium">
+          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-medium">
             Transforme a confiança dos seus clientes em lucro real. Comece grátis ou escolha um plano profissional.
           </p>
         </section>
 
-        <section className="pb-32 px-4 container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <section className="pb-24 sm:pb-32 px-4 container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
             {plans.map((plan, idx) => (
               <Card 
                 key={idx} 
@@ -117,9 +117,9 @@ export default function PricingPage() {
                     Degustação
                   </div>
                 )}
-                <CardHeader className="p-8">
+                <CardHeader className="p-6 sm:p-8">
                   <div className="flex items-center justify-between mb-4">
-                    <CardTitle className="text-2xl font-black font-headline uppercase tracking-widest">
+                    <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-widest">
                       {plan.name}
                     </CardTitle>
                     {plan.name === "Trial" && <Clock className="w-5 h-5 text-muted-foreground" />}
@@ -127,31 +127,31 @@ export default function PricingPage() {
                     {plan.name === "Enterprise" && <Zap className="w-5 h-5 text-primary" />}
                   </div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-black">{plan.price}</span>
-                    <span className="text-muted-foreground font-medium">{plan.period}</span>
+                    <span className="text-4xl sm:text-5xl font-black">{plan.price}</span>
+                    <span className="text-muted-foreground font-medium text-sm">{plan.period}</span>
                   </div>
-                  <p className="text-muted-foreground mt-4 font-medium text-sm leading-relaxed">
+                  <p className="text-muted-foreground mt-4 font-medium text-xs sm:text-sm leading-relaxed">
                     {plan.description}
                   </p>
                 </CardHeader>
-                <CardContent className="p-8 pt-0 flex-1">
-                  <ul className="space-y-4">
+                <CardContent className="p-6 sm:p-8 pt-0 flex-1">
+                  <ul className="space-y-3 sm:space-y-4">
                     {plan.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-center gap-3 text-sm font-medium">
-                        <div className="bg-primary/10 p-1 rounded-full text-primary">
-                          <Check className="w-4 h-4" />
+                      <li key={fIdx} className="flex items-center gap-3 text-xs sm:text-sm font-medium">
+                        <div className="bg-primary/10 p-1 rounded-full text-primary shrink-0">
+                          <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </div>
                         {feature}
                       </li>
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter className="p-8 pt-0">
+                <CardFooter className="p-6 sm:p-8 pt-0">
                   <Link href="/signup" className="w-full">
                     <Button 
-                      className={`w-full h-14 text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 ${plan.highlight ? 'bg-primary hover:bg-primary/90' : 'bg-muted-foreground/10 text-foreground hover:bg-muted-foreground/20'}`}
+                      className={`w-full h-12 sm:h-14 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 ${plan.highlight ? 'bg-primary hover:bg-primary/90' : 'bg-muted-foreground/10 text-foreground hover:bg-muted-foreground/20'}`}
                     >
-                      {plan.cta} <ArrowRight className="ml-2 w-5 h-5" />
+                      {plan.cta} <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                   </Link>
                 </CardFooter>
@@ -160,25 +160,25 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="py-24 bg-muted/30 border-y">
+        <section className="py-16 sm:py-24 bg-muted/30 border-y">
           <div className="container px-4 mx-auto max-w-4xl">
-            <h2 className="text-3xl font-black font-headline text-center mb-16 tracking-tight">Perguntas Frequentes</h2>
+            <h2 className="text-2xl sm:text-3xl font-black font-headline text-center mb-12 sm:mb-16 tracking-tight">Perguntas Frequentes</h2>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-trial" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-6 font-medium">
+                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">Posso mudar de plano a qualquer momento?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-6 font-medium">
+                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Posso mudar de plano a qualquer momento?</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   Sim! Você pode fazer o upgrade ou downgrade do seu plano diretamente pelo seu painel administrativo. A diferença de valor será ajustada proporcionalmente na sua próxima fatura.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">Como funciona o redirecionamento para o Google Maps?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-6 font-medium">
+                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o redirecionamento para o Google Maps?</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   Ao receber uma avaliação de 4 ou 5 estrelas, o Proova exibe um botão especial incentivando o cliente a replicar esse elogio no seu perfil do Google Business, aumentando seu SEO local.
                 </AccordionContent>
               </AccordionItem>
@@ -186,28 +186,28 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="py-24 container px-4 mx-auto">
-          <div className="bg-primary text-white rounded-[3rem] p-12 text-center space-y-8 relative overflow-hidden shadow-2xl">
+        <section className="py-16 sm:py-24 container px-4 mx-auto">
+          <div className="bg-primary text-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-center space-y-8 relative overflow-hidden shadow-2xl">
              <div className="relative z-10 space-y-4">
-              <h2 className="text-3xl md:text-5xl font-black font-headline tracking-tighter">Ainda tem dúvidas?</h2>
-              <p className="text-primary-foreground/90 font-medium text-lg max-w-xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline tracking-tighter">Ainda tem dúvidas?</h2>
+              <p className="text-primary-foreground/90 font-medium text-base sm:text-lg max-w-xl mx-auto">
                 Nossa equipe de especialistas está pronta para ajudar você a turbinar suas vendas através da prova social.
               </p>
-              <div className="pt-6">
-                <Button variant="secondary" size="lg" className="h-16 px-10 rounded-2xl text-xl font-black shadow-2xl">
+              <div className="pt-4 sm:pt-6">
+                <Button variant="secondary" size="lg" className="h-14 sm:h-16 px-8 sm:px-10 rounded-2xl text-lg sm:text-xl font-black shadow-2xl w-full sm:w-auto">
                   Falar com Especialista
                 </Button>
               </div>
              </div>
-             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32" />
-             <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl -ml-32 -mb-32" />
+             <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24 sm:-mr-32 sm:-mt-32" />
+             <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-64 sm:h-64 bg-black/10 rounded-full blur-3xl -ml-24 -mb-24 sm:-ml-32 sm:-mb-32" />
           </div>
         </section>
       </main>
 
       <footer className="py-12 border-t bg-background">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
-          <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
+          <div className="flex items-center gap-2 relative w-[140px] h-[40px] md:w-[200px] md:h-[55px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
