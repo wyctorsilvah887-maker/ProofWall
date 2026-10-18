@@ -20,7 +20,8 @@ import {
   Layout,
   Palette,
   HelpCircle,
-  Info
+  Info,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +48,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { ThemeToggle } from '@/components/theme-toggle';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
@@ -183,6 +190,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
   const [muralIndex, setMuralIndex] = useState(0);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') setBaseUrl(window.location.origin);
@@ -222,6 +230,11 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     }
     return slice;
   }, [currentSelection, muralIndex, layout]);
+
+  const displayedTestimonialsSelection = useMemo(() => {
+    if (!approvedTestimonials) return [];
+    return showAll ? approvedTestimonials : approvedTestimonials.slice(0, 10);
+  }, [approvedTestimonials, showAll]);
 
   const handleSave = async () => {
     if (!widgetRef) return;
@@ -315,29 +328,51 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             </div>
 
             <div className="space-y-6 pt-12 border-t">
-              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Conteúdo do Mural</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {approvedTestimonials?.map((t: any) => (
-                  <div 
-                    key={t.id} 
-                    onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
-                    className={cn(
-                      "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
-                      selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
-                        {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold text-[11px] block truncate">{t.userName}</span>
-                        <p className="text-[10px] text-muted-foreground italic line-clamp-1 mt-1">"{t.text}"</p>
-                      </div>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="testimonials" className="border-none">
+                  <AccordionTrigger className="hover:no-underline py-0 group">
+                    <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+                      <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({approvedTestimonials?.length || 0})
+                    </h2>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {displayedTestimonialsSelection.map((t: any) => (
+                        <div 
+                          key={t.id} 
+                          onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
+                          className={cn(
+                            "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
+                            selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                              {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="font-bold text-[11px] block truncate">{t.userName}</span>
+                              <p className="text-[10px] text-muted-foreground italic line-clamp-1 mt-1">"{t.text}"</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {!showAll && (approvedTestimonials?.length || 0) > 10 && (
+                        <div className="col-span-full mt-6 flex justify-center">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setShowAll(true)} 
+                            className="rounded-full gap-2 border-primary/20 text-primary hover:bg-primary/5 font-bold h-11 px-8"
+                          >
+                            Mostrar Todos <ChevronDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         </div>

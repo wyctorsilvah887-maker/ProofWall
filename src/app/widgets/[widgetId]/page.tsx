@@ -24,7 +24,8 @@ import {
   Info,
   Link2,
   Copy,
-  ExternalLink
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -334,6 +335,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [muralIndex, setMuralIndex] = useState(0);
   const [baseUrl, setBaseUrl] = useState('');
+  const [showAll, setShowAll] = useState(false);
 
   const [tempImage, setTempImage] = useState<string | null>(null);
   const [cropType, setCropType] = useState<'logo' | 'cover' | null>(null);
@@ -404,6 +406,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       !takenTestimonialIds.has(t.id) || selectedIds.includes(t.id)
     );
   }, [approvedTestimonials, takenTestimonialIds, selectedIds]);
+
+  const displayedTestimonialsSelection = useMemo(() => {
+    return showAll ? selectableTestimonials : selectableTestimonials.slice(0, 10);
+  }, [selectableTestimonials, showAll]);
 
   const currentTestimonials = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
@@ -618,7 +624,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   </AccordionTrigger>
                   <AccordionContent className="pt-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                      {selectableTestimonials.map((t: any) => (
+                      {displayedTestimonialsSelection.map((t: any) => (
                         <div 
                           key={t.id} 
                           onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
@@ -638,6 +644,18 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                           </div>
                         </div>
                       ))}
+
+                      {!showAll && selectableTestimonials.length > 10 && (
+                        <div className="col-span-full mt-6 flex justify-center">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setShowAll(true)} 
+                            className="rounded-full gap-2 border-primary/20 text-primary hover:bg-primary/5 font-bold h-11 px-8"
+                          >
+                            Mostrar Todos <ChevronDown className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
