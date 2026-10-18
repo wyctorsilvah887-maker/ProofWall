@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -331,11 +330,11 @@ export default function DashPage() {
   const collectionLink = `${baseUrl}/c/${companySlug}`;
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[180px] h-[50px] md:w-[240px] md:h-[70px] transition-transform group-hover:scale-105">
+            <div className="relative w-[140px] h-[40px] md:w-[240px] md:h-[70px] transition-transform group-hover:scale-105">
               <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" />
               <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" />
             </div>
@@ -347,12 +346,12 @@ export default function DashPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end">
-                  <span className="text-xs font-bold truncate max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
+                  <span className="text-xs font-bold truncate max-w-[80px] sm:max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
                     <span className={cn(
-                      "text-[10px] uppercase tracking-widest font-black leading-tight",
+                      "text-[8px] sm:text-[10px] uppercase tracking-widest font-black leading-tight",
                       userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}
@@ -419,7 +418,7 @@ export default function DashPage() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -437,8 +436,8 @@ export default function DashPage() {
           </Link>
         </header>
 
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 relative">
-          <Card className="border-none shadow-sm group cursor-default relative overflow-visible rounded-2xl">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 relative">
+          <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">Resumo</CardTitle>
               {trendMetrics.isPositive ? (
@@ -447,7 +446,7 @@ export default function DashPage() {
                 <TrendingDown className="h-4 w-4 text-destructive" />
               )}
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold">
                   {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
@@ -465,15 +464,11 @@ export default function DashPage() {
                   <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
                 </div>
               </div>
+              
+              <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-md p-1.5 z-30 group-hover:scale-110 transition-transform translate-x-1/2">
+                <ArrowRight className="h-4 w-4 text-primary" />
+              </div>
             </CardContent>
-            
-            <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 group-hover:scale-110 transition-transform ring-4 ring-muted/20">
-              <ArrowRight className="h-4 w-4 text-primary" />
-            </div>
-
-            <div className="flex md:hidden absolute -bottom-5 left-1/2 -translate-x-1/2 items-center justify-center bg-background rounded-full border shadow-lg p-1.5 z-30 transition-transform ring-4 ring-muted/20">
-              <ArrowDown className="h-4 w-4 text-primary" />
-            </div>
           </Card>
 
           <div className="relative group">
@@ -487,7 +482,7 @@ export default function DashPage() {
             >
               <span className="flex items-center gap-1.5"><Edit3 className="w-2.5 h-2.5" /> Configurar Link</span>
             </div>
-            <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl">
+            <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
                 <MapPin className="h-4 w-4 text-primary" />
@@ -519,7 +514,7 @@ export default function DashPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3">
-                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide">
+                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all">
                   {collectionLink}
                 </div>
                 <div className="flex gap-2">
@@ -537,7 +532,7 @@ export default function DashPage() {
                     onClick={() => setIsQrDialogOpen(true)}
                   >
                     <QrCode className="h-4 w-4" />
-                    <span>Gerar Cartaz</span>
+                    <span className="whitespace-nowrap">Gerar Cartaz</span>
                   </Button>
                 </div>
               </div>
@@ -604,7 +599,7 @@ export default function DashPage() {
         </div>
       </main>
 
-      <footer className="py-8 border-t flex flex-col items-center gap-4">
+      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto">
         <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
@@ -683,7 +678,7 @@ export default function DashPage() {
           </div>
           <DialogFooter>
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl}>
-              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 w-4 h-4" />}
+              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 w-4 h-4" />}
               Salvar Configuração
             </Button>
           </DialogFooter>
@@ -703,17 +698,10 @@ export default function DashPage() {
               <QRCodeSVG 
                 id="qr-code-svg"
                 value={collectionLink} 
-                size={200}
+                size={180}
                 level="H"
                 includeMargin={false}
-                imageSettings={{
-                  src: "/apple-touch-icon.png",
-                  x: undefined,
-                  y: undefined,
-                  height: 40,
-                  width: 40,
-                  excavate: true,
-                }}
+                className="max-w-full h-auto"
               />
             </div>
 
