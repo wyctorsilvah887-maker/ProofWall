@@ -82,7 +82,7 @@
         "status": { "type": "string" },
         "productName": { "type": "string" },
         "payload": { "type": "object" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": { "type": "string", format: "date-time" }
       }
     },
     "Testimonial": {
@@ -178,6 +178,26 @@
           "type": "string",
           "enum": ["mural", "carousel", "grid", "popup"],
           "description": "Tipo de layout do widget."
+        },
+        "heroTitle": {
+          "type": "string",
+          "description": "Título principal customizado da página pública."
+        },
+        "heroSubtitle": {
+          "type": "string",
+          "description": "Subtítulo do hero."
+        },
+        "testimonialsTitle": {
+          "type": "string",
+          "description": "Título da seção de depoimentos."
+        },
+        "footerText": {
+          "type": "string",
+          "description": "Texto do rodapé."
+        },
+        "showLogo": {
+          "type": "boolean",
+          "description": "Controla exibição da logo."
         },
         "createdAt": {
           "type": "string",

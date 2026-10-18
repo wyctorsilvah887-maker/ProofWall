@@ -101,6 +101,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
   const logoUrl = widgetData?.logoUrl || '';
   const coverImageUrl = widgetData?.coverImageUrl || '';
+  
+  // Customizações de Texto
+  const heroTitle = widgetData?.heroTitle || `O que dizem sobre ${companyData?.companyName || 'nós'}`;
+  const heroSubtitle = widgetData?.heroSubtitle || '';
+  const testimonialsTitle = widgetData?.testimonialsTitle || '';
+  const footerText = widgetData?.footerText || 'PROOVA — Prova Social de Verdade';
+  const showLogo = widgetData?.showLogo !== false;
 
   useEffect(() => {
     if (layout === 'mural' && filteredTestimonials.length > 0) {
@@ -195,20 +202,35 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         )}
 
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
-          <header className={cn("px-6 text-center space-y-12", hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32")}>
-            <div className="space-y-10">
-              {hasValidLogo && (
+          <header className={cn("px-6 text-center space-y-8", hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32")}>
+            <div className="space-y-6">
+              {showLogo && hasValidLogo && (
                 <div className="flex justify-center">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
                     <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo" />
                   </div>
                 </div>
               )}
-              <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.05] max-w-5xl mx-auto">
-                O que dizem sobre <span style={{ color: themeColor }}>{companyData?.companyName}</span>
-              </h1>
+              <div className="space-y-4">
+                <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.05] max-w-5xl mx-auto">
+                  {heroTitle}
+                </h1>
+                {heroSubtitle && (
+                  <p className="text-muted-foreground text-lg sm:text-2xl max-w-3xl mx-auto font-medium leading-relaxed italic opacity-80">
+                    {heroSubtitle}
+                  </p>
+                )}
+              </div>
             </div>
           </header>
+
+          {testimonialsTitle && (
+            <div className="text-center py-8">
+              <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
+                {testimonialsTitle}
+              </h2>
+            </div>
+          )}
 
           <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1600px] mx-auto">
             {filteredTestimonials.length === 0 ? (
@@ -265,7 +287,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </a>
             )}
             <div className="flex flex-col items-center gap-2 opacity-30">
-              <p className="text-[9px] font-bold">PROOVA — Prova Social de Verdade</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest">{footerText}</p>
             </div>
           </footer>
         </div>

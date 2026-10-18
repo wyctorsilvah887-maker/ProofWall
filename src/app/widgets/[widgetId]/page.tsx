@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -32,13 +33,15 @@ import {
   Gem,
   Shield,
   Sun,
-  Moon
+  Moon,
+  Type
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore, useDoc, useCollection, useStorage, useAuth } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -185,6 +188,11 @@ const PublicPageSettings = ({
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
   logoUrl, setLogoUrl,
+  heroTitle, setHeroTitle,
+  heroSubtitle, setHeroSubtitle,
+  testimonialsTitle, setTestimonialsTitle,
+  footerText, setFooterText,
+  showLogo, setShowLogo,
   onFileSelect,
   isUploading,
   handleSave,
@@ -211,6 +219,7 @@ const PublicPageSettings = ({
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0">
           <TabsTrigger value="geral" className="text-xs">Visual</TabsTrigger>
+          <TabsTrigger value="conteudo" className="text-xs">Conteúdo</TabsTrigger>
           <TabsTrigger value="design" className="text-xs">Layout</TabsTrigger>
           <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
         </TabsList>
@@ -263,9 +272,40 @@ const PublicPageSettings = ({
               </div>
             </TabsContent>
 
+            <TabsContent value="conteudo" className="mt-0 space-y-8">
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Type className="w-3 h-3 text-primary" /> Título Principal (Hero)
+                </Label>
+                <Input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Ex: O que dizem sobre nós" className="text-xs" />
+              </div>
+              
+              <div className="space-y-4">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Subtítulo Hero</Label>
+                <Textarea value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="Uma breve descrição impactante..." className="text-xs min-h-[80px]" />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Título da Seção de Depoimentos</Label>
+                <Input value={testimonialsTitle} onChange={(e) => setTestimonialsTitle(e.target.value)} placeholder="Ex: Experiência de quem confia" className="text-xs" />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Texto do Rodapé</Label>
+                <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="Ex: © 2026 Sua Empresa" className="text-xs" />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                 <div className="flex items-center justify-between p-3 bg-muted/10 rounded-xl">
+                  <Label className="text-[11px] font-bold">Exibir Logotipo</Label>
+                  <Switch checked={showLogo} onCheckedChange={setShowLogo} />
+                </div>
+              </div>
+            </TabsContent>
+
             <TabsContent value="design" className="mt-0 space-y-6">
               <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nome da Página</Label>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Nome da Página (Interno)</Label>
                 <Input value={widgetName} onChange={(e) => setWidgetName(e.target.value)} />
               </div>
               <div className="space-y-4">
@@ -354,6 +394,14 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [whatsappNumber, setWhatsappNumber] = useState('');
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
+  
+  // Novos estados de conteúdo
+  const [heroTitle, setHeroTitle] = useState('');
+  const [heroSubtitle, setHeroSubtitle] = useState('');
+  const [testimonialsTitle, setTestimonialsTitle] = useState('');
+  const [footerText, setFooterText] = useState('');
+  const [showLogo, setShowLogo] = useState(true);
+
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -385,6 +433,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setWhatsappNumber(widgetData.whatsappNumber || '');
       setGoogleMapsUrl(widgetData.googleMapsUrl || '');
       setExternalSiteUrl(widgetData.externalSiteUrl || '');
+      
+      // Inicializando novos campos
+      setHeroTitle(widgetData.heroTitle || '');
+      setHeroSubtitle(widgetData.heroSubtitle || '');
+      setTestimonialsTitle(widgetData.testimonialsTitle || '');
+      setFooterText(widgetData.footerText || '');
+      setShowLogo(widgetData.showLogo !== undefined ? widgetData.showLogo : true);
     }
   }, [widgetData]);
 
@@ -494,6 +549,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       whatsappNumber,
       googleMapsUrl,
       externalSiteUrl,
+      heroTitle,
+      heroSubtitle,
+      testimonialsTitle,
+      footerText,
+      showLogo,
     }).then(() => {
       setIsSaving(false);
       toast({ title: "Alterações Salvas", description: "Sua página pública foi atualizada." });
@@ -515,6 +575,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
     googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
     layout, setLayout, logoUrl, setLogoUrl,
+    heroTitle, setHeroTitle, heroSubtitle, setHeroSubtitle,
+    testimonialsTitle, setTestimonialsTitle, footerText, setFooterText,
+    showLogo, setShowLogo,
     onFileSelect, isUploading, handleSave, isSaving
   };
 
@@ -590,7 +653,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem 
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                className="rounded-xl cursor-bold py-2.5"
+                className="rounded-xl cursor-pointer font-bold py-2.5"
               >
                 {theme === 'light' ? (
                   <Moon className="mr-2 h-4 w-4 text-primary" />
@@ -675,16 +738,31 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24")}>
-                <div className="text-center space-y-10">
-                  {hasValidLogo && (
+                <div className="text-center space-y-6">
+                  {showLogo && hasValidLogo && (
                     <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
                       <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>
                   )}
-                  <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.1]">
-                    O que dizem sobre <span style={{ color: themeColor }}>{userData?.companyName}</span>
-                  </h1>
+                  <div className="space-y-4">
+                    <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.1] max-w-4xl mx-auto">
+                      {heroTitle || `O que dizem sobre ${userData?.companyName}`}
+                    </h1>
+                    {heroSubtitle && (
+                      <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto font-medium">
+                        {heroSubtitle}
+                      </p>
+                    )}
+                  </div>
                 </div>
+
+                {testimonialsTitle && (
+                  <div className="pt-12 pb-4 text-center">
+                    <h2 className="text-2xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
+                      {testimonialsTitle}
+                    </h2>
+                  </div>
+                )}
 
                 <div className="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {visibleTestimonials.length > 0 ? (
@@ -701,6 +779,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   ) : (
                     <div className="col-span-full py-20 text-center opacity-30 italic text-sm">Selecione depoimentos para o preview.</div>
                   )}
+                </div>
+
+                <div className="mt-auto pt-16 pb-8 text-center">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">
+                    {footerText || 'PROOVA — Prova Social de Verdade'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -777,15 +861,15 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
-                <p className="text-sm font-bold"><strong className="text-primary">Aba Layout</strong> (Estilo de Exibição)</p>
-                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha o formato do <strong className="text-primary">mural</strong> (Masonry, Grade, etc).</p>
+                <p className="text-sm font-bold"><strong className="text-primary">Aba Conteúdo</strong> (Textos Persuasivos)</p>
+                <p className="text-xs text-muted-foreground">Personalize o <strong className="text-primary">Título (Hero)</strong>, subtítulos e rodapé para que a página fale a língua do seu cliente.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
-                <p className="text-sm font-bold"><strong className="text-primary">Aba Social</strong> (Interação e Site Oficial)</p>
-                <p className="text-xs text-muted-foreground">Ative o botão de <strong className="text-primary">WhatsApp</strong> e configure o <strong className="text-primary">Site Oficial</strong>. <strong className="text-primary">Dica:</strong> Copie o link da sua página pública e use-o no seu perfil ou bio!</p>
+                <p className="text-sm font-bold"><strong className="text-primary">Aba Social</strong> (Interação e Link Oficial)</p>
+                <p className="text-xs text-muted-foreground">Ative o botão de <strong className="text-primary">WhatsApp</strong> e configure o <strong className="text-primary">Site Oficial</strong>. <strong className="text-primary">Dica:</strong> Use sua página pública na bio das redes sociais!</p>
               </div>
             </div>
           </div>
@@ -822,4 +906,3 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
-
