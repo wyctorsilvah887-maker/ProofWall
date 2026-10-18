@@ -34,7 +34,11 @@ import {
   Monitor,
   Inbox,
   Save,
-  Gem
+  Gem,
+  ExternalLink,
+  Lock,
+  AlertTriangle,
+  Fingerprint
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -58,7 +62,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, updateDoc, orderBy, limit } from 'firebase/firestore';
+import { doc, collection, query, updateDoc, orderBy, limit, where, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -74,18 +78,31 @@ export default function DashPage() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [baseUrl, setBaseUrl] = useState('');
+  
+  // Dialog States
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+  const [isSlugDialogOpen, setIsSlugDialogOpen] = useState(false);
   
+  // Feature States
   const [selectedWidgetForLink, setSelectedWidgetForLink] = useState<any>(null);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfTheme, setPdfTheme] = useState<'light' | 'dark'>('light');
 
+  // Slug States
+  const [tempSlug, setTempSlug] = useState('');
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false);
+  const [slugError, setSlugError] = useState<string | null>(null);
+
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
+  const isProPlan = useMemo(() => {
+    return userData?.membershipStatus === 'gold' || userData?.membershipStatus === 'enterprise';
+  }, [userData]);
 
   const membershipLabel = useMemo(() => {
     const status = userData?.membershipStatus;
@@ -151,14 +168,7 @@ export default function DashPage() {
   }, [userData]);
 
   const companySlug = useMemo(() => {
-    if (!userData) return '';
-    if (userData.companySlug) return userData.companySlug;
-    
-    return userData?.companyName?.toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-') || '';
+    return userData?.companySlug || '';
   }, [userData]);
 
   const testimonialsQuery = useMemo(() => {
@@ -201,18 +211,17 @@ export default function DashPage() {
   };
 
   const handleUpdateGoogleMapsUrl = async () => {
-    if (!db || !user || !selectedWidgetForLink || isUpdatingUrl) return;
+    if (!db || !user || isUpdatingUrl) return;
     
     setIsUpdatingUrl(true);
-    const widgetRef = doc(db, 'users', user.uid, 'widgets', selectedWidgetForLink.id);
+    const userRef = doc(db, 'users', user.uid);
     
-    updateDoc(widgetRef, {
+    updateDoc(userRef, {
       googleMapsUrl: newGoogleMapsUrl.trim()
     })
       .then(() => {
-        toast({ title: "Link Atualizado", description: `Link do Google Business salvo para o widget "${selectedWidgetForLink.name}".` });
+        toast({ title: "Link Atualizado", description: `Link do Google Business salvo com sucesso.` });
         setIsGoogleMapsDialogOpen(false);
-        setSelectedWidgetForLink(null);
         setNewGoogleMapsUrl('');
       })
       .catch((err) => {
@@ -221,6 +230,56 @@ export default function DashPage() {
       .finally(() => {
         setIsUpdatingUrl(false);
       });
+  };
+
+  const handleUpdateSlug = async () => {
+    if (!db || !user || isCheckingSlug || !tempSlug.trim()) return;
+    
+    const normalizedSlug = tempSlug.trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+
+    if (normalizedSlug === companySlug) {
+      setIsSlugDialogOpen(false);
+      return;
+    }
+
+    if (normalizedSlug.length < 3) {
+      setSlugError("O link deve ter pelo menos 3 caracteres.");
+      return;
+    }
+
+    setIsCheckingSlug(true);
+    setSlugError(null);
+
+    try {
+      // Verificar se o slug já existe em outro usuário
+      const q = query(collection(db, 'users'), where('companySlug', '==', normalizedSlug));
+      const snap = await getDocs(q);
+      
+      if (!snap.empty) {
+        setSlugError("Este link já está sendo usado por outra empresa.");
+        setIsCheckingSlug(false);
+        return;
+      }
+
+      await updateDoc(doc(db, 'users', user.uid), {
+        companySlug: normalizedSlug
+      });
+
+      toast({
+        title: "Link Personalizado!",
+        description: "Sua nova URL de coleta já está ativa.",
+      });
+      setIsSlugDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: "destructive", title: "Erro na atualização", description: "Não foi possível mudar o link agora." });
+    } finally {
+      setIsCheckingSlug(false);
+    }
   };
 
   const handleDownloadPdf = async () => {
@@ -368,7 +427,7 @@ export default function DashPage() {
                 <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="mx-1" />
-              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5 bg-primary/5 text-primary">
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
@@ -470,8 +529,7 @@ export default function DashPage() {
           <div className="relative group">
             <div 
               onClick={() => {
-                setSelectedWidgetForLink(null);
-                setNewGoogleMapsUrl('');
+                setNewGoogleMapsUrl(userData?.googleMapsUrl || '');
                 setIsGoogleMapsDialogOpen(true);
               }}
               className="absolute -top-3 right-4 z-40 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
@@ -504,14 +562,30 @@ export default function DashPage() {
           <Card className="border-none shadow-sm overflow-hidden group rounded-2xl">
             <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
+                </CardTitle>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setTempSlug(companySlug);
+                    setSlugError(null);
+                    setIsSlugDialogOpen(true);
+                  }}
+                  className="h-7 text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {isProPlan ? <Fingerprint className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                  Personalizar Link
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-3">
-                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all">
+                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm px-1.5 py-0.5 rounded border border-primary/20 text-[8px] font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Ativo</div>
                 </div>
                 <div className="flex gap-2">
                   <Button 
@@ -608,7 +682,76 @@ export default function DashPage() {
         </div>
       </footer>
 
-      {/* Dialogs... */}
+      {/* Identity Dialog */}
+      <Dialog open={isSlugDialogOpen} onOpenChange={setIsSlugDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          {isProPlan ? (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+                  <Fingerprint className="w-6 h-6 text-primary" /> Identidade do Link
+                </DialogTitle>
+                <DialogDescription>
+                  Personalize o final da sua URL de coleta. Links curtos convertem mais!
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="slug-input" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nova URL de Coleta</Label>
+                  <div className="relative group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground opacity-50">proova.../c/</span>
+                    <Input 
+                      id="slug-input"
+                      placeholder="minha-loja"
+                      value={tempSlug}
+                      onChange={(e) => {
+                        const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                        setTempSlug(val);
+                        setSlugError(null);
+                      }}
+                      className="h-14 pl-[78px] rounded-2xl border-2 focus:ring-primary/20 text-sm font-bold"
+                    />
+                  </div>
+                  {slugError && <p className="text-[10px] text-destructive font-bold flex items-center gap-1 animate-in slide-in-from-top-1"><AlertTriangle className="w-3 h-3" /> {slugError}</p>}
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 flex gap-3 items-start">
+                   <AlertTriangle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                   <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
+                     <strong className="text-foreground">Aviso Importante:</strong> Ao mudar seu link personalizado, os links e QR codes impressos anteriormente <strong className="text-destructive">deixarão de funcionar</strong> instantaneamente.
+                   </p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button className="w-full font-black h-12 rounded-2xl shadow-xl gap-2" onClick={handleUpdateSlug} disabled={isCheckingSlug}>
+                  {isCheckingSlug ? <Loader2 className="animate-spin" /> : <Save className="w-4 h-4" />}
+                  Atualizar Identidade
+                </Button>
+              </DialogFooter>
+            </>
+          ) : (
+            <div className="text-center py-6 space-y-6">
+              <div className="mx-auto bg-primary/10 p-5 rounded-full w-fit text-primary animate-pulse">
+                <Gem className="w-12 h-12" />
+              </div>
+              <div className="space-y-2">
+                <DialogTitle className="text-2xl font-black font-headline">Recurso Profissional</DialogTitle>
+                <DialogDescription className="max-w-[280px] mx-auto">
+                  A personalização de links (URLs memoráveis) é exclusiva para membros <strong className="text-primary">Gold</strong> e <strong className="text-primary">Enterprise</strong>.
+                </DialogDescription>
+              </div>
+              <div className="pt-2">
+                 <Button className="w-full h-14 rounded-2xl text-lg font-black shadow-xl" onClick={() => router.push('/pricing')}>
+                   Ver Planos e Upgrade
+                 </Button>
+                 <Button variant="ghost" className="w-full mt-2 text-xs font-bold text-muted-foreground" onClick={() => setIsSlugDialogOpen(false)}>Depois</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Tutorial Dialog */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col">
           <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background">
