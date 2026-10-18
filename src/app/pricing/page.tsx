@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -55,6 +54,7 @@ export default function PricingPage() {
         "Depoimentos em Vídeo (4K)",
         "Branding 100% customizado",
         "Remoção da marca Proova",
+        "Acesso ao ADS",
         "Suporte VIP via WhatsApp",
       ],
       cta: "Seja Enterprise",
