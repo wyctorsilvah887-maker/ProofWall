@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -327,7 +326,7 @@ const PublicPageSettings = ({
                                     <SelectContent>
                                       <SelectItem value="light">Fundo Claro</SelectItem>
                                       <SelectItem value="dark">Fundo Escuro</SelectItem>
-                                      <SelectItem value="accent">Destaque (Marca)</SelectItem>
+                                      <SelectItem value="accent">Fundo Marca</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </div>
@@ -456,6 +455,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
   const isEnterprise = userData?.membershipStatus === 'enterprise';
+  const isGold = userData?.membershipStatus === 'gold';
+  const SELECTION_LIMIT = isGold ? 50 : Infinity;
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -647,6 +648,21 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     }).catch(() => setIsSaving(false));
   };
 
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const isRemoving = prev.includes(id);
+      if (!isRemoving && prev.length >= SELECTION_LIMIT) {
+        toast({
+          variant: "destructive",
+          title: "Limite do Plano Gold",
+          description: "Você atingiu o limite de 50 depoimentos ativos. Faça upgrade para o Enterprise para selecionar ilimitados.",
+        });
+        return prev;
+      }
+      return isRemoving ? prev.filter(i => i !== id) : [...prev, id];
+    });
+  };
+
   const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
     setCroppedAreaPixels(croppedAreaPixels);
   };
@@ -668,7 +684,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     onFileSelect, isUploading, handleSave, isSaving, isEnterprise
   };
 
-  const membershipLabel = userData?.membershipStatus;
+  const membershipStatus = userData?.membershipStatus;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
@@ -701,12 +717,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  {membershipLabel && (
+                  {membershipStatus && (
                     <span className={cn(
                       "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      membershipLabel === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                      membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
-                      {membershipLabel === 'enterprise' ? 'Membro Enterprise' : (membershipLabel === 'gold' ? 'Membro Gold' : 'Período Trial')}
+                      {membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : 'Período Trial')}
                     </span>
                   )}
                 </div>
@@ -919,32 +935,49 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="selection" className="border-none">
                   <AccordionTrigger className="hover:no-underline py-0 group">
-                    <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
-                      <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({selectableTestimonials.length})
-                    </h2>
+                    <div className="flex items-center justify-between w-full pr-6">
+                      <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+                        <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({selectableTestimonials.length})
+                      </h2>
+                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && isGold ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
+                        {selectedIds.length} / {isGold ? '50' : '∞'} ATIVOS
+                      </Badge>
+                    </div>
                   </AccordionTrigger>
                   <AccordionContent className="pt-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                      {displayedTestimonialsSelection.map((t: any) => (
-                        <div 
-                          key={t.id} 
-                          onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
-                          className={cn(
-                            "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
-                            selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
-                          )}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
-                              {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                      {displayedTestimonialsSelection.map((t: any) => {
+                        const isSelected = selectedIds.includes(t.id);
+                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && isGold;
+                        const isDisabled = !isSelected && isAtLimit;
+
+                        return (
+                          <div 
+                            key={t.id} 
+                            onClick={() => !isDisabled && toggleSelection(t.id)} 
+                            className={cn(
+                              "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background relative", 
+                              isSelected ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10",
+                              isDisabled && "opacity-40 cursor-not-allowed grayscale"
+                            )}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", isSelected ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                                {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="font-bold text-[11px] block truncate">{t.userName}</span>
+                                <p className="text-[10px] text-muted-foreground italic line-clamp-2 mt-1">"{t.text}"</p>
+                              </div>
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <span className="font-bold text-[11px] block truncate">{t.userName}</span>
-                              <p className="text-[10px] text-muted-foreground italic line-clamp-2 mt-1">"{t.text}"</p>
-                            </div>
+                            {isDisabled && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-background/20 rounded-xl">
+                                <Lock className="w-4 h-4 text-muted-foreground/50" />
+                              </div>
+                            )}
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                       {!showAll && selectableTestimonials.length > 10 && (
                         <div className="col-span-full mt-6 flex justify-center">
