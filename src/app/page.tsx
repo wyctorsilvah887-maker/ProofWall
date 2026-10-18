@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from "react";
@@ -69,6 +68,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
+          <Link href="/pricing" className="hidden sm:block text-sm font-bold hover:text-primary transition-colors">Planos</Link>
           <Link href="/login" className="hidden sm:block">
             <Button variant="ghost" size="sm" className="font-bold">Entrar</Button>
           </Link>
@@ -281,9 +281,9 @@ export default function Home() {
                 </p>
               </div>
               <div className="w-full max-w-sm mx-auto space-y-4 px-4">
-                <Link href="/signup">
+                <Link href="/pricing">
                   <Button size="lg" variant="secondary" className="w-full h-16 text-xl font-black shadow-2xl hover:scale-105 active:scale-95 transition-transform rounded-2xl">
-                    Garantir Minha Vaga VIP
+                    Ver Planos e Garantir Vaga
                   </Button>
                 </Link>
                 <p className="text-[11px] md:text-xs text-primary-foreground/70 uppercase tracking-[0.2em] font-black">
@@ -301,7 +301,12 @@ export default function Home() {
              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-4">
+            <div className="flex items-center justify-center gap-6">
+              <Link href="/pricing" className="text-xs font-bold hover:text-primary transition-colors">Preços</Link>
+              <Link href="/signup" className="text-xs font-bold hover:text-primary transition-colors">Começar</Link>
+              <Link href="/login" className="text-xs font-bold hover:text-primary transition-colors">Login</Link>
+            </div>
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-40">
               © 2026 BY SYNAPSE GROUP | SYNP GROUP TECHNOLOGY
