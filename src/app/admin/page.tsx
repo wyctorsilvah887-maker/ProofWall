@@ -585,11 +585,11 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <Badge 
                 variant={selectedUser?.membershipStatus === 'enterprise' ? 'default' : (selectedUser?.membershipStatus === 'gold' ? 'secondary' : 'outline')} 
-                className="uppercase text-[9px] font-black"
+                className="uppercase text-[8px] font-black h-5"
               >
                 {selectedUser?.membershipStatus || 'Lead'}
               </Badge>
-              {selectedUser?.isAdmin && <Badge variant="secondary" className="uppercase text-[9px] font-black">Administrador</Badge>}
+              {selectedUser?.isAdmin && <Badge variant="secondary" className="uppercase text-[8px] font-black h-5">Administrador</Badge>}
             </div>
           </SheetHeader>
 

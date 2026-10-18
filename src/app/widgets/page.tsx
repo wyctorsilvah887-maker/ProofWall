@@ -214,7 +214,7 @@ export default function WidgetsPage() {
                   </span>
                   {membershipLabel && (
                     <span className={cn(
-                      "text-[8px] sm:text-[10px] uppercase tracking-widest font-black leading-tight",
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
                       userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}
@@ -318,7 +318,6 @@ export default function WidgetsPage() {
                 <div className="flex flex-col p-5 md:p-6 gap-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      {/* O ícone aqui muda para preto quando o container pai (group) recebe o hover */}
                       <div className="bg-primary/10 p-4 rounded-2xl hidden md:block group-hover:bg-primary transition-colors">
                         <Layout className="w-6 h-6 text-primary group-hover:text-black transition-colors" />
                       </div>

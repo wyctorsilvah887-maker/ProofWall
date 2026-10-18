@@ -351,7 +351,7 @@ export default function DashPage() {
                   </span>
                   {membershipLabel && (
                     <span className={cn(
-                      "text-[8px] sm:text-[10px] uppercase tracking-widest font-black leading-tight",
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
                       userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}
@@ -674,7 +674,7 @@ export default function DashPage() {
           </div>
           <DialogFooter>
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl}>
-              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 w-4 h-4" />}
+              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
               Salvar Configuração
             </Button>
           </DialogFooter>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -99,9 +98,9 @@ export default function PrivateInboxPage() {
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-14 h-14 md:w-16 md:h-16 transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-xl shadow-sm object-contain dark:hidden" />
-              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-xl shadow-sm object-contain hidden dark:block" />
+            <div className="relative w-[140px] h-[40px] md:w-[180px] md:h-[50px] transition-transform group-hover:scale-105">
+              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" />
             </div>
           </Link>
         </div>
@@ -117,7 +116,7 @@ export default function PrivateInboxPage() {
                   </span>
                   {membershipLabel && (
                     <span className={cn(
-                      "text-[10px] uppercase tracking-widest font-black leading-tight",
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
                       userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}

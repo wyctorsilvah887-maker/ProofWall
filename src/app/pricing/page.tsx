@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -159,7 +158,7 @@ export default function PricingPage() {
                     </span>
                     {membershipLabel && (
                       <span className={cn(
-                        "text-[10px] uppercase tracking-widest font-black leading-tight",
+                        "text-[8px] uppercase tracking-widest font-black leading-tight",
                         userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                       )}>
                         {membershipLabel}
@@ -345,7 +344,7 @@ export default function PricingPage() {
               </div>
              </div>
              <div className="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-white/10 rounded-full blur-3xl -mr-24 -mt-24 sm:-mr-32 sm:-mt-32" />
-             <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-64 sm:h-64 bg-black/10 rounded-full blur-3xl -ml-24 -mb-24 sm:-ml-32 sm:-mb-32" />
+             <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-64 sm:h-64 bg-black/10 rounded-full blur-3xl -ml-24 -mb-24 sm:-ml-32 -mb-32" />
           </div>
         </section>
       </main>
