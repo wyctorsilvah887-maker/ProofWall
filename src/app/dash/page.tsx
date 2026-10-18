@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -310,7 +309,7 @@ export default function DashPage() {
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[140px] h-[40px] md:w-[180px] md:h-[50px] transition-transform group-hover:scale-105">
+            <div className="relative w-[180px] h-[50px] md:w-[240px] md:h-[70px] transition-transform group-hover:scale-105">
               <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" />
               <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" />
             </div>
@@ -573,7 +572,7 @@ export default function DashPage() {
       </main>
 
       <footer className="py-8 border-t flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 relative w-[120px] h-[35px] md:w-[160px] md:h-[45px]">
+        <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
@@ -621,6 +620,100 @@ export default function DashPage() {
           </div>
           <DialogFooter className="p-8 pt-4 pb-8 bg-background">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Google Maps Configuration Dialog */}
+      <Dialog open={isGoogleMapsDialogOpen} onOpenChange={setIsGoogleMapsDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+              <MapPin className="w-6 h-6 text-primary" /> Configurar Google Business
+            </DialogTitle>
+            <DialogDescription>
+              Insira o link direto da sua empresa no Google Maps para turbinar suas avaliações 5 estrelas.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="google-url" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Link do Google Maps</Label>
+              <Input 
+                id="google-url"
+                placeholder="https://g.page/r/sua-empresa/review"
+                value={newGoogleMapsUrl}
+                onChange={(e) => setNewGoogleMapsUrl(e.target.value)}
+                className="h-12 rounded-xl"
+              />
+              <p className="text-[10px] text-muted-foreground">Clientes que avaliarem com 4 ou 5 estrelas verão um botão para replicar o elogio no Google.</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={handleUpdateGoogleMapsUrl} disabled={isUpdatingUrl}>
+              {isUpdatingUrl ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 w-4 h-4" />}
+              Salvar Configuração
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* QR Code Dialog */}
+      <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0">
+          <DialogHeader className="p-8 pt-10 pb-4 bg-background">
+            <DialogTitle className="text-2xl font-black font-headline text-center">Cartaz de Balcão</DialogTitle>
+            <DialogDescription className="text-center">Imprima seu QR Code para coletar elogios presencialmente.</DialogDescription>
+          </DialogHeader>
+          
+          <div className="p-8 space-y-8 flex flex-col items-center">
+            <div className="p-6 bg-white rounded-3xl shadow-inner border-4 border-primary/10">
+              <QRCodeSVG 
+                id="qr-code-svg"
+                value={collectionLink} 
+                size={200}
+                level="H"
+                includeMargin={false}
+                imageSettings={{
+                  src: "/apple-touch-icon.png",
+                  x: undefined,
+                  y: undefined,
+                  height: 40,
+                  width: 40,
+                  excavate: true,
+                }}
+              />
+            </div>
+
+            <div className="w-full space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center block">Escolha o Tema do Cartaz</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  variant={pdfTheme === 'light' ? 'default' : 'outline'}
+                  onClick={() => setPdfTheme('light')}
+                  className="rounded-xl h-10 text-xs font-bold"
+                >
+                  <Sun className="w-3.5 h-3.5 mr-2" /> Claro
+                </Button>
+                <Button 
+                  variant={pdfTheme === 'dark' ? 'default' : 'outline'}
+                  onClick={() => setPdfTheme('dark')}
+                  className="rounded-xl h-10 text-xs font-bold"
+                >
+                  <Moon className="w-3.5 h-3.5 mr-2" /> Escuro
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="p-8 pt-0 pb-10 bg-background">
+            <Button 
+              className="w-full h-14 rounded-2xl text-lg font-black shadow-xl gap-2" 
+              onClick={handleDownloadPdf}
+              disabled={isGeneratingPdf}
+            >
+              {isGeneratingPdf ? <Loader2 className="animate-spin" /> : <Download className="w-5 h-5" />}
+              Baixar Cartaz PDF
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
