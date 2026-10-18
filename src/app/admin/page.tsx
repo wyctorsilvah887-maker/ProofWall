@@ -24,6 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from '@/lib/utils';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -72,7 +73,7 @@ export default function AdminPage() {
     return query(
       collection(db, 'payment_events'),
       orderBy('createdAt', 'desc'),
-      limit(20)
+      limit(50)
     );
   }, [db, user, isAdminVerified]);
 
@@ -458,10 +459,17 @@ export default function AdminPage() {
                     </TableHeader>
                     <TableBody>
                       {paymentEvents.map((evt: any) => (
-                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' ? "bg-destructive/5" : "")}>
+                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' || evt.status === 'refunded' ? "bg-destructive/5" : "")}>
                           <TableCell>
                             <div className="flex flex-col">
-                              <Badge variant={evt.status === 'approved' ? 'default' : (evt.status === 'canceled' ? 'destructive' : 'outline')} className="w-fit uppercase text-[9px] font-black">
+                              <Badge 
+                                variant={
+                                  evt.status === 'approved' || evt.status === 'renewed' || evt.status === 'subscription_renewed' || evt.status === 'active' 
+                                    ? 'default' 
+                                    : (evt.status === 'canceled' || evt.status === 'refunded' ? 'destructive' : 'outline')
+                                } 
+                                className="w-fit uppercase text-[9px] font-black"
+                              >
                                 {evt.status}
                               </Badge>
                             </div>
