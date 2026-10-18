@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -699,7 +700,7 @@ export default function DashPage() {
                 <div className="space-y-2">
                   <Label htmlFor="slug-input" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nova URL de Coleta</Label>
                   <div className="relative group">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground opacity-50">proova.../c/</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted-foreground/60 pointer-events-none">proova.../c/</span>
                     <Input 
                       id="slug-input"
                       placeholder="minha-loja"
@@ -709,7 +710,7 @@ export default function DashPage() {
                         setTempSlug(val);
                         setSlugError(null);
                       }}
-                      className="h-14 pl-[78px] rounded-2xl border-2 focus:ring-primary/20 text-sm font-bold"
+                      className="h-14 pl-28 rounded-2xl border-2 focus:ring-primary/20 text-sm font-bold"
                     />
                   </div>
                   {slugError && <p className="text-[10px] text-destructive font-bold flex items-center gap-1 animate-in slide-in-from-top-1"><AlertTriangle className="w-3 h-3" /> {slugError}</p>}
