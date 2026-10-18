@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -30,7 +29,7 @@ export default function PricingPage() {
     },
     {
       name: "Gold",
-      price: "R$ 47",
+      price: "R$ 49,90",
       period: "/mês",
       description: "Ideal para profissionais liberais e pequenos negócios em crescimento.",
       features: [
