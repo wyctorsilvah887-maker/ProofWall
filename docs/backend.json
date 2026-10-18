@@ -33,8 +33,17 @@
         },
         "membershipStatus": {
           "type": "string",
-          "enum": ["gold", "enterprise", "trial"],
+          "enum": ["gold", "enterprise", "trial", "expired"],
           "description": "Status da assinatura ou nível de membro."
+        },
+        "trialStartedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data e hora em que o período de teste começou."
+        },
+        "trialUsed": {
+          "type": "boolean",
+          "description": "Indica se o usuário já utilizou o período de teste gratuito."
         },
         "testimonialsCount": {
           "type": "integer",

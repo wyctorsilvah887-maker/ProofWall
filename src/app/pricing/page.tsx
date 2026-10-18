@@ -59,7 +59,6 @@ export default function PricingPage() {
     return null;
   }, [userData]);
 
-  // Geramos os links dinâmicos passando o UID do usuário para a Cakto
   const checkoutLinks = useMemo(() => {
     const uidParam = user ? `&ext_id=${user.uid}` : '';
     return {
@@ -68,61 +67,71 @@ export default function PricingPage() {
     };
   }, [user]);
 
-  const plans = [
-    {
-      name: "Trial",
-      price: "Grátis",
-      period: "/14 dias",
-      description: "Experimente o poder da prova social sem compromisso por duas semanas.",
-      features: [
-        "Acesso total por 14 dias",
-        "Coleta ilimitada de depoimentos",
-        "1 Mural de depoimentos ativo",
-        "Redirecionamento Google Maps",
-        "Uso único por conta",
-      ],
-      cta: "Começar Teste Grátis",
-      checkoutUrl: "/signup",
-      popular: false,
-      highlight: false,
-    },
-    {
-      name: "Gold",
-      price: "R$ 49,90",
-      period: "/mês",
-      description: "Ideal para profissionais liberais e pequenos negócios em crescimento.",
-      features: [
-        "Até 50 depoimentos ativos",
-        "Mural de depoimentos avançado",
-        "Link de coleta personalizado",
-        "Redirecionamento Google Maps",
-        "Suporte prioritário",
-      ],
-      cta: "Assinar Gold",
-      checkoutUrl: checkoutLinks.gold,
-      popular: false,
-      highlight: false,
-    },
-    {
-      name: "Enterprise",
-      price: "R$ 97",
-      period: "/mês",
-      description: "O plano completo para empresas que buscam domínio total do mercado.",
-      features: [
-        "Depoimentos ilimitados",
-        "Todos os widgets liberados",
-        "Depoimentos em Vídeo (4K)",
-        "Branding 100% customizado",
-        "Remoção da marca Proova",
-        "Acesso ao ADS",
-        "Suporte VIP via WhatsApp",
-      ],
-      cta: "Seja Enterprise",
-      checkoutUrl: checkoutLinks.enterprise,
-      popular: true,
-      highlight: true,
-    }
-  ];
+  const plans = useMemo(() => {
+    const allPlans = [
+      {
+        id: 'trial',
+        name: "Trial",
+        price: "Grátis",
+        period: "/14 dias",
+        description: "Experimente o poder da prova social sem compromisso por duas semanas.",
+        features: [
+          "Acesso total por 14 dias",
+          "Coleta ilimitada de depoimentos",
+          "1 Mural de depoimentos ativo",
+          "Redirecionamento Google Maps",
+          "Uso único por conta",
+        ],
+        cta: "Começar Teste Grátis",
+        checkoutUrl: user ? "/payment-success?plan=trial" : "/signup",
+        popular: false,
+        highlight: false,
+        hidden: !!userData?.trialUsed || userData?.membershipStatus === 'gold' || userData?.membershipStatus === 'enterprise'
+      },
+      {
+        id: 'gold',
+        name: "Gold",
+        price: "R$ 49,90",
+        period: "/mês",
+        description: "Ideal para profissionais liberais e pequenos negócios em crescimento.",
+        features: [
+          "Até 50 depoimentos ativos",
+          "Mural de depoimentos avançado",
+          "Link de coleta personalizado",
+          "Redirecionamento Google Maps",
+          "Suporte prioritário",
+        ],
+        cta: "Assinar Gold",
+        checkoutUrl: checkoutLinks.gold,
+        popular: false,
+        highlight: false,
+        hidden: false
+      },
+      {
+        id: 'enterprise',
+        name: "Enterprise",
+        price: "R$ 97",
+        period: "/mês",
+        description: "O plano completo para empresas que buscam domínio total do mercado.",
+        features: [
+          "Depoimentos ilimitados",
+          "Todos os widgets liberados",
+          "Depoimentos em Vídeo (4K)",
+          "Branding 100% customizado",
+          "Remoção da marca Proova",
+          "Acesso ao ADS",
+          "Suporte VIP via WhatsApp",
+        ],
+        cta: "Seja Enterprise",
+        checkoutUrl: checkoutLinks.enterprise,
+        popular: true,
+        highlight: true,
+        hidden: false
+      }
+    ];
+
+    return allPlans.filter(p => !p.hidden);
+  }, [user, userData, checkoutLinks]);
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
@@ -234,7 +243,10 @@ export default function PricingPage() {
         </section>
 
         <section className="pb-24 px-4 container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+          <div className={cn(
+            "grid grid-cols-1 gap-8 max-w-7xl mx-auto items-stretch",
+            plans.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2 max-w-4xl"
+          )}>
             {plans.map((plan, idx) => (
               <Card 
                 key={idx} 
@@ -250,9 +262,9 @@ export default function PricingPage() {
                     <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-widest">
                       {plan.name}
                     </CardTitle>
-                    {plan.name === "Trial" && <Clock className="w-5 h-5 text-muted-foreground" />}
-                    {plan.name === "Gold" && <Star className="w-5 h-5 text-primary" />}
-                    {plan.name === "Enterprise" && <Zap className="w-5 h-5 text-primary" />}
+                    {plan.id === "trial" && <Clock className="w-5 h-5 text-muted-foreground" />}
+                    {plan.id === "gold" && <Star className="w-5 h-5 text-primary" />}
+                    {plan.id === "enterprise" && <Zap className="w-5 h-5 text-primary" />}
                   </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl sm:text-5xl font-black">{plan.price}</span>
@@ -300,7 +312,7 @@ export default function PricingPage() {
               <AccordionItem value="item-trial" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
-                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais.
+                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais. O trial só pode ser usado uma vez por conta.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">

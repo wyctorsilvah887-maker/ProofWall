@@ -88,6 +88,14 @@ export default function DashPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setBaseUrl(window.location.origin);
@@ -99,6 +107,28 @@ export default function DashPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  // Lógica de expiração do Trial (14 dias)
+  useEffect(() => {
+    if (userData?.membershipStatus === 'trial' && userData?.trialStartedAt && db && user) {
+      const startedAt = userData.trialStartedAt.toDate?.() || new Date(userData.trialStartedAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - startedAt.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays > 14) {
+        updateDoc(doc(db, 'users', user.uid), {
+          membershipStatus: 'expired'
+        });
+        toast({
+          variant: "destructive",
+          title: "Período Trial Expirado",
+          description: "Escolha um plano profissional para continuar usando o Proova.",
+        });
+        router.push('/pricing');
+      }
+    }
+  }, [userData, db, user, router]);
 
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
@@ -149,14 +179,6 @@ export default function DashPage() {
   }, [db, user]);
 
   const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
-
-  const membershipLabel = useMemo(() => {
-    const status = userData?.membershipStatus;
-    if (status === 'enterprise') return 'Membro Enterprise';
-    if (status === 'gold') return 'Membro Gold';
-    if (status === 'trial') return 'Período Trial';
-    return null;
-  }, [userData]);
 
   if (authLoading || userDataLoading || (user && !userData)) {
     return (

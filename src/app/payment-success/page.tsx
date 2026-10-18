@@ -4,7 +4,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2, Loader2, Rocket, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,10 +20,8 @@ function SuccessContent() {
 
   useEffect(() => {
     async function processUpgrade() {
-      // Se ainda estiver carregando a autenticação, esperamos.
       if (authLoading) return;
 
-      // Se o usuário não estiver logado ao retornar (ex: limpou cache ou trocou de browser)
       if (!user) {
         setIsUpdating(false);
         setError("Identificamos seu pagamento, mas você precisa estar logado para ativar seu plano.");
@@ -34,13 +32,23 @@ function SuccessContent() {
       
       try {
         const userRef = doc(db, 'users', user.uid);
-        await updateDoc(userRef, {
+        
+        const updateData: any = {
           membershipStatus: plan.toLowerCase()
-        });
+        };
+
+        if (plan.toLowerCase() === 'trial') {
+          updateData.trialUsed = true;
+          updateData.trialStartedAt = serverTimestamp();
+        }
+
+        await updateDoc(userRef, updateData);
         
         toast({
           title: "Upgrade Concluído!",
-          description: `Sua conta agora é ${plan.toUpperCase()}.`,
+          description: plan.toLowerCase() === 'trial' 
+            ? "Seu período de 14 dias começou agora." 
+            : `Sua conta agora é ${plan.toUpperCase()}.`,
         });
         
         setIsUpdating(false);
