@@ -210,12 +210,12 @@ export default function WidgetsPage() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                 <div className="flex flex-col items-end">
-                  <span className="text-xs font-bold truncate max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
+                  <span className="text-xs font-bold truncate max-w-[80px] sm:max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
                     <span className={cn(
-                      "text-[10px] uppercase tracking-widest font-black leading-tight",
+                      "text-[8px] sm:text-[10px] uppercase tracking-widest font-black leading-tight",
                       userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}
@@ -273,31 +273,31 @@ export default function WidgetsPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Link href="/dash" className="hidden sm:block">
-              <Button variant="ghost" size="icon" className="rounded-full">
+            <Link href="/dash">
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div className="space-y-0.5">
               <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Meus Murais</h1>
-              <p className="text-sm text-muted-foreground hidden sm:block">Gerencie e publique suas provas sociais</p>
+              <p className="text-sm text-muted-foreground">Gerencie e publique suas provas sociais</p>
             </div>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)} className="w-full sm:w-auto h-12 rounded-xl shadow-lg font-bold gap-2" size="lg">
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="w-full sm:w-auto h-12 rounded-xl shadow-lg font-bold gap-2 text-sm" size="lg">
             <Plus className="w-5 h-5" /> Novo Mural
           </Button>
         </div>
 
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 
             type="text"
             placeholder="Buscar mural pelo nome..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex h-11 w-full rounded-xl border border-input bg-background pl-10 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transition-all"
+            className="flex h-12 w-full rounded-xl border border-input bg-background pl-11 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 transition-all shadow-sm"
           />
         </div>
 
@@ -305,19 +305,19 @@ export default function WidgetsPage() {
           {widgetsLoading ? (
             <div className="py-20 text-center">
               <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">Sincronizando seus murais...</p>
+              <p className="text-muted-foreground text-sm">Sincronizando seus murais...</p>
             </div>
           ) : filteredWidgets.length > 0 ? (
             filteredWidgets.map((w: any) => (
               <Card key={w.id} className="border-none shadow-sm hover:shadow-md transition-all overflow-hidden group rounded-2xl">
                 <div className="flex flex-col p-5 md:p-6 gap-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="bg-primary/10 p-4 rounded-2xl hidden sm:block">
+                      <div className="bg-primary/10 p-4 rounded-2xl hidden md:block group-hover:bg-primary group-hover:text-white transition-colors">
                         <Layout className="w-6 h-6 text-primary" />
                       </div>
-                      <div className="space-y-1">
-                        <h3 className="font-black font-headline text-lg md:text-xl truncate group-hover:text-primary transition-colors">{w.name}</h3>
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <h3 className="font-black font-headline text-lg md:text-xl truncate group-hover:text-primary transition-colors pr-8 sm:pr-0">{w.name}</h3>
                         <div className="flex flex-wrap gap-2">
                           <Badge variant="secondary" className="text-[9px] h-5 bg-primary/5 text-primary border-none px-2 font-black">
                             {w.selectedTestimonialIds?.length || 0} AVALIAÇÕES
@@ -329,7 +329,7 @@ export default function WidgetsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 self-end sm:self-center">
+                    <div className="absolute right-4 top-4 sm:relative sm:right-0 sm:top-0">
                       <Button 
                         variant="ghost" 
                         size="icon" 
@@ -341,27 +341,28 @@ export default function WidgetsPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <Button 
-                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
+                      className="h-14 sm:h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm justify-between px-4"
                       onClick={() => router.push(`/widgets/${w.id}`)}
                     >
-                      <Monitor className="w-4 h-4" /> Página Pública
-                      <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-30" />
+                      <span className="flex items-center gap-2"><Monitor className="w-4 h-4" /> Página Pública</span>
+                      <ChevronRight className="w-3.5 h-3.5 opacity-30" />
                     </Button>
                     <Button 
-                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm"
+                      className="h-14 sm:h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-background border border-primary/20 text-primary hover:bg-primary/5 shadow-sm justify-between px-4"
                       onClick={() => router.push(`/widgetconfig/${w.id}`)}
                     >
-                      <Settings2 className="w-4 h-4" /> Mural Embutido
-                      <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-30" />
+                      <span className="flex items-center gap-2"><Settings2 className="w-4 h-4" /> Mural Embutido</span>
+                      <ChevronRight className="w-3.5 h-3.5 opacity-30" />
                     </Button>
                     <Button 
                       variant="secondary"
-                      className="h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-muted/50 hover:bg-muted shadow-sm"
+                      className="h-14 sm:h-12 rounded-xl text-xs font-black uppercase tracking-widest gap-2 bg-muted/50 hover:bg-muted shadow-sm justify-between px-4 sm:col-span-2 lg:col-span-1"
                       onClick={() => { setSelectedWidget(w); setIsDialogOpen(true); }}
                     >
-                      <Code className="w-4 h-4" /> Obter Código
+                      <span className="flex items-center gap-2"><Code className="w-4 h-4" /> Obter Código</span>
+                      <Copy className="w-3.5 h-3.5 opacity-30" />
                     </Button>
                   </div>
                 </div>
@@ -374,7 +375,7 @@ export default function WidgetsPage() {
                 <p className="font-bold text-lg">Nenhum mural criado</p>
                 <p className="text-sm text-muted-foreground">Comece criando seu primeiro mural de depoimentos.</p>
               </div>
-              <Button onClick={() => setIsCreateDialogOpen(true)} variant="outline" className="rounded-xl font-bold">
+              <Button onClick={() => setIsCreateDialogOpen(true)} variant="outline" className="rounded-xl font-bold mt-4 h-12 px-8">
                 Criar Agora
               </Button>
             </div>
@@ -382,14 +383,14 @@ export default function WidgetsPage() {
         </div>
       </main>
 
-      <footer className="py-8 border-t mt-auto flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 relative w-[120px] h-[35px] md:w-[160px] md:h-[45px]">
+      <footer className="py-12 border-t mt-auto flex flex-col items-center gap-6 bg-background/50">
+        <div className="flex items-center gap-2 relative w-[140px] h-[40px] md:w-[180px] md:h-[50px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
-        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
+        <div className="container px-4 md:px-6 mx-auto text-center space-y-2">
+          <p className="text-xs md:text-sm text-muted-foreground font-medium">© 2026 Proova - Prova Social de Verdade.</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-30">
             Feito Pelo Grupo Synapse | Synapse Group
           </p>
         </div>
@@ -397,23 +398,23 @@ export default function WidgetsPage() {
 
       {/* Dialog for Widget Code */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-lg">
+        <DialogContent className="rounded-3xl sm:max-w-lg border-none shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black font-headline">Código do Mural</DialogTitle>
-            <DialogDescription>
-              Copie o código abaixo e cole no HTML do seu site para exibir o mural {selectedWidget?.name}.
+            <DialogDescription className="text-sm">
+              Copie o código abaixo e cole no HTML do seu site para exibir o mural "{selectedWidget?.name}".
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
-            <div className="relative bg-muted/50 rounded-xl p-4 border border-primary/20">
-              <Terminal className="absolute top-4 left-4 w-4 h-4 text-primary/50" />
-              <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap pl-6 leading-relaxed">
+            <div className="relative bg-muted/50 rounded-xl p-5 border border-primary/20">
+              <Terminal className="absolute top-5 left-5 w-4 h-4 text-primary/50" />
+              <pre className="text-[11px] font-mono text-foreground break-all whitespace-pre-wrap pl-7 leading-relaxed select-all">
                 {selectedWidget ? getWidgetCode(selectedWidget.id) : ''}
               </pre>
               <Button 
                 size="icon" 
                 variant="secondary" 
-                className="absolute top-2 right-2 h-8 w-8 rounded-lg shadow-sm" 
+                className="absolute top-2 right-2 h-9 w-9 rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all" 
                 onClick={() => copyToClipboard(getWidgetCode(selectedWidget.id))}
               >
                 <Copy className="h-4 w-4" />
@@ -423,34 +424,34 @@ export default function WidgetsPage() {
               <p className="text-xs text-primary font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" /> Dica de Instalação
               </p>
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
                 Recomendamos colar este código antes da tag final <code>&lt;/body&gt;</code> para garantir que o mural carregue sem afetar a velocidade do seu site.
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button className="w-full font-black h-12 rounded-xl" onClick={() => setIsDialogOpen(false)}>Fechar</Button>
+            <Button className="w-full font-black h-12 rounded-xl text-sm" onClick={() => setIsDialogOpen(false)}>Entendi, fechar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Dialog for New Widget */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
+        <DialogContent className="rounded-3xl sm:max-w-md border-none shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-black font-headline">Novo Mural</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               Dê um nome para identificar seu novo mural de depoimentos.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nome do Mural</label>
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Nome do Mural</label>
               <Input 
                 placeholder="Ex: Landing Page Promoção" 
                 value={newWidgetName}
                 onChange={(e) => setNewWidgetName(e.target.value)}
-                className="h-12 rounded-xl"
+                className="h-12 rounded-xl text-sm"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateWidget()}
               />
@@ -458,7 +459,7 @@ export default function WidgetsPage() {
           </div>
           <DialogFooter>
             <Button 
-              className="w-full font-black h-12 rounded-xl shadow-lg" 
+              className="w-full font-black h-12 rounded-xl shadow-lg text-sm" 
               onClick={() => handleCreateWidget()}
               disabled={isCreating || !newWidgetName.trim()}
             >
