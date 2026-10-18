@@ -446,7 +446,7 @@ export default function DashPage() {
                 <TrendingDown className="h-4 w-4 text-destructive" />
               )}
             </CardHeader>
-            <CardContent className="relative">
+            <CardContent>
               <div className="space-y-1">
                 <div className="text-2xl md:text-3xl font-bold">
                   {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
@@ -463,10 +463,6 @@ export default function DashPage() {
                   </Badge>
                   <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
                 </div>
-              </div>
-              
-              <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 items-center justify-center bg-background rounded-full border shadow-md p-1.5 z-30 group-hover:scale-110 transition-transform translate-x-1/2">
-                <ArrowRight className="h-4 w-4 text-primary" />
               </div>
             </CardContent>
           </Card>
