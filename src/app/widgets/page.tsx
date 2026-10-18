@@ -25,7 +25,8 @@ import {
   Inbox,
   Sun,
   Moon,
-  Gem
+  Gem,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,6 +70,7 @@ export default function WidgetsPage() {
   const [selectedWidget, setSelectedWidget] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [baseUrl, setBaseUrl] = useState('');
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
@@ -247,6 +249,10 @@ export default function WidgetsPage() {
                 <Gem className="mr-2 h-4 w-4 text-primary" />
                 <span>Planos de Upgrade</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsTutorialOpen(true)} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Info className="mr-2 h-4 w-4 text-primary" />
+                <span>Tutorial</span>
+              </DropdownMenuItem>
               
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem 
@@ -286,7 +292,12 @@ export default function WidgetsPage() {
               </Button>
             </Link>
             <div className="space-y-0.5">
-              <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Meus Murais</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Meus Murais</h1>
+                <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
+                  <Info className="w-3 h-3" /> Tutorial
+                </Button>
+              </div>
               <p className="text-sm text-muted-foreground">Gerencie e publique suas provas sociais</p>
             </div>
           </div>
@@ -400,6 +411,46 @@ export default function WidgetsPage() {
           </p>
         </div>
       </footer>
+
+      {/* Tutorial Dialog */}
+      <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
+        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background">
+            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+              <Info className="w-6 h-6 text-primary" /> Como usar seus Murais
+            </DialogTitle>
+            <DialogDescription>
+              Aprenda a gerenciar seus destinos de prova social.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-6 px-8 overflow-y-auto">
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
+              <div>
+                <p className="text-sm font-bold">Crie novos destinos</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Clique em "Novo Mural" para criar uma nova configuração. Cada mural pode ter depoimentos e layouts diferentes.</p>
+              </div>
+            </div>
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
+              <div>
+                <p className="text-sm font-bold">Página Pública vs Mural Embutido</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">A <strong>Página Pública</strong> é um link que você pode colocar na bio. O <strong>Mural Embutido</strong> é um código para você colar dentro do seu site.</p>
+              </div>
+            </div>
+            <div className="flex gap-4 group">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">3</div>
+              <div>
+                <p className="text-sm font-bold">Obtenha o Código</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Clique em "Obter Código" para copiar o snippet de instalação. Cole-o no seu site para ver a mágica acontecer!</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="p-8 pt-4 pb-8 bg-background">
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Entendi!</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog for Widget Code */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
