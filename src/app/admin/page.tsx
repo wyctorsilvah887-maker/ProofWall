@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -287,19 +286,16 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 font-body text-foreground">
-      <header className="bg-background border-b h-20 md:h-24 flex items-center px-6 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[40px] md:w-[180px] md:h-[50px]">
+    <div className="min-h-screen bg-muted/30 font-body text-foreground overflow-x-hidden flex flex-col">
+      <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[35px] md:w-[180px] md:h-[50px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
         </div>
-        <div className="ml-auto flex items-center gap-4">
-          <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5">
-            <BadgeCheck className="w-3 h-3" /> Administrador
+        <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 h-7">
+            <BadgeCheck className="w-3 h-3" /> Admin
           </Badge>
-          <span className="text-sm text-muted-foreground hidden sm:inline-block">
-            <span className="font-bold text-foreground">{userData?.companyName || user.email}</span>
-          </span>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -308,7 +304,7 @@ export default function AdminPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
-              <DropdownMenuLabel className="px-3 py-2">Opções de Admin</DropdownMenuLabel>
+              <DropdownMenuLabel className="px-3 py-2 text-xs uppercase tracking-widest text-muted-foreground">Administrador</DropdownMenuLabel>
               <DropdownMenuSeparator className="mx-1" />
               
               <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
@@ -343,155 +339,161 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main className="container mx-auto p-6 space-y-8">
-        <div className="grid gap-6 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total de Leads</CardTitle>
-              <Users className="w-4 h-4 text-muted-foreground" />
+      <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-7xl">
+        <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
+              <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Leads</CardTitle>
+              <Users className="w-4 h-4 text-primary" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 md:px-6">
               <div className="text-2xl font-bold">{leadsList?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">Inscrições capturadas</p>
+              <p className="text-[10px] text-muted-foreground">Inscrições totais</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Eventos Webhook</CardTitle>
-              <CreditCard className="w-4 h-4 text-muted-foreground" />
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
+              <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Alertas</CardTitle>
+              <CreditCard className="w-4 h-4 text-primary" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 md:px-6">
               <div className="text-2xl font-bold">{paymentEvents?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">Alertas de pagamento</p>
+              <p className="text-[10px] text-muted-foreground">Webhooks recebidos</p>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="leads" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="leads" className="gap-2"><Users className="w-4 h-4" /> Usuários e Leads</TabsTrigger>
-            <TabsTrigger value="payments" className="gap-2"><CreditCard className="w-4 h-4" /> Auditoria de Pagamentos</TabsTrigger>
+          <TabsList className="mb-4 bg-muted/50 p-1 rounded-xl h-11">
+            <TabsTrigger value="leads" className="gap-2 rounded-lg text-xs font-bold"><Users className="w-3.5 h-3.5" /> Usuários</TabsTrigger>
+            <TabsTrigger value="payments" className="gap-2 rounded-lg text-xs font-bold"><CreditCard className="w-3.5 h-3.5" /> Auditoria</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="leads">
-            <Card className="shadow-lg border-none">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl flex items-center gap-2">
-                  <UserCheck className="w-5 h-5" /> Gestão de Usuários
+          <TabsContent value="leads" className="mt-0">
+            <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
+              <CardHeader className="px-4 md:px-6">
+                <CardTitle className="font-headline text-lg flex items-center gap-2">
+                  <UserCheck className="w-5 h-5 text-primary" /> Gestão de Usuários
                 </CardTitle>
-                <CardDescription>Visualize e gerencie o status de cada lead.</CardDescription>
+                <CardDescription className="text-xs">Visualize e gerencie todos os clientes da plataforma.</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0 overflow-x-auto scrollbar-hide">
                 {leadsLoading ? (
                   <div className="py-20 text-center">
                     <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-                    <p className="text-muted-foreground">Carregando leads...</p>
+                    <p className="text-muted-foreground text-xs">Carregando dados...</p>
                   </div>
                 ) : leadsList && leadsList.length > 0 ? (
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Nome / Empresa</TableHead>
-                        <TableHead>E-mail / UID</TableHead>
-                        <TableHead>Plano Atual</TableHead>
-                        <TableHead>Registro</TableHead>
+                      <TableRow className="bg-muted/30">
+                        <TableHead className="text-[10px] uppercase font-black">Empresa / Nome</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Email / UID</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Plano</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Registro</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sortedLeads.map((usr: any) => (
-                        <TableRow key={usr.id}>
+                        <TableRow key={usr.id} className="hover:bg-muted/20">
                           <TableCell className="font-bold">
-                            <div className="flex flex-col">
-                              <span>{usr.name}</span>
-                              <span className="text-[10px] text-muted-foreground font-normal uppercase tracking-widest">{usr.companyName}</span>
+                            <div className="flex flex-col min-w-[120px]">
+                              <span className="text-xs">{usr.companyName}</span>
+                              <span className="text-[10px] text-muted-foreground font-normal uppercase tracking-widest">{usr.name}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex flex-col text-xs">
+                            <div className="flex flex-col text-[11px] min-w-[150px]">
                               <span className="font-medium text-primary">{usr.email}</span>
-                              <span className="text-[10px] text-muted-foreground font-mono">{usr.id}</span>
+                              <span className="text-[9px] text-muted-foreground font-mono opacity-60">UID: {usr.id}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={usr.membershipStatus === 'enterprise' ? 'default' : 'secondary'} className="uppercase text-[9px] font-black">
+                            <Badge 
+                              variant={usr.membershipStatus === 'enterprise' ? 'default' : (usr.membershipStatus === 'gold' ? 'secondary' : 'outline')} 
+                              className="uppercase text-[8px] font-black h-5"
+                            >
                               {usr.membershipStatus || 'Lead'}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-muted-foreground text-xs">
-                            {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Recentemente'}
+                          <TableCell className="text-muted-foreground text-[10px] whitespace-nowrap">
+                            {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 ) : (
-                  <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
-                    <p className="text-muted-foreground">Nenhum lead registrado ainda.</p>
+                  <div className="py-20 text-center border-2 border-dashed m-6 rounded-xl bg-muted/10">
+                    <p className="text-muted-foreground text-sm">Nenhum lead registrado ainda.</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="payments">
-            <Card className="shadow-lg border-none">
-              <CardHeader>
-                <CardTitle className="font-headline text-xl flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5" /> Alertas de Webhook (Cakto)
+          <TabsContent value="payments" className="mt-0">
+            <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
+              <CardHeader className="px-4 md:px-6">
+                <CardTitle className="font-headline text-lg flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-primary" /> Auditoria de Pagamentos
                 </CardTitle>
-                <CardDescription>Logs em tempo real para controle de assinaturas e cancelamentos.</CardDescription>
+                <CardDescription className="text-xs">Logs recebidos via Webhook Cakto em tempo real.</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0 overflow-x-auto scrollbar-hide">
                 {eventsLoading ? (
                   <div className="py-20 text-center">
                     <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-                    <p className="text-muted-foreground">Sincronizando eventos...</p>
+                    <p className="text-muted-foreground text-xs">Sincronizando eventos...</p>
                   </div>
                 ) : paymentEvents && paymentEvents.length > 0 ? (
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Evento / Status</TableHead>
-                        <TableHead>E-mail / UID Vinculado</TableHead>
-                        <TableHead>Produto</TableHead>
-                        <TableHead>Data do Evento</TableHead>
+                      <TableRow className="bg-muted/30">
+                        <TableHead className="text-[10px] uppercase font-black">Status / Evento</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Cliente / UID</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Produto</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Data</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {paymentEvents.map((evt: any) => (
-                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? "bg-destructive/5" : "")}>
+                        <TableRow key={evt.id} className={cn(
+                          "hover:bg-muted/20 transition-colors",
+                          evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? "bg-destructive/5" : ""
+                        )}>
                           <TableCell>
-                            <div className="flex flex-col">
+                            <div className="flex flex-col min-w-[100px]">
                               <Badge 
                                 variant={
                                   evt.status === 'approved' || evt.status === 'paid' || evt.status === 'renewed' || evt.eventType?.includes('approve') 
                                     ? 'default' 
                                     : (evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? 'destructive' : 'outline')
                                 } 
-                                className="w-fit uppercase text-[9px] font-black"
+                                className="w-fit uppercase text-[8px] font-black h-5"
                               >
                                 {evt.status}
                               </Badge>
-                              <span className="text-[8px] text-muted-foreground font-mono mt-1">{evt.eventType}</span>
+                              <span className="text-[8px] text-muted-foreground font-mono mt-1 opacity-60 uppercase">{evt.eventType}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="flex flex-col text-xs">
+                            <div className="flex flex-col text-[11px] min-w-[150px]">
                               <span className="font-medium">{evt.customerEmail}</span>
-                              <span className="text-[10px] text-muted-foreground font-mono">UID: {evt.externalId}</span>
+                              <span className="text-[9px] text-muted-foreground font-mono opacity-60">ID: {evt.externalId}</span>
                             </div>
                           </TableCell>
-                          <TableCell className="text-xs font-bold">{evt.productName}</TableCell>
-                          <TableCell className="text-muted-foreground text-xs">
-                            {evt.createdAt?.toDate ? evt.createdAt.toDate().toLocaleString('pt-BR') : 'Agora'}
+                          <TableCell className="text-[11px] font-bold whitespace-nowrap">{evt.productName}</TableCell>
+                          <TableCell className="text-muted-foreground text-[10px] whitespace-nowrap">
+                            {evt.createdAt?.toDate ? evt.createdAt.toDate().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : 'Agora'}
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 ) : (
-                  <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
-                    <p className="text-muted-foreground">Nenhum evento de pagamento recebido ainda.</p>
+                  <div className="py-20 text-center border-2 border-dashed m-6 rounded-xl bg-muted/10">
+                    <p className="text-muted-foreground text-sm">Nenhum log de pagamento recebido.</p>
                   </div>
                 )}
               </CardContent>
@@ -500,13 +502,13 @@ export default function AdminPage() {
         </Tabs>
       </main>
       
-      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-12 bg-background/50">
-        <div className="flex items-center gap-2 relative w-[48px] h-[48px] md:w-[56px] md:h-[56px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block" />
+      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto bg-background/50">
+        <div className="flex items-center gap-2 relative w-[48px] h-[48px]">
+          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>
-        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Administração Segura.</p>
+        <div className="container px-4 text-center">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">© 2026 Proova - Gestão Segura Synapse Group</p>
         </div>
       </footer>
     </div>
