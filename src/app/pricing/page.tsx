@@ -25,7 +25,6 @@ import {
   Loader2,
   Box
 } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useUser, useAuth, useFirestore, useDoc } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -66,7 +65,6 @@ export default function PricingPage() {
   }, [status]);
 
   const checkoutLinks = useMemo(() => {
-    // Corrigido: Usando ? em vez de & pois é o primeiro parâmetro da URL
     const uidParam = user ? `?ext_id=${user.uid}` : '';
     return {
       gold: `https://pay.cakto.com.br/8c7bbit_1215637${uidParam}`,
@@ -177,8 +175,6 @@ export default function PricingPage() {
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
-          <ThemeToggle />
-          
           {!authLoading && user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
