@@ -54,7 +54,6 @@ import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -205,7 +204,6 @@ export default function WidgetsPage() {
           </Link>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -236,8 +234,8 @@ export default function WidgetsPage() {
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
-                <Layout className="mr-2 h-4 w-4 text-primary" />
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5 bg-primary/5 text-primary">
+                <Layout className="mr-2 h-4 w-4" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
@@ -262,6 +260,12 @@ export default function WidgetsPage() {
                 <span>Alternar Tema</span>
               </DropdownMenuItem>
 
+              {userData?.isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <Shield className="mr-2 h-4 w-4 text-primary" />
+                  <span>Administração</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
