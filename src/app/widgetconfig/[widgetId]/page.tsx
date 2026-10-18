@@ -115,9 +115,11 @@ const EmbedSettings = ({
   layout, setLayout, 
   themeColor, setThemeColor,
   secondaryColor, setSecondaryColor,
-  handleSave, isSaving
+  handleSave, isSaving,
+  isGoldPlan
 }: any) => {
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
+  const router = useRouter();
   
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
@@ -140,21 +142,37 @@ const EmbedSettings = ({
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Formato do Mural</Label>
             <div className="grid grid-cols-1 gap-2">
               {[
-                { id: 'mural', icon: LayoutGrid, label: 'Mural lateral' },
-                { id: 'carousel', icon: Play, label: 'Carrossel' },
-                { id: 'grid', icon: Layout, label: 'Grade' },
-                { id: 'popup', icon: MessageSquare, label: 'Popup Solo' },
-              ].map((item) => (
-                <button 
-                  key={item.id}
-                  onClick={() => setLayout(item.id as LayoutType)} 
-                  className={cn("flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all", layout === item.id ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/20")}
-                >
-                  <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
-                  <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
-                </button>
-              ))}
+                { id: 'grid', icon: Layout, label: 'Grade Padrão', isGold: false },
+                { id: 'mural', icon: LayoutGrid, label: 'Mural Masonry', isGold: true },
+                { id: 'carousel', icon: Play, label: 'Carrossel Dinâmico', isGold: true },
+                { id: 'popup', icon: MessageSquare, label: 'Popup de Prova Social', isGold: true },
+              ].map((item) => {
+                const isLocked = item.isGold && !isGoldPlan;
+                return (
+                  <button 
+                    key={item.id}
+                    disabled={isLocked}
+                    onClick={() => setLayout(item.id as LayoutType)} 
+                    className={cn(
+                      "flex items-center justify-between p-3 rounded-xl border-2 text-left transition-all", 
+                      layout === item.id ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/20",
+                      isLocked && "opacity-50 grayscale cursor-not-allowed bg-muted/20"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon className={cn("w-4 h-4", layout === item.id ? "text-primary" : "text-muted-foreground")} />
+                      <span className={cn("text-xs font-bold", layout === item.id ? "text-primary" : "text-foreground")}>{item.label}</span>
+                    </div>
+                    {isLocked && <Lock className="w-3 h-3 text-muted-foreground" />}
+                  </button>
+                );
+              })}
             </div>
+            {!isGoldPlan && (
+              <p className="text-[10px] text-primary font-bold text-center bg-primary/5 p-2 rounded-lg border border-primary/10">
+                🚀 Ative o Trial ou Gold para usar layouts avançados
+              </p>
+            )}
           </div>
 
           <div className="space-y-6 pt-4 border-t">
@@ -171,9 +189,10 @@ const EmbedSettings = ({
           </div>
 
           <div className="space-y-6 pt-4 border-t">
-            <div className="space-y-4">
+            <div className={cn("space-y-4", !isGoldPlan && "opacity-40 grayscale pointer-events-none")}>
               <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Palette className="w-3 h-3 text-primary" /> Cor Secundária
+                <Palette className="w-3 h-3 text-primary" /> Cor Secundária (Gold)
+                {!isGoldPlan && <Lock className="w-2.5 h-2.5" />}
               </Label>
               <div className="flex flex-wrap gap-2">
                 {colors.map((color) => (
@@ -209,6 +228,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   
   // Limites refinados: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
   const SELECTION_LIMIT = isEnterprise ? Infinity : ((isGold || isTrial) ? 50 : 10);
+  const isGoldPlan = isGold || isTrial || isEnterprise;
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -218,7 +238,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [layout, setLayout] = useState<LayoutType>('mural');
+  const [layout, setLayout] = useState<LayoutType>('grid');
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [isSaving, setIsSaving] = useState(false);
@@ -235,7 +255,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   useEffect(() => {
     if (widgetData) {
       setSelectedIds(widgetData.selectedTestimonialIds || []);
-      setLayout(widgetData.layout || 'mural');
+      setLayout(widgetData.layout || 'grid');
       setThemeColor(widgetData.themeColor || '#f97316');
       setSecondaryColor(widgetData.secondaryColor || '#ffffff');
     }
@@ -290,11 +310,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     setSelectedIds(prev => {
       const isRemoving = prev.includes(id);
       if (!isRemoving && prev.length >= SELECTION_LIMIT) {
-        const planName = isEnterprise ? "Enterprise" : (isGold || isTrial ? "Profissional" : "Base");
         toast({
           variant: "destructive",
-          title: `Limite do Plano`,
-          description: `Você atingiu o limite de ${SELECTION_LIMIT} depoimentos ativos. Faça upgrade para o Enterprise para selecionar ilimitados.`,
+          title: `Limite de Seleção`,
+          description: `Seu plano atual permite até ${SELECTION_LIMIT} depoimentos ativos por mural.`,
         });
         return prev;
       }
@@ -308,7 +327,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
-  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving };
+  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving, isGoldPlan };
 
   const membershipLabel = isEnterprise ? 'Membro Enterprise' : (isGold ? 'Membro Gold' : (isTrial ? 'Período Trial' : 'Plano Base'));
 
@@ -430,10 +449,17 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             <div className="relative border shadow-xl bg-muted/20 p-8 rounded-[2rem] min-h-[400px] flex items-center justify-center ring-1 ring-primary/5">
               <div className="w-full max-w-2xl">
                 {visibleTestimonials.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {visibleTestimonials.map((t: any, i) => (
-                      <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} muralIndex={muralIndex} />
-                    ))}
+                  <div className={cn(
+                    "w-full",
+                    layout === 'grid' || layout === 'mural' ? "grid grid-cols-1 md:grid-cols-2 gap-4" : "flex justify-center"
+                  )}>
+                    {layout === 'popup' ? (
+                      <TestimonialCard t={visibleTestimonials[0]} themeColor={themeColor} secondaryColor={secondaryColor} />
+                    ) : (
+                      visibleTestimonials.map((t: any, i) => (
+                        <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} themeColor={themeColor} secondaryColor={secondaryColor} index={i} muralIndex={muralIndex} />
+                      ))
+                    )}
                   </div>
                 ) : (
                   <div className="text-center opacity-30 italic text-sm">Selecione depoimentos abaixo para ativar o mural.</div>
