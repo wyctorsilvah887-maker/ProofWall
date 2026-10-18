@@ -6,7 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, Gem, TrendingUp, CreditCard, AlertCircle } from 'lucide-react';
+import { 
+  Shield, LogOut, Users, UserCheck, Lock, Mail, User, 
+  BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, 
+  TrendingUp, CreditCard, AlertCircle, Copy, Hash, Calendar,
+  BarChart3, MousePointer2, ExternalLink
+} from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -15,6 +20,13 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetDescription 
+} from '@/components/ui/sheet';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, doc, setDoc, serverTimestamp, where, orderBy, limit } from 'firebase/firestore';
@@ -24,6 +36,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -36,6 +49,8 @@ export default function AdminPage() {
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
   
   const [isAdminVerified, setIsAdminVerified] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isDetailOpen, setIsUserDetailOpen] = useState(false);
 
   useEffect(() => {
     if (userData?.isAdmin === true) {
@@ -135,6 +150,11 @@ export default function AdminPage() {
       toast({ variant: "destructive", title: "Erro de Autenticação", description: error.message });
       setIsAuthLoading(false);
     }
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copiado!", description: `${label} copiado com sucesso.` });
   };
 
   if (authLoading || (user && userDataLoading)) {
@@ -339,7 +359,7 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-7xl">
+      <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-7xl overflow-x-hidden">
         <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
@@ -375,7 +395,7 @@ export default function AdminPage() {
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
                   <UserCheck className="w-5 h-5 text-primary" /> Gestão de Usuários
                 </CardTitle>
-                <CardDescription className="text-xs">Visualize e gerencie todos os clientes da plataforma.</CardDescription>
+                <CardDescription className="text-xs">Visualize e gerencie todos os clientes da plataforma. Clique em uma linha para detalhes.</CardDescription>
               </CardHeader>
               <CardContent className="p-0 overflow-x-auto scrollbar-hide">
                 {leadsLoading ? (
@@ -395,7 +415,14 @@ export default function AdminPage() {
                     </TableHeader>
                     <TableBody>
                       {sortedLeads.map((usr: any) => (
-                        <TableRow key={usr.id} className="hover:bg-muted/20">
+                        <TableRow 
+                          key={usr.id} 
+                          className="hover:bg-muted/20 cursor-pointer transition-colors"
+                          onClick={() => {
+                            setSelectedUser(usr);
+                            setIsUserDetailOpen(true);
+                          }}
+                        >
                           <TableCell className="font-bold">
                             <div className="flex flex-col min-w-[120px]">
                               <span className="text-xs">{usr.companyName}</span>
@@ -511,6 +538,135 @@ export default function AdminPage() {
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">© 2026 Proova - Gestão Segura Synapse Group</p>
         </div>
       </footer>
+
+      {/* User Detail Sheet */}
+      <Sheet open={isDetailOpen} onOpenChange={setIsUserDetailOpen}>
+        <SheetContent className="sm:max-w-md w-full overflow-y-auto">
+          <SheetHeader className="pb-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-primary/10 p-3 rounded-2xl">
+                <User className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <SheetTitle className="font-headline text-xl font-bold leading-tight">{selectedUser?.name}</SheetTitle>
+                <SheetDescription className="flex items-center gap-1.5 text-xs font-medium">
+                  <Building2 className="w-3 h-3" /> {selectedUser?.companyName}
+                </SheetDescription>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Badge 
+                variant={selectedUser?.membershipStatus === 'enterprise' ? 'default' : (selectedUser?.membershipStatus === 'gold' ? 'secondary' : 'outline')} 
+                className="uppercase text-[9px] font-black"
+              >
+                {selectedUser?.membershipStatus || 'Lead'}
+              </Badge>
+              {selectedUser?.isAdmin && <Badge variant="secondary" className="uppercase text-[9px] font-black">Administrador</Badge>}
+            </div>
+          </SheetHeader>
+
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">E-mail do Usuário</Label>
+                <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-xl border group hover:border-primary/30 transition-colors">
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0 ml-1" />
+                  <span className="text-xs font-medium truncate flex-1">{selectedUser?.email}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
+                    onClick={() => copyToClipboard(selectedUser?.email, "E-mail")}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">ID do Firebase (UID)</Label>
+                <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-xl border group hover:border-primary/30 transition-colors">
+                  <Hash className="w-4 h-4 text-muted-foreground shrink-0 ml-1" />
+                  <span className="text-[10px] font-mono opacity-70 truncate flex-1">{selectedUser?.id}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
+                    onClick={() => copyToClipboard(selectedUser?.id, "UID")}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Slug</Label>
+                <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-xl border group hover:border-primary/30 transition-colors">
+                  <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 ml-1" />
+                  <span className="text-[10px] font-mono opacity-70 truncate flex-1">/c/{selectedUser?.companySlug}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
+                    onClick={() => copyToClipboard(selectedUser?.companySlug, "Slug")}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </section>
+
+            <Separator />
+
+            <section className="grid grid-cols-2 gap-4">
+              <div className="space-y-2 p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                <div className="flex items-center justify-between">
+                  <BarChart3 className="w-4 h-4 text-primary" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">Reviews</span>
+                </div>
+                <div className="text-2xl font-black">{selectedUser?.testimonialsCount || 0}</div>
+                <p className="text-[9px] text-muted-foreground uppercase font-bold">Depoimentos totais</p>
+              </div>
+
+              <div className="space-y-2 p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                <div className="flex items-center justify-between">
+                  <MousePointer2 className="w-4 h-4 text-primary" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">G-Clicks</span>
+                </div>
+                <div className="text-2xl font-black">{selectedUser?.googleRedirectCount || 0}</div>
+                <p className="text-[9px] text-muted-foreground uppercase font-bold">Cliques no Maps</p>
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase tracking-widest">
+                  Registrado em: {selectedUser?.createdAt?.toDate ? selectedUser.createdAt.toDate().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : 'N/A'}
+                </span>
+              </div>
+              {selectedUser?.trialStartedAt && (
+                <div className="flex items-center gap-2 text-primary">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                    Trial iniciado: {selectedUser.trialStartedAt.toDate ? selectedUser.trialStartedAt.toDate().toLocaleDateString('pt-BR') : 'N/A'}
+                  </span>
+                </div>
+              )}
+            </section>
+
+            <div className="pt-6">
+              <Button 
+                variant="outline" 
+                className="w-full h-12 rounded-xl font-bold gap-2 border-primary/20 text-primary hover:bg-primary/5"
+                onClick={() => setIsUserDetailOpen(false)}
+              >
+                Fechar Detalhes
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
