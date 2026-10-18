@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -85,11 +86,13 @@ export default function PrivateInboxPage() {
     );
   }
 
-  const membershipLabel = userData?.membershipStatus === 'gold' 
-    ? 'Membro Gold' 
-    : userData?.membershipStatus === 'standard' 
-      ? 'Membro Standard' 
-      : null;
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
@@ -113,7 +116,10 @@ export default function PrivateInboxPage() {
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                    <span className={cn(
+                      "text-[10px] uppercase tracking-widest font-black leading-tight",
+                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    )}>
                       {membershipLabel}
                     </span>
                   )}
@@ -260,7 +266,7 @@ export default function PrivateInboxPage() {
       <footer className="py-8 border-t mt-auto flex flex-col items-center gap-4">
         <div className="flex items-center gap-2 relative w-[48px] h-[48px] md:w-[56px] md:h-[56px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block" />
         </div>
         <div className="container px-4 md:px-6 mx-auto text-center space-y-4">
           <p className="text-xs text-muted-foreground">© 2026 Proova - Inbox Privado de Feedback.</p>

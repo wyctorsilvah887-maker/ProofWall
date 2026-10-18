@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -53,6 +54,7 @@ import { toast } from '@/hooks/use-toast';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -183,11 +185,13 @@ export default function WidgetsPage() {
     );
   }
 
-  const membershipLabel = userData?.membershipStatus === 'gold' 
-    ? 'Membro Gold' 
-    : userData?.membershipStatus === 'standard' 
-      ? 'Membro Standard' 
-      : null;
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
@@ -210,7 +214,10 @@ export default function WidgetsPage() {
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
                   {membershipLabel && (
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                    <span className={cn(
+                      "text-[10px] uppercase tracking-widest font-black leading-tight",
+                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    )}>
                       {membershipLabel}
                     </span>
                   )}
