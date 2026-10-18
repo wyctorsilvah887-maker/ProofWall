@@ -478,7 +478,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const isGold = membershipStatus === 'gold';
   const isTrial = membershipStatus === 'trial';
   
-  // Limites refinados: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
   const SELECTION_LIMIT = isEnterprise ? Infinity : ((isGold || isTrial) ? 50 : 10);
   const isGoldPlan = isGold || isTrial || isEnterprise;
 
@@ -1039,30 +1038,32 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
+            <div className="flex gap-4 group">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
               <div>
-                <p className="text-sm font-bold"><strong className="text-primary">Aba Visual</strong> (Design e Identidade)</p>
-                <p className="text-xs text-muted-foreground">Use o ícone de <strong className="text-primary">Monitor</strong> para subir sua logo e definir as cores que combinam com seu branding.</p>
+                <p className="text-sm font-bold">Acesse as Configurações</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Clique no ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> no topo para abrir o painel lateral e customizar o visual, textos e cores da sua página.
+                </p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
+            <div className="flex gap-4 group">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
               <div>
-                <p className="text-sm font-bold"><strong className="text-primary">Aba Conteúdo</strong> (Textos Persuasivos)</p>
-                <p className="text-xs text-muted-foreground">Personalize o <strong className="text-primary">Título (Hero)</strong>, adicione <strong className="text-primary">Seções Dinâmicas</strong> com CTAs e ajuste o rodapé.</p>
+                <p className="text-sm font-bold">Curadoria de Conteúdo</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Personalize o <strong>Título (Hero)</strong> e adicione <strong>Seções Dinâmicas</strong> (se for Enterprise). Selecione abaixo os depoimentos que deseja destacar.</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
+            <div className="flex gap-4 group">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">3</div>
               <div>
-                <p className="text-sm font-bold"><strong className="text-primary">Aba Social</strong> (Interação e Link Oficial)</p>
-                <p className="text-xs text-muted-foreground">Ative o botão de <strong className="text-primary">WhatsApp</strong> e configure o <strong className="text-primary">Site Oficial</strong>. <strong className="text-primary">Dica:</strong> Use sua página pública na bio das redes sociais!</p>
+                <p className="text-sm font-bold">Interação e Redes Sociais</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Ative o botão de <strong>WhatsApp</strong> e configure o <strong>Site Oficial</strong> na aba Social. Use o link gerado na sua bio das redes sociais!</p>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
