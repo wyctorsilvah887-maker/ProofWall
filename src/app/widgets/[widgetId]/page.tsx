@@ -54,6 +54,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Slider } from '@/components/ui/slider';
 import Cropper from 'react-easy-crop';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -602,30 +608,40 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               </div>
             </div>
 
-            <div className="space-y-6 pt-12 border-t">
-              <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Depoimentos Disponíveis</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {selectableTestimonials.map((t: any) => (
-                  <div 
-                    key={t.id} 
-                    onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
-                    className={cn(
-                      "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
-                      selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
-                        {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold text-[11px] block truncate">{t.userName}</span>
-                        <p className="text-[10px] text-muted-foreground italic line-clamp-2 mt-1">"{t.text}"</p>
-                      </div>
+            <div className="pt-12 border-t">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="selection" className="border-none">
+                  <AccordionTrigger className="hover:no-underline py-0 group">
+                    <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
+                      <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({selectableTestimonials.length})
+                    </h2>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {selectableTestimonials.map((t: any) => (
+                        <div 
+                          key={t.id} 
+                          onClick={() => setSelectedIds(prev => prev.includes(t.id) ? prev.filter(i => i !== t.id) : [...prev, t.id])} 
+                          className={cn(
+                            "cursor-pointer transition-all rounded-xl border-2 p-4 bg-background", 
+                            selectedIds.includes(t.id) ? "border-primary bg-primary/5 shadow-md" : "border-transparent shadow-sm hover:border-muted-foreground/10"
+                          )}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                              {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <span className="font-bold text-[11px] block truncate">{t.userName}</span>
+                              <p className="text-[10px] text-muted-foreground italic line-clamp-2 mt-1">"{t.text}"</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         </div>
