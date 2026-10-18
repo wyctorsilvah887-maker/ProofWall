@@ -33,7 +33,7 @@
         },
         "membershipStatus": {
           "type": "string",
-          "enum": ["gold", "standard"],
+          "enum": ["gold", "enterprise", "trial"],
           "description": "Status da assinatura ou nível de membro."
         },
         "testimonialsCount": {

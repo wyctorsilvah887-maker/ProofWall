@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle2, Loader2, Rocket, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Loader2, Rocket, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 
@@ -20,15 +20,16 @@ function SuccessContent() {
 
   useEffect(() => {
     async function processUpgrade() {
+      // Se ainda estiver carregando a autenticação, esperamos.
       if (authLoading) return;
+
+      // Se o usuário não estiver logado ao retornar (ex: limpou cache ou trocou de browser)
       if (!user) {
         setIsUpdating(false);
-        setError("Usuário não autenticado.");
+        setError("Identificamos seu pagamento, mas você precisa estar logado para ativar seu plano.");
         return;
       }
 
-      // Parâmetros que a Cakto deve retornar no Redirect URL
-      // Exemplo: /payment-success?plan=gold
       const plan = searchParams.get('plan') || 'gold'; 
       
       try {
@@ -71,13 +72,16 @@ function SuccessContent() {
           ) : error ? (
             <>
               <div className="mx-auto bg-destructive/10 p-4 rounded-full w-fit">
-                <Rocket className="w-12 h-12 text-destructive" />
+                <ShieldAlert className="w-12 h-12 text-destructive" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-black font-headline">Quase lá!</h2>
-                <p className="text-sm text-muted-foreground">{error}</p>
+                <h2 className="text-2xl font-black font-headline">Ação Necessária</h2>
+                <p className="text-sm text-muted-foreground px-4">{error}</p>
               </div>
-              <Button onClick={() => router.push('/dash')} className="w-full h-12 font-bold">Voltar para o Painel</Button>
+              <div className="flex flex-col gap-3">
+                <Button onClick={() => router.push('/login')} className="w-full h-12 font-bold">Fazer Login para Ativar</Button>
+                <Button variant="ghost" onClick={() => router.push('/dash')} className="w-full h-10 text-xs">Ir para o Dashboard</Button>
+              </div>
             </>
           ) : (
             <>
