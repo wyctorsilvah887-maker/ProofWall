@@ -342,7 +342,10 @@ const PublicPageSettings = ({
 
               <div className="space-y-4 pt-4 border-t">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Texto do Rodapé</Label>
-                <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="Ex: © 2026 Sua Empresa" className="text-xs" />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">©</span>
+                  <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="2026 Sua Empresa" className="text-xs pl-7 h-10" />
+                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t">
@@ -870,8 +873,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </div>
 
                 <div className="mt-auto pt-16 pb-8 text-center">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">
-                    {footerText || 'PROOVA — Prova Social de Verdade'}
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 flex items-center justify-center gap-1">
+                    <span>©</span> {footerText || `${new Date().getFullYear()} ${userData?.companyName || 'Sua Empresa'}`}
                   </p>
                   {showLogo && (
                     <div className="mt-4 flex items-center justify-center gap-1.5 opacity-20">
@@ -902,7 +905,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                           )}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={cn("mt-1_w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                            <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                               {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                             </div>
                             <div className="flex-1 min-w-0">

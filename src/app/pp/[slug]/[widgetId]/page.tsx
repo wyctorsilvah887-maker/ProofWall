@@ -105,7 +105,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const heroTitle = widgetData?.heroTitle || `O que dizem sobre ${companyData?.companyName || 'nós'}`;
   const heroSubtitle = widgetData?.heroSubtitle || '';
   const testimonialsTitle = widgetData?.testimonialsTitle || '';
-  const footerText = widgetData?.footerText || 'PROOVA — Prova Social de Verdade';
+  const footerText = widgetData?.footerText || `${new Date().getFullYear()} ${companyData?.companyName || ''}`;
   const showProovaBranding = widgetData?.showLogo !== false;
 
   useEffect(() => {
@@ -320,7 +320,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               </a>
             )}
             <div className="flex flex-col items-center gap-2 opacity-30">
-              <p className="text-[9px] font-bold uppercase tracking-widest">{footerText}</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+                <span>©</span> {footerText}
+              </p>
               {showProovaBranding && (
                 <div className="flex items-center gap-1.5 mt-2 animate-in fade-in slide-in-from-bottom-2">
                   <span className="text-[8px] font-black uppercase tracking-[0.3em]">POWERED BY PROOVA</span>
