@@ -25,15 +25,23 @@ import {
   Link2,
   Copy,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  LogOut,
+  TrendingUp,
+  Inbox,
+  Gem,
+  Shield,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useUser, useFirestore, useDoc, useCollection, useStorage } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useStorage, useAuth } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -63,7 +71,15 @@ import {
 } from "@/components/ui/accordion";
 import { Slider } from '@/components/ui/slider';
 import Cropper from 'react-easy-crop';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { useTheme } from 'next-themes';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -170,20 +186,26 @@ const PublicPageSettings = ({
   layout, setLayout,
   logoUrl, setLogoUrl,
   onFileSelect,
-  isUploading
+  isUploading,
+  handleSave,
+  isSaving
 }: any) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
-      <div className="p-4 border-b bg-muted/10 shrink-0">
+      <div className="p-4 border-b bg-muted/10 shrink-0 space-y-4">
         <Link href="/widgets" className="w-full">
           <Button variant="ghost" className="w-full justify-start gap-3 h-10 px-2 group">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar</span>
           </Button>
         </Link>
+        <Button onClick={handleSave} disabled={isSaving || isUploading} className="w-full shadow-lg h-12 font-bold gap-2 text-sm">
+          {isSaving ? <Loader2 className="animate-spin h-4 w-4" /> : <Save className="h-4 w-4" />}
+          Salvar Alterações
+        </Button>
       </div>
 
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
@@ -298,8 +320,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const { widgetId } = use(params);
   const { user, loading: authLoading } = useUser();
   const db = useFirestore();
+  const auth = useAuth();
   const storage = useStorage();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
   const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
@@ -491,8 +515,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
     googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
     layout, setLayout, logoUrl, setLogoUrl,
-    onFileSelect, isUploading
+    onFileSelect, isUploading, handleSave, isSaving
   };
+
+  const membershipLabel = userData?.membershipStatus;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
@@ -513,15 +539,80 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2">
-            <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[150px]">{widgetName || 'Editor'}</h1>
+            <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[120px] sm:max-w-none">{widgetName || 'Editor'}</h1>
           </div>
         </div>
+
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
-          <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg h-10 px-6 font-bold">
-            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar Tudo
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
+                    {userData?.companyName || 'Minha Empresa'}
+                  </span>
+                  {membershipLabel && (
+                    <span className={cn(
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
+                      membershipLabel === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    )}>
+                      {membershipLabel === 'enterprise' ? 'Membro Enterprise' : (membershipLabel === 'gold' ? 'Membro Gold' : 'Período Trial')}
+                    </span>
+                  )}
+                </div>
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <User className="w-4 h-4" />
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
+              <DropdownMenuLabel className="px-3 py-2">
+                <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <TrendingUp className="mr-2 h-4 w-4 text-primary" />
+                <span>Dash</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Layout className="mr-2 h-4 w-4 text-primary" />
+                <span>Meus Widgets</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Inbox className="mr-2 h-4 w-4 text-primary" />
+                <span>Inbox Privado</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
+              {userData?.isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <Shield className="mr-2 h-4 w-4 text-primary" />
+                  <span>Administração</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -731,3 +822,4 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     </div>
   );
 }
+

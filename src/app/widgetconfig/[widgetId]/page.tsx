@@ -21,14 +21,22 @@ import {
   Palette,
   HelpCircle,
   Info,
-  ChevronDown
+  ChevronDown,
+  LogOut,
+  TrendingUp,
+  Inbox,
+  Gem,
+  Shield,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { useUser, useFirestore, useDoc, useCollection } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useAuth } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -54,7 +62,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ThemeToggle } from '@/components/theme-toggle';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { useTheme } from 'next-themes';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -96,19 +112,24 @@ const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex 
 const EmbedSettings = ({ 
   layout, setLayout, 
   themeColor, setThemeColor,
-  secondaryColor, setSecondaryColor
+  secondaryColor, setSecondaryColor,
+  handleSave, isSaving
 }: any) => {
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
   
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
-      <div className="p-4 border-b bg-muted/10 shrink-0">
+      <div className="p-4 border-b bg-muted/10 shrink-0 space-y-4">
         <Link href="/widgets" className="w-full">
           <Button variant="ghost" className="w-full justify-start gap-3 h-10 px-2 group">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs font-black uppercase tracking-[0.2em]">Voltar</span>
           </Button>
         </Link>
+        <Button onClick={handleSave} disabled={isSaving} className="w-full shadow-lg h-12 font-bold gap-2 text-sm">
+          {isSaving ? <Loader2 className="animate-spin h-4 w-4" /> : <Save className="h-4 w-4" />}
+          Salvar Alterações
+        </Button>
       </div>
 
       <ScrollArea className="flex-1">
@@ -169,10 +190,15 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const { widgetId } = use(params);
   const { user, loading: authLoading } = useUser();
   const db = useFirestore();
+  const auth = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const widgetRef = useMemo(() => (db && user ? doc(db, 'users', user.uid, 'widgets', widgetId) : null), [db, user, widgetId]);
   const { data: widgetData, loading: widgetLoading } = useDoc(widgetRef);
+
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData } = useDoc(userDocRef);
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -256,7 +282,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
-  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor };
+  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving };
+
+  const membershipLabel = userData?.membershipStatus;
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
@@ -276,18 +304,84 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2">
-            <h1 className="text-sm font-black uppercase tracking-tight truncate">{widgetData?.name || 'Mural Embed'}</h1>
+            <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[120px] sm:max-w-none">{widgetData?.name || 'Mural Embed'}</h1>
           </div>
         </div>
+
         <div className="ml-auto flex items-center gap-2 md:gap-4">
-          <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
             <HelpCircle className="w-5 h-5" />
           </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="shadow-lg h-10 px-6 font-bold">
-            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
-            Salvar
-          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
+                    {userData?.companyName || 'Minha Empresa'}
+                  </span>
+                  {membershipLabel && (
+                    <span className={cn(
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
+                      membershipLabel === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    )}>
+                      {membershipLabel === 'enterprise' ? 'Membro Enterprise' : (membershipLabel === 'gold' ? 'Membro Gold' : 'Período Trial')}
+                    </span>
+                  )}
+                </div>
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                  <User className="w-4 h-4" />
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
+              <DropdownMenuLabel className="px-3 py-2">
+                <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <TrendingUp className="mr-2 h-4 w-4 text-primary" />
+                <span>Dash</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Layout className="mr-2 h-4 w-4 text-primary" />
+                <span>Meus Widgets</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Inbox className="mr-2 h-4 w-4 text-primary" />
+                <span>Inbox Privado</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-pointer font-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
+              {userData?.isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <Shield className="mr-2 h-4 w-4 text-primary" />
+                  <span>Administração</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator className="mx-1" />
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sair</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 
@@ -408,7 +502,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
                 <p className="text-sm font-bold">Salve e Publique</p>
-                <p className="text-xs text-muted-foreground">Clique em <strong>Salvar</strong> e copie o código para colar no HTML do seu site.</p>
+                <p className="text-xs text-muted-foreground">Clique em <strong>Salvar Alterações</strong> e copie o código para colar no HTML do seu site.</p>
               </div>
             </div>
           </div>
@@ -437,3 +531,4 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     </div>
   );
 }
+
