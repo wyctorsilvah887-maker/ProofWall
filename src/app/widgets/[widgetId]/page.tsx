@@ -38,7 +38,8 @@ import {
   Plus,
   ArrowRight,
   Settings,
-  MoreVertical
+  MoreVertical,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -155,9 +156,11 @@ const PublicPageSettings = ({
   onFileSelect,
   isUploading,
   handleSave,
-  isSaving
+  isSaving,
+  isEnterprise
 }: any) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
 
   const addSection = () => {
@@ -201,7 +204,9 @@ const PublicPageSettings = ({
       <Tabs defaultValue="geral" className="w-full flex-1 flex flex-col min-h-0">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-12 px-2 shrink-0">
           <TabsTrigger value="geral" className="text-xs">Visual</TabsTrigger>
-          <TabsTrigger value="conteudo" className="text-xs">Conteúdo</TabsTrigger>
+          <TabsTrigger value="conteudo" className="text-xs flex items-center gap-1.5">
+            Conteúdo {!isEnterprise && <Lock className="w-2.5 h-2.5 opacity-40" />}
+          </TabsTrigger>
           <TabsTrigger value="design" className="text-xs">Layout</TabsTrigger>
           <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
         </TabsList>
@@ -254,109 +259,132 @@ const PublicPageSettings = ({
               </div>
             </TabsContent>
 
-            <TabsContent value="conteudo" className="mt-0 space-y-8">
-              <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <Type className="w-3 h-3 text-primary" /> Título Principal (Hero)
-                </Label>
-                <Input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Ex: O que dizem sobre nós" className="text-xs" />
-              </div>
-              
-              <div className="space-y-4">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Subtítulo Hero</Label>
-                <Textarea value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="Uma breve descrição impactante..." className="text-xs min-h-[80px]" />
-              </div>
+            <TabsContent value="conteudo" className="mt-0">
+              {isEnterprise ? (
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                      <Type className="w-3 h-3 text-primary" /> Título Principal (Hero)
+                    </Label>
+                    <Input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="Ex: O que dizem sobre nós" className="text-xs" />
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Subtítulo Hero</Label>
+                    <Textarea value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="Uma breve descrição impactante..." className="text-xs min-h-[80px]" />
+                  </div>
 
-              <div className="space-y-6 pt-6 border-t">
-                <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Seções Adicionais</Label>
-                  <Button variant="outline" size="sm" onClick={addSection} className="h-7 text-[10px] font-black uppercase gap-1 rounded-lg">
-                    <Plus className="w-3 h-3" /> Adicionar
+                  <div className="space-y-6 pt-6 border-t">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Seções Adicionais</Label>
+                      <Button variant="outline" size="sm" onClick={addSection} className="h-7 text-[10px] font-black uppercase gap-1 rounded-lg">
+                        <Plus className="w-3 h-3" /> Adicionar
+                      </Button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {customSections.map((section: CustomSection, idx: number) => (
+                        <Card key={section.id} className="border shadow-sm overflow-hidden bg-muted/5">
+                          <Accordion type="single" collapsible>
+                            <AccordionItem value="item-1" className="border-none">
+                              <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/10">
+                                 <AccordionTrigger className="hover:no-underline py-0 flex-1">
+                                   <span className="text-[10px] font-black uppercase truncate pr-2">{section.title || `Seção ${idx + 1}`}</span>
+                                 </AccordionTrigger>
+                                 <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0" onClick={() => removeSection(section.id)}>
+                                   <Trash2 className="w-3 h-3" />
+                                 </Button>
+                              </div>
+                              <AccordionContent className="p-3 space-y-3 pb-4">
+                                <div className="space-y-1.5">
+                                  <Label className="text-[9px] font-bold uppercase opacity-50">Título</Label>
+                                  <Input value={section.title} onChange={(e) => updateSection(section.id, 'title', e.target.value)} className="h-8 text-[11px]" />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label className="text-[9px] font-bold uppercase opacity-50">Subtítulo</Label>
+                                  <Input value={section.subtitle} onChange={(e) => updateSection(section.id, 'subtitle', e.target.value)} className="h-8 text-[11px]" />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label className="text-[9px] font-bold uppercase opacity-50">Texto do Bloco</Label>
+                                  <Textarea value={section.content} onChange={(e) => updateSection(section.id, 'content', e.target.value)} className="text-[11px] min-h-[60px]" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-bold uppercase opacity-50">Texto Botão</Label>
+                                    <Input value={section.buttonText} onChange={(e) => updateSection(section.id, 'buttonText', e.target.value)} className="h-8 text-[11px]" />
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-bold uppercase opacity-50">Link Botão</Label>
+                                    <Input value={section.buttonUrl} onChange={(e) => updateSection(section.id, 'buttonUrl', e.target.value)} className="h-8 text-[11px]" />
+                                  </div>
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label className="text-[9px] font-bold uppercase opacity-50">Estilo do Bloco</Label>
+                                  <Select value={section.variant} onValueChange={(val) => updateSection(section.id, 'variant', val)}>
+                                    <SelectTrigger className="h-8 text-[11px]">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="light">Fundo Claro</SelectItem>
+                                      <SelectItem value="dark">Fundo Escuro</SelectItem>
+                                      <SelectItem value="accent">Destaque (Marca)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </Card>
+                      ))}
+                      {customSections.length === 0 && (
+                        <p className="text-[10px] text-muted-foreground text-center py-4 italic">Nenhuma seção adicional.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Título da Seção de Depoimentos</Label>
+                    <Input value={testimonialsTitle} onChange={(e) => setTestimonialsTitle(e.target.value)} placeholder="Ex: Experiência de quem confia" className="text-xs" />
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t">
+                    <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Texto do Rodapé</Label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">©</span>
+                      <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="2026 Sua Empresa" className="text-xs pl-7 h-10" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t">
+                     <div className="flex items-center justify-between p-3 bg-muted/10 rounded-xl">
+                      <div className="space-y-0.5">
+                        <Label className="text-[11px] font-bold">Exibir Marca Proova</Label>
+                        <p className="text-[9px] text-muted-foreground">Ativar rodapé "Powered by Proova"</p>
+                      </div>
+                      <Switch checked={showLogo} onCheckedChange={setShowLogo} />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-4 bg-primary/5 rounded-2xl m-2 border border-primary/10 border-dashed animate-in fade-in zoom-in duration-300">
+                  <div className="bg-primary/10 p-3 rounded-full text-primary">
+                    <Gem className="w-8 h-8" />
+                  </div>
+                  <div className="space-y-2 px-2">
+                    <h3 className="text-sm font-black uppercase tracking-tight">Recurso Enterprise</h3>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed max-w-[200px] mx-auto">
+                      A personalização total de textos, seções no-code ilimitadas e o modo White Label estão disponíveis apenas no plano <span className="font-bold text-primary">Enterprise</span>.
+                    </p>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    className="h-9 px-6 font-bold text-[10px] uppercase tracking-widest rounded-xl shadow-lg mt-2" 
+                    onClick={() => router.push('/pricing')}
+                  >
+                    Fazer Upgrade
                   </Button>
                 </div>
-
-                <div className="space-y-4">
-                  {customSections.map((section: CustomSection, idx: number) => (
-                    <Card key={section.id} className="border shadow-sm overflow-hidden bg-muted/5">
-                      <Accordion type="single" collapsible>
-                        <AccordionItem value="item-1" className="border-none">
-                          <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/10">
-                             <AccordionTrigger className="hover:no-underline py-0 flex-1">
-                               <span className="text-[10px] font-black uppercase truncate pr-2">{section.title || `Seção ${idx + 1}`}</span>
-                             </AccordionTrigger>
-                             <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0" onClick={() => removeSection(section.id)}>
-                               <Trash2 className="w-3 h-3" />
-                             </Button>
-                          </div>
-                          <AccordionContent className="p-3 space-y-3 pb-4">
-                            <div className="space-y-1.5">
-                              <Label className="text-[9px] font-bold uppercase opacity-50">Título</Label>
-                              <Input value={section.title} onChange={(e) => updateSection(section.id, 'title', e.target.value)} className="h-8 text-[11px]" />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-[9px] font-bold uppercase opacity-50">Subtítulo</Label>
-                              <Input value={section.subtitle} onChange={(e) => updateSection(section.id, 'subtitle', e.target.value)} className="h-8 text-[11px]" />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-[9px] font-bold uppercase opacity-50">Texto do Bloco</Label>
-                              <Textarea value={section.content} onChange={(e) => updateSection(section.id, 'content', e.target.value)} className="text-[11px] min-h-[60px]" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                              <div className="space-y-1.5">
-                                <Label className="text-[9px] font-bold uppercase opacity-50">Texto Botão</Label>
-                                <Input value={section.buttonText} onChange={(e) => updateSection(section.id, 'buttonText', e.target.value)} className="h-8 text-[11px]" />
-                              </div>
-                              <div className="space-y-1.5">
-                                <Label className="text-[9px] font-bold uppercase opacity-50">Link Botão</Label>
-                                <Input value={section.buttonUrl} onChange={(e) => updateSection(section.id, 'buttonUrl', e.target.value)} className="h-8 text-[11px]" />
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="text-[9px] font-bold uppercase opacity-50">Estilo do Bloco</Label>
-                              <Select value={section.variant} onValueChange={(val) => updateSection(section.id, 'variant', val)}>
-                                <SelectTrigger className="h-8 text-[11px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="light">Fundo Claro</SelectItem>
-                                  <SelectItem value="dark">Fundo Escuro</SelectItem>
-                                  <SelectItem value="accent">Destaque (Marca)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </Card>
-                  ))}
-                  {customSections.length === 0 && (
-                    <p className="text-[10px] text-muted-foreground text-center py-4 italic">Nenhuma seção adicional.</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Título da Seção de Depoimentos</Label>
-                <Input value={testimonialsTitle} onChange={(e) => setTestimonialsTitle(e.target.value)} placeholder="Ex: Experiência de quem confia" className="text-xs" />
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Texto do Rodapé</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">©</span>
-                  <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="2026 Sua Empresa" className="text-xs pl-7 h-10" />
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                 <div className="flex items-center justify-between p-3 bg-muted/10 rounded-xl">
-                  <div className="space-y-0.5">
-                    <Label className="text-[11px] font-bold">Exibir Marca Proova</Label>
-                    <p className="text-[9px] text-muted-foreground">Ativar rodapé "Powered by Proova"</p>
-                  </div>
-                  <Switch checked={showLogo} onCheckedChange={setShowLogo} />
-                </div>
-              </div>
+              )}
             </TabsContent>
 
             <TabsContent value="design" className="mt-0 space-y-6">
@@ -426,6 +454,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
+
+  const isEnterprise = userData?.membershipStatus === 'enterprise';
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -635,7 +665,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     heroTitle, setHeroTitle, heroSubtitle, setHeroSubtitle,
     testimonialsTitle, setTestimonialsTitle, footerText, setFooterText,
     showLogo, setShowLogo, customSections, setCustomSections,
-    onFileSelect, isUploading, handleSave, isSaving
+    onFileSelect, isUploading, handleSave, isSaving, isEnterprise
   };
 
   const membershipLabel = userData?.membershipStatus;
