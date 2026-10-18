@@ -1,15 +1,62 @@
+
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, ArrowRight, Zap, Star, Shield, HelpCircle, ArrowLeft, Clock } from 'lucide-react';
+import { 
+  Check, 
+  ArrowRight, 
+  Zap, 
+  Star, 
+  Shield as ShieldIcon, 
+  HelpCircle, 
+  ArrowLeft, 
+  Clock, 
+  User, 
+  LogOut, 
+  TrendingUp, 
+  Layout, 
+  Inbox, 
+  Gem, 
+  Sun, 
+  Moon,
+  Loader2
+} from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useUser, useAuth, useFirestore, useDoc } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
+import { useTheme } from 'next-themes';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 
 export default function PricingPage() {
+  const { user, loading: authLoading } = useUser();
+  const auth = useAuth();
+  const db = useFirestore();
+  const router = useRouter();
+  const { theme, setTheme } = useTheme();
+
+  const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
+  const { data: userData } = useDoc(userDocRef);
+
+  const membershipLabel = userData?.membershipStatus === 'gold' 
+    ? 'Membro Gold' 
+    : userData?.membershipStatus === 'standard' 
+      ? 'Membro Standard' 
+      : null;
+
   const plans = [
     {
       name: "Trial",
@@ -78,9 +125,81 @@ export default function PricingPage() {
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
-          <Link href="/signup">
-            <Button size="sm" className="font-bold shadow-lg text-[10px] sm:text-xs h-9 px-3 sm:h-11 sm:px-6 rounded-xl">Começar Grátis</Button>
-          </Link>
+          
+          {!authLoading && user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-10 md:h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
+                  <div className="hidden md:flex flex-col items-end">
+                    <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
+                      {userData?.companyName || 'Minha Empresa'}
+                    </span>
+                    {membershipLabel && (
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-black leading-tight">
+                        {membershipLabel}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <User className="w-4 h-4" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
+                <DropdownMenuLabel className="px-3 py-2">
+                  <p className="text-xs font-headline font-black uppercase tracking-[0.2em] text-muted-foreground">Minha Conta</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="mx-1" />
+                <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <TrendingUp className="mr-2 h-4 w-4 text-primary" />
+                  <span>Dash</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <Layout className="mr-2 h-4 w-4 text-primary" />
+                  <span>Meus Widgets</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                  <Inbox className="mr-2 h-4 w-4 text-primary" />
+                  <span>Inbox Privado</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5 bg-primary/5 text-primary">
+                  <Gem className="mr-2 h-4 w-4" />
+                  <span>Planos de Upgrade</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="mx-1" />
+                <DropdownMenuItem 
+                  onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                  className="rounded-xl cursor-pointer font-bold py-2.5"
+                >
+                  {theme === 'light' ? (
+                    <Moon className="mr-2 h-4 w-4 text-primary" />
+                  ) : (
+                    <Sun className="mr-2 h-4 w-4 text-primary" />
+                  )}
+                  <span>Alternar Tema</span>
+                </DropdownMenuItem>
+
+                {userData?.isAdmin && (
+                  <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                    <ShieldIcon className="mr-2 h-4 w-4 text-primary" />
+                    <span>Administração</span>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator className="mx-1" />
+                <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair do Sistema</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {authLoading && (
+            <div className="w-9 h-9 flex items-center justify-center">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            </div>
+          )}
         </div>
       </header>
 
@@ -131,7 +250,7 @@ export default function PricingPage() {
                     {plan.features.map((feature, fIdx) => (
                       <li key={fIdx} className="flex items-start gap-3 text-xs sm:text-sm font-medium">
                         <div className="bg-primary/10 p-1 rounded-full text-primary shrink-0 mt-0.5">
-                          <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          <Check className="w-3.5 h-3.5 sm:w-4 h-4" />
                         </div>
                         <span className="leading-tight">{feature}</span>
                       </li>
