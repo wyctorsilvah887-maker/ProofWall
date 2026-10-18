@@ -679,22 +679,22 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
-                <p className="text-sm font-bold">Aba Visual (Design e Identidade)</p>
-                <p className="text-xs text-muted-foreground">Use o ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> para subir sua logo e definir as cores que combinam com seu branding.</p>
+                <p className="text-sm font-bold"><strong className="text-primary">Aba Visual</strong> (Design e Identidade)</p>
+                <p className="text-xs text-muted-foreground">Use o ícone de <strong className="text-primary">Monitor</strong> para subir sua logo e definir as cores que combinam com seu branding.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
-                <p className="text-sm font-bold">Aba Layout (Estilo de Exibição)</p>
-                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha o formato do mural (Masonry, Grade, etc).</p>
+                <p className="text-sm font-bold"><strong className="text-primary">Aba Layout</strong> (Estilo de Exibição)</p>
+                <p className="text-xs text-muted-foreground">Personalize o título da página e escolha o formato do <strong className="text-primary">mural</strong> (Masonry, Grade, etc).</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
               <div>
-                <p className="text-sm font-bold">Aba Social (Interação e Site Oficial)</p>
-                <p className="text-xs text-muted-foreground">Ative o botão de WhatsApp e configure o *Site Oficial*. **Dica:** Copie o link da sua página pública e use-o no seu perfil do WhatsApp ou na bio do Instagram!</p>
+                <p className="text-sm font-bold"><strong className="text-primary">Aba Social</strong> (Interação e Site Oficial)</p>
+                <p className="text-xs text-muted-foreground">Ative o botão de <strong className="text-primary">WhatsApp</strong> e configure o <strong className="text-primary">Site Oficial</strong>. <strong className="text-primary">Dica:</strong> Copie o link da sua página pública e use-o no seu perfil ou bio!</p>
               </div>
             </div>
           </div>
