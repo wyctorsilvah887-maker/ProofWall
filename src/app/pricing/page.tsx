@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -12,7 +13,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 export default function PricingPage() {
   const plans = [
     {
-      name: "Standard",
+      name: "Gold",
       price: "R$ 47",
       period: "/mês",
       description: "Ideal para profissionais liberais e pequenos negócios começando a crescer.",
@@ -27,7 +28,7 @@ export default function PricingPage() {
       popular: false,
     },
     {
-      name: "Gold",
+      name: "Enterprise",
       price: "R$ 97",
       period: "/mês",
       description: "O plano completo para empresas que querem dominar o mercado local.",
@@ -39,7 +40,7 @@ export default function PricingPage() {
         "Remoção da marca Proova",
         "Suporte VIP via WhatsApp",
       ],
-      cta: "Seja Gold",
+      cta: "Seja Enterprise",
       popular: true,
     }
   ];
@@ -150,7 +151,7 @@ export default function PricingPage() {
               <AccordionItem value="item-3" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">O que acontece se eu atingir o limite de depoimentos?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium">
-                  Seus novos depoimentos continuarão sendo coletados, mas você precisará fazer o upgrade para o plano Gold para exibi-los nos murais ou gerenciar um volume maior de avaliações.
+                  Seus novos depoimentos continuarão sendo coletados, mas você precisará fazer o upgrade para o plano Enterprise para exibi-los nos murais ou gerenciar um volume maior de avaliações.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
