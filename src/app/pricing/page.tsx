@@ -71,6 +71,7 @@ export default function PricingPage() {
         "Uso único por conta",
       ],
       cta: "Começar Teste Grátis",
+      checkoutUrl: "/signup",
       popular: false,
       highlight: false,
     },
@@ -87,6 +88,7 @@ export default function PricingPage() {
         "Suporte prioritário",
       ],
       cta: "Assinar Gold",
+      checkoutUrl: "https://pay.cakto.com.br/8c7bbit_1215637",
       popular: false,
       highlight: false,
     },
@@ -105,6 +107,7 @@ export default function PricingPage() {
         "Suporte VIP via WhatsApp",
       ],
       cta: "Seja Enterprise",
+      checkoutUrl: "https://pay.cakto.com.br/yhtkwz4_1215645",
       popular: true,
       highlight: true,
     }
@@ -258,7 +261,7 @@ export default function PricingPage() {
                   </ul>
                 </CardContent>
                 <CardFooter className="p-6 sm:p-8 pt-6 shrink-0 mt-auto">
-                  <Link href="/signup" className="w-full">
+                  <Link href={plan.checkoutUrl} className="w-full" target={plan.checkoutUrl.startsWith('http') ? "_blank" : "_self"}>
                     <Button 
                       className={`w-full h-14 sm:h-16 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
                         plan.highlight 
