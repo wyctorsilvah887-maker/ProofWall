@@ -10,7 +10,7 @@ import {
   Shield, LogOut, Users, UserCheck, Lock, Mail, User, 
   BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, 
   TrendingUp, CreditCard, AlertCircle, Copy, Hash, Calendar,
-  BarChart3, MousePointer2, ExternalLink, Gem
+  BarChart3, MousePointer2, ExternalLink, Gem, ArrowLeft
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -38,6 +38,7 @@ import { useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -309,9 +310,16 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground overflow-x-hidden flex flex-col">
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[35px] md:w-[180px] md:h-[50px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
+        <div className="flex items-center gap-4">
+          <Link href="/dash">
+            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[35px] md:w-[180px] md:h-[50px]">
+            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
+          </div>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 h-7">
