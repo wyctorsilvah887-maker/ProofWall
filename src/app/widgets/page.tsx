@@ -462,7 +462,7 @@ export default function WidgetsPage() {
               onClick={() => handleCreateWidget()}
               disabled={isCreating || !newWidgetName.trim()}
             >
-              {isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
+              {isCreating ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Plus className="mr-2 w-4 h-4" />}
               Criar Mural Agora
             </Button>
           </DialogFooter>
