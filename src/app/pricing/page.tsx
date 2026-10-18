@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, ArrowRight, Zap, Star, Shield, HelpCircle } from 'lucide-react';
+import { Check, ArrowRight, Zap, Star, Shield, HelpCircle, ArrowLeft } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -47,10 +47,16 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
       <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
-        <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[180px] h-[50px] md:w-[240px] md:h-[70px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" />
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Voltar</span>
+          </Link>
+          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
+            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" />
+          </Link>
+        </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <Link href="/login" className="hidden sm:block">
