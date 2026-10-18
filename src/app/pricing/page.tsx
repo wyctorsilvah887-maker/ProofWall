@@ -98,18 +98,18 @@ export default function PricingPage() {
         </section>
 
         <section className="pb-24 px-4 container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
             {plans.map((plan, idx) => (
               <Card 
                 key={idx} 
-                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col ${plan.highlight ? 'border-primary shadow-xl md:scale-105 z-10' : 'border-border bg-card/50'}`}
+                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col h-full ${plan.highlight ? 'border-primary shadow-xl md:scale-105 z-10' : 'border-border bg-card/50'}`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg">
+                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg z-20">
                     Mais Escolhido
                   </div>
                 )}
-                <CardHeader className="p-6 sm:p-8">
+                <CardHeader className="p-6 sm:p-8 shrink-0">
                   <div className="flex items-center justify-between mb-4">
                     <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-widest">
                       {plan.name}
@@ -129,25 +129,26 @@ export default function PricingPage() {
                 <CardContent className="p-6 sm:p-8 pt-0 flex-1">
                   <ul className="space-y-3 sm:space-y-4">
                     {plan.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-center gap-3 text-xs sm:text-sm font-medium">
-                        <div className="bg-primary/10 p-1 rounded-full text-primary shrink-0">
+                      <li key={fIdx} className="flex items-start gap-3 text-xs sm:text-sm font-medium">
+                        <div className="bg-primary/10 p-1 rounded-full text-primary shrink-0 mt-0.5">
                           <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </div>
-                        {feature}
+                        <span className="leading-tight">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
-                <CardFooter className="p-6 sm:p-8 pt-0">
+                <CardFooter className="p-6 sm:p-8 pt-6 shrink-0 mt-auto">
                   <Link href="/signup" className="w-full">
                     <Button 
-                      className={`w-full h-12 sm:h-14 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                      className={`w-full h-14 sm:h-16 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
                         plan.highlight 
                           ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
                           : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                       }`}
                     >
-                      {plan.cta} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="truncate">{plan.cta}</span>
+                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                     </Button>
                   </Link>
                 </CardFooter>
