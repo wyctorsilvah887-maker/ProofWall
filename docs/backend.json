@@ -72,6 +72,19 @@
         "createdAt"
       ]
     },
+    "PaymentEvent": {
+      "title": "PaymentEvent",
+      "description": "Log de eventos recebidos via Webhook da Cakto.",
+      "type": "object",
+      "properties": {
+        "externalId": { "type": "string" },
+        "customerEmail": { "type": "string" },
+        "status": { "type": "string" },
+        "productName": { "type": "string" },
+        "payload": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "Testimonial": {
       "title": "Testimonial",
       "description": "Depoimento enviado por um cliente.",
@@ -184,6 +197,10 @@
     "/users/{userId}": {
       "schema": "User",
       "description": "Coleção central de todos os usuários e leads do sistema."
+    },
+    "/payment_events/{eventId}": {
+      "schema": "PaymentEvent",
+      "description": "Logs de webhooks da Cakto para auditoria admin."
     },
     "/users/{userId}/testimonials/{testimonialId}": {
       "schema": "Testimonial",

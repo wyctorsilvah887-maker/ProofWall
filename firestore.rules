@@ -9,20 +9,12 @@ service cloud.firestore {
       allow create: if true;
       allow get, list: if true;
       
-      // Permite que o dono edite seu perfil OU permite incrementos públicos de contadores específicos
-      // Usamos hasOnly para garantir que APENAS os contadores sejam alterados por visitantes
       allow update: if (request.auth != null && request.auth.uid == userId) || 
-        (request.resource.data.diff(resource.data).affectedKeys().hasAny(['testimonialsCount', 'googleRedirectCount']) &&
-         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['testimonialsCount', 'googleRedirectCount']));
+        (request.resource.data.diff(resource.data).affectedKeys().hasAny(['testimonialsCount', 'googleRedirectCount', 'membershipStatus', 'trialUsed', 'trialStartedAt']) &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['testimonialsCount', 'googleRedirectCount', 'membershipStatus', 'trialUsed', 'trialStartedAt']));
       
       allow delete: if request.auth != null && request.auth.uid == userId;
       
-      // Admin global bypass
-      allow read, write: if request.auth != null && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
-
-      // Depoimentos Públicos
       match /testimonials/{testimonialId} {
         allow create: if true;
         allow read: if resource.data.status == 'approved';
@@ -30,22 +22,30 @@ service cloud.firestore {
           (request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
       }
 
-      // Feedbacks Privados (1-3 estrelas)
       match /private_feedbacks/{feedbackId} {
         allow create: if true;
         allow read, update, delete: if (request.auth != null && request.auth.uid == userId);
       }
 
-      // Widgets
       match /widgets/{widgetId} {
         allow read: if true;
         allow update: if true;
         allow create, delete: if request.auth != null && request.auth.uid == userId;
       }
     }
+
+    // Regras para Logs de Pagamento (Público apenas para criação via Webhook, Leitura apenas Admin)
+    match /payment_events/{eventId} {
+      allow create: if true;
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
     
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
   }
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, Gem, TrendingUp } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, Gem, TrendingUp, CreditCard, AlertCircle } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -17,11 +18,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase/firestore';
+import { collection, query, doc, setDoc, serverTimestamp, where, orderBy, limit } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AdminPage() {
   const auth = useAuth();
@@ -64,6 +66,17 @@ export default function AdminPage() {
   }, [db, user, isAdminVerified]);
 
   const { data: leadsList, loading: leadsLoading } = useCollection(leadsQuery);
+
+  const paymentEventsQuery = useMemo(() => {
+    if (!db || !user || !isAdminVerified) return null;
+    return query(
+      collection(db, 'payment_events'),
+      orderBy('createdAt', 'desc'),
+      limit(20)
+    );
+  }, [db, user, isAdminVerified]);
+
+  const { data: paymentEvents, loading: eventsLoading } = useCollection(paymentEventsQuery);
 
   const sortedLeads = useMemo(() => {
     if (!leadsList) return [];
@@ -275,7 +288,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground">
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-6 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl relative w-[64px] h-[64px] md:w-[72px] md:h-[72px]">
+        <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[40px] md:w-[180px] md:h-[50px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
         </div>
@@ -330,7 +343,7 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-6 space-y-8">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total de Leads</CardTitle>
@@ -341,66 +354,147 @@ export default function AdminPage() {
               <p className="text-xs text-muted-foreground">Inscrições capturadas</p>
             </CardContent>
           </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Eventos Webhook</CardTitle>
+              <CreditCard className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{paymentEvents?.length || 0}</div>
+              <p className="text-xs text-muted-foreground">Alertas de pagamento</p>
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="shadow-lg border-none">
-          <CardHeader>
-            <CardTitle className="font-headline text-xl flex items-center gap-2">
-              <UserCheck className="w-5 h-5" /> Lista de Inscritos VIP
-            </CardTitle>
-            <CardDescription>Visualização em tempo real dos novos leads.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {leadsLoading ? (
-              <div className="py-20 text-center">
-                <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
-                <p className="text-muted-foreground">Carregando leads...</p>
-              </div>
-            ) : leadsList && leadsList.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>E-mail</TableHead>
-                    <TableHead>Data de Registro</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {sortedLeads.map((usr: any) => (
-                    <TableRow key={usr.id}>
-                      <TableCell className="font-bold flex items-center gap-2">
-                        <User className="w-4 h-4 text-primary/60" />
-                        {usr.name}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 text-primary">
-                          <Mail className="w-4 h-4 text-primary/60" />
-                          {usr.email}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Recentemente'}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
-                <p className="text-muted-foreground">Nenhum lead registrado ainda.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="leads" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="leads" className="gap-2"><Users className="w-4 h-4" /> Usuários e Leads</TabsTrigger>
+            <TabsTrigger value="payments" className="gap-2"><CreditCard className="w-4 h-4" /> Auditoria de Pagamentos</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="leads">
+            <Card className="shadow-lg border-none">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl flex items-center gap-2">
+                  <UserCheck className="w-5 h-5" /> Gestão de Usuários
+                </CardTitle>
+                <CardDescription>Visualize e gerencie o status de cada lead.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {leadsLoading ? (
+                  <div className="py-20 text-center">
+                    <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+                    <p className="text-muted-foreground">Carregando leads...</p>
+                  </div>
+                ) : leadsList && leadsList.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nome / Empresa</TableHead>
+                        <TableHead>E-mail / UID</TableHead>
+                        <TableHead>Plano Atual</TableHead>
+                        <TableHead>Registro</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sortedLeads.map((usr: any) => (
+                        <TableRow key={usr.id}>
+                          <TableCell className="font-bold">
+                            <div className="flex flex-col">
+                              <span>{usr.name}</span>
+                              <span className="text-[10px] text-muted-foreground font-normal uppercase tracking-widest">{usr.companyName}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col text-xs">
+                              <span className="font-medium text-primary">{usr.email}</span>
+                              <span className="text-[10px] text-muted-foreground font-mono">{usr.id}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={usr.membershipStatus === 'enterprise' ? 'default' : 'secondary'} className="uppercase text-[9px] font-black">
+                              {usr.membershipStatus || 'Lead'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {usr.createdAt?.toDate ? usr.createdAt.toDate().toLocaleString('pt-BR') : 'Recentemente'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
+                    <p className="text-muted-foreground">Nenhum lead registrado ainda.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <Card className="shadow-lg border-none">
+              <CardHeader>
+                <CardTitle className="font-headline text-xl flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5" /> Alertas de Webhook (Cakto)
+                </CardTitle>
+                <CardDescription>Logs em tempo real para controle de assinaturas e cancelamentos.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {eventsLoading ? (
+                  <div className="py-20 text-center">
+                    <Loader2 className="animate-spin h-8 w-8 text-primary mx-auto mb-4" />
+                    <p className="text-muted-foreground">Sincronizando eventos...</p>
+                  </div>
+                ) : paymentEvents && paymentEvents.length > 0 ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Evento / Status</TableHead>
+                        <TableHead>E-mail / UID Vinculado</TableHead>
+                        <TableHead>Produto</TableHead>
+                        <TableHead>Data do Evento</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paymentEvents.map((evt: any) => (
+                        <TableRow key={evt.id} className={cn(evt.status === 'canceled' ? "bg-destructive/5" : "")}>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <Badge variant={evt.status === 'approved' ? 'default' : (evt.status === 'canceled' ? 'destructive' : 'outline')} className="w-fit uppercase text-[9px] font-black">
+                                {evt.status}
+                              </Badge>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col text-xs">
+                              <span className="font-medium">{evt.customerEmail}</span>
+                              <span className="text-[10px] text-muted-foreground font-mono">UID: {evt.externalId}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-xs font-bold">{evt.productName}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {evt.createdAt?.toDate ? evt.createdAt.toDate().toLocaleString('pt-BR') : 'Agora'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="py-20 text-center border-2 border-dashed rounded-lg bg-background">
+                    <p className="text-muted-foreground">Nenhum evento de pagamento recebido ainda.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
       
       <footer className="py-8 border-t flex flex-col items-center gap-4 mt-12 bg-background/50">
         <div className="flex items-center gap-2 relative w-[48px] h-[48px] md:w-[56px] md:h-[56px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block" />
         </div>
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
           <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Administração Segura.</p>
