@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -507,9 +506,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setIsTutorialOpen(true)} className="rounded-full text-muted-foreground hover:text-primary">
-            <HelpCircle className="w-5 h-5" />
-          </Button>
           <Button onClick={handleSave} disabled={isSaving || isUploading} className="shadow-lg h-10 px-6 font-bold">
             {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
             Salvar Tudo
