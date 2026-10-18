@@ -204,8 +204,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const { data: userData } = useDoc(userDocRef);
 
   const membershipStatus = userData?.membershipStatus;
+  const isEnterprise = membershipStatus === 'enterprise';
   const isGold = membershipStatus === 'gold';
-  const SELECTION_LIMIT = isGold ? 50 : Infinity;
+  const isTrial = membershipStatus === 'trial';
+  const SELECTION_LIMIT = (isEnterprise || isTrial) ? Infinity : (isGold ? 50 : 10);
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -287,10 +289,11 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     setSelectedIds(prev => {
       const isRemoving = prev.includes(id);
       if (!isRemoving && prev.length >= SELECTION_LIMIT) {
+        const planName = isGold ? "Gold" : "Base";
         toast({
           variant: "destructive",
-          title: "Limite do Plano Gold",
-          description: "Você atingiu o limite de 50 depoimentos ativos. Faça upgrade para o Enterprise para selecionar ilimitados.",
+          title: `Limite do Plano ${planName}`,
+          description: `Você atingiu o limite de ${SELECTION_LIMIT} depoimentos ativos. Faça upgrade para o Enterprise para selecionar ilimitados.`,
         });
         return prev;
       }
@@ -392,7 +395,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="mx-1" />
-              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>
@@ -445,8 +448,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
                         <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({approvedTestimonials?.length || 0})
                       </h2>
-                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && isGold ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
-                        {selectedIds.length} / {isGold ? '50' : '∞'} ATIVOS
+                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isEnterprise && !isTrial ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
+                        {selectedIds.length} / {isEnterprise || isTrial ? '∞' : SELECTION_LIMIT} ATIVOS
                       </Badge>
                     </div>
                   </AccordionTrigger>
@@ -454,7 +457,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {displayedTestimonialsSelection.map((t: any) => {
                         const isSelected = selectedIds.includes(t.id);
-                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && isGold;
+                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && !isEnterprise && !isTrial;
                         const isDisabled = !isSelected && isAtLimit;
 
                         return (
