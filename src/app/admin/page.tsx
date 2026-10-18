@@ -10,7 +10,7 @@ import {
   Shield, LogOut, Users, UserCheck, Lock, Mail, User, 
   BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, 
   TrendingUp, CreditCard, AlertCircle, Copy, Hash, Calendar,
-  BarChart3, MousePointer2, ExternalLink
+  BarChart3, MousePointer2, ExternalLink, Gem
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -27,6 +27,7 @@ import {
   SheetTitle, 
   SheetDescription 
 } from '@/components/ui/sheet';
+import { Label } from '@/components/ui/label';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, doc, setDoc, serverTimestamp, where, orderBy, limit } from 'firebase/firestore';
