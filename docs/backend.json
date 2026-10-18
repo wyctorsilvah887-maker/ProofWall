@@ -199,6 +199,22 @@
           "type": "boolean",
           "description": "Controla exibição da logo."
         },
+        "customSections": {
+          "type": "array",
+          "description": "Seções de conteúdo dinâmicas da página.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "subtitle": { "type": "string" },
+              "content": { "type": "string" },
+              "buttonText": { "type": "string" },
+              "buttonUrl": { "type": "string" },
+              "variant": { "type": "string", "enum": ["light", "dark", "accent"] }
+            }
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",

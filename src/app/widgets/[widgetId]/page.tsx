@@ -34,7 +34,11 @@ import {
   Shield,
   Sun,
   Moon,
-  Type
+  Type,
+  Plus,
+  ArrowRight,
+  Settings,
+  MoreVertical
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -83,64 +87,18 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
-const createImage = (url: string): Promise<HTMLImageElement> =>
-  new Promise((resolve, reject) => {
-    const image = new Image();
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', (error) => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous');
-    image.src = url;
-  });
-
-async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: { x: number; y: number; width: number; height: number },
-  type: 'logo' | 'cover'
-): Promise<Blob> {
-  const image = await createImage(imageSrc);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  if (!ctx) throw new Error('Falha ao obter contexto 2D');
-
-  const targetWidth = type === 'cover' ? 3840 : 1024; 
-  const aspectRatio = pixelCrop.width / pixelCrop.height;
-  const targetHeight = targetWidth / aspectRatio;
-
-  canvas.width = targetWidth;
-  canvas.height = targetHeight;
-
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-
-  ctx.drawImage(
-    image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    targetWidth,
-    targetHeight
-  );
-
-  return new Promise((resolve, reject) => {
-    const mimeType = type === 'cover' ? 'image/png' : 'image/jpeg';
-    const quality = type === 'cover' ? 1.0 : 0.92;
-
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) reject(new Error('Canvas vazio'));
-        else resolve(blob);
-      },
-      mimeType,
-      quality
-    );
-  });
+interface CustomSection {
+  id: string;
+  title: string;
+  subtitle: string;
+  content: string;
+  buttonText: string;
+  buttonUrl: string;
+  variant: 'light' | 'dark' | 'accent';
 }
 
 const TestimonialCard = ({ t, themeColor, secondaryColor, index = 0, muralIndex = 0 }: { t: any, themeColor: string, secondaryColor: string, index?: number, muralIndex?: number }) => {
@@ -193,6 +151,7 @@ const PublicPageSettings = ({
   testimonialsTitle, setTestimonialsTitle,
   footerText, setFooterText,
   showLogo, setShowLogo,
+  customSections, setCustomSections,
   onFileSelect,
   isUploading,
   handleSave,
@@ -200,6 +159,29 @@ const PublicPageSettings = ({
 }: any) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
+
+  const addSection = () => {
+    const newSection: CustomSection = {
+      id: Math.random().toString(36).substr(2, 9),
+      title: 'Nova Seção de Destaque',
+      subtitle: 'Chamada secundária persuasiva',
+      content: 'Conte aqui um pouco mais sobre seu diferencial ou uma oferta especial para seu cliente.',
+      buttonText: 'Saiba Mais',
+      buttonUrl: '',
+      variant: 'light'
+    };
+    setCustomSections([...customSections, newSection]);
+  };
+
+  const removeSection = (id: string) => {
+    setCustomSections(customSections.filter((s: CustomSection) => s.id !== id));
+  };
+
+  const updateSection = (id: string, field: keyof CustomSection, value: string) => {
+    setCustomSections(customSections.map((s: CustomSection) => 
+      s.id === id ? { ...s, [field]: value } : s
+    ));
+  };
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
@@ -283,6 +265,74 @@ const PublicPageSettings = ({
               <div className="space-y-4">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Subtítulo Hero</Label>
                 <Textarea value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="Uma breve descrição impactante..." className="text-xs min-h-[80px]" />
+              </div>
+
+              <div className="space-y-6 pt-6 border-t">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Seções Adicionais</Label>
+                  <Button variant="outline" size="sm" onClick={addSection} className="h-7 text-[10px] font-black uppercase gap-1 rounded-lg">
+                    <Plus className="w-3 h-3" /> Adicionar
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {customSections.map((section: CustomSection, idx: number) => (
+                    <Card key={section.id} className="border shadow-sm overflow-hidden bg-muted/5">
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="item-1" className="border-none">
+                          <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/10">
+                             <AccordionTrigger className="hover:no-underline py-0 flex-1">
+                               <span className="text-[10px] font-black uppercase truncate pr-2">{section.title || `Seção ${idx + 1}`}</span>
+                             </AccordionTrigger>
+                             <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0" onClick={() => removeSection(section.id)}>
+                               <Trash2 className="w-3 h-3" />
+                             </Button>
+                          </div>
+                          <AccordionContent className="p-3 space-y-3 pb-4">
+                            <div className="space-y-1.5">
+                              <Label className="text-[9px] font-bold uppercase opacity-50">Título</Label>
+                              <Input value={section.title} onChange={(e) => updateSection(section.id, 'title', e.target.value)} className="h-8 text-[11px]" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-[9px] font-bold uppercase opacity-50">Subtítulo</Label>
+                              <Input value={section.subtitle} onChange={(e) => updateSection(section.id, 'subtitle', e.target.value)} className="h-8 text-[11px]" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-[9px] font-bold uppercase opacity-50">Texto do Bloco</Label>
+                              <Textarea value={section.content} onChange={(e) => updateSection(section.id, 'content', e.target.value)} className="text-[11px] min-h-[60px]" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="space-y-1.5">
+                                <Label className="text-[9px] font-bold uppercase opacity-50">Texto Botão</Label>
+                                <Input value={section.buttonText} onChange={(e) => updateSection(section.id, 'buttonText', e.target.value)} className="h-8 text-[11px]" />
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label className="text-[9px] font-bold uppercase opacity-50">Link Botão</Label>
+                                <Input value={section.buttonUrl} onChange={(e) => updateSection(section.id, 'buttonUrl', e.target.value)} className="h-8 text-[11px]" />
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-[9px] font-bold uppercase opacity-50">Estilo do Bloco</Label>
+                              <Select value={section.variant} onValueChange={(val) => updateSection(section.id, 'variant', val)}>
+                                <SelectTrigger className="h-8 text-[11px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="light">Fundo Claro</SelectItem>
+                                  <SelectItem value="dark">Fundo Escuro</SelectItem>
+                                  <SelectItem value="accent">Destaque (Marca)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </Card>
+                  ))}
+                  {customSections.length === 0 && (
+                    <p className="text-[10px] text-muted-foreground text-center py-4 italic">Nenhuma seção adicional.</p>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t">
@@ -395,12 +445,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   
-  // Novos estados de conteúdo
   const [heroTitle, setHeroTitle] = useState('');
   const [heroSubtitle, setHeroSubtitle] = useState('');
   const [testimonialsTitle, setTestimonialsTitle] = useState('');
   const [footerText, setFooterText] = useState('');
   const [showLogo, setShowLogo] = useState(true);
+  const [customSections, setCustomSections] = useState<CustomSection[]>([]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -434,12 +484,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setGoogleMapsUrl(widgetData.googleMapsUrl || '');
       setExternalSiteUrl(widgetData.externalSiteUrl || '');
       
-      // Inicializando novos campos
       setHeroTitle(widgetData.heroTitle || '');
       setHeroSubtitle(widgetData.heroSubtitle || '');
       setTestimonialsTitle(widgetData.testimonialsTitle || '');
       setFooterText(widgetData.footerText || '');
       setShowLogo(widgetData.showLogo !== undefined ? widgetData.showLogo : true);
+      setCustomSections(widgetData.customSections || []);
     }
   }, [widgetData]);
 
@@ -554,6 +604,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       testimonialsTitle,
       footerText,
       showLogo,
+      customSections
     }).then(() => {
       setIsSaving(false);
       toast({ title: "Alterações Salvas", description: "Sua página pública foi atualizada." });
@@ -577,7 +628,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     layout, setLayout, logoUrl, setLogoUrl,
     heroTitle, setHeroTitle, heroSubtitle, setHeroSubtitle,
     testimonialsTitle, setTestimonialsTitle, footerText, setFooterText,
-    showLogo, setShowLogo,
+    showLogo, setShowLogo, customSections, setCustomSections,
     onFileSelect, isUploading, handleSave, isSaving
   };
 
@@ -737,7 +788,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
-              <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24")}>
+              {/* HEADER PREVIEW */}
+              <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24 pb-20")}>
                 <div className="text-center space-y-6">
                   {showLogo && hasValidLogo && (
                     <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
@@ -756,6 +808,42 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   </div>
                 </div>
 
+                {/* CUSTOM SECTIONS PREVIEW */}
+                {customSections.map((section: CustomSection) => (
+                  <div 
+                    key={section.id} 
+                    className={cn(
+                      "py-16 px-8 sm:px-12 rounded-[2rem] text-center space-y-6 border-none",
+                      section.variant === 'accent' ? "text-white" : "bg-muted/10"
+                    )}
+                    style={{ 
+                      backgroundColor: section.variant === 'accent' ? themeColor : undefined,
+                      color: section.variant === 'accent' ? '#ffffff' : undefined,
+                      border: section.variant === 'accent' ? 'none' : '1px solid rgba(0,0,0,0.05)'
+                    }}
+                  >
+                    <div className="space-y-4 max-w-3xl mx-auto">
+                      <h2 className="text-2xl sm:text-4xl font-black tracking-tight">{section.title}</h2>
+                      <p className="text-lg font-bold opacity-80 italic">{section.subtitle}</p>
+                      <p className="text-sm sm:text-base leading-relaxed opacity-90">{section.content}</p>
+                      {section.buttonText && (
+                        <div className="pt-4">
+                          <Button 
+                            className={cn(
+                              "h-12 px-8 rounded-xl font-bold gap-2 shadow-lg",
+                              section.variant === 'accent' ? "bg-white text-foreground hover:bg-white/90" : ""
+                            )}
+                            style={{ backgroundColor: section.variant !== 'accent' ? themeColor : undefined }}
+                          >
+                            {section.buttonText} <ArrowRight className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* TESTIMONIALS SECTION PREVIEW */}
                 {testimonialsTitle && (
                   <div className="pt-12 pb-4 text-center">
                     <h2 className="text-2xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
@@ -862,7 +950,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
                 <p className="text-sm font-bold"><strong className="text-primary">Aba Conteúdo</strong> (Textos Persuasivos)</p>
-                <p className="text-xs text-muted-foreground">Personalize o <strong className="text-primary">Título (Hero)</strong>, subtítulos e rodapé para que a página fale a língua do seu cliente.</p>
+                <p className="text-xs text-muted-foreground">Personalize o <strong className="text-primary">Título (Hero)</strong>, adicione <strong className="text-primary">Seções Dinâmicas</strong> com CTAs e ajuste o rodapé.</p>
               </div>
             </div>
             <div className="flex gap-4">

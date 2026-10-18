@@ -13,7 +13,7 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
-import { Star, User, Loader2, MessageSquare, MessageCircle, Globe } from 'lucide-react';
+import { Star, User, Loader2, MessageSquare, MessageCircle, Globe, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -101,8 +101,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
   const logoUrl = widgetData?.logoUrl || '';
   const coverImageUrl = widgetData?.coverImageUrl || '';
+  const customSections = widgetData?.customSections || [];
   
-  // Customizações de Texto
   const heroTitle = widgetData?.heroTitle || `O que dizem sobre ${companyData?.companyName || 'nós'}`;
   const heroSubtitle = widgetData?.heroSubtitle || '';
   const testimonialsTitle = widgetData?.testimonialsTitle || '';
@@ -141,7 +141,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     );
   }
 
-  const hasValidCover = coverImageUrl && coverImageUrl.startsWith('http');
   const hasValidLogo = logoUrl && logoUrl.startsWith('http');
 
   const TestimonialCard = ({ t, index = 0 }: { t: any, index?: number }) => {
@@ -194,15 +193,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       </nav>
 
       <div className="flex-1 flex flex-col">
-        {hasValidCover && (
-          <div className="w-full relative h-[45vh] overflow-hidden">
-            <img src={coverImageUrl} className="w-full h-full object-cover" alt="Capa" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-          </div>
-        )}
-
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
-          <header className={cn("px-6 text-center space-y-8", hasValidCover ? "py-12 sm:py-24" : "py-24 sm:py-32")}>
+          <header className="px-6 text-center space-y-8 py-24 sm:py-32">
             <div className="space-y-6">
               {showLogo && hasValidLogo && (
                 <div className="flex justify-center">
@@ -224,9 +216,47 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           </header>
 
+          {/* CUSTOM SECTIONS RENDERER */}
+          <div className="w-full">
+            {customSections.map((section: any) => (
+              <section 
+                key={section.id} 
+                className={cn(
+                  "py-24 px-6 text-center",
+                  section.variant === 'accent' ? "text-white" : (section.variant === 'dark' ? "bg-black text-white" : "bg-muted/5")
+                )}
+                style={{ backgroundColor: section.variant === 'accent' ? themeColor : undefined }}
+              >
+                <div className="max-w-4xl mx-auto space-y-8">
+                  <div className="space-y-4">
+                    <h2 className="text-3xl sm:text-5xl font-black tracking-tight">{section.title}</h2>
+                    {section.subtitle && <p className="text-xl font-bold opacity-80">{section.subtitle}</p>}
+                  </div>
+                  <p className="text-base sm:text-xl leading-relaxed opacity-90 font-medium">{section.content}</p>
+                  {section.buttonText && (
+                    <div className="pt-8">
+                      <a href={section.buttonUrl || '#'} className="inline-block">
+                        <Button 
+                          size="lg" 
+                          className={cn(
+                            "h-16 px-10 rounded-2xl text-lg font-black gap-2 shadow-2xl transition-all hover:scale-105 active:scale-95",
+                            section.variant === 'accent' ? "bg-white text-black hover:bg-white/90" : ""
+                          )}
+                          style={{ backgroundColor: section.variant !== 'accent' ? themeColor : undefined }}
+                        >
+                          {section.buttonText} <ArrowRight className="w-5 h-5" />
+                        </Button>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </section>
+            ))}
+          </div>
+
           {testimonialsTitle && (
-            <div className="text-center py-8">
-              <h2 className="text-2xl sm:text-3xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
+            <div className="text-center py-20">
+              <h2 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
                 {testimonialsTitle}
               </h2>
             </div>
