@@ -150,6 +150,25 @@ export default function DashPage() {
 
   const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
 
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
+
+  if (authLoading || userDataLoading || (user && !userData)) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
+          <p className="text-muted-foreground font-medium">Autenticando perfil...</p>
+        </div>
+      </div>
+    );
+  }
+
   const totalGoogleRedirects = userData?.googleRedirectCount || 0;
 
   const copyToClipboard = (text: string, description: string) => {
@@ -287,26 +306,7 @@ export default function DashPage() {
     }
   };
 
-  if (authLoading || userDataLoading || (user && !userData)) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-muted/30">
-        <div className="text-center space-y-4">
-          <Loader2 className="animate-spin h-10 w-10 text-primary mx-auto" />
-          <p className="text-muted-foreground font-medium">Autenticando perfil...</p>
-        </div>
-      </div>
-    );
-  }
-
   const collectionLink = `${baseUrl}/c/${companySlug}`;
-  
-  const membershipLabel = useMemo(() => {
-    const status = userData?.membershipStatus;
-    if (status === 'enterprise') return 'Membro Enterprise';
-    if (status === 'gold') return 'Membro Gold';
-    if (status === 'trial') return 'Período Trial';
-    return null;
-  }, [userData]);
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">

@@ -81,6 +81,14 @@ export default function WidgetsPage() {
 
   const { data: widgetsList, loading: widgetsLoading } = useCollection(widgetsQuery);
 
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
+
   const filteredWidgets = useMemo(() => {
     if (!widgetsList) return [];
     if (!searchTerm.trim()) return widgetsList;
@@ -184,14 +192,6 @@ export default function WidgetsPage() {
       </div>
     );
   }
-
-  const membershipLabel = useMemo(() => {
-    const status = userData?.membershipStatus;
-    if (status === 'enterprise') return 'Membro Enterprise';
-    if (status === 'gold') return 'Membro Gold';
-    if (status === 'trial') return 'Período Trial';
-    return null;
-  }, [userData]);
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">

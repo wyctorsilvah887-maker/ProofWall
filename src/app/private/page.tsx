@@ -68,6 +68,14 @@ export default function PrivateInboxPage() {
 
   const { data: privateFeedbacks, loading: feedbacksLoading } = useCollection(feedbacksQuery);
 
+  const membershipLabel = useMemo(() => {
+    const status = userData?.membershipStatus;
+    if (status === 'enterprise') return 'Membro Enterprise';
+    if (status === 'gold') return 'Membro Gold';
+    if (status === 'trial') return 'Período Trial';
+    return null;
+  }, [userData]);
+
   const handleDeleteFeedback = async (id: string) => {
     if (!db || !user) return;
     try {
@@ -85,14 +93,6 @@ export default function PrivateInboxPage() {
       </div>
     );
   }
-
-  const membershipLabel = useMemo(() => {
-    const status = userData?.membershipStatus;
-    if (status === 'enterprise') return 'Membro Enterprise';
-    if (status === 'gold') return 'Membro Gold';
-    if (status === 'trial') return 'Período Trial';
-    return null;
-  }, [userData]);
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
