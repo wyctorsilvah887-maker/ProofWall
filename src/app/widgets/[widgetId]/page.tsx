@@ -46,6 +46,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useDoc, useCollection, useStorage, useAuth } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -842,7 +843,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 <div className="text-center space-y-6">
                   {hasValidLogo && (
                     <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
-                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-4 border-background" alt="Logo" />
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-background" alt="Logo" />
                     </div>
                   )}
                   <div className="space-y-4">
