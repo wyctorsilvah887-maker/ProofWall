@@ -211,7 +211,7 @@ const PublicPageSettings = ({
             <TabsContent value="geral" className="mt-0 space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Logotipo (Square)</Label>
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Logotipo Empresa</Label>
                   {logoUrl && (
                     <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => setLogoUrl('')}>
                       <Trash2 className="w-3.5 h-3.5" />
@@ -347,7 +347,10 @@ const PublicPageSettings = ({
 
               <div className="space-y-4 pt-4 border-t">
                  <div className="flex items-center justify-between p-3 bg-muted/10 rounded-xl">
-                  <Label className="text-[11px] font-bold">Exibir Logotipo</Label>
+                  <div className="space-y-0.5">
+                    <Label className="text-[11px] font-bold">Exibir Marca Proova</Label>
+                    <p className="text-[9px] text-muted-foreground">Ativar rodapé "Powered by Proova"</p>
+                  </div>
                   <Switch checked={showLogo} onCheckedChange={setShowLogo} />
                 </div>
               </div>
@@ -782,16 +785,13 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Eye className="w-4 h-4" /> Preview Dinâmico
               </h2>
-              <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
-                <Info className="w-3 h-3" /> Ver Tutorial
-              </Button>
             </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
               {/* HEADER PREVIEW */}
               <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24 pb-20")}>
                 <div className="text-center space-y-6">
-                  {showLogo && hasValidLogo && (
+                  {hasValidLogo && (
                     <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 relative">
                       <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-xl border-4 border-background" alt="Logo" />
                     </div>
@@ -873,6 +873,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50">
                     {footerText || 'PROOVA — Prova Social de Verdade'}
                   </p>
+                  {showLogo && (
+                    <div className="mt-4 flex items-center justify-center gap-1.5 opacity-20">
+                      <span className="text-[8px] font-black uppercase tracking-[0.3em]">POWERED BY PROOVA</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -897,7 +902,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                           )}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={cn("mt-1 w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
+                            <div className={cn("mt-1_w-4 h-4 rounded-md border flex items-center justify-center shrink-0", selectedIds.includes(t.id) ? "bg-primary border-primary" : "border-muted-foreground/30")}>
                               {selectedIds.includes(t.id) && <Check className="w-2.5 h-2.5 text-white" />}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -928,6 +933,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </main>
 
+      {/* Tutorial Dialog */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-3xl sm:max-w-md">
           <DialogHeader>
@@ -993,4 +999,17 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       </Dialog>
     </div>
   );
+}
+
+async function getCroppedImg(imageSrc: string, pixelCrop: any, type: string): Promise<Blob> {
+  const image = new (window as any).Image();
+  image.src = imageSrc;
+  await new Promise((resolve) => (image.onload = resolve));
+  const canvas = document.createElement('canvas');
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error();
+  ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+  return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob!), type === 'cover' ? 'image/png' : 'image/jpeg', 0.9));
 }

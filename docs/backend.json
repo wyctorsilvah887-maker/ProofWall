@@ -197,7 +197,7 @@
         },
         "showLogo": {
           "type": "boolean",
-          "description": "Controla exibição da logo."
+          "description": "Controla a exibição da marca Proova na página pública (White Label)."
         },
         "customSections": {
           "type": "array",

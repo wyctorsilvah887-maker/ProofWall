@@ -100,14 +100,13 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const whatsappNumber = widgetData?.whatsappNumber || '';
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
   const logoUrl = widgetData?.logoUrl || '';
-  const coverImageUrl = widgetData?.coverImageUrl || '';
   const customSections = widgetData?.customSections || [];
   
   const heroTitle = widgetData?.heroTitle || `O que dizem sobre ${companyData?.companyName || 'nós'}`;
   const heroSubtitle = widgetData?.heroSubtitle || '';
   const testimonialsTitle = widgetData?.testimonialsTitle || '';
   const footerText = widgetData?.footerText || 'PROOVA — Prova Social de Verdade';
-  const showLogo = widgetData?.showLogo !== false;
+  const showProovaBranding = widgetData?.showLogo !== false;
 
   useEffect(() => {
     if (layout === 'mural' && filteredTestimonials.length > 0) {
@@ -184,7 +183,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden text-foreground">
       <nav className="h-16 border-b flex items-center px-6 justify-between bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA</span>
+          {showProovaBranding ? (
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground animate-in fade-in duration-500">PROOVA</span>
+          ) : (
+            <div className="w-10" />
+          )}
         </div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
@@ -196,10 +199,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
         <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
           <header className="px-6 text-center space-y-8 py-24 sm:py-32">
             <div className="space-y-6">
-              {showLogo && hasValidLogo && (
+              {hasValidLogo && (
                 <div className="flex justify-center">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
-                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo" />
+                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
                   </div>
                 </div>
               )}
@@ -235,7 +238,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   <p className="text-base sm:text-xl leading-relaxed opacity-90 font-medium">{section.content}</p>
                   {section.buttonText && (
                     <div className="pt-8">
-                      <a href={section.buttonUrl || '#'} className="inline-block">
+                      <a href={section.buttonUrl || '#'} className="inline-block" target="_blank" rel="noopener noreferrer">
                         <Button 
                           size="lg" 
                           className={cn(
@@ -318,6 +321,11 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             )}
             <div className="flex flex-col items-center gap-2 opacity-30">
               <p className="text-[9px] font-bold uppercase tracking-widest">{footerText}</p>
+              {showProovaBranding && (
+                <div className="flex items-center gap-1.5 mt-2 animate-in fade-in slide-in-from-bottom-2">
+                  <span className="text-[8px] font-black uppercase tracking-[0.3em]">POWERED BY PROOVA</span>
+                </div>
+              )}
             </div>
           </footer>
         </div>
