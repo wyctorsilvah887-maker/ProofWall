@@ -155,8 +155,23 @@ export default function AdminPage() {
   };
 
   const copyToClipboard = (text: string, label: string) => {
+    if (!text) return;
     navigator.clipboard.writeText(text);
     toast({ title: "Copiado!", description: `${label} copiado com sucesso.` });
+  };
+
+  const handleOpenUserDetail = (uid: string) => {
+    const matchedUser = leadsList?.find((u: any) => u.id === uid);
+    if (matchedUser) {
+      setSelectedUser(matchedUser);
+      setIsUserDetailOpen(true);
+    } else {
+      toast({ 
+        variant: "destructive", 
+        title: "Usuário não encontrado", 
+        description: "Os dados deste usuário ainda não foram carregados ou o UID é inválido." 
+      });
+    }
   };
 
   if (authLoading || (user && userDataLoading)) {
@@ -474,7 +489,7 @@ export default function AdminPage() {
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-primary" /> Auditoria de Pagamentos
                 </CardTitle>
-                <CardDescription className="text-xs">Logs recebidos via Webhook Cakto em tempo real.</CardDescription>
+                <CardDescription className="text-xs">Logs recebidos via Webhook Cakto. Clique para ver o perfil do usuário.</CardDescription>
               </CardHeader>
               <CardContent className="p-0 overflow-x-auto scrollbar-hide">
                 {eventsLoading ? (
@@ -494,10 +509,14 @@ export default function AdminPage() {
                     </TableHeader>
                     <TableBody>
                       {paymentEvents.map((evt: any) => (
-                        <TableRow key={evt.id} className={cn(
-                          "hover:bg-muted/20 transition-colors",
-                          evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? "bg-destructive/5" : ""
-                        )}>
+                        <TableRow 
+                          key={evt.id} 
+                          className={cn(
+                            "hover:bg-muted/20 transition-colors cursor-pointer",
+                            evt.status === 'canceled' || evt.status === 'refunded' || evt.eventType?.includes('cancel') ? "bg-destructive/5" : ""
+                          )}
+                          onClick={() => handleOpenUserDetail(evt.externalId)}
+                        >
                           <TableCell>
                             <div className="flex flex-col min-w-[100px]">
                               <Badge 
