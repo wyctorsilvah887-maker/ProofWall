@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -102,7 +101,9 @@ export default function DashPage() {
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
   const isProPlan = useMemo(() => {
-    return userData?.membershipStatus === 'gold' || userData?.membershipStatus === 'enterprise';
+    // Trial agora tem acesso aos recursos Gold (como link personalizado)
+    const status = userData?.membershipStatus;
+    return status === 'gold' || status === 'enterprise' || status === 'trial';
   }, [userData]);
 
   const membershipLabel = useMemo(() => {
@@ -737,7 +738,7 @@ export default function DashPage() {
               <div className="space-y-2">
                 <DialogTitle className="text-2xl font-black font-headline">Recurso Profissional</DialogTitle>
                 <DialogDescription className="max-w-[280px] mx-auto">
-                  A personalização de links (URLs memoráveis) é exclusiva para membros <strong className="text-primary">Gold</strong> e <strong className="text-primary">Enterprise</strong>.
+                  A personalização de links (URLs memoráveis) é exclusiva para membros ativos em planos profissionais.
                 </DialogDescription>
               </div>
               <div className="pt-2">

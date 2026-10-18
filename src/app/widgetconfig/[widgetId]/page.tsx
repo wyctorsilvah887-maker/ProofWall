@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -63,7 +62,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/accordion";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -207,7 +206,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const isEnterprise = membershipStatus === 'enterprise';
   const isGold = membershipStatus === 'gold';
   const isTrial = membershipStatus === 'trial';
-  const SELECTION_LIMIT = (isEnterprise || isTrial) ? Infinity : (isGold ? 50 : 10);
+  
+  // Limites: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
+  const SELECTION_LIMIT = isEnterprise ? Infinity : ((isGold || isTrial) ? 50 : 10);
 
   const testimonialsQuery = useMemo(() => {
     if (!db || !user) return null;
@@ -289,7 +290,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     setSelectedIds(prev => {
       const isRemoving = prev.includes(id);
       if (!isRemoving && prev.length >= SELECTION_LIMIT) {
-        const planName = isGold ? "Gold" : "Base";
+        const planName = isGold ? "Gold" : (isTrial ? "Trial" : "Base");
         toast({
           variant: "destructive",
           title: `Limite do Plano ${planName}`,
@@ -448,8 +449,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
                         <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({approvedTestimonials?.length || 0})
                       </h2>
-                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isEnterprise && !isTrial ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
-                        {selectedIds.length} / {isEnterprise || isTrial ? '∞' : SELECTION_LIMIT} ATIVOS
+                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isEnterprise ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
+                        {selectedIds.length} / {isEnterprise ? '∞' : SELECTION_LIMIT} ATIVOS
                       </Badge>
                     </div>
                   </AccordionTrigger>
@@ -457,7 +458,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {displayedTestimonialsSelection.map((t: any) => {
                         const isSelected = selectedIds.includes(t.id);
-                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && !isEnterprise && !isTrial;
+                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && !isEnterprise;
                         const isDisabled = !isSelected && isAtLimit;
 
                         return (

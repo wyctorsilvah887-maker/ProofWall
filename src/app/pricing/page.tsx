@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -76,11 +75,11 @@ export default function PricingPage() {
         name: "Trial",
         price: "Grátis",
         period: "/14 dias",
-        description: "Experimente o poder da prova social sem compromisso por duas semanas.",
+        description: "Experimente o poder da prova social nível Gold sem custo por duas semanas.",
         features: [
-          "Acesso total por 14 dias",
-          "Coleta ilimitada de depoimentos",
-          "1 Mural de depoimentos ativo",
+          "Recursos GOLD por 14 dias",
+          "Até 50 depoimentos ativos",
+          "Link de coleta personalizado",
           "Redirecionamento Google Maps",
           "Uso único por conta",
         ],
@@ -316,7 +315,7 @@ export default function PricingPage() {
               <AccordionItem value="item-trial" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
-                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais. O trial só pode ser usado uma vez por conta.
+                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades do plano GOLD por duas semanas. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais para continuar exibindo seus murais. O trial só pode ser usado uma vez por conta.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">
