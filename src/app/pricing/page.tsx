@@ -13,7 +13,6 @@ import {
   Zap, 
   Star, 
   Shield as ShieldIcon, 
-  HelpCircle, 
   ArrowLeft, 
   Clock, 
   User, 
@@ -57,6 +56,15 @@ export default function PricingPage() {
       ? 'Membro Standard' 
       : null;
 
+  // Geramos os links dinâmicos passando o UID do usuário para a Cakto
+  const checkoutLinks = useMemo(() => {
+    const uidParam = user ? `&ext_id=${user.uid}` : '';
+    return {
+      gold: `https://pay.cakto.com.br/8c7bbit_1215637${uidParam}`,
+      enterprise: `https://pay.cakto.com.br/yhtkwz4_1215645${uidParam}`
+    };
+  }, [user]);
+
   const plans = [
     {
       name: "Trial",
@@ -88,7 +96,7 @@ export default function PricingPage() {
         "Suporte prioritário",
       ],
       cta: "Assinar Gold",
-      checkoutUrl: "https://pay.cakto.com.br/8c7bbit_1215637",
+      checkoutUrl: checkoutLinks.gold,
       popular: false,
       highlight: false,
     },
@@ -107,7 +115,7 @@ export default function PricingPage() {
         "Suporte VIP via WhatsApp",
       ],
       cta: "Seja Enterprise",
-      checkoutUrl: "https://pay.cakto.com.br/yhtkwz4_1215645",
+      checkoutUrl: checkoutLinks.enterprise,
       popular: true,
       highlight: true,
     }
