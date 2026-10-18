@@ -460,7 +460,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const isGold = membershipStatus === 'gold';
   const isTrial = membershipStatus === 'trial';
   
-  // Limites: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
+  // Limites refinados: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
   const SELECTION_LIMIT = isEnterprise ? Infinity : ((isGold || isTrial) ? 50 : 10);
 
   const testimonialsQuery = useMemo(() => {

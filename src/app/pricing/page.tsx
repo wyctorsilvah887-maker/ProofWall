@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -52,13 +51,18 @@ export default function PricingPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
-  const status = useMemo(() => userData?.membershipStatus || 'base', [userData]);
+  // Lógica refinada para status do plano
+  const status = useMemo(() => {
+    if (!user) return 'guest'; // Visitante não logado
+    return userData?.membershipStatus || 'base'; // Logado: status do banco ou base por padrão
+  }, [user, userData]);
 
   const membershipLabel = useMemo(() => {
     if (status === 'enterprise') return 'Membro Enterprise';
     if (status === 'gold') return 'Membro Gold';
     if (status === 'trial') return 'Período Trial';
     if (status === 'expired') return 'Plano Expirado';
+    if (status === 'guest') return 'Visitante';
     return 'Plano Base';
   }, [status]);
 
