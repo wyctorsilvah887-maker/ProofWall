@@ -62,7 +62,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/accordion";
+} from "@/components/ui/accordion";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -290,10 +290,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     setSelectedIds(prev => {
       const isRemoving = prev.includes(id);
       if (!isRemoving && prev.length >= SELECTION_LIMIT) {
-        const planName = isGold ? "Gold" : (isTrial ? "Trial" : "Base");
+        const planName = isEnterprise ? "Enterprise" : (isGold || isTrial ? "Profissional" : "Base");
         toast({
           variant: "destructive",
-          title: `Limite do Plano ${planName}`,
+          title: `Limite do Plano`,
           description: `Você atingiu o limite de ${SELECTION_LIMIT} depoimentos ativos. Faça upgrade para o Enterprise para selecionar ilimitados.`,
         });
         return prev;
@@ -310,7 +310,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
   const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving };
 
-  const membershipLabel = membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : (membershipStatus === 'trial' ? 'Período Trial' : 'Plano Base'));
+  const membershipLabel = isEnterprise ? 'Membro Enterprise' : (isGold ? 'Membro Gold' : (isTrial ? 'Período Trial' : 'Plano Base'));
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
@@ -344,7 +344,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                   </span>
                   <span className={cn(
                     "text-[8px] uppercase tracking-widest font-black leading-tight",
-                    membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    isEnterprise ? "text-primary animate-pulse" : "text-muted-foreground"
                   )}>
                     {membershipLabel}
                   </span>
