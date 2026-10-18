@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -22,7 +23,8 @@ import {
   Gem, 
   Sun, 
   Moon,
-  Loader2
+  Loader2,
+  Box
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -50,14 +52,15 @@ export default function PricingPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
+  const status = useMemo(() => userData?.membershipStatus || 'base', [userData]);
+
   const membershipLabel = useMemo(() => {
-    const status = userData?.membershipStatus;
     if (status === 'enterprise') return 'Membro Enterprise';
     if (status === 'gold') return 'Membro Gold';
     if (status === 'trial') return 'Período Trial';
     if (status === 'expired') return 'Plano Expirado';
     return 'Plano Base';
-  }, [userData]);
+  }, [status]);
 
   const checkoutLinks = useMemo(() => {
     const uidParam = user ? `&ext_id=${user.uid}` : '';
@@ -68,8 +71,27 @@ export default function PricingPage() {
   }, [user]);
 
   const plans = useMemo(() => {
-    const status = userData?.membershipStatus;
     const allPlans = [
+      {
+        id: 'base',
+        name: "Base",
+        price: "Grátis",
+        period: "/sempre",
+        description: "A fundação para quem está começando a organizar sua prova social.",
+        features: [
+          "Até 10 depoimentos ativos",
+          "Coleta ilimitada (Cofre)",
+          "Inbox Privado (1-3 estrelas)",
+          "Link de coleta padrão",
+          "Métricas básicas",
+        ],
+        cta: status === 'base' ? "Plano Atual" : "Plano Gratuito",
+        checkoutUrl: user ? "/dash" : "/signup",
+        popular: false,
+        highlight: false,
+        disabled: status === 'base',
+        hidden: false
+      },
       {
         id: 'trial',
         name: "Trial",
@@ -135,7 +157,7 @@ export default function PricingPage() {
     ];
 
     return allPlans.filter(p => !p.hidden);
-  }, [user, userData, checkoutLinks]);
+  }, [user, userData, checkoutLinks, status]);
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
@@ -147,7 +169,7 @@ export default function PricingPage() {
           </Link>
           <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[140px] h-[40px] sm:w-[180px] sm:h-[50px] md:w-[220px] md:h-[60px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="dark:block object-contain hidden" />
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -163,7 +185,7 @@ export default function PricingPage() {
                     </span>
                     <span className={cn(
                       "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                      status === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
                     )}>
                       {membershipLabel}
                     </span>
@@ -247,6 +269,7 @@ export default function PricingPage() {
         <section className="pb-24 px-4 container mx-auto">
           <div className={cn(
             "grid grid-cols-1 gap-8 max-w-7xl mx-auto items-stretch",
+            plans.length === 4 ? "md:grid-cols-2 lg:grid-cols-4" : 
             plans.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2 max-w-4xl"
           )}>
             {plans.map((plan, idx) => (
@@ -264,6 +287,7 @@ export default function PricingPage() {
                     <CardTitle className="text-xl sm:text-2xl font-black font-headline uppercase tracking-widest">
                       {plan.name}
                     </CardTitle>
+                    {plan.id === "base" && <Box className="w-5 h-5 text-muted-foreground" />}
                     {plan.id === "trial" && <Clock className="w-5 h-5 text-muted-foreground" />}
                     {plan.id === "gold" && <Star className="w-5 h-5 text-primary" />}
                     {plan.id === "enterprise" && <Zap className="w-5 h-5 text-primary" />}
@@ -315,7 +339,7 @@ export default function PricingPage() {
               <AccordionItem value="item-trial" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
-                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades do plano GOLD por duas semanas. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais para continuar exibindo seus murais. O trial só pode ser usado uma vez por conta.
+                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades do plano GOLD por duas semanas. Após os 14 dias, seus depoimentos continuam salvos, mas você retornará ao Plano Base ou precisará escolher um dos planos profissionais para continuar usando recursos avançados. O trial só pode ser usado uma vez por conta.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">
@@ -327,7 +351,7 @@ export default function PricingPage() {
               <AccordionItem value="item-2" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o redirecionamento para o Google Maps?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
-                  Ao receber uma avaliação de 4 ou 5 estrelas, o Proova exibe um botão especial incentivando o cliente a replicar esse elogio no seu perfil do Google Business, aumentando seu SEO local.
+                  Ao receber uma avaliação de 4 ou 5 estrelas, o Proova exibe um botão especial incentivando o cliente a replicar esse elogio no seu perfil do Google Business, aumentando seu SEO local. Disponível nos planos Gold, Enterprise e durante o período Trial.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
