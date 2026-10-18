@@ -54,6 +54,7 @@ import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -317,8 +318,9 @@ export default function WidgetsPage() {
                 <div className="flex flex-col p-5 md:p-6 gap-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="bg-primary/10 p-4 rounded-2xl hidden md:block group-hover:bg-primary group-hover:text-white transition-colors">
-                        <Layout className="w-6 h-6 text-primary" />
+                      {/* O ícone aqui muda para preto quando o container pai (group) recebe o hover */}
+                      <div className="bg-primary/10 p-4 rounded-2xl hidden md:block group-hover:bg-primary transition-colors">
+                        <Layout className="w-6 h-6 text-primary group-hover:text-black transition-colors" />
                       </div>
                       <div className="space-y-1.5 flex-1 min-w-0">
                         <h3 className="font-black font-headline text-lg md:text-xl truncate group-hover:text-primary transition-colors pr-8 sm:pr-0">{w.name}</h3>
