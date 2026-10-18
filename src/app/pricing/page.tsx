@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -64,30 +65,27 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Link href="/" className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-primary transition-colors group">
+      <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
+        <div className="flex items-center gap-2 sm:gap-6">
+          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="hidden sm:inline uppercase tracking-widest text-[10px]">Voltar</span>
+            <span className="hidden xs:inline uppercase tracking-widest text-[10px]">Voltar</span>
           </Link>
-          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[120px] h-[35px] sm:w-[160px] sm:h-[45px] md:w-[200px] md:h-[55px]">
+          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[140px] h-[40px] sm:w-[180px] sm:h-[50px] md:w-[220px] md:h-[60px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
             <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" />
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
-          <Link href="/login" className="hidden xs:block">
-            <Button variant="ghost" size="sm" className="font-bold text-xs sm:text-sm">Entrar</Button>
-          </Link>
           <Link href="/signup">
-            <Button size="sm" className="font-bold shadow-lg text-[10px] sm:text-xs h-9 px-3 sm:h-10 sm:px-4">Começar Grátis</Button>
+            <Button size="sm" className="font-bold shadow-lg text-[10px] sm:text-xs h-9 px-3 sm:h-11 sm:px-6 rounded-xl">Começar Grátis</Button>
           </Link>
         </div>
       </header>
 
       <main className="flex-1">
-        <section className="py-12 md:py-24 lg:py-32 px-4 container mx-auto text-center space-y-6">
+        <section className="py-12 md:py-24 px-4 container mx-auto text-center space-y-6">
           <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
             💎 Oferta especial: 50% OFF vitalício nos planos pagos
           </div>
@@ -99,21 +97,16 @@ export default function PricingPage() {
           </p>
         </section>
 
-        <section className="pb-24 sm:pb-32 px-4 container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+        <section className="pb-24 px-4 container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {plans.map((plan, idx) => (
               <Card 
                 key={idx} 
-                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col ${plan.highlight ? 'border-primary shadow-xl md:scale-105 z-10' : 'border-border'}`}
+                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col ${plan.highlight ? 'border-primary shadow-xl md:scale-105 z-10' : 'border-border bg-card/50'}`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg">
+                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg">
                     Mais Escolhido
-                  </div>
-                )}
-                {plan.name === "Trial" && (
-                  <div className="absolute top-0 left-0 bg-muted-foreground/10 text-muted-foreground text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-br-xl">
-                    Degustação
                   </div>
                 )}
                 <CardHeader className="p-6 sm:p-8">
@@ -148,9 +141,13 @@ export default function PricingPage() {
                 <CardFooter className="p-6 sm:p-8 pt-0">
                   <Link href="/signup" className="w-full">
                     <Button 
-                      className={`w-full h-12 sm:h-14 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 ${plan.highlight ? 'bg-primary hover:bg-primary/90' : 'bg-muted-foreground/10 text-foreground hover:bg-muted-foreground/20'}`}
+                      className={`w-full h-12 sm:h-14 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
+                        plan.highlight 
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                          : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                      }`}
                     >
-                      {plan.cta} <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                      {plan.cta} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                     </Button>
                   </Link>
                 </CardFooter>
@@ -159,24 +156,24 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24 bg-muted/30 border-y">
+        <section className="py-16 bg-muted/30 border-y">
           <div className="container px-4 mx-auto max-w-4xl">
-            <h2 className="text-2xl sm:text-3xl font-black font-headline text-center mb-12 sm:mb-16 tracking-tight">Perguntas Frequentes</h2>
+            <h2 className="text-2xl sm:text-3xl font-black font-headline text-center mb-12 tracking-tight">Perguntas Frequentes</h2>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="item-trial" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
+                <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Posso mudar de plano a qualquer momento?</AccordionTrigger>
+                <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Posso mudar de plano a qualquer momento?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   Sim! Você pode fazer o upgrade ou downgrade do seu plano diretamente pelo seu painel administrativo. A diferença de valor será ajustada proporcionalmente na sua próxima fatura.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-5 sm:py-6 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o redirecionamento para o Google Maps?</AccordionTrigger>
+                <AccordionTrigger className="text-left font-bold py-5 hover:text-primary transition-colors text-sm sm:text-base">Como funciona o redirecionamento para o Google Maps?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium text-xs sm:text-sm">
                   Ao receber uma avaliação de 4 ou 5 estrelas, o Proova exibe um botão especial incentivando o cliente a replicar esse elogio no seu perfil do Google Business, aumentando seu SEO local.
                 </AccordionContent>
@@ -185,8 +182,8 @@ export default function PricingPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24 container px-4 mx-auto">
-          <div className="bg-primary text-white rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-center space-y-8 relative overflow-hidden shadow-2xl">
+        <section className="py-16 container px-4 mx-auto">
+          <div className="bg-primary text-primary-foreground rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-12 text-center space-y-8 relative overflow-hidden shadow-2xl">
              <div className="relative z-10 space-y-4">
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-black font-headline tracking-tighter">Ainda tem dúvidas?</h2>
               <p className="text-primary-foreground/90 font-medium text-base sm:text-lg max-w-xl mx-auto">
@@ -206,7 +203,7 @@ export default function PricingPage() {
 
       <footer className="py-12 border-t bg-background">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
-          <div className="flex items-center gap-2 relative w-[140px] h-[40px] md:w-[200px] md:h-[55px]">
+          <div className="flex items-center gap-2 relative w-[180px] h-[50px] md:w-[240px] md:h-[70px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
