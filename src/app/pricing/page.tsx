@@ -6,42 +6,60 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, ArrowRight, Zap, Star, Shield, HelpCircle, ArrowLeft } from 'lucide-react';
+import { Check, ArrowRight, Zap, Star, Shield, HelpCircle, ArrowLeft, Clock } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function PricingPage() {
   const plans = [
     {
+      name: "Trial",
+      price: "Grátis",
+      period: "/14 dias",
+      description: "Experimente o poder da prova social sem compromisso por duas semanas.",
+      features: [
+        "Acesso total por 14 dias",
+        "Coleta ilimitada de depoimentos",
+        "1 Mural de depoimentos ativo",
+        "Redirecionamento Google Maps",
+        "Uso único por conta",
+      ],
+      cta: "Começar Teste Grátis",
+      popular: false,
+      highlight: false,
+    },
+    {
       name: "Gold",
       price: "R$ 47",
       period: "/mês",
-      description: "Ideal para profissionais liberais e pequenos negócios começando a crescer.",
+      description: "Ideal para profissionais liberais e pequenos negócios em crescimento.",
       features: [
         "Até 50 depoimentos ativos",
-        "Mural de depoimentos básico",
+        "Mural de depoimentos avançado",
         "Link de coleta personalizado",
         "Redirecionamento Google Maps",
-        "Suporte via e-mail",
+        "Suporte prioritário",
       ],
-      cta: "Começar Agora",
+      cta: "Assinar Gold",
       popular: false,
+      highlight: false,
     },
     {
       name: "Enterprise",
       price: "R$ 97",
       period: "/mês",
-      description: "O plano completo para empresas que querem dominar o mercado local.",
+      description: "O plano completo para empresas que buscam domínio total do mercado.",
       features: [
         "Depoimentos ilimitados",
-        "Todos os widgets (Carrossel, Popup, etc)",
+        "Todos os widgets liberados",
         "Depoimentos em Vídeo (4K)",
-        "Branding customizado (Logo/Capa)",
+        "Branding 100% customizado",
         "Remoção da marca Proova",
         "Suporte VIP via WhatsApp",
       ],
       cta: "Seja Enterprise",
       popular: true,
+      highlight: true,
     }
   ];
 
@@ -72,32 +90,42 @@ export default function PricingPage() {
       <main className="flex-1">
         <section className="py-20 md:py-32 px-4 container mx-auto text-center space-y-6">
           <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
-            💎 Oferta especial de lançamento: 50% OFF vitalício
+            💎 Oferta especial: 50% OFF vitalício nos planos pagos
           </div>
-          <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter max-w-3xl mx-auto leading-[1.1]">
+          <h1 className="text-4xl md:text-6xl font-black font-headline tracking-tighter max-w-4xl mx-auto leading-[1.1]">
             Escolha o plano perfeito para sua <span className="text-primary italic">Autoridade</span>.
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium">
-            Invista na ferramenta que transforma a confiança dos seus clientes em lucro real.
+            Transforme a confiança dos seus clientes em lucro real. Comece grátis ou escolha um plano profissional.
           </p>
         </section>
 
         <section className="pb-32 px-4 container mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {plans.map((plan, idx) => (
               <Card 
                 key={idx} 
-                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col ${plan.popular ? 'border-primary shadow-xl scale-105 z-10' : 'border-border'}`}
+                className={`relative overflow-hidden border-2 transition-all duration-300 hover:shadow-2xl flex flex-col ${plan.highlight ? 'border-primary shadow-xl md:scale-105 z-10' : 'border-border'}`}
               >
                 {plan.popular && (
                   <div className="absolute top-0 right-0 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-lg">
                     Mais Escolhido
                   </div>
                 )}
+                {plan.name === "Trial" && (
+                  <div className="absolute top-0 left-0 bg-muted-foreground/10 text-muted-foreground text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-br-xl">
+                    Degustação
+                  </div>
+                )}
                 <CardHeader className="p-8">
-                  <CardTitle className="text-2xl font-black font-headline uppercase tracking-widest mb-4">
-                    {plan.name}
-                  </CardTitle>
+                  <div className="flex items-center justify-between mb-4">
+                    <CardTitle className="text-2xl font-black font-headline uppercase tracking-widest">
+                      {plan.name}
+                    </CardTitle>
+                    {plan.name === "Trial" && <Clock className="w-5 h-5 text-muted-foreground" />}
+                    {plan.name === "Gold" && <Star className="w-5 h-5 text-primary" />}
+                    {plan.name === "Enterprise" && <Zap className="w-5 h-5 text-primary" />}
+                  </div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-5xl font-black">{plan.price}</span>
                     <span className="text-muted-foreground font-medium">{plan.period}</span>
@@ -121,7 +149,7 @@ export default function PricingPage() {
                 <CardFooter className="p-8 pt-0">
                   <Link href="/signup" className="w-full">
                     <Button 
-                      className={`w-full h-14 text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 ${plan.popular ? 'bg-primary hover:bg-primary/90' : 'bg-muted-foreground/10 text-foreground hover:bg-muted-foreground/20'}`}
+                      className={`w-full h-14 text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 ${plan.highlight ? 'bg-primary hover:bg-primary/90' : 'bg-muted-foreground/10 text-foreground hover:bg-muted-foreground/20'}`}
                     >
                       {plan.cta} <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
@@ -136,6 +164,12 @@ export default function PricingPage() {
           <div className="container px-4 mx-auto max-w-4xl">
             <h2 className="text-3xl font-black font-headline text-center mb-16 tracking-tight">Perguntas Frequentes</h2>
             <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-trial" className="border-b border-primary/10">
+                <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">Como funciona o plano Trial de 14 dias?</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-6 font-medium">
+                  O plano Trial é gratuito e serve para você conhecer a ferramenta. Ele dá acesso a todas as funcionalidades de coleta e redirecionamento. Após os 14 dias, seus depoimentos continuam salvos, mas você precisará escolher um dos planos profissionais (Gold ou Enterprise) para continuar exibindo seus murais.
+                </AccordionContent>
+              </AccordionItem>
               <AccordionItem value="item-1" className="border-b border-primary/10">
                 <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">Posso mudar de plano a qualquer momento?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground pb-6 font-medium">
@@ -148,12 +182,6 @@ export default function PricingPage() {
                   Ao receber uma avaliação de 4 ou 5 estrelas, o Proova exibe um botão especial incentivando o cliente a replicar esse elogio no seu perfil do Google Business, aumentando seu SEO local.
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="item-3" className="border-b border-primary/10">
-                <AccordionTrigger className="text-left font-bold py-6 hover:text-primary transition-colors">O que acontece se eu atingir o limite de depoimentos?</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-6 font-medium">
-                  Seus novos depoimentos continuarão sendo coletados, mas você precisará fazer o upgrade para o plano Enterprise para exibi-los nos murais ou gerenciar um volume maior de avaliações.
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </div>
         </section>
@@ -163,7 +191,7 @@ export default function PricingPage() {
              <div className="relative z-10 space-y-4">
               <h2 className="text-3xl md:text-5xl font-black font-headline tracking-tighter">Ainda tem dúvidas?</h2>
               <p className="text-primary-foreground/90 font-medium text-lg max-w-xl mx-auto">
-                Nossa equipe de especialistas está pronta para ajudar você a turbinar suas vendas.
+                Nossa equipe de especialistas está pronta para ajudar você a turbinar suas vendas através da prova social.
               </p>
               <div className="pt-6">
                 <Button variant="secondary" size="lg" className="h-16 px-10 rounded-2xl text-xl font-black shadow-2xl">
