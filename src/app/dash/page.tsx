@@ -33,7 +33,8 @@ import {
   Info,
   Monitor,
   Inbox,
-  Save
+  Save,
+  Gem
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -123,7 +124,6 @@ export default function DashPage() {
     if (!userData) return '';
     if (userData.companySlug) return userData.companySlug;
     
-    // Fallback de limpeza de slug
     return userData?.companyName?.toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9\s-]/g, '')
@@ -352,6 +352,10 @@ export default function DashPage() {
               <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Inbox className="mr-2 h-4 w-4 text-primary" />
                 <span>Inbox Privado</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setIsTutorialOpen(true)} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Info className="mr-2 h-4 w-4 text-primary" />

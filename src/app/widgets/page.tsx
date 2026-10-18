@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -25,7 +24,8 @@ import {
   Search,
   Inbox,
   Sun,
-  Moon
+  Moon,
+  Gem
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -201,6 +201,7 @@ export default function WidgetsPage() {
           </Link>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -236,6 +237,10 @@ export default function WidgetsPage() {
                 <Inbox className="mr-2 h-4 w-4 text-primary" />
                 <span>Inbox Privado</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
+              </DropdownMenuItem>
               
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem 
@@ -261,7 +266,6 @@ export default function WidgetsPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto w-full">
-        {/* Main Content */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/dash" className="hidden sm:block">
@@ -279,7 +283,6 @@ export default function WidgetsPage() {
           </Button>
         </div>
 
-        {/* ... Search and List */}
         <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 

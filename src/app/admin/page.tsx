@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon } from 'lucide-react';
+import { Shield, LogOut, Users, UserCheck, Calendar, Lock, Mail, User, BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, Gem, TrendingUp } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -22,10 +21,12 @@ import { collection, query, doc, setDoc, serverTimestamp, where } from 'firebase
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 
 export default function AdminPage() {
   const auth = useAuth();
   const db = useFirestore();
+  const router = useRouter();
   const { user, loading: authLoading } = useUser();
   const { theme, setTheme } = useTheme();
   
@@ -94,7 +95,6 @@ export default function AdminPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const newUser = userCredential.user;
         
-        // Geração de slug limpo (sem acentos)
         const slug = companyName.trim().toLowerCase()
           .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
           .replace(/[^a-z0-9\s-]/g, '')
@@ -293,10 +293,20 @@ export default function AdminPage() {
                 <User className="w-5 h-5 text-primary" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-background border-border shadow-xl rounded-2xl p-2">
+            <DropdownMenuContent align="end" className="w-56 bg-background border-border shadow-xl rounded-2xl p-2">
               <DropdownMenuLabel className="px-3 py-2">Opções de Admin</DropdownMenuLabel>
               <DropdownMenuSeparator className="mx-1" />
               
+              <DropdownMenuItem onClick={() => router.push('/dash')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <TrendingUp className="mr-2 h-4 w-4 text-primary" />
+                <span>Painel de App</span>
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
+              </DropdownMenuItem>
+
               <DropdownMenuItem 
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                 className="rounded-xl cursor-pointer font-bold py-2.5"

@@ -16,7 +16,10 @@ import {
   Inbox,
   Trash2,
   Mail,
-  ArrowLeft
+  ArrowLeft,
+  Sun,
+  Moon,
+  Gem
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -35,6 +38,7 @@ import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 export default function PrivateInboxPage() {
@@ -42,6 +46,7 @@ export default function PrivateInboxPage() {
   const db = useFirestore();
   const auth = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
@@ -135,12 +140,30 @@ export default function PrivateInboxPage() {
                 <Inbox className="mr-2 h-4 w-4" />
                 <span>Inbox Privado</span>
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
+                <Gem className="mr-2 h-4 w-4 text-primary" />
+                <span>Planos de Upgrade</span>
+              </DropdownMenuItem>
               {userData?.isAdmin && (
                 <DropdownMenuItem onClick={() => router.push('/admin')} className="rounded-xl cursor-pointer font-bold py-2.5">
                   <Shield className="mr-2 h-4 w-4 text-primary" />
                   <span>Administração</span>
                 </DropdownMenuItem>
               )}
+              <DropdownMenuSeparator className="mx-1" />
+              
+              <DropdownMenuItem 
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="rounded-xl cursor-pointer font-bold py-2.5"
+              >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4 text-primary" />
+                )}
+                <span>Alternar Tema</span>
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator className="mx-1" />
               <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
