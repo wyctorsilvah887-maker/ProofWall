@@ -291,7 +291,7 @@ export default function AdminPage() {
 
   if (!userDataLoading && userData && !userData.isAdmin) {
     return (
-      <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
+      <div className="flex h-screen items-center justify-center bg-muted/30 px-4 font-body">
         <Card className="w-full max-w-md shadow-xl text-center">
           <CardHeader>
             <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
@@ -578,6 +578,7 @@ export default function AdminPage() {
                     size="icon" 
                     className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
                     onClick={() => copyToClipboard(selectedUser?.email, "E-mail")}
+                    title="Copiar e-mail"
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </Button>
@@ -594,6 +595,7 @@ export default function AdminPage() {
                     size="icon" 
                     className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
                     onClick={() => copyToClipboard(selectedUser?.id, "UID")}
+                    title="Copiar UID"
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </Button>
@@ -603,13 +605,22 @@ export default function AdminPage() {
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">URL Slug</Label>
                 <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-xl border group hover:border-primary/30 transition-colors">
-                  <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 ml-1" />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 shrink-0 ml-1"
+                    onClick={() => window.open(`/c/${selectedUser?.companySlug}`, '_blank')}
+                    title="Abrir página de coleta"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
                   <span className="text-[10px] font-mono opacity-70 truncate flex-1">/c/{selectedUser?.companySlug}</span>
                   <Button 
                     variant="ghost" 
                     size="icon" 
                     className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
                     onClick={() => copyToClipboard(selectedUser?.companySlug, "Slug")}
+                    title="Copiar slug"
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </Button>
