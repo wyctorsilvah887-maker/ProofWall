@@ -30,6 +30,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
   const [googleMapsUrl, setGoogleMapsUrl] = useState<string | null>(null);
   const [companyNameDisplay, setCompanyNameDisplay] = useState('');
+  const [membershipStatus, setMembershipStatus] = useState<string | null>(null);
 
   useEffect(() => {
     async function findCompany() {
@@ -39,12 +40,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         setIsLoadingCompany(true);
         const decodedSlug = decodeURIComponent(rawSlug);
         
-        // Slug normalizado (sem acentos)
         const normalizedSlug = decodedSlug.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
         const usersRef = collection(db, 'users');
         
-        // Tentativa 1: Busca pelo companySlug limpo (ex: tia-dora)
         const q1 = query(usersRef, where('companySlug', '==', normalizedSlug), limit(1));
         const snap1 = await getDocs(q1);
         
@@ -53,11 +51,11 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           setTargetUserId(snap1.docs[0].id);
           setCompanyNameDisplay(data.companyName);
           setGoogleMapsUrl(data.googleMapsUrl || null);
+          setMembershipStatus(data.membershipStatus || 'lead');
           setIsLoadingCompany(false);
           return;
         }
 
-        // Tentativa 2: Busca pelo slug original da URL (ex: tia-dôra)
         const q2 = query(usersRef, where('companySlug', '==', decodedSlug.toLowerCase()), limit(1));
         const snap2 = await getDocs(q2);
 
@@ -66,16 +64,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           setTargetUserId(snap2.docs[0].id);
           setCompanyNameDisplay(data.companyName);
           setGoogleMapsUrl(data.googleMapsUrl || null);
+          setMembershipStatus(data.membershipStatus || 'lead');
           setIsLoadingCompany(false);
           return;
         }
 
-        // Tentativa 3: Busca pelo nome da empresa (Slug formatado de volta para nome)
         const probableName = decodedSlug.replace(/-/g, ' ');
         const q3 = query(usersRef, where('companyName', '>=', probableName), limit(5));
         const snap3 = await getDocs(q3);
         
-        // Como o Firestore não tem busca case-insensitive, filtramos localmente se necessário
         const match = snap3.docs.find(d => d.data().companyName.toLowerCase() === probableName.toLowerCase());
         
         if (match) {
@@ -83,6 +80,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           setTargetUserId(match.id);
           setCompanyNameDisplay(data.companyName);
           setGoogleMapsUrl(data.googleMapsUrl || null);
+          setMembershipStatus(data.membershipStatus || 'lead');
         }
 
       } catch (err) {
@@ -118,6 +116,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
     window.open(finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`, '_blank');
   };
+
+  const isRedirectAllowed = useMemo(() => {
+    return membershipStatus === 'trial' || membershipStatus === 'gold' || membershipStatus === 'enterprise';
+  }, [membershipStatus]);
 
   const handleResetForm = () => {
     setUserName('');
@@ -230,7 +232,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {companyNameDisplay}.</p>
             </div>
 
-            {googleMapsUrl && rating >= 4 && (
+            {googleMapsUrl && rating >= 4 && isRedirectAllowed && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>

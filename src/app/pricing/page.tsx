@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -67,6 +68,7 @@ export default function PricingPage() {
   }, [user]);
 
   const plans = useMemo(() => {
+    const status = userData?.membershipStatus;
     const allPlans = [
       {
         id: 'trial',
@@ -81,11 +83,12 @@ export default function PricingPage() {
           "Redirecionamento Google Maps",
           "Uso único por conta",
         ],
-        cta: "Começar Teste Grátis",
+        cta: status === 'trial' ? "Plano Atual" : "Começar Teste Grátis",
         checkoutUrl: user ? "/payment-success?plan=trial" : "/signup",
         popular: false,
         highlight: false,
-        hidden: !!userData?.trialUsed || userData?.membershipStatus === 'gold' || userData?.membershipStatus === 'enterprise'
+        disabled: status === 'trial',
+        hidden: !!userData?.trialUsed || status === 'gold' || status === 'enterprise'
       },
       {
         id: 'gold',
@@ -100,10 +103,11 @@ export default function PricingPage() {
           "Redirecionamento Google Maps",
           "Suporte prioritário",
         ],
-        cta: "Assinar Gold",
+        cta: status === 'gold' ? "Plano Atual" : "Assinar Gold",
         checkoutUrl: checkoutLinks.gold,
         popular: false,
         highlight: false,
+        disabled: status === 'gold',
         hidden: false
       },
       {
@@ -121,10 +125,11 @@ export default function PricingPage() {
           "Acesso ao ADS",
           "Suporte VIP via WhatsApp",
         ],
-        cta: "Seja Enterprise",
+        cta: status === 'enterprise' ? "Plano Atual" : "Seja Enterprise",
         checkoutUrl: checkoutLinks.enterprise,
         popular: true,
         highlight: true,
+        disabled: status === 'enterprise',
         hidden: false
       }
     ];
@@ -286,8 +291,9 @@ export default function PricingPage() {
                   </ul>
                 </CardContent>
                 <CardFooter className="p-6 sm:p-8 pt-6 shrink-0 mt-auto">
-                  <Link href={plan.checkoutUrl} className="w-full" target={plan.checkoutUrl.startsWith('http') ? "_blank" : "_self"}>
+                  <Link href={plan.disabled ? "#" : plan.checkoutUrl} className="w-full" target={plan.checkoutUrl.startsWith('http') ? "_blank" : "_self"}>
                     <Button 
+                      disabled={plan.disabled}
                       className={`w-full h-14 sm:h-16 text-base sm:text-lg font-black rounded-xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
                         plan.highlight 
                           ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
@@ -295,7 +301,7 @@ export default function PricingPage() {
                       }`}
                     >
                       <span className="truncate">{plan.cta}</span>
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                      {!plan.disabled && <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />}
                     </Button>
                   </Link>
                 </CardFooter>
