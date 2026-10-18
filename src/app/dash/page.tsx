@@ -110,7 +110,8 @@ export default function DashPage() {
     if (status === 'enterprise') return 'Membro Enterprise';
     if (status === 'gold') return 'Membro Gold';
     if (status === 'trial') return 'Período Trial';
-    return null;
+    if (status === 'expired') return 'Plano Expirado';
+    return 'Plano Base';
   }, [userData]);
 
   useEffect(() => {
@@ -409,14 +410,12 @@ export default function DashPage() {
                   <span className="text-xs font-bold truncate max-w-[80px] sm:max-w-[120px] md:max-w-[200px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  {membershipLabel && (
-                    <span className={cn(
-                      "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
-                    )}>
-                      {membershipLabel}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[8px] uppercase tracking-widest font-black leading-tight",
+                    userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                  )}>
+                    {membershipLabel}
+                  </span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                   <User className="w-4 h-4" />
@@ -700,7 +699,7 @@ export default function DashPage() {
                 <div className="space-y-2">
                   <Label htmlFor="slug-input" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nova URL de Coleta</Label>
                   <div className="relative group">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted-foreground/60 pointer-events-none">proova.../c/</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted-foreground/60 pointer-events-none select-none">proova.../c/</span>
                     <Input 
                       id="slug-input"
                       placeholder="minha-loja"

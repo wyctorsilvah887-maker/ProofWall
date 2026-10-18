@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -72,7 +73,8 @@ export default function PrivateInboxPage() {
     if (status === 'enterprise') return 'Membro Enterprise';
     if (status === 'gold') return 'Membro Gold';
     if (status === 'trial') return 'Período Trial';
-    return null;
+    if (status === 'expired') return 'Plano Expirado';
+    return 'Plano Base';
   }, [userData]);
 
   const handleDeleteFeedback = async (id: string) => {
@@ -114,14 +116,12 @@ export default function PrivateInboxPage() {
                   <span className="text-xs font-bold truncate max-w-[120px] md:max-w-[200px] group-hover:text-primary transition-colors leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  {membershipLabel && (
-                    <span className={cn(
-                      "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
-                    )}>
-                      {membershipLabel}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[8px] uppercase tracking-widest font-black leading-tight",
+                    userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                  )}>
+                    {membershipLabel}
+                  </span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                   <User className="w-4 h-4" />

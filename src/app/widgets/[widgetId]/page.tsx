@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -350,7 +351,7 @@ const PublicPageSettings = ({
                   <div className="space-y-4 pt-4 border-t">
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Texto do Rodapé</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">©</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground select-none">©</span>
                       <Input value={footerText} onChange={(e) => setFooterText(e.target.value)} placeholder="2026 Sua Empresa" className="text-xs pl-7 h-10" />
                     </div>
                   </div>
@@ -687,6 +688,8 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const membershipStatus = userData?.membershipStatus;
 
+  const membershipLabel = membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : (membershipStatus === 'trial' ? 'Período Trial' : 'Plano Base'));
+
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
@@ -718,14 +721,12 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  {membershipStatus && (
-                    <span className={cn(
-                      "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
-                    )}>
-                      {membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : 'Período Trial')}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[8px] uppercase tracking-widest font-black leading-tight",
+                    membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                  )}>
+                    {membershipLabel}
+                  </span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                   <User className="w-4 h-4" />

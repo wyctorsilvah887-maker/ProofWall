@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -194,7 +195,7 @@ export default function AdminPage() {
               <Lock className="w-6 h-6 text-primary" />
             </div>
             <CardTitle className="text-2xl font-headline">Área Restrita</CardTitle>
-            <CardDescription>Insira o código mestre para gerenciar os leads.</CardDescription>
+            <CardDescription>Insira o código mestre para gerenciar os usuários.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAccessCodeSubmit} className="space-y-4">
@@ -387,7 +388,7 @@ export default function AdminPage() {
         <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
-              <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Leads</CardTitle>
+              <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Usuários</CardTitle>
               <Users className="w-4 h-4 text-primary" />
             </CardHeader>
             <CardContent className="px-4 md:px-6">
@@ -409,7 +410,7 @@ export default function AdminPage() {
 
         <Tabs defaultValue="leads" className="w-full">
           <TabsList className="mb-4 bg-muted/50 p-1 rounded-xl h-11">
-            <TabsTrigger value="leads" className="gap-2 rounded-lg text-xs font-bold"><Users className="w-3.5 h-3.5" /> Usuários</TabsTrigger>
+            <TabsTrigger value="leads" className="gap-2 rounded-lg text-xs font-bold"><Users className="w-3.5 h-3.5" /> Gestão de Contas</TabsTrigger>
             <TabsTrigger value="payments" className="gap-2 rounded-lg text-xs font-bold"><CreditCard className="w-3.5 h-3.5" /> Auditoria</TabsTrigger>
           </TabsList>
 
@@ -417,7 +418,7 @@ export default function AdminPage() {
             <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
               <CardHeader className="px-4 md:px-6">
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
-                  <UserCheck className="w-5 h-5 text-primary" /> Gestão de Usuários
+                  <UserCheck className="w-5 h-5 text-primary" /> Painel de Usuários
                 </CardTitle>
                 <CardDescription className="text-xs">Visualize e gerencie todos os clientes da plataforma. Clique em uma linha para detalhes.</CardDescription>
               </CardHeader>
@@ -433,7 +434,7 @@ export default function AdminPage() {
                       <TableRow className="bg-muted/30">
                         <TableHead className="text-[10px] uppercase font-black">Empresa / Nome</TableHead>
                         <TableHead className="text-[10px] uppercase font-black">Email / UID</TableHead>
-                        <TableHead className="text-[10px] uppercase font-black">Plano</TableHead>
+                        <TableHead className="text-[10px] uppercase font-black">Plano Atual</TableHead>
                         <TableHead className="text-[10px] uppercase font-black">Registro</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -464,7 +465,7 @@ export default function AdminPage() {
                               variant={usr.membershipStatus === 'enterprise' ? 'default' : (usr.membershipStatus === 'gold' ? 'secondary' : 'outline')} 
                               className="uppercase text-[8px] font-black h-5"
                             >
-                              {usr.membershipStatus || 'Lead'}
+                              {usr.membershipStatus === 'enterprise' ? 'Enterprise' : (usr.membershipStatus === 'gold' ? 'Gold' : (usr.membershipStatus === 'trial' ? 'Trial' : 'Plano Base'))}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground text-[10px] whitespace-nowrap">
@@ -476,7 +477,7 @@ export default function AdminPage() {
                   </Table>
                 ) : (
                   <div className="py-20 text-center border-2 border-dashed m-6 rounded-xl bg-muted/10">
-                    <p className="text-muted-foreground text-sm">Nenhum lead registrado ainda.</p>
+                    <p className="text-muted-foreground text-sm">Nenhum usuário registrado ainda.</p>
                   </div>
                 )}
               </CardContent>
@@ -587,7 +588,7 @@ export default function AdminPage() {
                 variant={selectedUser?.membershipStatus === 'enterprise' ? 'default' : (selectedUser?.membershipStatus === 'gold' ? 'secondary' : 'outline')} 
                 className="uppercase text-[8px] font-black h-5"
               >
-                {selectedUser?.membershipStatus || 'Lead'}
+                {selectedUser?.membershipStatus === 'enterprise' ? 'Enterprise' : (selectedUser?.membershipStatus === 'gold' ? 'Gold' : (selectedUser?.membershipStatus === 'trial' ? 'Trial' : 'Plano Base'))}
               </Badge>
               {selectedUser?.isAdmin && <Badge variant="secondary" className="uppercase text-[8px] font-black h-5">Administrador</Badge>}
             </div>

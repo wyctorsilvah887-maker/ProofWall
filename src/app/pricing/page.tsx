@@ -56,7 +56,8 @@ export default function PricingPage() {
     if (status === 'enterprise') return 'Membro Enterprise';
     if (status === 'gold') return 'Membro Gold';
     if (status === 'trial') return 'Período Trial';
-    return null;
+    if (status === 'expired') return 'Plano Expirado';
+    return 'Plano Base';
   }, [userData]);
 
   const checkoutLinks = useMemo(() => {
@@ -83,7 +84,7 @@ export default function PricingPage() {
           "Redirecionamento Google Maps",
           "Uso único por conta",
         ],
-        cta: status === 'trial' ? "Plano Atual" : "Começar Teste Grátis",
+        cta: status === 'trial' ? "Plano Atual" : "Ativar Período Trial",
         checkoutUrl: user ? "/payment-success?plan=trial" : "/signup",
         popular: false,
         highlight: false,
@@ -161,14 +162,12 @@ export default function PricingPage() {
                     <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
                       {userData?.companyName || 'Minha Empresa'}
                     </span>
-                    {membershipLabel && (
-                      <span className={cn(
-                        "text-[8px] uppercase tracking-widest font-black leading-tight",
-                        userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
-                      )}>
-                        {membershipLabel}
-                      </span>
-                    )}
+                    <span className={cn(
+                      "text-[8px] uppercase tracking-widest font-black leading-tight",
+                      userData?.membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    )}>
+                      {membershipLabel}
+                    </span>
                   </div>
                   <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                     <User className="w-4 h-4" />

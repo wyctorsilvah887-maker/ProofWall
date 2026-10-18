@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -305,6 +306,8 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
   const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving };
 
+  const membershipLabel = membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : (membershipStatus === 'trial' ? 'Período Trial' : 'Plano Base'));
+
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
       <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
@@ -335,14 +338,12 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                   <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
                     {userData?.companyName || 'Minha Empresa'}
                   </span>
-                  {membershipStatus && (
-                    <span className={cn(
-                      "text-[8px] uppercase tracking-widest font-black leading-tight",
-                      membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
-                    )}>
-                      {membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : 'Período Trial')}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[8px] uppercase tracking-widest font-black leading-tight",
+                    membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                  )}>
+                    {membershipLabel}
+                  </span>
                 </div>
                 <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
                   <User className="w-4 h-4" />
