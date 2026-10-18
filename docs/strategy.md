@@ -30,3 +30,11 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 - **Implementação:**
     - Schema.org (JSON-LD) em todas as páginas públicas (`/pp`).
     - Otimização para "Social Proof Search".
+
+## 🛠️ 5. Suporte Prioritário (Conversão & Retenção Gold)
+**Tese:** Remover barreiras técnicas para garantir que o cliente veja valor no produto imediatamente.
+- **Implementação:**
+    - **SLA de Resposta:** Garantia de retorno em até 8 horas úteis para usuários Gold/Trial.
+    - **WhatsApp Lite:** Canal de chat direto para dúvidas rápidas de instalação e configuração.
+    - **Auxílio Guided Setup:** Suporte focado em ajudar o cliente a colar o script e configurar o DNS do link personalizado.
+    - **Priorização Sistêmica:** Tags visuais no painel administrativo para identificar UIDs com status prioritário.
