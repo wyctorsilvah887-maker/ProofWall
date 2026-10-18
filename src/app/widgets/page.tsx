@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -55,6 +54,7 @@ import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function WidgetsPage() {
   const { user, loading: authLoading } = useUser();
@@ -194,7 +194,7 @@ export default function WidgetsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
@@ -394,6 +394,80 @@ export default function WidgetsPage() {
           </p>
         </div>
       </footer>
+
+      {/* Dialog for Widget Code */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline">Código do Mural</DialogTitle>
+            <DialogDescription>
+              Copie o código abaixo e cole no HTML do seu site para exibir o mural {selectedWidget?.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="relative bg-muted/50 rounded-xl p-4 border border-primary/20">
+              <Terminal className="absolute top-4 left-4 w-4 h-4 text-primary/50" />
+              <pre className="text-[10px] font-mono text-foreground break-all whitespace-pre-wrap pl-6 leading-relaxed">
+                {selectedWidget ? getWidgetCode(selectedWidget.id) : ''}
+              </pre>
+              <Button 
+                size="icon" 
+                variant="secondary" 
+                className="absolute top-2 right-2 h-8 w-8 rounded-lg shadow-sm" 
+                onClick={() => copyToClipboard(getWidgetCode(selectedWidget.id))}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="bg-primary/5 p-4 rounded-xl border border-primary/10">
+              <p className="text-xs text-primary font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" /> Dica de Instalação
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                Recomendamos colar este código antes da tag final <code>&lt;/body&gt;</code> para garantir que o mural carregue sem afetar a velocidade do seu site.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-black h-12 rounded-xl" onClick={() => setIsDialogOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for New Widget */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-headline">Novo Mural</DialogTitle>
+            <DialogDescription>
+              Dê um nome para identificar seu novo mural de depoimentos.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nome do Mural</label>
+              <Input 
+                placeholder="Ex: Landing Page Promoção" 
+                value={newWidgetName}
+                onChange={(e) => setNewWidgetName(e.target.value)}
+                className="h-12 rounded-xl"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateWidget()}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              className="w-full font-black h-12 rounded-xl shadow-lg" 
+              onClick={() => handleCreateWidget()}
+              disabled={isCreating || !newWidgetName.trim()}
+            >
+              {isCreating ? <Loader2 className="animate-spin mr-2" /> : <Plus className="mr-2" />}
+              Criar Mural Agora
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
