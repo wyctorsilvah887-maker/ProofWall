@@ -37,48 +37,59 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [muralIndex, setMuralIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
 
-  // Busca robusta pela empresa (igual à página de coleta)
+  // Busca Ultra Resiliente pela empresa
   useEffect(() => {
     async function findCompany() {
       if (!db || !rawSlug) return;
       
       try {
-        const decodedSlug = decodeURIComponent(rawSlug).replace(/\+/g, ' ');
-        const normalizedSlug = decodedSlug.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        setIsLoading(true);
+        const decodedSlug = decodeURIComponent(rawSlug).toLowerCase();
         
-        // 1. Tentar busca direta por ID
-        const userRef = doc(db, 'users', rawSlug);
-        const userSnap = await getDocs(query(collection(db, 'users'), where('__name__', '==', rawSlug), limit(1)));
+        // 1. Tentar busca direta por Document ID (UID)
+        const docSnap = await getDocs(query(collection(db, 'users'), where('__name__', '==', rawSlug), limit(1)));
         
-        if (!userSnap.empty) {
-          setTargetUserId(userSnap.docs[0].id);
-          setCompanyData(userSnap.docs[0].data());
+        if (!docSnap.empty) {
+          setTargetUserId(docSnap.docs[0].id);
+          setCompanyData(docSnap.docs[0].data());
           return;
         }
 
-        // 2. Tentar busca por companySlug (Normalizado)
-        const q1 = query(collection(db, 'users'), where('companySlug', '==', normalizedSlug), limit(1));
-        const snap1 = await getDocs(q1);
-        
-        if (!snap1.empty) {
-          setTargetUserId(snap1.docs[0].id);
-          setCompanyData(snap1.docs[0].data());
-          return;
+        // 2. Variações do Slug para garantir match (trata + como espaço ou hífen)
+        const variations = [
+          decodedSlug, // odonto+saude-teixeira
+          decodedSlug.replace(/\+/g, '-'), // odonto-saude-teixeira (padrão proova)
+          decodedSlug.replace(/\+/g, ' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-'),
+          decodedSlug.replace(/-/g, '+'),
+        ];
+
+        // Remover duplicatas
+        const uniqueVariations = Array.from(new Set(variations));
+
+        for (const v of uniqueVariations) {
+          const q = query(collection(db, 'users'), where('companySlug', '==', v), limit(1));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            setTargetUserId(snap.docs[0].id);
+            setCompanyData(snap.docs[0].data());
+            return;
+          }
         }
 
-        // 3. Tentar busca por companySlug (Original)
-        const q2 = query(collection(db, 'users'), where('companySlug', '==', decodedSlug.toLowerCase().replace(/\s+/g, '-')), limit(1));
-        const snap2 = await getDocs(q2);
-
-        if (!snap2.empty) {
-          setTargetUserId(snap2.docs[0].id);
-          setCompanyData(snap2.docs[0].data());
+        // 3. Fallback final: Busca por nome aproximado (se a URL tiver espaços convertidos)
+        const probableName = decodedSlug.replace(/[+-]/g, ' ');
+        const q3 = query(collection(db, 'users'), where('companyName', '>=', probableName), limit(10));
+        const snap3 = await getDocs(q3);
+        const match = snap3.docs.find(d => d.data().companyName.toLowerCase() === probableName.toLowerCase());
+        if (match) {
+          setTargetUserId(match.id);
+          setCompanyData(match.data());
           return;
         }
         
-        setIsLoading(false);
       } catch (err) {
         console.error("Erro ao localizar empresa:", err);
+      } finally {
         setIsLoading(false);
       }
     }
@@ -97,8 +108,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       } else {
         setWidgetData(null);
       }
-      setIsLoading(false);
-    }, () => setIsLoading(false));
+    });
 
     const testimonialsRef = collection(db, 'users', targetUserId, 'testimonials');
     const tQuery = query(testimonialsRef, where('status', '==', 'approved'));
@@ -134,7 +144,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const footerText = widgetData?.footerText || `${new Date().getFullYear()} ${companyData?.companyName || ''}`;
   const showProovaBranding = widgetData?.showLogo !== false;
 
-  // Efeito de rotação para layouts estáticos (Mural e Grade) - Limitado a 5 visíveis
+  // Efeito de rotação limitado a 5 visíveis
   useEffect(() => {
     if ((layout === 'mural' || layout === 'grid') && filteredTestimonials.length > 5) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 7000);
