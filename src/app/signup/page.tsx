@@ -164,11 +164,11 @@ export default function SignupPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seu Nome</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seu Nome/CEO/Responsável</label>
                     <div className="relative">
                       <User className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground/50" />
                       <Input
-                        placeholder="Ex: Pedro Silva"
+                        placeholder="Nome do Responsável"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium"
