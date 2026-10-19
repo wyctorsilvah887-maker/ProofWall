@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mail, User, Building2, Lock, Loader2, Eye, EyeOff, MapPin, Globe, Check } from "lucide-react";
+import { ArrowLeft, Mail, User, Building2, Lock, Loader2, Eye, EyeOff, MapPin, Globe, Check, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
