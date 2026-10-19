@@ -122,38 +122,40 @@ export default function SignupPage() {
           <CardContent className="px-6 sm:px-10 pb-10">
             <form onSubmit={handleSignup} className="space-y-8">
               
-              {/* Business Type Toggle Button */}
+              {/* Business Type Toggle Button - Inspired by Cakto Theme Switch */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
                 <div 
                   onClick={() => setBusinessType(prev => prev === 'local' ? 'digital' : 'local')}
-                  className="relative flex bg-muted/50 p-1 rounded-[1.25rem] border border-border/50 shadow-inner cursor-pointer h-14 items-center group overflow-hidden"
+                  className="relative flex bg-muted/50 p-1.5 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-16 items-center group overflow-hidden"
                 >
-                  {/* Sliding background indicator */}
+                  {/* Sliding background indicator (The "Knob") */}
                   <div 
                     className={cn(
-                      "absolute top-1 bottom-1 w-[calc(50%-4px)] bg-background shadow-lg rounded-[1rem] transition-all duration-300 ease-in-out z-0",
-                      businessType === 'local' ? "left-1" : "left-[calc(50%+3px)]"
+                      "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-background shadow-xl rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0",
+                      businessType === 'local' ? "left-1.5" : "left-[calc(50%+4.5px)]"
                     )}
                   />
                   
-                  {/* Local Business label */}
+                  {/* Local Business Option */}
                   <div className={cn(
-                    "relative z-10 flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.1em] transition-colors duration-300",
-                    businessType === 'local' ? "text-primary" : "text-muted-foreground opacity-60"
+                    "relative z-10 flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                    businessType === 'local' ? "text-primary scale-100" : "text-muted-foreground opacity-40 scale-90"
                   )}>
-                    <MapPin className="w-3.5 h-3.5" /> Negócio Local
+                    <MapPin className={cn("w-4 h-4 transition-transform duration-500", businessType === 'local' ? "scale-110" : "")} /> 
+                    Negócio Local
                   </div>
 
-                  {/* Digital/SaaS label */}
+                  {/* Digital/SaaS Option */}
                   <div className={cn(
-                    "relative z-10 flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.1em] transition-colors duration-300",
-                    businessType === 'digital' ? "text-primary" : "text-muted-foreground opacity-60"
+                    "relative z-10 flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                    businessType === 'digital' ? "text-primary scale-100" : "text-muted-foreground opacity-40 scale-90"
                   )}>
-                    <Globe className="w-3.5 h-3.5" /> Digital / SaaS
+                    <Globe className={cn("w-4 h-4 transition-transform duration-500", businessType === 'digital' ? "scale-110" : "")} /> 
+                    Digital / SaaS
                   </div>
                 </div>
-                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-medium">Clique no botão para alternar</p>
+                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Toque para alternar o perfil</p>
               </div>
 
               <div className="space-y-4">
