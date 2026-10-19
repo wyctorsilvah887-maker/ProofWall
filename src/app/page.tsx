@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2, ArrowRight } from "lucide-react";
+import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2, ArrowRight, MapPin, Inbox, Layout } from "lucide-react";
 import { useUser } from "@/firebase";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -32,21 +32,21 @@ export default function Home() {
 
   const testimonials = [
     {
-      name: "Alice M.",
-      company: "TechFlow Solutions",
-      text: "A facilidade de instalar o widget no meu site foi impressionante. O visual combinou direto!",
+      name: "Dra. Juliana S.",
+      company: "Clínica OdontoLife",
+      text: "Minha visibilidade no Google Maps dobrou desde que comecei a usar o Proova para redirecionar os elogios 5 estrelas.",
       avatar: avatars[0]
     },
     {
-      name: "Bruno R.",
-      company: "Creative Labs",
-      text: "Nossos clientes adoram gravar depoimentos em vídeo. A conversão subiu drasticamente.",
+      name: "Marcos R.",
+      company: "SaaS Builder",
+      text: "O Mural Masonry na minha Landing Page deu uma cara profissional que eu não conseguia antes. A conversão subiu 30%.",
       avatar: avatars[1]
     },
     {
-      name: "Carla S.",
-      company: "Global E-commerce",
-      text: "O Proova é a melhor ferramenta de prova social que já utilizei. Simples e poderosa.",
+      name: "Carla T.",
+      company: "Boutique Fashion",
+      text: "O Inbox Privado me salvou. Resolvi dois problemas de clientes insatisfeitos antes de virarem reclamações públicas.",
       avatar: avatars[2]
     }
   ];
@@ -79,7 +79,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        {/* HERO SECTION WITH BG PHOTO */}
+        {/* HERO SECTION */}
         <section className="relative w-full py-16 md:py-32 lg:py-48 flex items-center justify-center overflow-hidden">
           {heroBg && (
             <div className="absolute inset-0 z-0">
@@ -100,13 +100,13 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-8 text-center lg:text-left">
                 <div className="space-y-6">
                   <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs md:text-sm font-bold text-primary border border-primary/20 mx-auto lg:mx-0 w-fit backdrop-blur-sm">
-                    🚀 Novo: Suporte a depoimentos em vídeo 4K
+                    💎 Onde a confiança vira lucro
                   </div>
                   <h1 className="text-4xl font-black tracking-tighter sm:text-6xl md:text-7xl font-headline max-w-[800px] leading-[1.05]">
                     Transforme elogios em <span className="text-primary italic">Máquinas de Vendas</span>.
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground text-lg md:text-xl lg:text-2xl/relaxed mx-auto lg:mx-0 font-medium">
-                    Colete, modere e exiba depoimentos reais em minutos com o domínio premium <strong>proova.wsstudioscompany.com.br</strong>.
+                  <p className="max-w-[600px] text-muted-foreground text-lg md:text-xl lg:text-2xl/relaxed mx-auto lg:mx-0 font-medium leading-relaxed">
+                    Colete depoimentos, domine o <strong>SEO Local no Google</strong> e proteja sua marca com o ecossistema definitivo de prova social.
                   </p>
                 </div>
                 
@@ -116,7 +116,7 @@ export default function Home() {
                       size="lg" 
                       className="w-full sm:w-auto h-16 px-10 rounded-2xl text-xl font-black shadow-[0_20px_40px_-15px_rgba(249,115,22,0.4)] transition-all hover:scale-105 active:scale-95 group"
                     >
-                      Começar Agora <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      Começar Gratuitamente <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                   <div className="flex items-center justify-center lg:justify-start gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
@@ -132,7 +132,7 @@ export default function Home() {
                   {heroImage && (
                     <Image
                       src={heroImage.imageUrl}
-                      alt={heroImage.description}
+                      alt="Dashboard Proova"
                       fill
                       priority
                       className="object-cover transition duration-500 group-hover:scale-105"
@@ -145,12 +145,12 @@ export default function Home() {
                         <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-sm md:text-base italic mb-4 font-medium">"Aumentamos nossa conversão em 25% logo na primeira semana com o Proova!"</p>
+                    <p className="text-sm md:text-base italic mb-4 font-bold text-foreground">"Ficamos em 1º no Google Maps após usar o redirecionamento do Proova!"</p>
                     <div className="flex items-center gap-3 border-t pt-4">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-black text-primary border border-primary/20">JD</div>
                       <div className="flex flex-col">
                         <span className="text-xs font-black">João D.</span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">CEO da TechNova</span>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Dono de Negócio Local</span>
                       </div>
                     </div>
                   </div>
@@ -160,102 +160,134 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES SECTION WITH SUBTLE TEXTURE */}
+        {/* ECOSYSTEM FEATURES */}
         <section className="w-full py-24 md:py-32 bg-muted/30 relative">
           <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="flex flex-col items-center justify-center space-y-6 text-center mb-16">
               <div className="space-y-2">
                 <h2 className="text-3xl font-black tracking-tighter sm:text-5xl font-headline">
-                  Identidade Visual <span className="text-primary italic">Impecável</span>.
+                  O Ecossistema <span className="text-primary italic">Proova</span>.
                 </h2>
                 <p className="max-w-[800px] text-muted-foreground text-base md:text-xl font-medium">
-                  O Proova se adapta à sua marca, não o contrário.
+                  Três pilares projetados para escalar sua autoridade e proteger sua imagem.
                 </p>
               </div>
             </div>
             
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative w-full max-w-6xl p-6 md:p-12 bg-card rounded-[3rem] border shadow-2xl overflow-hidden min-h-[500px] ring-1 ring-primary/5">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-4">
-                  {testimonials.map((t, idx) => (
-                    <div 
-                      key={idx} 
-                      className="bg-background border rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all duration-300 hover:translate-y-[-8px] flex flex-col justify-between group"
-                    >
-                      <div className="space-y-4">
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} className="w-4 h-4 fill-yellow-400 text-yellow-400 group-hover:scale-110 transition-transform" />
-                          ))}
-                        </div>
-                        <p className="text-sm md:text-base text-foreground italic leading-relaxed font-medium">"{t.text}"</p>
-                      </div>
-                      <div className="flex items-center gap-4 mt-8 border-t pt-6">
-                        <div className="relative w-12 h-12 rounded-2xl overflow-hidden border-2 border-primary/10 shadow-sm">
-                          {t.avatar && (
-                            <Image 
-                              src={t.avatar.imageUrl} 
-                              alt={t.avatar.description} 
-                              fill 
-                              className="object-cover" 
-                              data-ai-hint={t.avatar.imageHint}
-                            />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-xs font-black">{t.name}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">{t.company}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+            <div className="grid gap-8 md:grid-cols-3">
+              {/* Pillar 1 */}
+              <div className="bg-card border rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
+                <div className="space-y-6">
+                  <div className="p-4 rounded-2xl bg-primary/5 text-primary w-fit group-hover:bg-primary group-hover:text-white transition-all">
+                    <MapPin className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl font-black font-headline">Boost no Google</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                    Detectamos elogios 4 e 5 estrelas e incentivamos o cliente a replicar a nota no seu <strong>Google Business</strong>. SEO Local no piloto automático.
+                  </p>
                 </div>
-                
-                <div className="mt-12 flex justify-center">
-                  <div className="px-6 py-3 bg-primary/5 rounded-full border border-primary/10 text-[10px] md:text-xs font-mono text-primary font-bold shadow-sm">
-                    &lt;script src="https://proova.wsstudioscompany.com.br/widget.js"&gt;&lt;/script&gt;
+              </div>
+
+              {/* Pillar 2 */}
+              <div className="bg-card border rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
+                <div className="space-y-6">
+                  <div className="p-4 rounded-2xl bg-primary/5 text-primary w-fit group-hover:bg-primary group-hover:text-white transition-all">
+                    <Inbox className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl font-black font-headline">Reputation Shield</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                    Feedbacks críticos (1-3 estrelas) caem no seu <strong>Inbox Privado</strong>. Resolva o problema internamente e evite reclamações públicas.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 3 */}
+              <div className="bg-card border rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+                <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
+                <div className="space-y-6">
+                  <div className="p-4 rounded-2xl bg-primary/5 text-primary w-fit group-hover:bg-primary group-hover:text-white transition-all">
+                    <Layout className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-2xl font-black font-headline">Widgets de Elite</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                    Murais Masonry, Carrosséis dinâmicos e Popups de conversão. Instale no seu site em minutos com um único snippet de código.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* VERSATILITY SECTION */}
+        <section className="w-full py-24 md:py-32 bg-background">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="grid gap-12 lg:grid-cols-2 items-center">
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <h2 className="text-3xl sm:text-5xl font-black tracking-tight font-headline">
+                    Para quem vende no <span className="text-primary">balcão</span> ou na <span className="text-primary">nuvem</span>.
+                  </h2>
+                  <p className="text-lg text-muted-foreground font-medium">
+                    90% dos seus clientes buscam prova social antes de comprar. Nós capturamos essa autoridade onde quer que você esteja.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="bg-green-500/10 p-3 rounded-xl text-green-600 h-fit shrink-0"><CheckCircle2 className="w-5 h-5" /></div>
+                    <div>
+                      <p className="font-bold text-lg">Negócios Locais</p>
+                      <p className="text-muted-foreground text-sm">Restaurantes, clínicas e lojas. Gere o <strong>Cartaz de Balcão (PDF)</strong> com QR Code e domine sua região.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="bg-blue-500/10 p-3 rounded-xl text-blue-600 h-fit shrink-0"><CheckCircle2 className="w-5 h-5" /></div>
+                    <div>
+                      <p className="font-bold text-lg">Produtos Digitais & SaaS</p>
+                      <p className="text-muted-foreground text-sm">Landing Pages e Apps. Use o <strong>Popup de Notificação</strong> para provar que pessoas reais estão usando seu produto.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="bg-primary/10 p-3 rounded-xl text-primary h-fit shrink-0"><CheckCircle2 className="w-5 h-5" /></div>
+                    <div>
+                      <p className="font-bold text-lg">Link na Bio VIP</p>
+                      <p className="text-muted-foreground text-sm">Use sua <strong>Página Pública</strong> com slug personalizado no Instagram. Seus elogios rotacionando 24h por dia.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full py-24 md:py-32 bg-background">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="grid gap-10 md:grid-cols-3">
-              <div className="flex flex-col items-center text-center space-y-6 p-8 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="p-5 rounded-[2rem] bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Link2 className="w-8 h-8 md:w-10 md:h-10" />
-                </div>
-                <h3 className="text-2xl font-black font-headline tracking-tight">Coleta Viral</h3>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
-                  Envie um link <strong>proova</strong> direto no WhatsApp. Seu cliente avalia em 30 segundos.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-6 p-8 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="p-5 rounded-[2rem] bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <ShieldCheck className="w-8 h-8 md:w-10 md:h-10" />
-                </div>
-                <h3 className="text-2xl font-black font-headline tracking-tight">Moderação Inteligente</h3>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
-                  Você no controle total. Escolha quais elogios merecem destaque no seu site com um clique.
-                </p>
-              </div>
-              <div className="flex flex-col items-center text-center space-y-6 p-8 rounded-[2.5rem] border bg-card shadow-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="p-5 rounded-[2rem] bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Zap className="w-8 h-8 md:w-10 md:h-10" />
-                </div>
-                <h3 className="text-2xl font-black font-headline tracking-tight">Carga Instantânea</h3>
-                <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium">
-                  Widget ultra otimizado servido via CDN de alta velocidade. Zero impacto no seu SEO.
-                </p>
+              
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent rounded-[3rem] blur opacity-25"></div>
+                <Card className="relative border-none shadow-2xl rounded-[3rem] overflow-hidden bg-muted/20 p-2">
+                  <div className="grid grid-cols-1 gap-2 p-2">
+                    {testimonials.map((t, i) => (
+                      <div key={i} className="bg-background p-6 rounded-[2rem] border shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${i * 200}ms` }}>
+                        <div className="flex gap-1 mb-2">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
+                        <p className="text-xs italic font-medium text-foreground mb-4">"{t.text}"</p>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-[8px] font-black text-primary uppercase">{t.name.substring(0, 2)}</div>
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black">{t.name}</span>
+                            <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest">{t.company}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
               </div>
             </div>
           </div>
         </section>
 
-        {/* FINAL CTA WITH BG PHOTO */}
+        {/* FOUNDER CTA */}
         <section className="relative w-full py-24 md:py-48 bg-primary text-primary-foreground overflow-hidden">
           {ctaBg && (
             <div className="absolute inset-0 z-0">
@@ -277,17 +309,17 @@ export default function Home() {
                   Seja um Membro Fundador da <span className="italic">Proova</span>.
                 </h2>
                 <p className="max-w-[700px] text-primary-foreground/90 text-lg md:text-2xl font-medium mx-auto">
-                  Garanta <strong>50% de desconto perpétuo</strong> ao se inscrever hoje no Proova.
+                  Garanta <strong>50% de desconto vitalício</strong> e desbloqueie o poder da prova social profissional hoje.
                 </p>
               </div>
               <div className="w-full max-w-sm mx-auto space-y-4 px-4">
                 <Link href="/pricing">
                   <Button size="lg" variant="secondary" className="w-full h-16 text-xl font-black shadow-2xl hover:scale-105 active:scale-95 transition-transform rounded-2xl">
-                    Ver Planos e Garantir Vaga
+                    Ver Planos e Reservar Vaga
                   </Button>
                 </Link>
                 <p className="text-[11px] md:text-xs text-primary-foreground/70 uppercase tracking-[0.2em] font-black">
-                  Oferta limitada para os primeiros 50 inscritos.
+                  Vagas limitadas para os primeiros 100 inscritos.
                 </p>
               </div>
             </div>
@@ -309,7 +341,7 @@ export default function Home() {
             </div>
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-40">
-              © 2026 BY SYNAPSE GROUP | SYNP GROUP TECHNOLOGY
+              © 2026 BY SYNAPSE GROUP | PROOVA TECHNOLOGY
             </p>
           </div>
         </div>
