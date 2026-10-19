@@ -26,7 +26,7 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function PublicPage({ params }: { params: Promise<{ slug: string, widgetId: string }> }) {
-  const { slug, widgetId } = use(params);
+  const { slug: rawSlug, widgetId } = use(params);
   const db = useFirestore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -37,30 +37,56 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const [muralIndex, setMuralIndex] = useState(0);
   const [api, setApi] = useState<CarouselApi>();
 
+  // Busca robusta pela empresa (igual à página de coleta)
   useEffect(() => {
-    if (!db || !slug) return;
+    async function findCompany() {
+      if (!db || !rawSlug) return;
+      
+      try {
+        const decodedSlug = decodeURIComponent(rawSlug).replace(/\+/g, ' ');
+        const normalizedSlug = decodedSlug.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        
+        // 1. Tentar busca direta por ID
+        const userRef = doc(db, 'users', rawSlug);
+        const userSnap = await getDocs(query(collection(db, 'users'), where('__name__', '==', rawSlug), limit(1)));
+        
+        if (!userSnap.empty) {
+          setTargetUserId(userSnap.docs[0].id);
+          setCompanyData(userSnap.docs[0].data());
+          return;
+        }
 
-    const userRef = doc(db, 'users', slug);
-    const unsubUser = onSnapshot(userRef, (docSnap) => {
-      if (docSnap.exists()) {
-        setTargetUserId(slug);
-        setCompanyData(docSnap.data());
-      } else {
-        const q = query(collection(db, 'users'), where('companySlug', '==', slug), limit(1));
-        getDocs(q).then(snapshot => {
-          if (!snapshot.empty) {
-            setTargetUserId(snapshot.docs[0].id);
-            setCompanyData(snapshot.docs[0].data());
-          } else {
-            setIsLoading(false);
-          }
-        }).catch(() => setIsLoading(false));
+        // 2. Tentar busca por companySlug (Normalizado)
+        const q1 = query(collection(db, 'users'), where('companySlug', '==', normalizedSlug), limit(1));
+        const snap1 = await getDocs(q1);
+        
+        if (!snap1.empty) {
+          setTargetUserId(snap1.docs[0].id);
+          setCompanyData(snap1.docs[0].data());
+          return;
+        }
+
+        // 3. Tentar busca por companySlug (Original)
+        const q2 = query(collection(db, 'users'), where('companySlug', '==', decodedSlug.toLowerCase().replace(/\s+/g, '-')), limit(1));
+        const snap2 = await getDocs(q2);
+
+        if (!snap2.empty) {
+          setTargetUserId(snap2.docs[0].id);
+          setCompanyData(snap2.docs[0].data());
+          return;
+        }
+        
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Erro ao localizar empresa:", err);
+        setIsLoading(false);
       }
-    }, () => setIsLoading(false));
+    }
+    
+    findCompany();
+  }, [db, rawSlug]);
 
-    return () => unsubUser();
-  }, [db, slug]);
-
+  // Carregar dados do Widget e Testemunhos após encontrar o targetUserId
   useEffect(() => {
     if (!db || !targetUserId || !widgetId) return;
 
@@ -79,7 +105,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     const unsubTestimonials = onSnapshot(tQuery, (snapshot) => {
       const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setAllTestimonials(docs);
-    }, () => setIsLoading(false));
+    });
 
     return () => {
       unsubWidget();
@@ -108,7 +134,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const footerText = widgetData?.footerText || `${new Date().getFullYear()} ${companyData?.companyName || ''}`;
   const showProovaBranding = widgetData?.showLogo !== false;
 
-  // Efeito de rotação para layouts estáticos (Mural e Grade)
+  // Efeito de rotação para layouts estáticos (Mural e Grade) - Limitado a 5 visíveis
   useEffect(() => {
     if ((layout === 'mural' || layout === 'grid') && filteredTestimonials.length > 5) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 7000);
@@ -122,11 +148,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return () => clearInterval(interval);
   }, [api, layout]);
 
-  // Pool de exibição limitado a 5 itens (Janela Deslizante)
   const visibleDisplayPool = useMemo(() => {
     if (filteredTestimonials.length === 0) return [];
     
-    // Para Mural e Grade, mostramos apenas 5 que rotacionam
     if (layout === 'mural' || layout === 'grid') {
       const slice = [];
       const count = Math.min(5, filteredTestimonials.length);
@@ -137,7 +161,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       return slice;
     }
     
-    // Carousel e Popup gerenciam sua própria visibilidade/pool
     return filteredTestimonials;
   }, [filteredTestimonials, muralIndex, layout]);
 
@@ -192,10 +215,8 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden text-foreground">
       <nav className="h-16 border-b flex items-center px-6 justify-between bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          {showProovaBranding ? (
-            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground animate-in fade-in duration-500">PROOVA</span>
-          ) : (
-            <div className="w-10" />
+          {showProovaBranding && (
+            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">PROOVA</span>
           )}
         </div>
         <div className="flex items-center gap-4">
@@ -205,142 +226,150 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
       </nav>
 
       <div className="flex-1 flex flex-col">
-        <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
-          <header className="px-6 text-center space-y-8 py-24 sm:py-32">
-            <div className="space-y-6">
-              {hasValidLogo && (
-                <div className="flex justify-center">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
-                    <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
+        {!targetUserId ? (
+           <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4">
+             <MessageSquare className="w-12 h-12 text-muted-foreground/20" />
+             <h2 className="text-xl font-bold">Empresa não localizada</h2>
+             <p className="text-muted-foreground text-sm">Verifique se o link está correto ou se a empresa ainda está ativa.</p>
+           </div>
+        ) : (
+          <div className="w-full max-w-full mx-auto flex-1 flex flex-col">
+            <header className="px-6 text-center space-y-8 py-24 sm:py-32">
+              <div className="space-y-6">
+                {hasValidLogo && (
+                  <div className="flex justify-center">
+                    <div className="w-24 h-24 sm:w-32 sm:h-32 relative">
+                      <img src={logoUrl} className="w-full h-full object-cover rounded-[2.5rem] shadow-2xl border-4 border-background" alt="Logo Empresa" />
+                    </div>
                   </div>
+                )}
+                <div className="space-y-4">
+                  <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.05] max-w-5xl mx-auto">
+                    {heroTitle}
+                  </h1>
+                  {heroSubtitle && (
+                    <p className="text-muted-foreground text-lg sm:text-2xl max-w-3xl mx-auto font-medium leading-relaxed italic opacity-80">
+                      {heroSubtitle}
+                    </p>
+                  )}
                 </div>
-              )}
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-7xl font-black tracking-tighter text-foreground leading-[1.05] max-w-5xl mx-auto">
-                  {heroTitle}
-                </h1>
-                {heroSubtitle && (
-                  <p className="text-muted-foreground text-lg sm:text-2xl max-w-3xl mx-auto font-medium leading-relaxed italic opacity-80">
-                    {heroSubtitle}
-                  </p>
-                )}
               </div>
-            </div>
-          </header>
+            </header>
 
-          <div className="w-full">
-            {customSections.map((section: any) => (
-              <section 
-                key={section.id} 
-                className={cn(
-                  "py-24 px-6 text-center",
-                  section.variant === 'accent' ? "text-white" : (section.variant === 'dark' ? "bg-black text-white" : "bg-muted/5")
-                )}
-                style={{ backgroundColor: section.variant === 'accent' ? themeColor : undefined }}
-              >
-                <div className="max-w-4xl mx-auto space-y-8">
-                  <div className="space-y-4">
-                    <h2 className="text-3xl sm:text-5xl font-black tracking-tight">{section.title}</h2>
-                    {section.subtitle && <p className="text-xl font-bold opacity-80">{section.subtitle}</p>}
+            <div className="w-full">
+              {customSections.map((section: any) => (
+                <section 
+                  key={section.id} 
+                  className={cn(
+                    "py-24 px-6 text-center",
+                    section.variant === 'accent' ? "text-white" : (section.variant === 'dark' ? "bg-black text-white" : "bg-muted/5")
+                  )}
+                  style={{ backgroundColor: section.variant === 'accent' ? themeColor : undefined }}
+                >
+                  <div className="max-w-4xl mx-auto space-y-8">
+                    <div className="space-y-4">
+                      <h2 className="text-3xl sm:text-5xl font-black tracking-tight">{section.title}</h2>
+                      {section.subtitle && <p className="text-xl font-bold opacity-80">{section.subtitle}</p>}
+                    </div>
+                    <p className="text-base sm:text-xl leading-relaxed opacity-90 font-medium">{section.content}</p>
+                    {section.buttonText && (
+                      <div className="pt-8">
+                        <a href={section.buttonUrl || '#'} className="inline-block" target="_blank" rel="noopener noreferrer">
+                          <Button 
+                            size="lg" 
+                            className={cn(
+                              "h-16 px-10 rounded-2xl text-lg font-black gap-2 shadow-2xl transition-all hover:scale-105 active:scale-95",
+                              section.variant === 'accent' ? "bg-white text-black hover:bg-white/90" : ""
+                            )}
+                            style={{ backgroundColor: section.variant !== 'accent' ? themeColor : undefined }}
+                          >
+                            {section.buttonText} <ArrowRight className="w-5 h-5" />
+                          </Button>
+                        </a>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-base sm:text-xl leading-relaxed opacity-90 font-medium">{section.content}</p>
-                  {section.buttonText && (
-                    <div className="pt-8">
-                      <a href={section.buttonUrl || '#'} className="inline-block" target="_blank" rel="noopener noreferrer">
-                        <Button 
-                          size="lg" 
-                          className={cn(
-                            "h-16 px-10 rounded-2xl text-lg font-black gap-2 shadow-2xl transition-all hover:scale-105 active:scale-95",
-                            section.variant === 'accent' ? "bg-white text-black hover:bg-white/90" : ""
-                          )}
-                          style={{ backgroundColor: section.variant !== 'accent' ? themeColor : undefined }}
-                        >
-                          {section.buttonText} <ArrowRight className="w-5 h-5" />
-                        </Button>
-                      </a>
+                </section>
+              ))}
+            </div>
+
+            {testimonialsTitle && (
+              <div className="text-center py-20">
+                <h2 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
+                  {testimonialsTitle}
+                </h2>
+              </div>
+            )}
+
+            <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1600px] mx-auto">
+              {filteredTestimonials.length === 0 ? (
+                <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
+                  <MessageSquare className="w-12 h-12" />
+                  <p className="text-[9px] font-black uppercase">Aguardando depoimentos</p>
+                </div>
+              ) : (
+                <div className="w-full">
+                  {layout === 'mural' && (
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
+                      {visibleDisplayPool.map((t, i) => (
+                        <div key={`${t.id}-${muralIndex}-${i}`} className="break-inside-avoid mb-6">
+                          <TestimonialCard t={t} index={i} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {layout === 'grid' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:columns-4 gap-6">
+                      {visibleDisplayPool.map((t, i) => (
+                        <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} index={i} />
+                      ))}
+                    </div>
+                  )}
+                  {layout === 'carousel' && (
+                    <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-5xl mx-auto">
+                      <CarouselContent>
+                        {filteredTestimonials.map((t, i) => (
+                          <CarouselItem key={t.id} className="p-4 md:basis-1/2 lg:basis-1/3">
+                            <TestimonialCard t={t} index={i} />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                    </Carousel>
+                  )}
+                  {layout === 'popup' && (
+                    <div className="max-w-md mx-auto">
+                      <TestimonialCard t={filteredTestimonials[muralIndex % filteredTestimonials.length]} />
                     </div>
                   )}
                 </div>
-              </section>
-            ))}
-          </div>
-
-          {testimonialsTitle && (
-            <div className="text-center py-20">
-              <h2 className="text-3xl sm:text-4xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
-                {testimonialsTitle}
-              </h2>
-            </div>
-          )}
-
-          <main className="px-6 pb-20 space-y-12 flex-1 w-full max-w-[1600px] mx-auto">
-            {filteredTestimonials.length === 0 ? (
-              <div className="text-center py-20 opacity-20 flex flex-col items-center gap-4">
-                <MessageSquare className="w-12 h-12" />
-                <p className="text-[9px] font-black uppercase">Aguardando depoimentos</p>
-              </div>
-            ) : (
-              <div className="w-full">
-                {layout === 'mural' && (
-                  <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
-                    {visibleDisplayPool.map((t, i) => (
-                      <div key={`${t.id}-${muralIndex}-${i}`} className="break-inside-avoid mb-6">
-                        <TestimonialCard t={t} index={i} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:columns-4 gap-6">
-                    {visibleDisplayPool.map((t, i) => (
-                      <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} index={i} />
-                    ))}
-                  </div>
-                )}
-                {layout === 'carousel' && (
-                  <Carousel setApi={setApi} opts={{ loop: true }} className="w-full max-w-5xl mx-auto">
-                    <CarouselContent>
-                      {filteredTestimonials.map((t, i) => (
-                        <CarouselItem key={t.id} className="p-4 md:basis-1/2 lg:basis-1/3">
-                          <TestimonialCard t={t} index={i} />
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                  </Carousel>
-                )}
-                {layout === 'popup' && (
-                  <div className="max-w-md mx-auto">
-                    <TestimonialCard t={filteredTestimonials[muralIndex % filteredTestimonials.length]} />
-                  </div>
-                )}
-              </div>
-            )}
-          </main>
-
-          <footer className="mt-auto px-6 py-20 text-center space-y-12 border-t bg-muted/5">
-            {externalSiteUrl && (
-              <a 
-                href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-12 py-6 rounded-full text-white text-[14px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all" 
-                style={{ backgroundColor: themeColor }}
-              >
-                Visitar Site Oficial <Globe className="w-5 h-5" />
-              </a>
-            )}
-            <div className="flex flex-col items-center gap-2 opacity-30">
-              <p className="text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1">
-                <span>©</span> {footerText}
-              </p>
-              {showProovaBranding && (
-                <div className="flex items-center gap-1.5 mt-2 animate-in fade-in slide-in-from-bottom-2">
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em]">POWERED BY PROOVA</span>
-                </div>
               )}
-            </div>
-          </footer>
-        </div>
+            </main>
+
+            <footer className="mt-auto px-6 py-20 text-center space-y-12 border-t bg-muted/5">
+              {externalSiteUrl && (
+                <a 
+                  href={externalSiteUrl.startsWith('http') ? externalSiteUrl : `https://${externalSiteUrl}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-12 py-6 rounded-full text-white text-[14px] font-black shadow-2xl hover:scale-105 active:scale-95 transition-all" 
+                  style={{ backgroundColor: themeColor }}
+                >
+                  Visitar Site Oficial <Globe className="w-5 h-5" />
+                </a>
+              )}
+              <div className="flex flex-col items-center gap-2 opacity-30">
+                <p className="text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-1">
+                  <span>©</span> {footerText}
+                </p>
+                {showProovaBranding && (
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
+                    <span className="text-[8px] font-black uppercase tracking-[0.3em]">POWERED BY PROOVA</span>
+                  </div>
+                )}
+              </div>
+            </footer>
+          </div>
+        )}
       </div>
 
       {whatsappEnabled && whatsappNumber && (
