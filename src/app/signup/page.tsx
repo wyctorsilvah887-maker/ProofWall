@@ -122,40 +122,43 @@ export default function SignupPage() {
           <CardContent className="px-6 sm:px-10 pb-10">
             <form onSubmit={handleSignup} className="space-y-8">
               
-              {/* Business Type Toggle Button - Inspired by Cakto Theme Switch */}
+              {/* Business Type Toggle Button - Exactly like Cakto Theme Switch Style */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
                 <div 
                   onClick={() => setBusinessType(prev => prev === 'local' ? 'digital' : 'local')}
-                  className="relative flex bg-muted/50 p-1.5 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-16 items-center group overflow-hidden"
+                  className="relative flex bg-muted/50 p-1.5 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-16 items-center group overflow-hidden select-none"
                 >
-                  {/* Sliding background indicator (The "Knob") */}
+                  {/* Sliding background pill (The Active State) */}
                   <div 
                     className={cn(
-                      "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-background shadow-xl rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0",
-                      businessType === 'local' ? "left-1.5" : "left-[calc(50%+4.5px)]"
+                      "absolute top-1.5 bottom-1.5 w-[calc(50%-3px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
+                      businessType === 'local' ? "left-1.5" : "left-[calc(50%+1.5px)]"
                     )}
-                  />
-                  
-                  {/* Local Business Option */}
-                  <div className={cn(
-                    "relative z-10 flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
-                    businessType === 'local' ? "text-primary scale-100" : "text-muted-foreground opacity-40 scale-90"
-                  )}>
-                    <MapPin className={cn("w-4 h-4 transition-transform duration-500", businessType === 'local' ? "scale-110" : "")} /> 
-                    Negócio Local
+                  >
+                    <div className="absolute inset-0 bg-primary/[0.03] rounded-inherit" />
                   </div>
+                  
+                  {/* Labels Layer */}
+                  <div className="relative z-10 flex w-full h-full items-center">
+                    <div className={cn(
+                      "flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                      businessType === 'local' ? "text-primary scale-100" : "text-muted-foreground/40 scale-90"
+                    )}>
+                      <MapPin className={cn("w-4 h-4 transition-transform duration-500", businessType === 'local' ? "scale-110" : "")} /> 
+                      Negócio Local
+                    </div>
 
-                  {/* Digital/SaaS Option */}
-                  <div className={cn(
-                    "relative z-10 flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
-                    businessType === 'digital' ? "text-primary scale-100" : "text-muted-foreground opacity-40 scale-90"
-                  )}>
-                    <Globe className={cn("w-4 h-4 transition-transform duration-500", businessType === 'digital' ? "scale-110" : "")} /> 
-                    Digital / SaaS
+                    <div className={cn(
+                      "flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                      businessType === 'digital' ? "text-primary scale-100" : "text-muted-foreground/40 scale-90"
+                    )}>
+                      <Globe className={cn("w-4 h-4 transition-transform duration-500", businessType === 'digital' ? "scale-110" : "")} /> 
+                      Digital / SaaS
+                    </div>
                   </div>
                 </div>
-                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Toque para alternar o perfil</p>
+                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Clique para alternar o perfil</p>
               </div>
 
               <div className="space-y-4">
