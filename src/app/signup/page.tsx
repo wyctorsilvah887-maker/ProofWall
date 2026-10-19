@@ -132,7 +132,7 @@ export default function SignupPage() {
                   {/* Sliding background pill (The Active State) */}
                   <div 
                     className={cn(
-                      "absolute top-1.5 bottom-1.5 w-[calc(50%-3px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.1)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
+                      "absolute top-1.5 bottom-1.5 w-[calc(50%-3px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.15)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
                       businessType === 'local' ? "left-1.5" : "left-[calc(50%+1.5px)]"
                     )}
                   >
