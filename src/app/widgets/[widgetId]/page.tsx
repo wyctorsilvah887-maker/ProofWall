@@ -70,6 +70,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -718,7 +719,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             <SheetContent side="left" className="p-0 w-80 border-none">
               <SheetHeader className="sr-only">
                 <SheetTitle>Configurações da Página Pública</SheetTitle>
-                <DialogDescription>Ajuste o visual e as redes sociais da sua página.</DialogDescription>
+                <SheetDescription>Ajuste o visual e as redes sociais da sua página.</SheetDescription>
               </SheetHeader>
               <PublicPageSettings {...sidebarProps} />
             </SheetContent>
@@ -1070,6 +1071,10 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
       <Dialog open={!!tempImage} onOpenChange={(open) => !open && setTempImage(null)}>
         <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Recortar Imagem</DialogTitle>
+            <DialogDescription>Ajuste o enquadramento da sua imagem para o logotipo ou capa.</DialogDescription>
+          </DialogHeader>
           <div className="flex-1 relative bg-black">
             {tempImage && (
               <Cropper
