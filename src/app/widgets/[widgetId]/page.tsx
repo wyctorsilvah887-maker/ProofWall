@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -68,6 +67,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -642,7 +642,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     if (!widgetRef) return;
     setIsSaving(true);
     
-    // Limpeza de seções customizadas para evitar campos indefinidos
     const cleanedSections = customSections.map(s => ({
       id: s.id,
       title: s.title || '',
