@@ -143,10 +143,10 @@ export default function PricingPage() {
         features: [
           "Depoimentos ilimitados",
           "Todos os widgets liberados",
-          "Depoimentos em Vídeo (4K)",
+          "Depoimentos em Vídeo (4K) (Em breve)",
           "Branding 100% customizado",
           "Remoção da marca Proova",
-          "Acesso ao ADS",
+          "Acesso ao ADS (Em breve)",
           "Suporte VIP via WhatsApp",
         ],
         cta: status === 'enterprise' ? "Plano Atual" : "Seja Enterprise",
