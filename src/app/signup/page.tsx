@@ -102,38 +102,40 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-12 relative font-body text-foreground">
-      <Link href="/" className="fixed top-8 left-8 hidden sm:flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest">
-        <ArrowLeft className="w-4 h-4" /> Início
-      </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 px-4 py-8 md:py-12 relative font-body text-foreground overflow-y-auto">
+      <div className="fixed top-4 md:top-8 left-4 md:left-8 z-50">
+        <Link href="/" className="flex items-center gap-1.5 text-[10px] md:text-sm font-bold text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest bg-background/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-border/20">
+          <ArrowLeft className="w-3 h-3 md:w-4 md:h-4" /> Início
+        </Link>
+      </div>
 
-      <div className="w-full max-w-xl space-y-8">
-        <div className="flex flex-col items-center text-center space-y-2">
-          <h1 className="text-4xl font-black font-headline tracking-tighter">Crie sua Conta</h1>
-          <p className="text-muted-foreground text-lg font-medium">A primeira máquina de prova social inteligente.</p>
+      <div className="w-full max-w-xl space-y-6 md:space-y-8 mt-8 md:mt-0">
+        <div className="flex flex-col items-center text-center space-y-1.5 md:space-y-2">
+          <h1 className="text-3xl md:text-4xl font-black font-headline tracking-tighter">Crie sua Conta</h1>
+          <p className="text-muted-foreground text-sm md:text-lg font-medium">A primeira máquina de prova social inteligente.</p>
         </div>
 
         <Card className="border-none shadow-2xl overflow-hidden bg-card">
           <div className="h-2 bg-primary w-full" />
-          <CardHeader className="pt-8 text-center space-y-1">
-            <CardTitle className="text-2xl font-black font-headline">Configuração do Perfil</CardTitle>
-            <CardDescription>Defina o perfil da sua operação para personalizar seu painel.</CardDescription>
+          <CardHeader className="pt-6 md:pt-8 text-center space-y-1">
+            <CardTitle className="text-xl md:text-2xl font-black font-headline">Configuração do Perfil</CardTitle>
+            <CardDescription className="text-xs md:text-sm">Defina o perfil da sua operação para personalizar seu painel.</CardDescription>
           </CardHeader>
-          <CardContent className="px-6 sm:px-10 pb-10">
-            <form onSubmit={handleSignup} className="space-y-8">
+          <CardContent className="px-5 sm:px-10 pb-8 md:pb-10">
+            <form onSubmit={handleSignup} className="space-y-6 md:space-y-8">
               
               {/* Business Type Toggle Button - Exactly like Cakto Theme Switch Style */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
+                <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
                 <div 
                   onClick={() => setBusinessType(prev => prev === 'local' ? 'digital' : 'local')}
-                  className="relative flex bg-muted/50 p-1.5 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-16 items-center group overflow-hidden select-none"
+                  className="relative flex bg-muted/50 p-1 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-14 md:h-16 items-center group overflow-hidden select-none"
                 >
                   {/* Sliding background pill (The Active State) */}
                   <div 
                     className={cn(
-                      "absolute top-1.5 bottom-1.5 w-[calc(50%-3px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.15)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
-                      businessType === 'local' ? "left-1.5" : "left-[calc(50%+1.5px)]"
+                      "absolute top-1 bottom-1 w-[calc(50%-2px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.15)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
+                      businessType === 'local' ? "left-1" : "left-[calc(50%+1px)]"
                     )}
                   >
                     <div className="absolute inset-0 bg-primary/[0.03] rounded-inherit" />
@@ -142,80 +144,80 @@ export default function SignupPage() {
                   {/* Labels Layer */}
                   <div className="relative z-10 flex w-full h-full items-center">
                     <div className={cn(
-                      "flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                      "flex-1 flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.05em] md:tracking-[0.1em] transition-all duration-500",
                       businessType === 'local' ? "text-primary scale-100" : "text-muted-foreground/40 scale-90"
                     )}>
-                      <MapPin className={cn("w-4 h-4 transition-transform duration-500", businessType === 'local' ? "scale-110" : "")} /> 
-                      Negócio Local
+                      <MapPin className={cn("w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-500", businessType === 'local' ? "scale-110" : "")} /> 
+                      <span className="whitespace-nowrap">Negócio Local</span>
                     </div>
 
                     <div className={cn(
-                      "flex-1 flex items-center justify-center gap-2.5 text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500",
+                      "flex-1 flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.05em] md:tracking-[0.1em] transition-all duration-500",
                       businessType === 'digital' ? "text-primary scale-100" : "text-muted-foreground/40 scale-90"
                     )}>
-                      <Globe className={cn("w-4 h-4 transition-transform duration-500", businessType === 'digital' ? "scale-110" : "")} /> 
-                      Digital / SaaS
+                      <Globe className={cn("w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-500", businessType === 'digital' ? "scale-110" : "")} /> 
+                      <span className="whitespace-nowrap">Digital / SaaS</span>
                     </div>
                   </div>
                 </div>
-                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Clique para alternar o perfil</p>
+                <p className="text-[8px] md:text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Clique para alternar o perfil</p>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seu Nome/CEO/Responsável</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Seu Nome/CEO/Responsável</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground/50" />
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/50" />
                       <Input
                         placeholder="Nome do Responsável"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium"
+                        className="h-10 md:h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium text-sm"
                         required
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nome da Empresa</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Nome da Empresa</label>
                     <div className="relative">
-                      <Building2 className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground/50" />
+                      <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/50" />
                       <Input
                         placeholder="Ex: Tech Soluções"
                         value={company}
                         onChange={(e) => setCompany(e.target.value)}
-                        className="h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium"
+                        className="h-10 md:h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium text-sm"
                         required
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">E-mail de Acesso</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">E-mail de Acesso</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground/50" />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/50" />
                     <Input
                       type="email"
                       placeholder="seu@melhoremail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium"
+                      className="h-10 md:h-11 pl-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium text-sm"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Senha Segura</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Senha Segura</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground/50" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/50" />
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Mínimo 6 caracteres"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-11 pl-10 pr-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium"
+                      className="h-10 md:h-11 pl-10 pr-10 bg-muted/20 border-transparent focus:ring-primary/20 font-medium text-sm"
                       required
                     />
                     <button
@@ -223,7 +225,7 @@ export default function SignupPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-3 text-muted-foreground hover:text-primary transition-colors"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                 </div>
@@ -231,7 +233,7 @@ export default function SignupPage() {
 
               <Button 
                 type="submit" 
-                className="w-full h-14 text-lg font-black shadow-xl hover:scale-[1.02] active:scale-95 transition-all rounded-2xl gap-2"
+                className="w-full h-12 md:h-14 text-base md:text-lg font-black shadow-xl hover:scale-[1.02] active:scale-95 transition-all rounded-xl md:rounded-2xl gap-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -242,7 +244,7 @@ export default function SignupPage() {
               </Button>
 
               <div className="text-center pt-4 border-t">
-                <p className="text-sm text-muted-foreground font-medium">
+                <p className="text-xs md:text-sm text-muted-foreground font-medium">
                   Já possui uma conta?{' '}
                   <Link href="/login" className="text-primary font-black hover:underline tracking-tight">
                     Fazer Login
@@ -253,8 +255,8 @@ export default function SignupPage() {
           </CardContent>
         </Card>
         
-        <div className="flex flex-col items-center gap-4 opacity-40">
-           <p className="text-[10px] text-center uppercase tracking-[0.3em] font-black">
+        <div className="flex flex-col items-center gap-4 opacity-40 pb-8 md:pb-0">
+           <p className="text-[8px] md:text-[10px] text-center uppercase tracking-[0.2em] md:tracking-[0.3em] font-black">
              🔒 Conexão Segura Synapse Group
            </p>
         </div>
