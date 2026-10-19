@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -70,7 +71,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -323,7 +323,7 @@ const PublicPageSettings = ({
                                 </div>
                                 <div className="space-y-1.5">
                                   <Label className="text-[9px] font-bold uppercase opacity-50">Estilo do Bloco</Label>
-                                  <Select value={section.variant} onValueChange={(val) => updateSection(section.id, 'variant', val)}>
+                                  <Select value={section.variant} onValueChange={(val) => updateSection(section.id, 'variant', val as any)}>
                                     <SelectTrigger className="h-8 text-[11px]">
                                       <SelectValue />
                                     </SelectTrigger>
@@ -559,7 +559,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (layout === 'mural' && selectedIds.length > 0) {
+    if ((layout === 'mural' || layout === 'grid') && selectedIds.length > 5) {
       const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % selectedIds.length), 6000);
       return () => clearInterval(interval);
     }
@@ -579,42 +579,34 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     });
   };
 
-  const takenTestimonialIds = useMemo(() => {
-    if (!allWidgets) return new Set<string>();
-    const set = new Set<string>();
-    allWidgets.forEach((w: any) => {
-      if (w.id !== widgetId && w.selectedTestimonialIds) {
-        w.selectedTestimonialIds.forEach((id: string) => set.add(id));
-      }
-    });
-    return set;
-  }, [allWidgets, widgetId]);
-
-  const selectableTestimonials = useMemo(() => {
-    if (!approvedTestimonials) return [];
-    return approvedTestimonials.filter((t: any) => 
-      !takenTestimonialIds.has(t.id) || selectedIds.includes(t.id)
-    );
-  }, [approvedTestimonials, takenTestimonialIds, selectedIds]);
-
-  const displayedTestimonialsSelection = useMemo(() => {
-    return showAll ? selectableTestimonials : selectableTestimonials.slice(0, 10);
-  }, [selectableTestimonials, showAll]);
-
   const currentTestimonials = useMemo(() => {
     return approvedTestimonials?.filter(t => selectedIds.includes(t.id)) || [];
   }, [approvedTestimonials, selectedIds]);
 
   const visibleTestimonials = useMemo(() => {
-    if (layout !== 'mural' || currentTestimonials.length === 0) return currentTestimonials.slice(0, 8);
-    const slice = [];
-    const count = Math.min(8, currentTestimonials.length);
-    for (let i = 0; i < count; i++) {
-      const idx = (muralIndex + i) % currentTestimonials.length;
-      slice.push(currentTestimonials[idx]);
+    if (currentTestimonials.length === 0) return [];
+    
+    if (layout === 'mural' || layout === 'grid') {
+      const slice = [];
+      const count = Math.min(5, currentTestimonials.length);
+      for (let i = 0; i < count; i++) {
+        const idx = (muralIndex + i) % currentTestimonials.length;
+        slice.push(currentTestimonials[idx]);
+      }
+      return slice;
     }
-    return slice;
+    
+    return currentTestimonials.slice(0, 5);
   }, [currentTestimonials, muralIndex, layout]);
+
+  const selectableTestimonials = useMemo(() => {
+    if (!approvedTestimonials) return [];
+    return approvedTestimonials;
+  }, [approvedTestimonials]);
+
+  const displayedTestimonialsSelection = useMemo(() => {
+    return showAll ? selectableTestimonials : selectableTestimonials.slice(0, 10);
+  }, [selectableTestimonials, showAll]);
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'cover') => {
     const file = e.target.files?.[0];
@@ -649,27 +641,43 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const handleSave = async () => {
     if (!widgetRef) return;
     setIsSaving(true);
+    
+    // Limpeza de seções customizadas para evitar campos indefinidos
+    const cleanedSections = customSections.map(s => ({
+      id: s.id,
+      title: s.title || '',
+      subtitle: s.subtitle || '',
+      content: s.content || '',
+      buttonText: s.buttonText || '',
+      buttonUrl: s.buttonUrl || '',
+      variant: s.variant || 'light'
+    }));
+
     updateDoc(widgetRef, {
-      name: widgetName.trim(),
-      selectedTestimonialIds: selectedIds,
-      themeColor,
-      secondaryColor,
-      layout,
-      logoUrl,
-      whatsappEnabled,
-      whatsappNumber,
-      googleMapsUrl,
-      externalSiteUrl,
-      heroTitle,
-      heroSubtitle,
-      testimonialsTitle,
-      footerText,
-      showLogo,
-      customSections
+      name: (widgetName || '').trim(),
+      selectedTestimonialIds: selectedIds || [],
+      themeColor: themeColor || '#f97316',
+      secondaryColor: secondaryColor || '#ffffff',
+      layout: layout || 'grid',
+      logoUrl: logoUrl || '',
+      whatsappEnabled: !!whatsappEnabled,
+      whatsappNumber: whatsappNumber || '',
+      googleMapsUrl: googleMapsUrl || '',
+      externalSiteUrl: externalSiteUrl || '',
+      heroTitle: heroTitle || '',
+      heroSubtitle: heroSubtitle || '',
+      testimonialsTitle: testimonialsTitle || '',
+      footerText: footerText || '',
+      showLogo: showLogo !== undefined ? showLogo : true,
+      customSections: cleanedSections
     }).then(() => {
       setIsSaving(false);
-      toast({ title: "Alterações Salvas", description: "Sua página pública foi atualizada." });
-    }).catch(() => setIsSaving(false));
+      toast({ title: "Alterações Salvas", description: "Sua página pública foi atualizada com sucesso." });
+    }).catch((err) => {
+      console.error("Save Error:", err);
+      setIsSaving(false);
+      toast({ variant: "destructive", title: "Erro ao Salvar", description: "Verifique sua conexão e tente novamente." });
+    });
   };
 
   const toggleSelection = (id: string) => {
@@ -704,7 +712,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
     onFileSelect, isUploading, handleSave, isSaving, isEnterprise, isGoldPlan
   };
 
-  const membershipLabel = membershipStatus === 'enterprise' ? 'Membro Enterprise' : (membershipStatus === 'gold' ? 'Membro Gold' : (membershipStatus === 'trial' ? 'Período Trial' : 'Plano Base'));
+  const membershipLabel = isEnterprise ? 'Membro Enterprise' : (isGold ? 'Membro Gold' : (isTrial ? 'Período Trial' : 'Plano Base'));
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
@@ -739,7 +747,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   </span>
                   <span className={cn(
                     "text-[8px] uppercase tracking-widest font-black leading-tight",
-                    membershipStatus === 'enterprise' ? "text-primary animate-pulse" : "text-muted-foreground"
+                    isEnterprise ? "text-primary animate-pulse" : "text-muted-foreground"
                   )}>
                     {membershipLabel}
                   </span>
@@ -850,7 +858,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
             <div className="flex items-center justify-between">
               <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <Eye className="w-4 h-4" /> Preview Dinâmico
+                <Eye className="w-4 h-4" /> Preview Dinâmico (Máx. 5 Visíveis)
               </h2>
               <Button variant="link" size="sm" onClick={() => setIsTutorialOpen(true)} className="text-[10px] font-bold gap-1 text-primary p-0 h-auto">
                 <Info className="w-3 h-3" /> Ver Tutorial
@@ -858,7 +866,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
             </div>
 
             <div className="relative border-none shadow-2xl bg-background rounded-[2.5rem] min-h-[600px] flex flex-col overflow-hidden ring-1 ring-primary/5">
-              {/* HEADER PREVIEW */}
               <div className={cn("p-8 sm:p-12 space-y-12 flex-1 flex flex-col", "pt-24 pb-20")}>
                 <div className="text-center space-y-6">
                   {hasValidLogo && (
@@ -878,7 +885,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   </div>
                 </div>
 
-                {/* CUSTOM SECTIONS PREVIEW */}
                 {customSections.map((section: CustomSection) => (
                   <div 
                     key={section.id} 
@@ -913,7 +919,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                   </div>
                 ))}
 
-                {/* TESTIMONIALS SECTION PREVIEW */}
                 {testimonialsTitle && (
                   <div className="pt-12 pb-4 text-center">
                     <h2 className="text-2xl font-black font-headline uppercase tracking-widest" style={{ color: themeColor }}>
@@ -968,7 +973,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                         <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({selectableTestimonials.length})
                       </h2>
                       <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isEnterprise ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
-                        {selectedIds.length} / {isEnterprise ? '∞' : SELECTION_LIMIT} ATIVOS
+                        {selectedIds.length} / {isEnterprise ? '∞' : SELECTION_LIMIT} SELECIONADOS
                       </Badge>
                     </div>
                   </AccordionTrigger>
@@ -1027,7 +1032,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
         </div>
       </main>
 
-      {/* Tutorial Dialog */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-3xl sm:max-w-md">
           <DialogHeader>
@@ -1052,7 +1056,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
               <div>
                 <p className="text-sm font-bold">Curadoria de Conteúdo</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Personalize o <strong>Título (Hero)</strong> e adicione <strong>Seções Dinâmicas</strong> (se for Enterprise). Selecione abaixo os depoimentos que deseja destacar.</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">Personalize o <strong>Título (Hero)</strong> e selecione abaixo os depoimentos que deseja destacar (máx. 5 visíveis rotativos).</p>
               </div>
             </div>
             <div className="flex gap-4 group">
@@ -1071,9 +1075,9 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
       <Dialog open={!!tempImage} onOpenChange={(open) => !open && setTempImage(null)}>
         <DialogContent className="sm:max-w-3xl h-[80vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none">
-          <DialogHeader className="sr-only">
+          <DialogHeader className="p-6 bg-background border-b sr-only">
             <DialogTitle>Recortar Imagem</DialogTitle>
-            <DialogDescription>Ajuste o enquadramento da sua imagem para o logotipo ou capa.</DialogDescription>
+            <DialogDescription>Ajuste o enquadramento da sua imagem.</DialogDescription>
           </DialogHeader>
           <div className="flex-1 relative bg-black">
             {tempImage && (

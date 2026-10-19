@@ -108,9 +108,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const footerText = widgetData?.footerText || `${new Date().getFullYear()} ${companyData?.companyName || ''}`;
   const showProovaBranding = widgetData?.showLogo !== false;
 
+  // Efeito de rotação para layouts estáticos (Mural e Grade)
   useEffect(() => {
-    if (layout === 'mural' && filteredTestimonials.length > 0) {
-      const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 6000);
+    if ((layout === 'mural' || layout === 'grid') && filteredTestimonials.length > 5) {
+      const interval = setInterval(() => setMuralIndex(prev => (prev + 1) % filteredTestimonials.length), 7000);
       return () => clearInterval(interval);
     }
   }, [layout, filteredTestimonials]);
@@ -121,15 +122,23 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return () => clearInterval(interval);
   }, [api, layout]);
 
-  const visibleMuralTestimonials = useMemo(() => {
-    if (layout !== 'mural' || filteredTestimonials.length === 0) return [];
-    const slice = [];
-    const count = Math.min(12, filteredTestimonials.length);
-    for (let i = 0; i < count; i++) {
-      const idx = (muralIndex + i) % filteredTestimonials.length;
-      slice.push(filteredTestimonials[idx]);
+  // Pool de exibição limitado a 5 itens (Janela Deslizante)
+  const visibleDisplayPool = useMemo(() => {
+    if (filteredTestimonials.length === 0) return [];
+    
+    // Para Mural e Grade, mostramos apenas 5 que rotacionam
+    if (layout === 'mural' || layout === 'grid') {
+      const slice = [];
+      const count = Math.min(5, filteredTestimonials.length);
+      for (let i = 0; i < count; i++) {
+        const idx = (muralIndex + i) % filteredTestimonials.length;
+        slice.push(filteredTestimonials[idx]);
+      }
+      return slice;
     }
-    return slice;
+    
+    // Carousel e Popup gerenciam sua própria visibilidade/pool
+    return filteredTestimonials;
   }, [filteredTestimonials, muralIndex, layout]);
 
   if (isLoading) {
@@ -219,7 +228,6 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
             </div>
           </header>
 
-          {/* CUSTOM SECTIONS RENDERER */}
           <div className="w-full">
             {customSections.map((section: any) => (
               <section 
@@ -275,7 +283,7 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
               <div className="w-full">
                 {layout === 'mural' && (
                   <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
-                    {visibleMuralTestimonials.map((t, i) => (
+                    {visibleDisplayPool.map((t, i) => (
                       <div key={`${t.id}-${muralIndex}-${i}`} className="break-inside-avoid mb-6">
                         <TestimonialCard t={t} index={i} />
                       </div>
@@ -283,8 +291,10 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
                   </div>
                 )}
                 {layout === 'grid' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredTestimonials.map((t, i) => <TestimonialCard key={t.id} t={t} index={i} />)}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:columns-4 gap-6">
+                    {visibleDisplayPool.map((t, i) => (
+                      <TestimonialCard key={`${t.id}-${muralIndex}-${i}`} t={t} index={i} />
+                    ))}
                   </div>
                 )}
                 {layout === 'carousel' && (
