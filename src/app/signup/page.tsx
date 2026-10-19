@@ -25,7 +25,7 @@ export default function SignupPage() {
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [businessType, setBusinessType] = useState<'local' | 'digital' | null>('local');
+  const [businessType, setBusinessType] = useState<'local' | 'digital'>('local');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,15 +38,6 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!businessType) {
-      toast({
-        variant: "destructive",
-        title: "Perfil Necessário",
-        description: "Selecione se seu negócio é Local ou Digital para continuar.",
-      });
-      return;
-    }
-
     if (!name.trim() || !company.trim() || !email.trim() || !password.trim() || !db) return;
 
     setIsSubmitting(true);
@@ -126,40 +117,43 @@ export default function SignupPage() {
           <div className="h-2 bg-primary w-full" />
           <CardHeader className="pt-8 text-center space-y-1">
             <CardTitle className="text-2xl font-black font-headline">Configuração do Perfil</CardTitle>
-            <CardDescription>Escolha o tipo de negócio para otimizarmos seu painel.</CardDescription>
+            <CardDescription>Defina o perfil da sua operação para personalizar seu painel.</CardDescription>
           </CardHeader>
           <CardContent className="px-6 sm:px-10 pb-10">
             <form onSubmit={handleSignup} className="space-y-8">
               
-              {/* Business Type Selector (Segmented Control) */}
+              {/* Business Type Toggle Button */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
-                <div className="flex bg-muted/50 p-1.5 rounded-[1.25rem] border border-border/50 shadow-inner">
-                  <button
-                    type="button"
-                    onClick={() => setBusinessType('local')}
+                <div 
+                  onClick={() => setBusinessType(prev => prev === 'local' ? 'digital' : 'local')}
+                  className="relative flex bg-muted/50 p-1 rounded-[1.25rem] border border-border/50 shadow-inner cursor-pointer h-14 items-center group overflow-hidden"
+                >
+                  {/* Sliding background indicator */}
+                  <div 
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all",
-                      businessType === 'local' 
-                        ? "bg-background shadow-lg text-primary scale-[1.02]" 
-                        : "text-muted-foreground hover:text-foreground opacity-60"
+                      "absolute top-1 bottom-1 w-[calc(50%-4px)] bg-background shadow-lg rounded-[1rem] transition-all duration-300 ease-in-out z-0",
+                      businessType === 'local' ? "left-1" : "left-[calc(50%+3px)]"
                     )}
-                  >
+                  />
+                  
+                  {/* Local Business label */}
+                  <div className={cn(
+                    "relative z-10 flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.1em] transition-colors duration-300",
+                    businessType === 'local' ? "text-primary" : "text-muted-foreground opacity-60"
+                  )}>
                     <MapPin className="w-3.5 h-3.5" /> Negócio Local
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBusinessType('digital')}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all",
-                      businessType === 'digital' 
-                        ? "bg-background shadow-lg text-primary scale-[1.02]" 
-                        : "text-muted-foreground hover:text-foreground opacity-60"
-                    )}
-                  >
+                  </div>
+
+                  {/* Digital/SaaS label */}
+                  <div className={cn(
+                    "relative z-10 flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.1em] transition-colors duration-300",
+                    businessType === 'digital' ? "text-primary" : "text-muted-foreground opacity-60"
+                  )}>
                     <Globe className="w-3.5 h-3.5" /> Digital / SaaS
-                  </button>
+                  </div>
                 </div>
+                <p className="text-[9px] text-center text-muted-foreground uppercase tracking-widest font-medium">Clique no botão para alternar</p>
               </div>
 
               <div className="space-y-4">
