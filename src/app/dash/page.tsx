@@ -102,7 +102,7 @@ export default function DashPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
-  // Fetch Announcements (Usando nomes em inglês conforme regras e Admin)
+  // Fetch Announcements
   const announcementsQuery = useMemo(() => {
     if (!db) return null;
     return query(
@@ -116,7 +116,6 @@ export default function DashPage() {
   const { data: activeAnnouncements, error: announcementsError, loading: announcementsLoading } = useCollection(announcementsQuery);
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
 
-  // Debugging announcements
   useEffect(() => {
     if (activeAnnouncements) {
       console.log("📢 Anúncios carregados no Dash:", activeAnnouncements.length);
@@ -414,7 +413,7 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
-      {/* GLOBAL ANNOUNCEMENT BANNER - MARQUEE LOOP */}
+      {/* GLOBAL ANNOUNCEMENT BANNER */}
       {currentAnnouncement && !isAnnouncementDismissed && (
         <div className={cn(
           "w-full py-3 flex items-center relative overflow-hidden transition-all duration-500 z-[100] border-b border-white/10",
@@ -423,9 +422,7 @@ export default function DashPage() {
           currentAnnouncement.type === 'success' && "bg-green-600 text-white",
           currentAnnouncement.type === 'destructive' && "bg-red-600 text-white"
         )}>
-          {/* Animated Background Pulse */}
           <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
-          
           <div className="flex-1 overflow-hidden flex items-center relative z-10">
             <div className="flex animate-marquee whitespace-nowrap gap-16 items-center min-w-full">
               {[...Array(8)].map((_, i) => (
@@ -443,7 +440,6 @@ export default function DashPage() {
               ))}
             </div>
           </div>
-          
           <button 
             onClick={() => setIsAnnouncementDismissed(true)}
             className="p-2.5 mr-2 rounded-full hover:bg-black/15 transition-colors shrink-0 z-20 relative bg-inherit backdrop-blur-md border border-white/10 shadow-sm"
@@ -453,10 +449,10 @@ export default function DashPage() {
         </div>
       )}
 
-      <header className="bg-background border-b h-20 md:h-32 flex items-center px-1 md:px-2 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
-        <div className="flex items-center gap-2">
+      <header className="bg-background border-b h-20 md:h-32 flex items-center px-0 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center">
           <Link href="/dash" className="flex items-center group">
-            <div className="relative w-[300px] h-[100px] md:w-[480px] md:h-[150px] transition-transform group-hover:scale-105 -ml-4 md:-ml-8">
+            <div className="relative w-[300px] h-[100px] md:w-[480px] md:h-[150px] transition-transform group-hover:scale-105 -ml-8 md:-ml-12">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
