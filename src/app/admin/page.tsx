@@ -393,7 +393,7 @@ export default function AdminPage() {
           <Button 
             variant="outline" 
             className="gap-2 border-primary/20 text-primary hover:bg-primary/5 h-12 rounded-xl font-bold transition-all shadow-sm"
-            onClick={() => toast({ title: "Administração Avançada", description: "Configurações de infraestrutura em modo leitura." })}
+            onClick={() => router.push('/admin/advanced')}
           >
             <Settings className="w-4 h-4" /> Administração Avançada
           </Button>
