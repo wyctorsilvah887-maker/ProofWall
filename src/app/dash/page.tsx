@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -106,12 +105,24 @@ export default function DashPage() {
   // Fetch Announcements
   const announcementsQuery = useMemo(() => {
     if (!db) return null;
-    return query(collection(db, 'announcements'), where('isActive', '==', true), orderBy('createdAt', 'desc'), limit(1));
+    return query(
+      collection(db, 'announcements'), 
+      where('isActive', '==', true), 
+      orderBy('createdAt', 'desc'), 
+      limit(1)
+    );
   }, [db]);
   
   const { data: activeAnnouncements, error: announcementsError } = useCollection(announcementsQuery);
-  const currentAnnouncement = announcementsError ? null : activeAnnouncements?.[0];
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
+
+  const currentAnnouncement = useMemo(() => {
+    if (announcementsError) {
+      console.warn("Aviso: Falha ao carregar anúncios (possível índice ausente ou erro de permissão).");
+      return null;
+    }
+    return activeAnnouncements && activeAnnouncements.length > 0 ? activeAnnouncements[0] : null;
+  }, [activeAnnouncements, announcementsError]);
 
   const isProPlan = useMemo(() => {
     const status = userData?.membershipStatus;
@@ -399,7 +410,7 @@ export default function DashPage() {
       {/* GLOBAL ANNOUNCEMENT BANNER - MARQUEE LOOP */}
       {currentAnnouncement && !isAnnouncementDismissed && (
         <div className={cn(
-          "w-full py-2.5 flex items-center relative overflow-hidden transition-all duration-500 z-[100]",
+          "w-full py-3 flex items-center relative overflow-hidden transition-all duration-500 z-[100] border-b border-white/10",
           currentAnnouncement.type === 'info' && "bg-blue-600 text-white",
           currentAnnouncement.type === 'warning' && "bg-orange-500 text-white",
           currentAnnouncement.type === 'success' && "bg-green-600 text-white",
@@ -409,16 +420,15 @@ export default function DashPage() {
           <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
           
           <div className="flex-1 overflow-hidden flex items-center relative z-10">
-            <div className="flex animate-marquee whitespace-nowrap gap-12 items-center min-w-full">
-              {/* Iterating multiple times to fill screen and loop seamlessly */}
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 px-2">
-                  <Megaphone className="w-3.5 h-3.5" />
+            <div className="flex animate-marquee whitespace-nowrap gap-16 items-center min-w-full">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-4 shrink-0">
+                  <Megaphone className="w-4 h-4" />
                   <div className="flex items-center gap-2">
-                    <span className="font-black uppercase tracking-widest text-[10px]">
+                    <span className="font-black uppercase tracking-widest text-[11px]">
                       {currentAnnouncement.title}:
                     </span>
-                    <p className="text-[10px] md:text-xs font-bold opacity-95">
+                    <p className="text-[11px] md:text-sm font-bold opacity-95">
                       {currentAnnouncement.message}
                     </p>
                   </div>
@@ -429,24 +439,24 @@ export default function DashPage() {
           
           <button 
             onClick={() => setIsAnnouncementDismissed(true)}
-            className="p-2 mr-2 rounded-full hover:bg-black/10 transition-colors shrink-0 z-20 relative bg-inherit backdrop-blur-sm"
+            className="p-2.5 mr-2 rounded-full hover:bg-black/15 transition-colors shrink-0 z-20 relative bg-inherit backdrop-blur-md border border-white/10 shadow-sm"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      <header className="bg-background border-b h-20 md:h-28 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
-        <div className="flex items-center gap-3 md:gap-4">
-          <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[240px] h-[80px] md:w-[360px] md:h-[110px] transition-transform group-hover:scale-105">
+      <header className="bg-background border-b h-20 md:h-32 flex items-center px-1 md:px-2 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center gap-2">
+          <Link href="/dash" className="flex items-center group">
+            <div className="relative w-[300px] h-[100px] md:w-[480px] md:h-[150px] transition-transform group-hover:scale-105 -ml-4 md:-ml-8">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
           </Link>
         </div>
 
-        <div className="ml-auto flex items-center gap-2 md:gap-4">
+        <div className="ml-auto flex items-center gap-2 md:gap-4 pr-4 md:pr-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -714,7 +724,7 @@ export default function DashPage() {
       </main>
 
       <footer className="py-8 md:py-16 border-t flex flex-col items-center gap-8 mt-auto">
-        <div className="flex items-center gap-2 relative w-[210px] h-[70px] md:w-[320px] md:h-[100px]">
+        <div className="flex items-center gap-2 relative w-[280px] h-[90px] md:w-[420px] md:h-[130px] -mb-4">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>

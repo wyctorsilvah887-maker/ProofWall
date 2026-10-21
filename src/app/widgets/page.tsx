@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -199,16 +198,16 @@ export default function WidgetsPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
-      <header className="bg-background border-b h-20 md:h-28 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
-        <div className="flex items-center gap-3 md:gap-4">
-          <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[240px] h-[80px] md:w-[360px] md:h-[110px] transition-transform group-hover:scale-105">
+      <header className="bg-background border-b h-20 md:h-32 flex items-center px-1 md:px-2 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center gap-2">
+          <Link href="/dash" className="flex items-center group">
+            <div className="relative w-[300px] h-[100px] md:w-[480px] md:h-[150px] transition-transform group-hover:scale-105 -ml-4 md:-ml-8">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
           </Link>
         </div>
-        <div className="ml-auto flex items-center gap-2 md:gap-4">
+        <div className="ml-auto flex items-center gap-2 md:gap-4 pr-4 md:pr-8">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
@@ -400,7 +399,7 @@ export default function WidgetsPage() {
       </main>
 
       <footer className="py-12 border-t mt-auto flex flex-col items-center gap-8 bg-background/50">
-        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
+        <div className="flex items-center gap-2 relative w-[240px] h-[80px] md:w-[360px] md:h-[110px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>

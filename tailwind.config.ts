@@ -76,7 +76,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'ripple': 'ripple 2s cubic-bezier(0, 0, 0.2, 1) infinite',
-        'marquee': 'marquee 30s linear infinite',
+        'marquee': 'marquee 40s linear infinite',
       },
     },
   },
