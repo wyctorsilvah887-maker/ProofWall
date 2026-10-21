@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { collection, query, doc, setDoc, serverTimestamp, deleteDoc, addDoc, orderBy } from 'firebase/firestore';
+import { collection, query, doc, setDoc, serverTimestamp, deleteDoc, addDoc, orderBy, updateDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { useTheme } from 'next-themes';
@@ -79,6 +79,21 @@ export default function AdvancedAdminPage() {
       toast({ title: "Aviso Removido" });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro ao remover" });
+    }
+  };
+
+  const handleToggleAnnouncement = async (id: string, currentStatus: boolean) => {
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, 'announcements', id), {
+        isActive: !currentStatus,
+      });
+      toast({ 
+        title: !currentStatus ? "Aviso Ativado" : "Aviso Desativado",
+        description: !currentStatus ? "O comunicado voltará a ser exibido no Dashboard." : "O comunicado foi ocultado."
+      });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erro ao atualizar", description: error.message });
     }
   };
 
@@ -252,14 +267,24 @@ export default function AdvancedAdminPage() {
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">{ann.message}</p>
                       </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-destructive hover:bg-destructive/10 rounded-xl h-8 w-8 shrink-0"
-                        onClick={() => handleDeleteAnnouncement(ann.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-[8px] font-black uppercase opacity-40">Status</span>
+                          <Switch 
+                            checked={ann.isActive} 
+                            onCheckedChange={() => handleToggleAnnouncement(ann.id, ann.isActive)}
+                            className="scale-90 data-[state=checked]:bg-primary"
+                          />
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-destructive hover:bg-destructive/10 rounded-xl h-8 w-8"
+                          onClick={() => handleDeleteAnnouncement(ann.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))
