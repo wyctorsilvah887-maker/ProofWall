@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { 
   Shield, LogOut, ArrowLeft, Loader2, Megaphone, Plus, Trash2, 
-  CheckCircle2, AlertCircle, Info, Bell, Save
+  CheckCircle2, AlertCircle, Info, Bell, Save, ChevronDown
 } from 'lucide-react';
 import { useAuth, useFirestore, useUser, useCollection, useDoc } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -109,7 +109,7 @@ export default function AdvancedAdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground flex flex-col">
-      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-8 sticky top-0 z-10 shadow-sm">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/admin">
             <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
@@ -136,7 +136,7 @@ export default function AdvancedAdminPage() {
 
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-12">
           <div className="lg:col-span-5 space-y-6">
-            <Card className="border-none shadow-xl rounded-2xl overflow-hidden">
+            <Card className="border-none shadow-xl rounded-2xl overflow-hidden bg-card">
               <div className="h-2 bg-primary w-full" />
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -145,7 +145,7 @@ export default function AdvancedAdminPage() {
                 <CardDescription className="text-xs">O aviso aparecerá no topo do Dashboard dos usuários.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleCreateAnnouncement} className="space-y-4">
+                <form onSubmit={handleCreateAnnouncement} className="space-y-6">
                   <div className="space-y-2">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Título do Aviso</Label>
                     <Input 
@@ -153,7 +153,7 @@ export default function AdvancedAdminPage() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       required
-                      className="h-11"
+                      className="h-11 bg-background"
                     />
                   </div>
                   
@@ -164,18 +164,18 @@ export default function AdvancedAdminPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       required
-                      className="min-h-[100px] resize-none"
+                      className="min-h-[100px] resize-none bg-background"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo / Estilo</Label>
                       <Select value={type} onValueChange={setType}>
-                        <SelectTrigger className="h-11">
+                        <SelectTrigger className="h-11 bg-background">
                           <SelectValue placeholder="Selecione o tipo" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent position="popper" sideOffset={4} className="z-[110]">
                           <SelectItem value="info">Informativo (Azul)</SelectItem>
                           <SelectItem value="warning">Alerta (Laranja)</SelectItem>
                           <SelectItem value="success">Sucesso (Verde)</SelectItem>
@@ -183,15 +183,15 @@ export default function AdvancedAdminPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2 flex flex-col justify-end">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between p-3 border rounded-xl h-11 bg-muted/20">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ativo?</Label>
-                        <Switch checked={isActive} onCheckedChange={setIsActive} />
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground cursor-pointer" htmlFor="active-switch">Ativo?</Label>
+                        <Switch id="active-switch" checked={isActive} onCheckedChange={setIsActive} />
                       </div>
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full h-12 rounded-xl font-bold gap-2" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full h-12 rounded-xl font-bold gap-2 shadow-lg" disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="animate-spin h-4 w-4" /> : <Megaphone className="w-4 h-4" />}
                     Publicar Aviso Agora
                   </Button>
@@ -202,17 +202,17 @@ export default function AdvancedAdminPage() {
             <Card className="border-none shadow-md rounded-2xl bg-primary/5">
               <CardContent className="p-6 flex gap-4 items-start">
                 <Bell className="w-6 h-6 text-primary shrink-0" />
-                <div className="space-y-1">
-                  <p className="text-xs font-bold uppercase tracking-widest text-primary">Preview Visual</p>
+                <div className="space-y-1 w-full">
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Preview Visual</p>
                   <div className={cn(
-                    "p-3 rounded-lg border-l-4 text-xs font-medium",
+                    "p-4 rounded-xl border-l-4 text-xs font-medium shadow-sm",
                     type === 'info' && "bg-blue-500/10 border-blue-500 text-blue-700 dark:text-blue-300",
                     type === 'warning' && "bg-orange-500/10 border-orange-500 text-orange-700 dark:text-orange-300",
                     type === 'success' && "bg-green-500/10 border-green-500 text-green-700 dark:text-green-300",
                     type === 'destructive' && "bg-red-500/10 border-red-500 text-red-700 dark:text-red-300"
                   )}>
-                    <p className="font-bold mb-1">{title || 'Título do Exemplo'}</p>
-                    <p className="opacity-80">{message || 'Sua mensagem aparecerá aqui para os usuários...'}</p>
+                    <p className="font-bold mb-1 text-sm">{title || 'Título do Exemplo'}</p>
+                    <p className="opacity-80 leading-relaxed">{message || 'Sua mensagem aparecerá aqui para os usuários...'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -232,7 +232,7 @@ export default function AdvancedAdminPage() {
               ) : announcements && announcements.length > 0 ? (
                 announcements.map((ann: any) => (
                   <Card key={ann.id} className={cn(
-                    "border-none shadow-sm overflow-hidden rounded-2xl group transition-all hover:shadow-md",
+                    "border-none shadow-sm overflow-hidden rounded-2xl group transition-all hover:shadow-md relative",
                     !ann.isActive && "opacity-50 grayscale"
                   )}>
                     <CardContent className="p-4 md:p-6 flex items-start gap-4">
@@ -258,7 +258,7 @@ export default function AdvancedAdminPage() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="text-destructive hover:bg-destructive/10 rounded-xl h-8 w-8"
+                        className="text-destructive hover:bg-destructive/10 rounded-xl h-8 w-8 shrink-0"
                         onClick={() => handleDeleteAnnouncement(ann.id)}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
