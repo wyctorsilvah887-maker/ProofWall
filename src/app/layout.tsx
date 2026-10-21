@@ -21,12 +21,16 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
     other: [
       {
-        rel: "android-chrome-192x192",
-        url: "/android-chrome-192x192.png",
+        rel: "maskable-icon",
+        url: "/maskable_icon_x192 (6).png",
+        sizes: "192x192",
+        type: "image/png",
       },
       {
-        rel: "android-chrome-512x512",
-        url: "/android-chrome-512x512.png",
+        rel: "maskable-icon",
+        url: "/maskable_icon_x512 (5).png",
+        sizes: "512x512",
+        type: "image/png",
       },
     ],
   },
