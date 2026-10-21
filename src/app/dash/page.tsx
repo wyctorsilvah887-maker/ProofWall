@@ -449,10 +449,10 @@ export default function DashPage() {
         </div>
       )}
 
-      <header className="bg-background border-b h-20 md:h-32 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center">
           <Link href="/dash" className="flex items-center group">
-            <div className="relative w-[300px] h-[100px] md:w-[480px] md:h-[150px] transition-transform group-hover:scale-105">
+            <div className="relative w-[150px] h-[50px] md:w-[220px] md:h-[70px] transition-transform group-hover:scale-105 -ml-2 md:-ml-4">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
