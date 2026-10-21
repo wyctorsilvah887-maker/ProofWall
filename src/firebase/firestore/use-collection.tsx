@@ -53,8 +53,9 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
           
           errorEmitter.emit('permission-error', permissionError);
         } else if (err.code === 'failed-precondition' && err.message.includes('requires an index')) {
-          console.error("FALTA ÍNDICE NO FIRESTORE:", err.message);
-          console.warn("Clique no link acima para criar o índice necessário.");
+          // Usamos warn em vez de error para evitar que o Next.js exiba o overlay de erro em desenvolvimento
+          console.warn("⚠️ FIRESTORE: Falta um índice para esta consulta. Crie-o no link abaixo:");
+          console.warn(err.message);
         } else {
           console.error("Firestore useCollection Error:", err);
         }
