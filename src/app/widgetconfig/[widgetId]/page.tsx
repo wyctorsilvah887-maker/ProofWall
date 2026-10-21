@@ -43,13 +43,6 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -57,6 +50,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Accordion,
   AccordionContent,
@@ -227,7 +227,6 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const isGold = membershipStatus === 'gold';
   const isTrial = membershipStatus === 'trial';
   
-  // Limites refinados: Base: 10, Trial/Gold: 50, Enterprise: Ilimitado
   const SELECTION_LIMIT = isEnterprise ? Infinity : ((isGold || isTrial) ? 50 : 10);
   const isGoldPlan = isGold || isTrial || isEnterprise;
 
@@ -479,7 +478,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                       <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 group-hover:text-primary transition-colors">
                         <MessageSquare className="w-4 h-4" /> Depoimentos Disponíveis ({approvedTestimonials?.length || 0})
                       </h2>
-                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isEnterprise ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
+                      <Badge variant="outline" className={cn("text-[9px] h-5 font-black uppercase px-2", selectedIds.length >= SELECTION_LIMIT && !isGoldPlan ? "text-destructive border-destructive" : "text-primary border-primary/20")}>
                         {selectedIds.length} / {isEnterprise ? '∞' : SELECTION_LIMIT} ATIVOS
                       </Badge>
                     </div>
@@ -488,7 +487,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {displayedTestimonialsSelection.map((t: any) => {
                         const isSelected = selectedIds.includes(t.id);
-                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && !isEnterprise;
+                        const isAtLimit = selectedIds.length >= SELECTION_LIMIT && !isGoldPlan;
                         const isDisabled = !isSelected && isAtLimit;
 
                         return (

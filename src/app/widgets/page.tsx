@@ -479,7 +479,7 @@ export default function WidgetsPage() {
               <p className="text-xs text-primary font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" /> Dica de Instalação
               </p>
-              <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed">
+              <p className="text-[11px] text-muted-foreground mt-1.5 Birding-relaxed">
                 Recomendamos colar este código antes da tag final <code>&lt;/body&gt;</code> para garantir que o mural carregue sem afetar a velocidade do seu site.
               </p>
             </div>

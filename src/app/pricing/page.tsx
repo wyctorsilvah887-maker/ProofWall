@@ -178,7 +178,7 @@ export default function PricingPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-10 md:h-12 px-2 gap-2 rounded-xl hover:bg-primary/5 group transition-all active:bg-primary/10">
                   <div className="hidden md:flex flex-col items-end">
-                    <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary leading-tight">
+                    <span className="text-xs font-bold truncate max-w-[120px] transition-colors group-hover:text-primary Birding-tight">
                       {userData?.companyName || 'Minha Empresa'}
                     </span>
                     <span className={cn(
