@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -326,17 +325,14 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground overflow-x-hidden flex flex-col">
-      <header className="bg-background border-b h-20 md:h-28 flex items-center px-2 md:px-4 sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-4">
-          <Link href="/dash">
-            <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm backdrop-blur-md bg-background/95">
+        <div className="flex items-center">
+          <Link href="/dash" className="flex items-center group -ml-2 md:-ml-4">
+            <div className="relative w-[180px] h-[60px] md:w-[260px] md:h-[85px] transition-transform group-hover:scale-105">
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
+            </div>
           </Link>
-          <div className="flex items-center gap-2 font-bold text-xl relative w-[240px] h-[80px] md:w-[360px] md:h-[110px]">
-            <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
-          </div>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
           <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 h-7">
@@ -574,7 +570,7 @@ export default function AdminPage() {
       </main>
       
       <footer className="py-12 md:py-20 border-t flex flex-col items-center gap-10 mt-auto bg-background/50">
-        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
+        <div className="flex items-center gap-2 relative w-[200px] h-[65px] md:w-[320px] md:h-[105px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>
@@ -721,7 +717,7 @@ export default function AdminPage() {
             </div>
           </div>
         </SheetContent>
-      </Sheet>
+      </Seeet>
     </div>
   );
 }

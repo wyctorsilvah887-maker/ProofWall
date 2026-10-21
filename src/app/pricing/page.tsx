@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -146,7 +145,7 @@ export default function PricingPage() {
           "Todos os widgets liberados",
           "Depoimentos em Vídeo (4K) (Em breve)",
           "Branding 100% customizado",
-          "Remoção da marca Proova",
+          "Remocão da marca Proova",
           "Acesso ao ADS (Em breve)",
           "Suporte VIP via WhatsApp",
         ],
@@ -164,15 +163,13 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <header className="px-2 lg:px-4 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
-        <div className="flex items-center gap-2 sm:gap-6">
-          <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors group">
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="hidden xs:inline uppercase tracking-widest text-[10px]">Voltar</span>
-          </Link>
-          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[240px] h-[80px] md:w-[360px] md:h-[110px]">
-            <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="dark:block object-contain hidden" />
+      <header className="px-4 md:px-6 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center group -ml-2 md:-ml-4">
+            <div className="relative w-[180px] h-[60px] md:w-[260px] md:h-[85px] transition-transform group-hover:scale-105">
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="dark:block object-contain hidden" />
+            </div>
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -380,7 +377,7 @@ export default function PricingPage() {
 
       <footer className="py-12 md:py-20 border-t bg-background">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-10 text-center">
-          <div className="flex items-center gap-2 relative w-[200px] h-[65px] md:w-[300px] md:h-[90px]">
+          <div className="flex items-center gap-2 relative w-[200px] h-[65px] md:w-[320px] md:h-[105px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>

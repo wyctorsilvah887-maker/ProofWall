@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -74,6 +73,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 type LayoutType = 'mural' | 'carousel' | 'grid' | 'popup';
 
@@ -334,7 +334,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
-      <header className="bg-background border-b h-20 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>
@@ -349,8 +349,11 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
               <EmbedSettings {...sidebarProps} />
             </SheetContent>
           </Sheet>
-          <div className="flex items-center gap-2">
-            <h1 className="text-sm font-black uppercase tracking-tight truncate max-w-[120px] sm:max-w-none">{widgetData?.name || 'Mural Embed'}</h1>
+          <div className="flex items-center group -ml-2 md:-ml-4">
+            <div className="relative w-[180px] h-[60px] md:w-[260px] md:h-[85px] transition-transform group-hover:scale-105">
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
+            </div>
           </div>
         </div>
 
