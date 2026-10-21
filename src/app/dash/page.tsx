@@ -397,8 +397,8 @@ export default function DashPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-[140px] h-[45px] md:w-[220px] md:h-[65px] transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" priority />
-              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
           </Link>
         </div>
@@ -479,6 +479,7 @@ export default function DashPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
+        {/* ... (rest of main remains same) ... */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -672,8 +673,8 @@ export default function DashPage() {
 
       <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto">
         <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
           <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>

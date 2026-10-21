@@ -64,8 +64,8 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body overflow-x-hidden">
       <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
         <div className="flex items-center font-bold text-xl tracking-tight relative w-[130px] h-[45px] md:w-[220px] md:h-[65px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" priority />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           <ThemeToggle />
@@ -330,9 +330,9 @@ export default function Home() {
 
       <footer className="py-12 border-t bg-background relative z-10">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
-          <div className="flex items-center gap-2 relative w-[140px] h-[45px] md:w-[200px] md:h-[60px]">
-             <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
-             <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
+          <div className="flex items-center gap-2 relative w-[140px] h-[45px] md:w-[220px] md:h-[60px]">
+             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
+             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-4 md:gap-6">

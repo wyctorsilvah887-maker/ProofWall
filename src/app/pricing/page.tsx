@@ -170,8 +170,8 @@ export default function PricingPage() {
             <span className="hidden xs:inline uppercase tracking-widest text-[10px]">Voltar</span>
           </Link>
           <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[140px] h-[40px] sm:w-[180px] sm:h-[50px] md:w-[220px] md:h-[60px]">
-            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="dark:block object-contain hidden" />
+            <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="dark:block object-contain hidden" />
           </Link>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
@@ -254,6 +254,7 @@ export default function PricingPage() {
       </header>
 
       <main className="flex-1">
+        {/* ... (rest of pricing content remains same) ... */}
         <section className="py-12 md:py-24 px-4 container mx-auto text-center space-y-6">
           <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
             💎 Oferta especial: 50% OFF vitalício nos planos pagos
@@ -380,8 +381,8 @@ export default function PricingPage() {
       <footer className="py-12 border-t bg-background">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
           <div className="flex items-center gap-2 relative w-[180px] h-[50px] md:w-[240px] md:h-[70px]">
-             <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
-             <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
+             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
+             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
           <div className="space-y-2">
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>

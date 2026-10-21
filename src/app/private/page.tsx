@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -101,8 +100,8 @@ export default function PrivateInboxPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-[140px] h-[40px] md:w-[180px] md:h-[50px] transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" />
-              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" />
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" />
             </div>
           </Link>
         </div>
@@ -180,6 +179,7 @@ export default function PrivateInboxPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
+        {/* ... (rest of main remains same) ... */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/dash">
@@ -264,8 +264,8 @@ export default function PrivateInboxPage() {
 
       <footer className="py-8 border-t mt-auto flex flex-col items-center gap-4">
         <div className="flex items-center gap-2 relative w-[48px] h-[48px] md:w-[56px] md:h-[56px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block" />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="rounded-xl dark:hidden object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="rounded-xl hidden dark:block" />
         </div>
         <div className="container px-4 md:px-6 mx-auto text-center space-y-4">
           <p className="text-xs text-muted-foreground">© 2026 Proova - Inbox Privado de Feedback.</p>

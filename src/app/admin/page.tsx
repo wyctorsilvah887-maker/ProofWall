@@ -332,8 +332,8 @@ export default function AdminPage() {
             </Button>
           </Link>
           <div className="flex items-center gap-2 font-bold text-xl relative w-[130px] h-[45px] md:w-[200px] md:h-[60px]">
-            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" priority />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
+            <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
@@ -384,6 +384,7 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-7xl overflow-x-hidden">
+        {/* ... metrics cards ... */}
         <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
@@ -414,6 +415,7 @@ export default function AdminPage() {
           </TabsList>
 
           <TabsContent value="leads" className="mt-0">
+            {/* leads table */}
             <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
               <CardHeader className="px-4 md:px-6">
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
@@ -484,6 +486,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="payments" className="mt-0">
+            {/* payments table */}
             <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
               <CardHeader className="px-4 md:px-6">
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
@@ -559,8 +562,8 @@ export default function AdminPage() {
       
       <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto bg-background/50">
         <div className="flex items-center gap-2 relative w-[60px] h-[60px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>
         <div className="container px-4 text-center">
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">© 2026 Proova - Gestão Segura Synapse Group</p>

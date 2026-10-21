@@ -202,8 +202,8 @@ export default function WidgetsPage() {
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
             <div className="relative w-[140px] h-[45px] md:w-[220px] md:h-[65px] transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" priority />
-              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
+              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
           </Link>
         </div>
@@ -283,6 +283,7 @@ export default function WidgetsPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto w-full">
+        {/* ... (rest of main remains same) ... */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <Link href="/dash">
@@ -400,8 +401,8 @@ export default function WidgetsPage() {
 
       <footer className="py-12 border-t mt-auto flex flex-col items-center gap-6 bg-background/50">
         <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[220px] md:h-[65px]">
-          <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
         <div className="container px-4 md:px-6 mx-auto text-center space-y-2">
           <p className="text-xs md:text-sm text-muted-foreground font-medium">© 2026 Proova - Prova Social de Verdade.</p>
