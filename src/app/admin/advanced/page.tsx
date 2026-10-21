@@ -141,10 +141,17 @@ export default function AdvancedAdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-5xl">
-        <header className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Gestão de Avisos</h1>
-          <p className="text-muted-foreground text-sm">Crie notificações globais para todos os usuários da plataforma.</p>
-        </header>
+        <div className="flex flex-col gap-6">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-primary transition-colors h-8 px-0 font-bold uppercase tracking-widest text-[10px]">
+              <ArrowLeft className="w-4 h-4" /> Voltar ao Painel Admin
+            </Button>
+          </Link>
+          <header className="space-y-1">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Gestão de Avisos</h1>
+            <p className="text-muted-foreground text-sm">Crie notificações globais para todos os usuários da plataforma.</p>
+          </header>
+        </div>
 
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-12">
           <div className="lg:col-span-5 space-y-6">
