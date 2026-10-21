@@ -324,14 +324,14 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground overflow-x-hidden flex flex-col">
-      <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/dash">
             <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2 font-bold text-xl relative w-[130px] h-[45px] md:w-[200px] md:h-[60px]">
+          <div className="flex items-center gap-2 font-bold text-xl relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
           </div>
@@ -560,8 +560,8 @@ export default function AdminPage() {
         </Tabs>
       </main>
       
-      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto bg-background/50">
-        <div className="flex items-center gap-2 relative w-[60px] h-[60px]">
+      <footer className="py-12 md:py-20 border-t flex flex-col items-center gap-10 mt-auto bg-background/50">
+        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>

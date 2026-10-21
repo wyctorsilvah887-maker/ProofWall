@@ -163,13 +163,13 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
+      <header className="px-4 lg:px-6 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
         <div className="flex items-center gap-2 sm:gap-6">
           <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className="hidden xs:inline uppercase tracking-widest text-[10px]">Voltar</span>
           </Link>
-          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[140px] h-[40px] sm:w-[180px] sm:h-[50px] md:w-[220px] md:h-[60px]">
+          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" />
             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="dark:block object-contain hidden" />
           </Link>
@@ -254,7 +254,6 @@ export default function PricingPage() {
       </header>
 
       <main className="flex-1">
-        {/* ... (rest of pricing content remains same) ... */}
         <section className="py-12 md:py-24 px-4 container mx-auto text-center space-y-6">
           <div className="inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold text-primary border border-primary/20 backdrop-blur-sm">
             💎 Oferta especial: 50% OFF vitalício nos planos pagos
@@ -378,9 +377,9 @@ export default function PricingPage() {
         </section>
       </main>
 
-      <footer className="py-12 border-t bg-background">
-        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
-          <div className="flex items-center gap-2 relative w-[180px] h-[50px] md:w-[240px] md:h-[70px]">
+      <footer className="py-12 md:py-20 border-t bg-background">
+        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-10 text-center">
+          <div className="flex items-center gap-2 relative w-[200px] h-[65px] md:w-[300px] md:h-[90px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>

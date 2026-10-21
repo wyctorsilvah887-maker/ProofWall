@@ -62,8 +62,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body overflow-x-hidden">
-      <header className="px-4 lg:px-6 h-20 md:h-24 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
-        <div className="flex items-center font-bold text-xl tracking-tight relative w-[130px] h-[45px] md:w-[220px] md:h-[65px]">
+      <header className="px-4 lg:px-6 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
+        <div className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
         </div>
@@ -328,9 +328,9 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-12 border-t bg-background relative z-10">
-        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-6 text-center">
-          <div className="flex items-center gap-2 relative w-[140px] h-[45px] md:w-[220px] md:h-[60px]">
+      <footer className="py-12 md:py-20 border-t bg-background relative z-10">
+        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-10 text-center">
+          <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>

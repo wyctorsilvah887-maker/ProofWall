@@ -393,10 +393,10 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
-      <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[140px] h-[45px] md:w-[220px] md:h-[65px] transition-transform group-hover:scale-105">
+            <div className="relative w-[160px] h-[55px] md:w-[260px] md:h-[80px] transition-transform group-hover:scale-105">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
@@ -479,7 +479,6 @@ export default function DashPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
-        {/* ... (rest of main remains same) ... */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -671,8 +670,8 @@ export default function DashPage() {
         </div>
       </main>
 
-      <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto">
-        <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[200px] md:h-[55px]">
+      <footer className="py-8 md:py-16 border-t flex flex-col items-center gap-8 mt-auto">
+        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
