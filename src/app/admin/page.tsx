@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -332,9 +331,9 @@ export default function AdminPage() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2 font-bold text-xl relative w-[140px] h-[35px] md:w-[180px] md:h-[50px]">
-            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm dark:hidden object-contain" />
-            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="rounded-2xl shadow-sm hidden dark:block object-contain" />
+          <div className="flex items-center gap-2 font-bold text-xl relative w-[130px] h-[45px] md:w-[200px] md:h-[60px]">
+            <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="dark:hidden object-contain" priority />
+            <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
           </div>
         </div>
         <div className="ml-auto flex items-center gap-2 md:gap-4">
@@ -559,7 +558,7 @@ export default function AdminPage() {
       </main>
       
       <footer className="py-8 border-t flex flex-col items-center gap-4 mt-auto bg-background/50">
-        <div className="flex items-center gap-2 relative w-[48px] h-[48px]">
+        <div className="flex items-center gap-2 relative w-[60px] h-[60px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>

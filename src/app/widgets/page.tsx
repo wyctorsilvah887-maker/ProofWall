@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -202,9 +201,9 @@ export default function WidgetsPage() {
       <header className="bg-background border-b h-20 md:h-24 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[140px] h-[40px] md:w-[180px] md:h-[50px] transition-transform group-hover:scale-105">
-              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" />
-              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" />
+            <div className="relative w-[140px] h-[45px] md:w-[220px] md:h-[65px] transition-transform group-hover:scale-105">
+              <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo" fill className="object-contain dark:hidden" priority />
+              <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
           </Link>
         </div>
@@ -400,7 +399,7 @@ export default function WidgetsPage() {
       </main>
 
       <footer className="py-12 border-t mt-auto flex flex-col items-center gap-6 bg-background/50">
-        <div className="flex items-center gap-2 relative w-[140px] h-[40px] md:w-[180px] md:h-[50px]">
+        <div className="flex items-center gap-2 relative w-[160px] h-[45px] md:w-[220px] md:h-[65px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
