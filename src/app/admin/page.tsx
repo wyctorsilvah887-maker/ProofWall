@@ -10,7 +10,8 @@ import {
   Shield, LogOut, Users, UserCheck, Lock, Mail, User, 
   BadgeCheck, Loader2, Building2, Eye, EyeOff, Sun, Moon, 
   TrendingUp, CreditCard, AlertCircle, Copy, Hash, Calendar,
-  BarChart3, MousePointer2, ExternalLink, Gem, ArrowLeft
+  BarChart3, MousePointer2, ExternalLink, Gem, ArrowLeft,
+  Settings
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -384,7 +385,20 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-6 space-y-8 flex-1 max-w-7xl overflow-x-hidden">
-        {/* ... metrics cards ... */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Gestão Global</h1>
+            <p className="text-muted-foreground text-sm">Controle central de usuários e métricas da plataforma.</p>
+          </div>
+          <Button 
+            variant="outline" 
+            className="gap-2 border-primary/20 text-primary hover:bg-primary/5 h-12 rounded-xl font-bold transition-all shadow-sm"
+            onClick={() => toast({ title: "Administração Avançada", description: "Configurações de infraestrutura em modo leitura." })}
+          >
+            <Settings className="w-4 h-4" /> Administração Avançada
+          </Button>
+        </header>
+
         <div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4">
           <Card className="border-none shadow-sm overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-4 md:px-6">
@@ -415,7 +429,6 @@ export default function AdminPage() {
           </TabsList>
 
           <TabsContent value="leads" className="mt-0">
-            {/* leads table */}
             <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
               <CardHeader className="px-4 md:px-6">
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
@@ -486,7 +499,6 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="payments" className="mt-0">
-            {/* payments table */}
             <Card className="shadow-sm border-none overflow-hidden rounded-2xl">
               <CardHeader className="px-4 md:px-6">
                 <CardTitle className="font-headline text-lg flex items-center gap-2">
