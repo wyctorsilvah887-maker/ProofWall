@@ -350,7 +350,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             </SheetContent>
           </Sheet>
           <div className="flex items-center group -ml-2 md:-ml-4">
-            <div className="relative w-[180px] h-[60px] md:w-[260px] md:h-[85px] transition-transform group-hover:scale-105">
+            <div className="relative w-[200px] h-[65px] md:w-[320px] md:h-[105px] transition-transform group-hover:scale-105">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
@@ -386,7 +386,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
+              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5 bg-primary/5 text-primary">
                 <Layout className="mr-2 h-4 w-4 text-primary" />
                 <span>Meus Widgets</span>
               </DropdownMenuItem>
