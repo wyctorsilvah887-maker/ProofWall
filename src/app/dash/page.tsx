@@ -107,8 +107,9 @@ export default function DashPage() {
     if (!db) return null;
     return query(collection(db, 'announcements'), where('isActive', '==', true), orderBy('createdAt', 'desc'), limit(1));
   }, [db]);
-  const { data: activeAnnouncements } = useCollection(announcementsQuery);
-  const currentAnnouncement = activeAnnouncements?.[0];
+  
+  const { data: activeAnnouncements, error: announcementsError } = useCollection(announcementsQuery);
+  const currentAnnouncement = announcementsError ? null : activeAnnouncements?.[0];
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
 
   const isProPlan = useMemo(() => {
@@ -432,7 +433,7 @@ export default function DashPage() {
       <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
-            <div className="relative w-[160px] h-[55px] md:w-[260px] md:h-[80px] transition-transform group-hover:scale-105">
+            <div className="relative w-[210px] h-[70px] md:w-[320px] md:h-[100px] transition-transform group-hover:scale-105">
               <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="object-contain dark:hidden" priority />
               <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="object-contain hidden dark:block" priority />
             </div>
@@ -707,7 +708,7 @@ export default function DashPage() {
       </main>
 
       <footer className="py-8 md:py-16 border-t flex flex-col items-center gap-8 mt-auto">
-        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
+        <div className="flex items-center gap-2 relative w-[210px] h-[70px] md:w-[320px] md:h-[100px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>

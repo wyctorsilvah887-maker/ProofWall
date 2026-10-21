@@ -12,15 +12,18 @@ import { FirestorePermissionError, type SecurityRuleContext } from '../errors';
 export function useCollection<T = DocumentData>(query: Query<T> | null) {
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     if (!query) {
       setData(null);
       setLoading(false);
+      setError(null);
       return;
     }
 
     setLoading(true);
+    setError(null);
     
     const unsubscribe = onSnapshot(
       query,
@@ -28,11 +31,11 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
         setData(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T)));
         setLoading(false);
       },
-      async (error: any) => {
-        if (error.code === 'permission-denied') {
+      async (err: any) => {
+        setError(err);
+        if (err.code === 'permission-denied') {
           let path = 'unknown-collection';
           try {
-            // Tenta extrair o caminho de forma segura
             const internalQuery = (query as any)._query || query;
             if (internalQuery.path && internalQuery.path.segments) {
               path = internalQuery.path.segments.join('/');
@@ -49,8 +52,11 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
           } satisfies SecurityRuleContext);
           
           errorEmitter.emit('permission-error', permissionError);
+        } else if (err.code === 'failed-precondition' && err.message.includes('requires an index')) {
+          console.error("FALTA ÍNDICE NO FIRESTORE:", err.message);
+          console.warn("Clique no link acima para criar o índice necessário.");
         } else {
-          console.error("Firestore useCollection Error:", error);
+          console.error("Firestore useCollection Error:", err);
         }
         setLoading(false);
       }
@@ -59,5 +65,5 @@ export function useCollection<T = DocumentData>(query: Query<T> | null) {
     return () => unsubscribe();
   }, [query]);
 
-  return { data, loading };
+  return { data, loading, error };
 }
