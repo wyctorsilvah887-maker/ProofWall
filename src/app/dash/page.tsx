@@ -102,7 +102,7 @@ export default function DashPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
-  // Fetch Announcements
+  // Fetch Announcements (Usando nomes em inglês conforme regras e Admin)
   const announcementsQuery = useMemo(() => {
     if (!db) return null;
     return query(
@@ -113,16 +113,23 @@ export default function DashPage() {
     );
   }, [db]);
   
-  const { data: activeAnnouncements, error: announcementsError } = useCollection(announcementsQuery);
+  const { data: activeAnnouncements, error: announcementsError, loading: announcementsLoading } = useCollection(announcementsQuery);
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
 
-  const currentAnnouncement = useMemo(() => {
-    if (announcementsError) {
-      console.warn("Aviso: Falha ao carregar anúncios (possível índice ausente ou erro de permissão).");
-      return null;
+  // Debugging announcements
+  useEffect(() => {
+    if (activeAnnouncements) {
+      console.log("📢 Anúncios carregados no Dash:", activeAnnouncements.length);
     }
-    return activeAnnouncements && activeAnnouncements.length > 0 ? activeAnnouncements[0] : null;
+    if (announcementsError) {
+      console.warn("⚠️ Erro ao carregar anúncios:", announcementsError);
+    }
   }, [activeAnnouncements, announcementsError]);
+
+  const currentAnnouncement = useMemo(() => {
+    if (announcementsError || announcementsLoading) return null;
+    return activeAnnouncements && activeAnnouncements.length > 0 ? activeAnnouncements[0] : null;
+  }, [activeAnnouncements, announcementsError, announcementsLoading]);
 
   const isProPlan = useMemo(() => {
     const status = userData?.membershipStatus;
