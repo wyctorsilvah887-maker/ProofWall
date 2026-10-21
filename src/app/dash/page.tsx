@@ -38,7 +38,9 @@ import {
   ExternalLink,
   Lock,
   AlertTriangle,
-  Fingerprint
+  Fingerprint,
+  X,
+  Megaphone
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -100,8 +102,16 @@ export default function DashPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
+  // Fetch Announcements
+  const announcementsQuery = useMemo(() => {
+    if (!db) return null;
+    return query(collection(db, 'announcements'), where('isActive', '==', true), orderBy('createdAt', 'desc'), limit(1));
+  }, [db]);
+  const { data: activeAnnouncements } = useCollection(announcementsQuery);
+  const currentAnnouncement = activeAnnouncements?.[0];
+  const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
+
   const isProPlan = useMemo(() => {
-    // Trial agora tem acesso aos recursos Gold (como link personalizado)
     const status = userData?.membershipStatus;
     return status === 'gold' || status === 'enterprise' || status === 'trial';
   }, [userData]);
@@ -127,7 +137,6 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  // Lógica de expiração do Trial (14 dias)
   useEffect(() => {
     if (userData?.membershipStatus === 'trial' && userData?.trialStartedAt && db && user) {
       const startedAt = userData.trialStartedAt.toDate?.() || new Date(userData.trialStartedAt);
@@ -184,13 +193,6 @@ export default function DashPage() {
   }, [db, user]);
 
   const { data: displayTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
-
-  const widgetsQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return collection(db, 'users', user.uid, 'widgets');
-  }, [db, user]);
-
-  const { data: widgetsData, loading: widgetsLoading } = useCollection(widgetsQuery);
 
   if (authLoading || userDataLoading || (user && !userData)) {
     return (
@@ -258,7 +260,6 @@ export default function DashPage() {
     setSlugError(null);
 
     try {
-      // Verificar se o slug já existe em outro usuário
       const q = query(collection(db, 'users'), where('companySlug', '==', normalizedSlug));
       const snap = await getDocs(q);
       
@@ -393,6 +394,41 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
+      {/* GLOBAL ANNOUNCEMENT BANNER */}
+      {currentAnnouncement && !isAnnouncementDismissed && (
+        <div className={cn(
+          "w-full py-2.5 px-4 flex items-center justify-center relative overflow-hidden transition-all duration-500 z-[100]",
+          currentAnnouncement.type === 'info' && "bg-blue-600 text-white",
+          currentAnnouncement.type === 'warning' && "bg-orange-500 text-white",
+          currentAnnouncement.type === 'success' && "bg-green-600 text-white",
+          currentAnnouncement.type === 'destructive' && "bg-red-600 text-white"
+        )}>
+          {/* Animated Background Pulse */}
+          <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
+          
+          <div className="container max-w-7xl mx-auto flex items-center justify-between md:justify-center gap-3 relative z-10">
+            <div className="flex items-center gap-2 text-center">
+              <Megaphone className="w-4 h-4 hidden sm:block animate-bounce" />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                <span className="font-black uppercase tracking-widest text-[10px] md:text-xs">
+                  {currentAnnouncement.title}:
+                </span>
+                <p className="text-[10px] md:text-sm font-bold opacity-95">
+                  {currentAnnouncement.message}
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setIsAnnouncementDismissed(true)}
+              className="p-1 rounded-full hover:bg-black/10 transition-colors shrink-0 md:absolute md:right-4"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-8 sticky top-0 z-[60] shadow-sm backdrop-blur-md bg-background/95">
         <div className="flex items-center gap-3 md:gap-4">
           <Link href="/dash" className="flex items-center gap-2 group">
