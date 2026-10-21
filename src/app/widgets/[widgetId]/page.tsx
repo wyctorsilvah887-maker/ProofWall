@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -715,7 +716,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full overflow-hidden text-foreground">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+      <header className="bg-background border-b h-20 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>
@@ -798,7 +799,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="mx-1" />
-              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-pointer font-bold py-2.5">
+              <DropdownMenuItem onClick={() => signOut(auth)} className="rounded-xl text-destructive focus:text-destructive cursor-bold py-2.5">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sair</span>
               </DropdownMenuItem>

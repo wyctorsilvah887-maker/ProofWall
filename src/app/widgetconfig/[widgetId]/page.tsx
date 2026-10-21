@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect, use } from 'react';
+import { useState, useMemo, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, 
@@ -333,7 +334,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body w-full">
-      <header className="bg-background border-b h-20 flex items-center px-4 md:px-6 sticky top-0 z-[60] shadow-sm">
+      <header className="bg-background border-b h-20 flex items-center px-2 md:px-4 sticky top-0 z-[60] shadow-sm">
         <div className="flex items-center gap-3 flex-1">
           <Sheet>
             <SheetTrigger asChild>

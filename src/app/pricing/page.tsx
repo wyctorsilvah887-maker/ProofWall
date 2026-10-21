@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -163,13 +164,13 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-background font-body text-foreground flex flex-col">
-      <header className="px-4 lg:px-6 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
+      <header className="px-2 lg:px-4 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/95 backdrop-blur-md z-[100]">
         <div className="flex items-center gap-2 sm:gap-6">
           <Link href="/" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-primary transition-colors group">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className="hidden xs:inline uppercase tracking-widest text-[10px]">Voltar</span>
           </Link>
-          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
+          <Link href="/" className="flex items-center font-bold text-xl tracking-tight relative w-[240px] h-[80px] md:w-[360px] md:h-[110px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" />
             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="dark:block object-contain hidden" />
           </Link>

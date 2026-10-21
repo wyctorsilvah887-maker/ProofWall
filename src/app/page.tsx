@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from "react";
@@ -62,8 +63,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body overflow-x-hidden">
-      <header className="px-4 lg:px-6 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
-        <div className="flex items-center font-bold text-xl tracking-tight relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
+      <header className="px-2 lg:px-4 h-20 md:h-28 flex items-center justify-between border-b sticky top-0 bg-background/80 backdrop-blur-md z-[100]">
+        <div className="flex items-center font-bold text-xl tracking-tight relative w-[220px] h-[75px] md:w-[340px] md:h-[105px]">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
         </div>
@@ -106,9 +107,9 @@ export default function Home() {
                   <h1 className="text-3xl font-black tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline max-w-[800px] leading-[1.1] md:leading-[1.05]">
                     Transforme elogios em <span className="text-primary italic">Máquinas de Vendas</span>.
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground text-base md:text-xl lg:text-2xl/relaxed mx-auto lg:mx-0 font-medium leading-relaxed">
+                  <h2 className="max-w-[600px] text-muted-foreground text-base md:text-xl lg:text-2xl/relaxed mx-auto lg:mx-0 font-medium leading-relaxed">
                     Colete depoimentos, domine o <strong>SEO Local no Google</strong> e proteja sua marca com o ecossistema definitivo de prova social.
-                  </p>
+                  </h2>
                 </div>
                 
                 <div className="space-y-4 flex flex-col items-center lg:items-start">
@@ -330,7 +331,7 @@ export default function Home() {
 
       <footer className="py-12 md:py-20 border-t bg-background relative z-10">
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-10 text-center">
-          <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[280px] md:h-[85px]">
+          <div className="flex items-center gap-2 relative w-[220px] h-[75px] md:w-[340px] md:h-[105px]">
              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>

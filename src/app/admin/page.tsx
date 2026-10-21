@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -325,14 +326,14 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 font-body text-foreground overflow-x-hidden flex flex-col">
-      <header className="bg-background border-b h-20 md:h-28 flex items-center px-4 md:px-6 sticky top-0 z-10 shadow-sm">
+      <header className="bg-background border-b h-20 md:h-28 flex items-center px-2 md:px-4 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/dash">
             <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <div className="flex items-center gap-2 font-bold text-xl relative w-[160px] h-[55px] md:w-[260px] md:h-[80px]">
+          <div className="flex items-center gap-2 font-bold text-xl relative w-[240px] h-[80px] md:w-[360px] md:h-[110px]">
             <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo" fill className="dark:hidden object-contain" priority />
             <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo" fill className="hidden dark:block object-contain" priority />
           </div>
