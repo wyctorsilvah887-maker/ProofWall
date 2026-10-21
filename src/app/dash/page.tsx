@@ -395,10 +395,10 @@ export default function DashPage() {
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col font-body text-foreground overflow-x-hidden">
-      {/* GLOBAL ANNOUNCEMENT BANNER */}
+      {/* GLOBAL ANNOUNCEMENT BANNER - MARQUEE LOOP */}
       {currentAnnouncement && !isAnnouncementDismissed && (
         <div className={cn(
-          "w-full py-2.5 px-4 flex items-center justify-center relative overflow-hidden transition-all duration-500 z-[100]",
+          "w-full py-2.5 flex items-center relative overflow-hidden transition-all duration-500 z-[100]",
           currentAnnouncement.type === 'info' && "bg-blue-600 text-white",
           currentAnnouncement.type === 'warning' && "bg-orange-500 text-white",
           currentAnnouncement.type === 'success' && "bg-green-600 text-white",
@@ -407,26 +407,31 @@ export default function DashPage() {
           {/* Animated Background Pulse */}
           <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
           
-          <div className="container max-w-7xl mx-auto flex items-center justify-between md:justify-center gap-3 relative z-10">
-            <div className="flex items-center gap-2 text-center">
-              <Megaphone className="w-4 h-4 hidden sm:block animate-bounce" />
-              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                <span className="font-black uppercase tracking-widest text-[10px] md:text-xs">
-                  {currentAnnouncement.title}:
-                </span>
-                <p className="text-[10px] md:text-sm font-bold opacity-95">
-                  {currentAnnouncement.message}
-                </p>
-              </div>
+          <div className="flex-1 overflow-hidden flex items-center relative z-10">
+            <div className="flex animate-marquee whitespace-nowrap gap-12 items-center min-w-full">
+              {/* Iterating multiple times to fill screen and loop seamlessly */}
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 px-2">
+                  <Megaphone className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2">
+                    <span className="font-black uppercase tracking-widest text-[10px]">
+                      {currentAnnouncement.title}:
+                    </span>
+                    <p className="text-[10px] md:text-xs font-bold opacity-95">
+                      {currentAnnouncement.message}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            
-            <button 
-              onClick={() => setIsAnnouncementDismissed(true)}
-              className="p-1 rounded-full hover:bg-black/10 transition-colors shrink-0 md:absolute md:right-4"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
+          
+          <button 
+            onClick={() => setIsAnnouncementDismissed(true)}
+            className="p-2 mr-2 rounded-full hover:bg-black/10 transition-colors shrink-0 z-20 relative bg-inherit backdrop-blur-sm"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
