@@ -28,6 +28,12 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 
 ### 5.1 Configuração "Zero-Click" do Google Maps
 - **O que é:** Busca inteligente pelo nome da empresa para capturar o `place_id`.
+- **Fluxo:** 
+    1. Usuário clica em "Configurar Link".
+    2. Sistema checa se há Cidade/Estado no perfil; se não, solicita o preenchimento rápido.
+    3. Abre um campo de busca que consulta a Places API do Google.
+    4. O usuário seleciona a empresa correta na lista de resultados.
+    5. O sistema extrai o `place_id`, gera o link `writereview` e salva automaticamente.
 - **Objetivo:** Eliminar a necessidade do usuário "caçar" links técnicos do Google Business.
 
 ### 5.2 Kit de Marketing One-Click (Geração Expressa)
