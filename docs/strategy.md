@@ -28,21 +28,15 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 
 ### 5.1 Configuração "Zero-Click" do Google Maps - [IMPLEMENTADO]
 - **O que é:** Busca inteligente pelo nome da empresa para capturar o `place_id`.
-- **Fluxo:** 
-    1. Usuário clica em "Configurar Link".
-    2. Sistema checa se há Cidade/Estado no perfil; se não, solicita o preenchimento rápido.
-    3. Abre um campo de busca que consulta a Places API do Google.
-    4. O usuário seleciona a empresa correta na lista de resultados.
-    5. O sistema extrai o `place_id`, gera o link `writereview` e salva automaticamente.
 - **Objetivo:** Eliminar a necessidade do usuário "caçar" links técnicos do Google Business.
 
-### 5.2 Kit de Marketing One-Click (Geração Expressa)
-- **O que é:** Botão de download rápido do Cartaz de Balcão.
-- **Objetivo:** O sistema detecta a logo e las cores da marca e gera o PDF pronto para impressão sem abrir diálogos de configuração.
+### 5.2 Kit de Marketing One-Click (Geração Expressa) - [IMPLEMENTADO]
+- **O que é:** Botão de download rápido do Cartaz de Balcão e visualização simplificada.
+- **Objetivo:** O sistema detecta a logo e as cores da marca e facilita o download do PDF pronto para impressão.
 
-### 5.3 Sugestões de Ação Proativas (O "Consultor")
-- **O que é:** Alertas baseados em comportamento de dados.
-- **Exemplo:** "Sua coleta esfriou há 7 dias. Clique aqui para enviar o link para seus clientes via WhatsApp."
+### 5.3 Sugestões de Ação Proativas (O "Consultor") - [IMPLEMENTADO]
+- **O que é:** Alertas baseados em comportamento de dados e pendências de configuração.
+- **Exemplo:** "Google Maps não configurado" ou "Você tem feedbacks privados sem resposta".
 
 ### 5.4 Atalhos de Compartilhamento Dinâmico (Social Cards) - [IMPLEMENTADO]
 - **O que é:** Geração automática de cards para Instagram/Stories.

@@ -45,7 +45,11 @@ import {
   Instagram,
   ImageIcon,
   Quote,
-  Share
+  Share,
+  Sparkles,
+  Lightbulb,
+  Zap,
+  MessageCircle
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -133,6 +137,13 @@ export default function DashPage() {
   const { data: activeAnnouncements, error: announcementsError, loading: announcementsLoading } = useCollection(announcementsQuery);
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
 
+  // Fetch Private Feedbacks for Consultant logic
+  const privateFeedbacksQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'private_feedbacks'), limit(1));
+  }, [db, user]);
+  const { data: hasPrivateFeedbacks } = useCollection(privateFeedbacksQuery);
+
   const currentAnnouncement = useMemo(() => {
     if (announcementsError || announcementsLoading) return null;
     return activeAnnouncements && activeAnnouncements.length > 0 ? activeAnnouncements[0] : null;
@@ -163,6 +174,61 @@ export default function DashPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  // Consultant Logic
+  const consultantAlerts = useMemo(() => {
+    const alerts = [];
+
+    if (!userData?.googleMapsUrl) {
+      alerts.push({
+        id: 'google-setup',
+        type: 'warning',
+        icon: MapPin,
+        title: 'Google Maps pendente',
+        description: 'Sua empresa ainda não redireciona elogios para o Google. Configure agora.',
+        action: () => setIsGoogleMapsDialogOpen(true),
+        label: 'Configurar'
+      });
+    }
+
+    if (hasPrivateFeedbacks && hasPrivateFeedbacks.length > 0) {
+      alerts.push({
+        id: 'private-inbox',
+        type: 'info',
+        icon: Inbox,
+        title: 'Inbox Privado Ativo',
+        description: 'Você recebeu feedbacks críticos. Resolva-os antes que virem reclamações públicas.',
+        action: () => router.push('/private'),
+        label: 'Ver Inbox'
+      });
+    }
+
+    if (userData?.testimonialsCount === 0) {
+      alerts.push({
+        id: 'zero-testimonials',
+        type: 'success',
+        icon: MessageCircle,
+        title: 'Inicie sua coleta',
+        description: 'Envie seu link exclusivo para seus melhores clientes via WhatsApp agora.',
+        action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta"),
+        label: 'Copiar Link'
+      });
+    }
+
+    if (!userData?.googlePlaceId && userData?.googleMapsUrl) {
+      alerts.push({
+        id: 'precision-maps',
+        type: 'warning',
+        icon: Zap,
+        title: 'Melhore a precisão',
+        description: 'Use a busca "Zero-Click" para garantir que o link do Google nunca falhe.',
+        action: () => setIsGoogleMapsDialogOpen(true),
+        label: 'Otimizar'
+      });
+    }
+
+    return alerts;
+  }, [userData, hasPrivateFeedbacks, baseUrl, router]);
 
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
@@ -702,6 +768,50 @@ export default function DashPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
+        {/* CONSULTANT SECTION */}
+        {consultantAlerts.length > 0 && (
+          <section className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova</h2>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {consultantAlerts.map((alert) => (
+                <Card key={alert.id} className={cn(
+                  "border-none shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all",
+                  alert.type === 'warning' ? "bg-orange-500/5 ring-1 ring-orange-500/10" : "bg-primary/5 ring-1 ring-primary/10"
+                )}>
+                  <CardContent className="p-4 flex flex-col h-full justify-between gap-4">
+                    <div className="flex gap-3">
+                      <div className={cn(
+                        "p-2 rounded-xl h-fit",
+                        alert.type === 'warning' ? "bg-orange-500/20 text-orange-600" : "bg-primary/20 text-primary"
+                      )}>
+                        <alert.icon className="w-4 h-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-black uppercase tracking-tight leading-tight">{alert.title}</p>
+                        <p className="text-[10px] text-muted-foreground leading-snug font-medium">{alert.description}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant={alert.type === 'warning' ? 'default' : 'outline'}
+                      onClick={alert.action}
+                      className={cn(
+                        "h-8 text-[10px] font-black uppercase tracking-widest rounded-lg",
+                        alert.type === 'warning' ? "bg-orange-600 hover:bg-orange-700" : "border-primary/20 text-primary hover:bg-primary/5"
+                      )}
+                    >
+                      {alert.label} <ChevronRight className="w-3 h-3 ml-1" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
+
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
