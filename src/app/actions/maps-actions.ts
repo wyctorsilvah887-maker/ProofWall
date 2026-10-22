@@ -2,14 +2,17 @@
 
 /**
  * @fileOverview Server Actions para integração com Google Maps API.
+ * As variáveis de ambiente (GOOGLE_MAPS_API_KEY) devem ser configuradas 
+ * diretamente no painel da hospedagem (ex: Vercel/Firebase) para segurança.
  */
 
 export async function searchGooglePlaces(query: string, city: string, state: string) {
+  // Acesso direto à variável de ambiente do servidor
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
-    console.warn("GOOGLE_MAPS_API_KEY não configurada. Retornando resultados simulados.");
-    // Simulação inteligente baseada nos inputs para teste de fluxo sem API Key
+    console.warn("Atenção: GOOGLE_MAPS_API_KEY não encontrada no servidor. Usando modo de simulação.");
+    // Simulação para desenvolvimento sem chave
     return [
       { 
         name: `${query}`, 
@@ -30,7 +33,7 @@ export async function searchGooglePlaces(query: string, city: string, state: str
     const fullQuery = `${query} em ${city} ${state}`;
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(fullQuery)}&key=${apiKey}&language=pt-BR`;
 
-    const res = await fetch(url);
+    const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache de 1 hora para economizar API
     const data = await res.json();
 
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
@@ -44,7 +47,7 @@ export async function searchGooglePlaces(query: string, city: string, state: str
       isMock: false
     }));
   } catch (err) {
-    console.error("Falha na busca do Google Places:", err);
+    console.error("Falha crítica na busca do Google Places:", err);
     return [];
   }
 }
