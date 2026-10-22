@@ -675,7 +675,7 @@ export default function DashPage() {
           </div>
           <button 
             onClick={() => setIsAnnouncementDismissed(true)}
-            className="p-2.5 mr-2 rounded-full hover:bg-black/15 transition-colors shrink-0 z-20 relative bg-inherit backdrop-blur-md border border-white/10 shadow-sm"
+            className="p-2.5 mr-2 rounded-full hover:bg-white/10 transition-colors shrink-0 z-20 relative"
           >
             <X className="w-4 h-4" />
           </button>
@@ -1183,7 +1183,7 @@ export default function DashPage() {
                     <Input placeholder="Ex: São Paulo" value={userCity} onChange={(e) => setUserCity(e.target.value)} className="h-12 rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Estado (UF)</Label>
+                    <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Estado (UF)</Label>
                     <Input placeholder="Ex: SP" value={userState} onChange={(e) => setUserState(e.target.value.toUpperCase())} maxLength={2} className="h-12 rounded-xl" />
                   </div>
                 </div>
