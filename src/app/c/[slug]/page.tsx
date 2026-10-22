@@ -86,21 +86,18 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     return membershipStatus === 'trial' || membershipStatus === 'gold' || membershipStatus === 'enterprise';
   }, [membershipStatus]);
 
-  const handleGoogleRedirect = async () => {
-    if (!db || !targetUserId || !googleMapsUrl) return;
+  const handleGoogleRedirect = (url: string) => {
+    if (!url) return;
     
-    try {
+    // Rastreio em background (não aguarda para não bloquear o popup)
+    if (db && targetUserId) {
       const userRef = doc(db, 'users', targetUserId);
-      await updateDoc(userRef, {
+      updateDoc(userRef, {
         googleRedirectCount: increment(1)
-      });
-    } catch (err) {
-      console.error("Erro ao rastrear redirecionamento:", err);
+      }).catch(err => console.error("Erro ao rastrear clique:", err));
     }
 
-    let finalUrl = googleMapsUrl.trim();
-    if (!finalUrl) return;
-
+    let finalUrl = url.trim();
     const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
     
     if (finalUrl.includes('?')) {
@@ -155,22 +152,22 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     setIsSubmitting(true);
     setFinalDest(destination);
 
-    // 1. Processar Redirecionamento e Cópia IMEDIATAMENTE (antes do await do Firestore)
-    // Isso aproveita o contexto do clique do usuário para evitar bloqueio de popups
+    // Processar Redirecionamento e Cópia SINCRONAMENTE ao clique (crítico para mobile/popups)
     if (destination === 'public') {
+      // 1. Abre a janela primeiro (contexto de clique puro)
+      if (googleMapsUrl && rating >= 4 && isRedirectAllowed) {
+        handleGoogleRedirect(googleMapsUrl);
+      }
+
+      // 2. Copia para o clipboard logo em seguida
       try {
         await navigator.clipboard.writeText(text.trim());
         toast({
-          title: "Texto Copiado!",
-          description: "Cole seu elogio no perfil da empresa.",
+          title: "Elogio Copiado!",
+          description: "Pronto para colar no Google.",
         });
-        
-        // Se permitido, já abre o Google Maps em paralelo
-        if (googleMapsUrl && rating >= 4 && isRedirectAllowed) {
-          handleGoogleRedirect();
-        }
       } catch (err) {
-        console.warn("Clipboard/Redirect trigger failed", err);
+        console.warn("Clipboard failed", err);
       }
     }
 
@@ -263,10 +260,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
-                  <p className="text-xs text-muted-foreground">Se a janela do Google não abriu, clique no botão abaixo para colar seu elogio lá.</p>
+                  <p className="text-xs text-muted-foreground">Se a janela do Google não abriu, você pode tentar pelo botão abaixo:</p>
                 </div>
                 <Button 
-                  onClick={handleGoogleRedirect}
+                  onClick={() => handleGoogleRedirect(googleMapsUrl)}
                   className="w-full h-14 rounded-xl gap-3 text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all bg-[#4285F4] hover:bg-[#357ae8]"
                 >
                   <MapPin className="w-5 h-5" /> Abrir Google Maps (Colar)
