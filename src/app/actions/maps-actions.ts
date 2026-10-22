@@ -1,3 +1,4 @@
+
 'use server';
 
 import { headers } from 'next/headers';
@@ -11,7 +12,8 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp }
 async function checkRateLimit(actionName: string) {
   const { firestore } = initializeFirebase();
   const headerList = await headers();
-  const ip = headerList.get('x-forwarded-for') || 'unknown';
+  // Pega o primeiro IP da lista de proxies ou fallback para local
+  const ip = (headerList.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   
   const oneMinuteAgo = new Date(Date.now() - 60000);
   const rateLimitRef = collection(firestore, 'rate_limits');
@@ -26,7 +28,7 @@ async function checkRateLimit(actionName: string) {
   const snap = await getDocs(q);
   
   if (snap.size >= 10) {
-    throw new Error('Limite de requisições excedido (10/min). Tente novamente em um minuto.');
+    throw new Error('Limite de requisições excedido. Tente novamente em um minuto.');
   }
 
   // Registra a nova requisição
@@ -39,7 +41,6 @@ async function checkRateLimit(actionName: string) {
 
 /**
  * @fileOverview Server Actions para integração com Google Maps API.
- * Atualizado com Rate Limit de 10 requisições por minuto.
  */
 export async function searchGooglePlaces(queryStr: string, city: string, state: string) {
   try {
@@ -87,6 +88,7 @@ export async function searchGooglePlaces(queryStr: string, city: string, state: 
 
     const data = await response.json();
 
+    // Fallback para busca genérica se a busca localizada falhar
     if ((!data.places || data.places.length === 0) && textQuery !== queryStr) {
       const fallbackRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
         method: 'POST',

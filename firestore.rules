@@ -12,6 +12,12 @@ service cloud.firestore {
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
+    // Regras para Rate Limiting (Necessário para Server Actions com Web SDK)
+    match /rate_limits/{limitId} {
+      allow create: if true;
+      allow list: if true; 
+    }
+
     // Regras para a coleção de usuários
     match /users/{userId} {
       allow create: if true;

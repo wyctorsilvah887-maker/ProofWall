@@ -1,3 +1,4 @@
+
 'use server';
 
 import { headers } from 'next/headers';
@@ -10,7 +11,7 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp, 
 async function checkRateLimit(actionName: string) {
   const { firestore } = initializeFirebase();
   const headerList = await headers();
-  const ip = headerList.get('x-forwarded-for') || 'unknown';
+  const ip = (headerList.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0].trim();
   
   const oneMinuteAgo = new Date(Date.now() - 60000);
   const rateLimitRef = collection(firestore, 'rate_limits');
