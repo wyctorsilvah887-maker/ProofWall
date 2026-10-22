@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mail, User, Building2, Lock, Loader2, Eye, EyeOff, MapPin, Globe, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Mail, User, Building2, Lock, Loader2, Eye, EyeOff, MapPin, Globe, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -28,6 +30,7 @@ export default function SignupPage() {
   const [businessType, setBusinessType] = useState<'local' | 'digital'>('local');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -38,11 +41,30 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!termsAccepted) {
+      toast({
+        variant: "destructive",
+        title: "Termos Obrigatórios",
+        description: "Você deve aceitar os termos de uso e política de privacidade para continuar.",
+      });
+      return;
+    }
+
     if (!name.trim() || !company.trim() || !email.trim() || !password.trim() || !db) return;
 
     setIsSubmitting(true);
     
     try {
+      // Captura do IP do usuário para fins de auditoria jurídica (Proof of Acceptance)
+      let userIp = 'Não capturado';
+      try {
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        userIp = ipData.ip;
+      } catch (e) {
+        console.error("Falha ao capturar IP para log jurídico", e);
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser = userCredential.user;
       
@@ -63,13 +85,18 @@ export default function SignupPage() {
         testimonialsCount: 0,
         googleRedirectCount: 0,
         createdAt: serverTimestamp(),
+        // Campos de Compliance Jurídico
+        termsAccepted: true,
+        termsAcceptedAt: serverTimestamp(),
+        userIp: userIp,
+        legalConsentVersion: '4.0'
       };
 
       setDoc(doc(db, "users", newUser.uid), userData)
         .then(() => {
           toast({
             title: "Conta Criada!",
-            description: "Bem-vindo ao Proova. Sua conta foi configurada com sucesso.",
+            description: "Seu cadastro foi validado e os termos foram registrados.",
           });
           router.push('/dash');
         })
@@ -124,14 +151,12 @@ export default function SignupPage() {
           <CardContent className="px-5 sm:px-10 pb-8 md:pb-10">
             <form onSubmit={handleSignup} className="space-y-6 md:space-y-8">
               
-              {/* Business Type Toggle Button - Exactly like Cakto Theme Switch Style */}
               <div className="space-y-3">
                 <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Tipo de Operação</label>
                 <div 
                   onClick={() => setBusinessType(prev => prev === 'local' ? 'digital' : 'local')}
                   className="relative flex bg-muted/50 p-1 rounded-[1.5rem] border border-border/50 shadow-inner cursor-pointer h-14 md:h-16 items-center group overflow-hidden select-none"
                 >
-                  {/* Sliding background pill (The Active State) */}
                   <div 
                     className={cn(
                       "absolute top-1 bottom-1 w-[calc(50%-2px)] bg-background shadow-[0_8px_20px_-4px_rgba(0,0,0,0.15)] rounded-[1.25rem] transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) z-0 border border-border/10",
@@ -141,7 +166,6 @@ export default function SignupPage() {
                     <div className="absolute inset-0 bg-primary/[0.03] rounded-inherit" />
                   </div>
                   
-                  {/* Labels Layer */}
                   <div className="relative z-10 flex w-full h-full items-center">
                     <div className={cn(
                       "flex-1 flex items-center justify-center gap-2 text-[9px] md:text-[10px] font-black uppercase tracking-[0.05em] md:tracking-[0.1em] transition-all duration-500",
@@ -160,7 +184,6 @@ export default function SignupPage() {
                     </div>
                   </div>
                 </div>
-                <p className="text-[8px] md:text-[9px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-60">Clique para alternar o perfil</p>
               </div>
 
               <div className="space-y-4">
@@ -231,17 +254,39 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-12 md:h-14 text-base md:text-lg font-black shadow-xl hover:scale-[1.02] active:scale-95 transition-all rounded-xl md:rounded-2xl gap-2"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <><Loader2 className="animate-spin h-5 w-5" /> Criando Painel...</>
-                ) : (
-                  <>Começar Agora <CheckCircle2 className="w-5 h-5" /></>
-                )}
-              </Button>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-3 bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                  <Checkbox 
+                    id="terms" 
+                    checked={termsAccepted} 
+                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <Label 
+                      htmlFor="terms" 
+                      className="text-[10px] sm:text-xs font-bold leading-relaxed cursor-pointer"
+                    >
+                      Li e concordo com os <Link href="/terms" className="text-primary hover:underline underline-offset-4">Termos de Uso</Link> e a <Link href="/privacy" className="text-primary hover:underline underline-offset-4">Política de Privacidade</Link>.
+                    </Label>
+                    <p className="text-[9px] text-muted-foreground">
+                      Ao clicar em "Começar Agora", seu IP e timestamp serão registrados como prova de aceite.
+                    </p>
+                  </div>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 md:h-14 text-base md:text-lg font-black shadow-xl hover:scale-[1.02] active:scale-95 transition-all rounded-xl md:rounded-2xl gap-2"
+                  disabled={isSubmitting || !termsAccepted}
+                >
+                  {isSubmitting ? (
+                    <><Loader2 className="animate-spin h-5 w-5" /> Validando...</>
+                  ) : (
+                    <>Começar Agora <CheckCircle2 className="w-5 h-5" /></>
+                  )}
+                </Button>
+              </div>
 
               <div className="text-center pt-4 border-t">
                 <p className="text-xs md:text-sm text-muted-foreground font-medium">
@@ -256,8 +301,8 @@ export default function SignupPage() {
         </Card>
         
         <div className="flex flex-col items-center gap-4 opacity-40 pb-8 md:pb-0">
-           <p className="text-[8px] md:text-[10px] text-center uppercase tracking-[0.2em] md:tracking-[0.3em] font-black">
-             🔒 Conexão Segura Synapse Group
+           <p className="text-[8px] md:text-[10px] text-center uppercase tracking-[0.2em] md:tracking-[0.3em] font-black flex items-center gap-2">
+             <ShieldCheck className="w-3 h-3 md:w-4 md:h-4" /> Compliance e Auditoria Synapse Group
            </p>
         </div>
       </div>

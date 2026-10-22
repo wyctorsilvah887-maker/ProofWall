@@ -61,6 +61,23 @@
           "type": "integer",
           "description": "Total de depoimentos no final do mês anterior para comparação de métricas."
         },
+        "termsAccepted": {
+          "type": "boolean",
+          "description": "Indica se o usuário aceitou explicitamente os termos de uso e privacidade."
+        },
+        "termsAcceptedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp exato do aceite dos termos (Audit Log)."
+        },
+        "userIp": {
+          "type": "string",
+          "description": "Endereço IP do usuário no momento do cadastro (Audit Log)."
+        },
+        "legalConsentVersion": {
+          "type": "string",
+          "description": "Versão dos documentos legais aceitos pelo usuário."
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -74,7 +91,8 @@
         "email",
         "isAdmin",
         "businessType",
-        "createdAt"
+        "createdAt",
+        "termsAccepted"
       ]
     },
     "PaymentEvent": {
@@ -103,6 +121,7 @@
           "type": "string",
           "format": "email",
           "description": "Endereço de e-mail do cliente."
+"
         },
         "rating": {
           "type": "number",
