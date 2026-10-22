@@ -2,6 +2,8 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Redirecionamento Google Maps:** Corrigida a lógica de redirecionamento automático ao escolher "Público". O sistema agora dispara a abertura do Google Maps simultaneamente ao clique de envio, evitando bloqueios de pop-up e garantindo que o fluxo não dependa de uma segunda interação no mobile.
+- **Sanitização de URLs:** Implementada verificação automática de protocolo (https) para links de destino do Google Maps.
 - **Instruções UX Mobile:** Removida a menção a "Ctrl+V" nas instruções de sucesso, substituindo por uma linguagem agnóstica para facilitar a compreensão em smartphones e tablets.
 - **SEO Local Automático:** Implementada injeção dinâmica de JSON-LD nas Páginas Públicas para exibição de estrelas no Google.
 - **Fluxo de Cópia para Clipboard:** Adicionada funcionalidade de cópia automática do depoimento ao escolher "Enviar Público", facilitando a postagem no Google Maps.

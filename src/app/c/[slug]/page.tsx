@@ -82,6 +82,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     findCompany();
   }, [db, rawSlug]);
 
+  const isRedirectAllowed = useMemo(() => {
+    return membershipStatus === 'trial' || membershipStatus === 'gold' || membershipStatus === 'enterprise';
+  }, [membershipStatus]);
+
   const handleGoogleRedirect = async () => {
     if (!db || !targetUserId || !googleMapsUrl) return;
     
@@ -95,6 +99,8 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     }
 
     let finalUrl = googleMapsUrl.trim();
+    if (!finalUrl) return;
+
     const utmParams = 'utm_source=proova&utm_medium=testimonial_success&utm_campaign=google_maps_boost';
     
     if (finalUrl.includes('?')) {
@@ -103,12 +109,9 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       finalUrl += `?${utmParams}`;
     }
 
-    window.open(finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`, '_blank');
+    const secureUrl = finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`;
+    window.open(secureUrl, '_blank');
   };
-
-  const isRedirectAllowed = useMemo(() => {
-    return membershipStatus === 'trial' || membershipStatus === 'gold' || membershipStatus === 'enterprise';
-  }, [membershipStatus]);
 
   const handleResetForm = () => {
     setUserName('');
@@ -124,13 +127,8 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const handleSubmitInitial = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Anti-bot check: Honeypot field must be empty
-    if (honeypot) {
-      console.warn("Bot activity detected (honeypot)");
-      return;
-    }
+    if (honeypot) return;
 
-    // Anti-bot check: Fast completion (less than 3 seconds)
     if (Date.now() - loadTime < 3000) {
       toast({
         variant: "destructive",
@@ -157,16 +155,22 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     setIsSubmitting(true);
     setFinalDest(destination);
 
-    // Auto-copy for Google if public
+    // 1. Processar Redirecionamento e Cópia IMEDIATAMENTE (antes do await do Firestore)
+    // Isso aproveita o contexto do clique do usuário para evitar bloqueio de popups
     if (destination === 'public') {
       try {
         await navigator.clipboard.writeText(text.trim());
         toast({
           title: "Texto Copiado!",
-          description: "Copiamos seu elogio para você colar no Google agora.",
+          description: "Cole seu elogio no perfil da empresa.",
         });
+        
+        // Se permitido, já abre o Google Maps em paralelo
+        if (googleMapsUrl && rating >= 4 && isRedirectAllowed) {
+          handleGoogleRedirect();
+        }
       } catch (err) {
-        console.warn("Clipboard copy failed", err);
+        console.warn("Clipboard/Redirect trigger failed", err);
       }
     }
 
@@ -182,36 +186,33 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     const collectionName = destination === 'public' ? 'testimonials' : 'private_feedbacks';
     const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
 
-    addDoc(feedbacksRef, testimonialData)
-      .then(async () => {
-        try {
-          const userRef = doc(db, 'users', targetUserId);
-          await updateDoc(userRef, {
-            testimonialsCount: increment(1)
-          });
-        } catch (e) {
-          console.error("Erro ao incrementar testimonialsCount:", e);
-        }
-
-        setSubmitted(true);
-        setIsSubmitting(false);
-        setSelectionPending(false);
-        
-        toast({
-          title: destination === 'public' ? "Publicado com Sucesso!" : "Feedback Enviado Privado",
-          description: destination === 'public' ? "Seu elogio agora brilha no nosso site." : "A gerência recebeu seu feedback sigiloso.",
-        });
-      })
-      .catch(async (err) => {
-        const permissionError = new FirestorePermissionError({
-          path: feedbacksRef.path,
-          operation: 'create',
-          requestResourceData: testimonialData,
-        } satisfies SecurityRuleContext);
-        
-        errorEmitter.emit('permission-error', permissionError);
-        setIsSubmitting(false);
+    try {
+      await addDoc(feedbacksRef, testimonialData);
+      
+      const userRef = doc(db, 'users', targetUserId);
+      await updateDoc(userRef, {
+        testimonialsCount: increment(1)
       });
+
+      setSubmitted(true);
+      setIsSubmitting(false);
+      setSelectionPending(false);
+      
+      toast({
+        title: destination === 'public' ? "Publicado com Sucesso!" : "Feedback Enviado Privado",
+        description: destination === 'public' ? "Seu elogio agora brilha no nosso site." : "A gerência recebeu seu feedback sigiloso.",
+      });
+    } catch (err: any) {
+      console.error("Firestore Error:", err);
+      const permissionError = new FirestorePermissionError({
+        path: feedbacksRef.path,
+        operation: 'create',
+        requestResourceData: testimonialData,
+      } satisfies SecurityRuleContext);
+      
+      errorEmitter.emit('permission-error', permissionError);
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoadingCompany) {
@@ -262,15 +263,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
-                  <p className="text-xs text-muted-foreground">O seu elogio foi copiado. Clique no botão abaixo, cole o texto e envie no Google!</p>
+                  <p className="text-xs text-muted-foreground">Se a janela do Google não abriu, clique no botão abaixo para colar seu elogio lá.</p>
                 </div>
                 <Button 
                   onClick={handleGoogleRedirect}
                   className="w-full h-14 rounded-xl gap-3 text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all bg-[#4285F4] hover:bg-[#357ae8]"
                 >
-                  <MapPin className="w-5 h-5" /> Avaliar no Google (Colar Elogio)
+                  <MapPin className="w-5 h-5" /> Abrir Google Maps (Colar)
                 </Button>
-                <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Isso nos ajuda a crescer nossa visibilidade local</p>
+                <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Sua nota nos ajuda a crescer localmente</p>
               </div>
             )}
             
@@ -350,7 +351,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               </div>
             ) : (
               <form onSubmit={handleSubmitInitial} className="space-y-6">
-                {/* Honeypot field (invisible to users) */}
                 <div className="hidden" aria-hidden="true">
                   <input 
                     type="text" 
@@ -379,7 +379,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                             "relative transition-all duration-300 focus:outline-none p-1",
                             isActive ? "scale-110" : "scale-100 opacity-40",
                             isSelected ? "scale-110 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" : "hover:scale-125",
-                            "active:scale-150 transition-transform cubic-bezier(0.34, 1.56, 0.64, 1)"
+                            "active:scale-150 transition-transform"
                           )}
                         >
                           <Star 
@@ -392,9 +392,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                       );
                     })}
                   </div>
-                  {rating === 0 && (
-                    <p className="text-[10px] text-destructive font-bold uppercase animate-pulse">Clique em uma estrela para avaliar</p>
-                  )}
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
