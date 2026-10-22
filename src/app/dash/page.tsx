@@ -88,7 +88,6 @@ export default function DashPage() {
   const [baseUrl, setBaseUrl] = useState('');
   
   // Dialog States
-  const [isQrDialogOpen] = useState(false); // We can still use the dialog but state management is internal to buttons
   const [isQrDialogOpenManual, setIsQrDialogOpenManual] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -133,12 +132,6 @@ export default function DashPage() {
   
   const { data: activeAnnouncements, error: announcementsError, loading: announcementsLoading } = useCollection(announcementsQuery);
   const [isAnnouncementDismissed, setIsAnnouncementDismissed] = useState(false);
-
-  useEffect(() => {
-    if (activeAnnouncements) {
-      console.log("📢 Anúncios carregados no Dash:", activeAnnouncements.length);
-    }
-  }, [activeAnnouncements]);
 
   const currentAnnouncement = useMemo(() => {
     if (announcementsError || announcementsLoading) return null;
@@ -260,7 +253,7 @@ export default function DashPage() {
   const handleSearchPlaces = async () => {
     if (!searchQuery.trim()) return;
     setIsSearchingPlaces(true);
-    setPlaceResults([]); // Limpa resultados anteriores
+    setPlaceResults([]); 
     try {
       const results = await searchGooglePlaces(searchQuery, userData?.city || userCity, userData?.state || userState);
       setPlaceResults(results);
@@ -455,17 +448,10 @@ export default function DashPage() {
     ctx.roundRect(80, 80, 920, 920, 60);
     ctx.fill();
 
-    // Shadow effect
-    ctx.shadowColor = 'rgba(0,0,0,0.1)';
-    ctx.shadowBlur = 40;
-    ctx.shadowOffsetY = 20;
-
     // Draw Logo Text
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetY = 0;
     ctx.fillStyle = '#f97316';
     ctx.font = 'bold 32px Inter, sans-serif';
-    ctx.fillText('PROOVA', 140, 150);
+    ctx.fillText('PROOVA', 140, 160);
 
     // Quotation Mark
     ctx.font = '900 160px Inter, sans-serif';
@@ -485,14 +471,14 @@ export default function DashPage() {
 
     // Testimonial Text
     ctx.fillStyle = '#1f2937';
-    ctx.font = 'italic 500 48px Inter, sans-serif';
+    ctx.font = 'italic 500 44px Inter, sans-serif';
     
     const text = `"${selectedTestimonialForCard.text}"`;
     const maxWidth = 800;
     const words = text.split(' ');
     let line = '';
     let y = 480;
-    const lineHeight = 65;
+    const lineHeight = 60;
 
     for (let n = 0; words[n]; n++) {
       const testLine = line + words[n] + ' ';
@@ -565,7 +551,6 @@ export default function DashPage() {
             text: `Olha o que o cliente ${selectedTestimonialForCard.userName} disse sobre nós!`,
           });
         } else {
-          // Fallback if not supported
           handleDownloadSocialCard();
           toast({ title: "Modo Download", description: "Seu navegador não suporta compartilhamento direto. Baixando imagem..." });
         }
@@ -895,7 +880,7 @@ export default function DashPage() {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="h-8 text-[10px] font-black uppercase tracking-widest gap-1.5 text-primary hover:bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-8 text-[10px] font-black uppercase tracking-widest gap-1.5 text-primary hover:bg-primary/5 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                           onClick={() => {
                             setSelectedTestimonialForCard(t);
                             setIsSocialCardDialogOpen(true);
@@ -1233,67 +1218,69 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Social Card Dialog */}
+      {/* Social Card Dialog - Optimized for Mobile */}
       <Dialog open={isSocialCardDialogOpen} onOpenChange={setIsSocialCardDialogOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md border-none shadow-2xl overflow-hidden p-0">
-          <DialogHeader className="p-8 pt-10 pb-4 bg-background">
-            <DialogTitle className="text-2xl font-black font-headline text-center">Social Card VIP</DialogTitle>
-            <DialogDescription className="text-center">Transforme este depoimento em uma arte para seu Instagram.</DialogDescription>
+        <DialogContent className="rounded-[2rem] sm:rounded-3xl sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
+          <DialogHeader className="p-6 pt-10 pb-4 bg-background shrink-0">
+            <DialogTitle className="text-xl md:text-2xl font-black font-headline text-center">Social Card VIP</DialogTitle>
+            <DialogDescription className="text-center text-xs md:text-sm">Transforme este depoimento em uma arte para seu Instagram.</DialogDescription>
           </DialogHeader>
 
-          <div className="p-6 flex flex-col items-center">
+          <div className="px-6 py-2 flex-1 overflow-y-auto flex flex-col items-center">
             {selectedTestimonialForCard && (
-              <div className="w-full aspect-square bg-gradient-to-br from-primary to-orange-600 rounded-[2rem] p-8 shadow-xl flex flex-col relative overflow-hidden">
-                <div className="bg-white rounded-[1.5rem] p-6 h-full flex flex-col shadow-inner">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black text-primary tracking-widest">PROOVA</span>
-                    <Quote className="w-8 h-8 text-primary/10" />
+              <div className="w-full aspect-square max-w-[340px] bg-gradient-to-br from-primary to-orange-600 rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-8 shadow-xl flex flex-col relative overflow-hidden shrink-0">
+                <div className="bg-white rounded-[1.25rem] md:rounded-[1.5rem] p-4 md:p-6 h-full flex flex-col shadow-inner overflow-hidden">
+                  <div className="flex items-center justify-between mb-2 md:mb-4">
+                    <span className="text-[8px] md:text-[10px] font-black text-primary tracking-widest">PROOVA</span>
+                    <Quote className="w-6 h-6 md:w-8 md:h-8 text-primary/10" />
                   </div>
                   
-                  <div className="flex gap-1 mb-4">
+                  <div className="flex gap-1 mb-2 md:mb-4">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn("w-4 h-4", i < selectedTestimonialForCard.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/20")} />
+                      <Star key={i} className={cn("w-3 h-3 md:w-4 md:h-4", i < selectedTestimonialForCard.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/20")} />
                     ))}
                   </div>
 
-                  <p className="text-lg md:text-xl font-medium italic text-gray-800 leading-relaxed mb-6 flex-1 line-clamp-6">
+                  <p className="text-sm md:text-xl font-medium italic text-gray-800 leading-relaxed mb-4 md:mb-6 flex-1 line-clamp-4 md:line-clamp-6 overflow-hidden">
                     "{selectedTestimonialForCard.text}"
                   </p>
 
-                  <div className="border-t pt-4">
-                    <p className="font-bold text-primary text-base">{selectedTestimonialForCard.userName}</p>
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Avaliação Verificada</p>
+                  <div className="border-t pt-2 md:pt-4">
+                    <p className="font-bold text-primary text-sm md:text-base truncate">{selectedTestimonialForCard.userName}</p>
+                    <p className="text-[8px] md:text-[10px] font-black text-muted-foreground uppercase tracking-widest">Avaliação Verificada</p>
                   </div>
                 </div>
-                <div className="absolute bottom-4 left-0 right-0 text-center">
-                   <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.3em]">Gerado via proova.pro</p>
+                <div className="absolute bottom-2 left-0 right-0 text-center">
+                   <p className="text-[7px] md:text-[8px] font-black text-white/40 uppercase tracking-[0.3em]">Gerado via proova.pro</p>
                 </div>
               </div>
             )}
           </div>
 
-          <DialogFooter className="p-8 pt-0 pb-10 bg-background flex flex-col gap-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+          <DialogFooter className="p-6 pt-4 pb-8 bg-background flex flex-col gap-4 shrink-0">
+            <div className="grid grid-cols-2 gap-3 w-full">
               <Button 
                 variant="outline"
-                className="h-14 rounded-2xl text-sm font-black shadow-sm gap-2 border-primary/20 text-primary hover:bg-primary/5" 
+                className="h-12 md:h-14 rounded-xl md:rounded-2xl text-xs md:text-sm font-black shadow-sm gap-2 border-primary/20 text-primary hover:bg-primary/5 px-2" 
                 onClick={handleDownloadSocialCard}
                 disabled={isGeneratingCard}
               >
-                {isGeneratingCard ? <Loader2 className="animate-spin" /> : <Download className="w-4 h-4" />}
-                Baixar PNG
+                {isGeneratingCard ? <Loader2 className="animate-spin w-4 h-4" /> : <Download className="w-4 h-4" />}
+                <span>Baixar</span>
               </Button>
               
               <Button 
-                className="h-14 rounded-2xl text-sm font-black shadow-xl gap-2" 
+                className="h-12 md:h-14 rounded-xl md:rounded-2xl text-xs md:text-sm font-black shadow-xl gap-2 px-2" 
                 onClick={handleShareSocialCard}
                 disabled={isSharingCard}
               >
-                {isSharingCard ? <Loader2 className="animate-spin" /> : <Share className="w-4 h-4" />}
-                Compartilhar Arte
+                {isSharingCard ? <Loader2 className="animate-spin w-4 h-4" /> : <Share className="w-4 h-4" />}
+                <span>Compartilhar</span>
               </Button>
             </div>
-            <p className="text-[9px] text-center text-muted-foreground uppercase font-bold">Resolução 1080x1080 (Feed & Stories)</p>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-[8px] md:text-[10px] text-center text-muted-foreground uppercase font-black tracking-widest opacity-60">Resolução 1080x1080 (Feed & Stories)</p>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
