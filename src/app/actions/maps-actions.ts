@@ -1,18 +1,61 @@
 'use server';
 
+import { headers } from 'next/headers';
+import { initializeFirebase } from '@/firebase';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+
+/**
+ * Verifica o limite de requisições (Rate Limit) no Firestore.
+ * Limite: 10 requisições por minuto.
+ */
+async function checkRateLimit(actionName: string) {
+  const { firestore } = initializeFirebase();
+  const headerList = await headers();
+  const ip = headerList.get('x-forwarded-for') || 'unknown';
+  
+  const oneMinuteAgo = new Date(Date.now() - 60000);
+  const rateLimitRef = collection(firestore, 'rate_limits');
+  
+  const q = query(
+    rateLimitRef,
+    where('ip', '==', ip),
+    where('action', '==', actionName),
+    where('createdAt', '>', Timestamp.fromDate(oneMinuteAgo))
+  );
+  
+  const snap = await getDocs(q);
+  
+  if (snap.size >= 10) {
+    throw new Error('Limite de requisições excedido (10/min). Tente novamente em um minuto.');
+  }
+
+  // Registra a nova requisição
+  await addDoc(rateLimitRef, {
+    ip,
+    action: actionName,
+    createdAt: serverTimestamp()
+  });
+}
+
 /**
  * @fileOverview Server Actions para integração com Google Maps API.
- * Atualizado para usar a Places API (New) v1 para maior precisão.
+ * Atualizado com Rate Limit de 10 requisições por minuto.
  */
+export async function searchGooglePlaces(queryStr: string, city: string, state: string) {
+  try {
+    await checkRateLimit('google_maps_search');
+  } catch (e: any) {
+    console.warn("Rate Limit atingido:", e.message);
+    throw new Error(e.message);
+  }
 
-export async function searchGooglePlaces(query: string, city: string, state: string) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
     console.warn("Atenção: GOOGLE_MAPS_API_KEY não encontrada no servidor. Usando modo de simulação.");
     return [
       { 
-        name: `${query}`, 
+        name: `${queryStr}`, 
         address: `Exemplo: Rua das Flores, 123 - ${city || 'Cidade'}, ${state || 'UF'}`, 
         place_id: "ChIJN1t_tDeuEmsRUsoyG83frY4",
         isMock: true 
@@ -21,12 +64,11 @@ export async function searchGooglePlaces(query: string, city: string, state: str
   }
 
   try {
-    // Tenta primeiro uma busca refinada por localização
-    let textQuery = query;
+    let textQuery = queryStr;
     if (city && state) {
-      textQuery = `${query} em ${city} ${state}`;
+      textQuery = `${queryStr} em ${city} ${state}`;
     } else if (city) {
-      textQuery = `${query} em ${city}`;
+      textQuery = `${queryStr} em ${city}`;
     }
 
     const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
@@ -40,13 +82,12 @@ export async function searchGooglePlaces(query: string, city: string, state: str
         textQuery: textQuery,
         languageCode: 'pt-BR',
       }),
-      next: { revalidate: 0 } // Desativa cache para garantir resultados frescos durante a config
+      next: { revalidate: 0 }
     });
 
     const data = await response.json();
 
-    // Se a busca refinada falhar, tenta uma busca bruta apenas pelo nome
-    if ((!data.places || data.places.length === 0) && textQuery !== query) {
+    if ((!data.places || data.places.length === 0) && textQuery !== queryStr) {
       const fallbackRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
         method: 'POST',
         headers: {
@@ -55,7 +96,7 @@ export async function searchGooglePlaces(query: string, city: string, state: str
           'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress',
         },
         body: JSON.stringify({
-          textQuery: query,
+          textQuery: queryStr,
           languageCode: 'pt-BR',
         }),
       });

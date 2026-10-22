@@ -7,12 +7,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin, Shield, ArrowLeft, Globe, Copy } from 'lucide-react';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError, type SecurityRuleContext } from '@/firebase/errors';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
+import { submitTestimonialAction } from '@/app/actions/testimonial-actions';
 
 export default function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug: rawSlug } = use(params);
@@ -104,7 +103,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
     const secureUrl = finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`;
     
-    // Tenta abrir. Se falhar (bloqueador), o usuário terá o botão de fallback na tela de sucesso.
     try {
       window.open(secureUrl, '_blank');
     } catch (e) {
@@ -150,18 +148,15 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   };
 
   const handleFinalSubmit = async (destination: 'public' | 'private') => {
-    if (!db || !targetUserId) return;
+    if (!targetUserId) return;
     setIsSubmitting(true);
     setFinalDest(destination);
 
-    // Processar Redirecionamento e Cópia IMEDIATAMENTE ao clique (crítico para mobile/popups)
     if (destination === 'public') {
-      // 1. Redirecionamento (disparado antes de await para manter contexto de clique)
       if (googleMapsUrl) {
         handleGoogleRedirect(googleMapsUrl);
       }
 
-      // 2. Copia para o clipboard
       try {
         await navigator.clipboard.writeText(text.trim());
         toast({
@@ -173,26 +168,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       }
     }
 
-    const testimonialData = {
-      userName: userName.trim(),
-      userEmail: userEmail.trim().toLowerCase(),
+    // Chama a Server Action com Rate Limit
+    const result = await submitTestimonialAction({
+      targetUserId,
+      destination,
+      userName,
+      userEmail,
       rating,
-      text: text.trim(),
-      status: 'approved',
-      createdAt: serverTimestamp(),
-    };
+      text
+    });
 
-    const collectionName = destination === 'public' ? 'testimonials' : 'private_feedbacks';
-    const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
-
-    try {
-      await addDoc(feedbacksRef, testimonialData);
-      
-      const userRef = doc(db, 'users', targetUserId);
-      await updateDoc(userRef, {
-        testimonialsCount: increment(1)
-      });
-
+    if (result.success) {
       setSubmitted(true);
       setIsSubmitting(false);
       setSelectionPending(false);
@@ -201,15 +187,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
         title: destination === 'public' ? "Publicado com Sucesso!" : "Feedback Enviado Privado",
         description: destination === 'public' ? "Seu elogio agora brilha no nosso site." : "A gerência recebeu seu feedback sigiloso.",
       });
-    } catch (err: any) {
-      console.error("Firestore Error:", err);
-      const permissionError = new FirestorePermissionError({
-        path: feedbacksRef.path,
-        operation: 'create',
-        requestResourceData: testimonialData,
-      } satisfies SecurityRuleContext);
-      
-      errorEmitter.emit('permission-error', permissionError);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Falha no Envio",
+        description: result.error || "Ocorreu um erro ao processar seu depoimento.",
+      });
       setIsSubmitting(false);
     }
   };

@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Segurança & Rate Limiting - [FINALIZADO]:** Implementada proteção global de 10 requisições por minuto (Rate Limit) baseada em IP via Firestore. O sistema agora protege a API do Google Maps contra abusos e o formulário de coleta contra SPAM. Migrada a lógica de submissão para Server Actions para maior controle de backend.
 - **Consultor Proativo & UX Marketing - [FINALIZADO]:** Implementada seção de alertas inteligentes no Dashboard que sugere ações baseadas em dados (ex: configurar Google Maps, responder feedbacks privados). Otimizado o fluxo de geração de Kit de Marketing (Cartaz) para ser mais ágil e intuitivo.
 - **Social Cards (Compartilhamento VIP) - [FINALIZADO]:** Implementada ferramenta de geração de artes para redes sociais. O sistema agora permite transformar depoimentos 5 estrelas em imagens de alta resolução (1080x1080) otimizadas para o Instagram, com um clique. Adicionada funcionalidade de compartilhamento nativo (Web Share API) e download direto em PNG.
 - **Precisão Google Maps (Zero-Click) - [FINALIZADO]:** Implementada integração real com a `Google Places API` via Server Action. O sistema agora busca estabelecimentos no banco de dados oficial do Google usando a chave de API configurada no servidor, capturando o `place_id` exato para gerar links de avaliação infalíveis.
