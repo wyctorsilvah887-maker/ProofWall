@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from "react";
@@ -8,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2, ArrowRight, MapPin, Inbox, Layout } from "lucide-react";
+import { Star, CheckCircle2, Link2, ShieldCheck, Zap, Loader2, ArrowRight, MapPin, Inbox, Layout, Scale, Lock } from "lucide-react";
 import { useUser } from "@/firebase";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -177,7 +176,6 @@ export default function Home() {
             </div>
             
             <div className="grid gap-6 md:gap-8 md:grid-cols-3">
-              {/* Pillar 1 */}
               <div className="bg-card border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
                 <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
                 <div className="space-y-4 md:space-y-6">
@@ -191,7 +189,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Pillar 2 */}
               <div className="bg-card border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
                 <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
                 <div className="space-y-4 md:space-y-6">
@@ -205,7 +202,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Pillar 3 */}
               <div className="bg-card border rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
                 <div className="h-1.5 w-full bg-primary absolute top-0 left-0" />
                 <div className="space-y-4 md:space-y-6">
@@ -335,11 +331,13 @@ export default function Home() {
              <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="dark:hidden object-contain" />
              <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-center gap-4 md:gap-6">
-              <Link href="/pricing" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors">Preços</Link>
-              <Link href="/signup" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors">Começar</Link>
-              <Link href="/login" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors">Login</Link>
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
+              <Link href="/pricing" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors uppercase tracking-widest">Preços</Link>
+              <Link href="/signup" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors uppercase tracking-widest">Começar</Link>
+              <Link href="/login" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors uppercase tracking-widest">Login</Link>
+              <Link href="/terms" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-1"><Scale className="w-3 h-3" /> Termos</Link>
+              <Link href="/privacy" className="text-[10px] md:text-xs font-bold hover:text-primary transition-colors uppercase tracking-widest flex items-center gap-1"><Lock className="w-3 h-3" /> Privacidade</Link>
             </div>
             <p className="text-[10px] md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
             <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-[0.2em] md:tracking-[0.3em] font-black opacity-40">
