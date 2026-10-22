@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin, Shield, ArrowLeft, Globe } from 'lucide-react';
+import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin, Shield, ArrowLeft, Globe, Copy } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
@@ -32,6 +32,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [companyNameDisplay, setCompanyNameDisplay] = useState('');
   const [membershipStatus, setMembershipStatus] = useState<string | null>(null);
   const [finalDest, setFinalDest] = useState<'public' | 'private' | null>(null);
+  
+  // Anti-bot state
+  const [honeypot, setHoneypot] = useState('');
+  const [loadTime] = useState(Date.now());
 
   useEffect(() => {
     async function findCompany() {
@@ -68,21 +72,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
           setIsLoadingCompany(false);
           return;
         }
-
-        const probableName = decodedSlug.replace(/-/g, ' ');
-        const q3 = query(usersRef, where('companyName', '>=', probableName), limit(5));
-        const snap3 = await getDocs(q3);
-        
-        const match = snap3.docs.find(d => d.data().companyName.toLowerCase() === probableName.toLowerCase());
-        
-        if (match) {
-          const data = match.data();
-          setTargetUserId(match.id);
-          setCompanyNameDisplay(data.companyName);
-          setGoogleMapsUrl(data.googleMapsUrl || null);
-          setMembershipStatus(data.membershipStatus || 'lead');
-        }
-
       } catch (err) {
         console.error("Erro ao localizar empresa:", err);
       } finally {
@@ -134,6 +123,23 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
   const handleSubmitInitial = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Anti-bot check: Honeypot field must be empty
+    if (honeypot) {
+      console.warn("Bot activity detected (honeypot)");
+      return;
+    }
+
+    // Anti-bot check: Fast completion (less than 3 seconds)
+    if (Date.now() - loadTime < 3000) {
+      toast({
+        variant: "destructive",
+        title: "Calma aí!",
+        description: "Você está enviando rápido demais. Aguarde um segundo.",
+      });
+      return;
+    }
+
     if (rating === 0) {
       toast({
         variant: "destructive",
@@ -150,6 +156,19 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     if (!db || !targetUserId) return;
     setIsSubmitting(true);
     setFinalDest(destination);
+
+    // Auto-copy for Google if public
+    if (destination === 'public') {
+      try {
+        await navigator.clipboard.writeText(text.trim());
+        toast({
+          title: "Texto Copiado!",
+          description: "Copiamos seu elogio para você colar no Google agora.",
+        });
+      } catch (err) {
+        console.warn("Clipboard copy failed", err);
+      }
+    }
 
     const testimonialData = {
       userName: userName.trim(),
@@ -243,13 +262,13 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
-                  <p className="text-xs text-muted-foreground">Você poderia nos ajudar replicando essa avaliação no nosso perfil do Google?</p>
+                  <p className="text-xs text-muted-foreground">O seu elogio foi copiado. Clique no botão abaixo, cole (Ctrl+V) e envie no Google!</p>
                 </div>
                 <Button 
                   onClick={handleGoogleRedirect}
                   className="w-full h-14 rounded-xl gap-3 text-sm font-bold shadow-xl hover:scale-105 active:scale-95 transition-all bg-[#4285F4] hover:bg-[#357ae8]"
                 >
-                  <MapPin className="w-5 h-5" /> Avaliar no Google Business
+                  <MapPin className="w-5 h-5" /> Avaliar no Google (Colar Elogio)
                 </Button>
                 <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-medium">Isso nos ajuda a crescer nossa visibilidade local</p>
               </div>
@@ -299,20 +318,20 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                   <Button 
                     disabled={isSubmitting}
                     onClick={() => handleFinalSubmit('public')}
-                    className="h-20 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[#4285F4] hover:bg-[#357ae8] shadow-xl transition-all hover:scale-[1.02] active:scale-95 border-none"
+                    className="h-24 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[#4285F4] hover:bg-[#357ae8] shadow-xl transition-all hover:scale-[1.02] active:scale-95 border-none"
                   >
                     <div className="flex items-center gap-2">
                       <Globe className="w-5 h-5" />
                       <span className="font-bold text-lg">Público no Google & Site</span>
                     </div>
-                    <span className="text-[9px] opacity-70 uppercase font-black tracking-widest">Aumenta nossa visibilidade para o mundo</span>
+                    <span className="text-[9px] opacity-70 uppercase font-black tracking-widest px-4 text-center">Copiaremos seu texto para você colar no perfil da empresa</span>
                   </Button>
                   
                   <Button 
                     disabled={isSubmitting}
                     variant="outline"
                     onClick={() => handleFinalSubmit('private')}
-                    className="h-20 rounded-2xl flex flex-col items-center justify-center gap-1 border-primary/20 text-primary hover:bg-primary/5 shadow-md transition-all hover:scale-[1.02] active:scale-95"
+                    className="h-24 rounded-2xl flex flex-col items-center justify-center gap-1 border-primary/20 text-primary hover:bg-primary/5 shadow-md transition-all hover:scale-[1.02] active:scale-95"
                   >
                     <div className="flex items-center gap-2">
                       <Shield className="w-5 h-5" />
@@ -331,6 +350,17 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               </div>
             ) : (
               <form onSubmit={handleSubmitInitial} className="space-y-6">
+                {/* Honeypot field (invisible to users) */}
+                <div className="hidden" aria-hidden="true">
+                  <input 
+                    type="text" 
+                    name="website_url" 
+                    tabIndex={-1} 
+                    value={honeypot} 
+                    onChange={(e) => setHoneypot(e.target.value)} 
+                  />
+                </div>
+
                 <div className="space-y-3 text-center">
                   <label className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sua Nota</label>
                   <div className="flex justify-center gap-1 sm:gap-2">
@@ -387,9 +417,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                       onChange={(e) => setUserEmail(e.target.value)}
                       className="h-11 bg-background"
                     />
-                    <p className="text-[10px] text-muted-foreground mt-1 px-1">
-                      Usado apenas para identificação e contato se necessário.
-                    </p>
                   </div>
                 </div>
 
@@ -418,7 +445,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
                 </Button>
 
                 <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
-                  🔒 Conexão Segura Proova
+                  🔒 Conexão Segura Proova Antispam
                 </p>
               </form>
             )}
@@ -428,4 +455,3 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     </div>
   );
 }
-

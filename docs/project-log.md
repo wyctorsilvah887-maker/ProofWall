@@ -2,17 +2,13 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
-- **Planos & Restrições:** Implementada hierarquia completa: Plano Base (10 reviews), Trial/Gold (50 reviews) e Enterprise (Ilimitado).
-- **Mural Avançado:** Implementado bloqueio de layouts (Carrossel, Masonry, Popup) e customização de cores secundárias para o Plano Base.
-- **Checkout Cakto:** Corrigido erro de parâmetro na URL de checkout (substituição de '&' por '?').
-- **UX & Tutorial:** Atualizado tutorial da Página Pública para orientar sobre o ícone de monitor e corrigido botão de tutorial em editores.
-- **Estratégia:** Documentada tese de "Suporte Prioritário" para o plano Gold em `docs/strategy.md`.
-- **DNS e Domínio:** Orientação para gestão de DNS via Vercel Dashboard.
-- **Consolidação de Marca:** Atualização do rodapé da Landing Page e página de recuperação de senha com a assinatura "Synapse Group".
-- **Double-Down Reviews (Google Maps):** Implementada lógica na página de coleta (`/c`) que exibe o botão do Google Maps apenas para depoimentos de 4 ou 5 estrelas em planos Trial/Gold/Enterprise.
+- **SEO Local Automático:** Implementada injeção dinâmica de JSON-LD nas Páginas Públicas para exibição de estrelas no Google.
+- **Fluxo de Cópia para Clipboard:** Adicionada funcionalidade de cópia automática do depoimento ao escolher "Enviar Público", facilitando a postagem no Google Maps.
+- **Proteção Anti-Bot:** Implementado campo Honeypot e verificação de tempo de submissão (Minimum Load Time) para prevenir ataques de spam e bots automáticos.
+- **Compliance Jurídico:** Integração de captura de IP e Timestamp no aceite de Termos de Uso e Privacidade durante o cadastro.
+- **Estratégia Documentada:** Criado `docs/strategy.md` com o roteiro de inovações futuras (AI Smart Pick, Genkit Shield, etc).
 
 ## 🚀 Próximos Marcos Técnicos
-- [ ] Implementação de Depoimentos em Vídeo (Ver tese em docs/strategy.md).
-- [ ] Moderação Automática com IA (Genkit).
-- [ ] Sistema de Recompensas e Cupons (Gamificação).
-- [ ] Ativação do Suporte Prioritário Gold (Estratégia 5).
+- [ ] Implementação de Depoimentos em Vídeo.
+- [ ] Ativação da Moderação Automática com Genkit (Shield).
+- [ ] Dashboard de Insights de Sentimento para feedbacks privados.
