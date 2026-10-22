@@ -2,7 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
-- **Social Cards (Compartilhamento VIP) - [FINALIZADO]:** Implementada ferramenta de geração de artes para redes sociais. O sistema agora permite transformar depoimentos 5 estrelas em imagens de alta resolução (1080x1080) otimizadas para o Instagram, com um clique, facilitando o marketing orgânico dos clientes.
+- **Social Cards (Compartilhamento VIP) - [FINALIZADO]:** Implementada ferramenta de geração de artes para redes sociais. O sistema agora permite transformar depoimentos 5 estrelas em imagens de alta resolução (1080x1080) otimizadas para o Instagram, com um clique. Adicionada funcionalidade de compartilhamento nativo (Web Share API) e download direto em PNG.
 - **Precisão Google Maps (Zero-Click) - [FINALIZADO]:** Implementada integração real com a `Google Places API` via Server Action. O sistema agora busca estabelecimentos no banco de dados oficial do Google usando a chave de API configurada no servidor, capturando o `place_id` exato para gerar links de avaliação infalíveis.
 - **Redirecionamento Google Maps:** Corrigida a lógica de redirecionamento automático ao escolher "Público". O sistema agora dispara a abertura do Google Maps simultaneamente ao clique de envio, evitando bloqueios de pop-up e garantindo que o fluxo não dependa de uma segunda interação no mobile. Recurso agora liberado para todos os planos e notas.
 - **Sanitização de URLs:** Implementada verificação automática de protocolo (https) para links de destino do Google Maps.

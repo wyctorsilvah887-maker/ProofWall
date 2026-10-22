@@ -9,7 +9,6 @@ import {
   LogOut,
   User,
   Loader2,
-  ArrowRight,
   Share2,
   Copy,
   Link2,
@@ -45,7 +44,8 @@ import {
   AlertCircle,
   Instagram,
   ImageIcon,
-  Quote
+  Quote,
+  Share
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -88,7 +88,8 @@ export default function DashPage() {
   const [baseUrl, setBaseUrl] = useState('');
   
   // Dialog States
-  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const [isQrDialogOpen] = useState(false); // We can still use the dialog but state management is internal to buttons
+  const [isQrDialogOpenManual, setIsQrDialogOpenManual] = useState(false);
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isSlugDialogOpen, setIsSlugDialogOpen] = useState(false);
@@ -101,6 +102,7 @@ export default function DashPage() {
   const [pdfTheme, setPdfTheme] = useState<'light' | 'dark'>('light');
   const [selectedTestimonialForCard, setSelectedTestimonialForCard] = useState<any>(null);
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const [isSharingCard, setIsSharingCard] = useState(false);
 
   // Zero-Click Google Search States
   const [googleStep, setGoogleStep] = useState<'info' | 'location' | 'search' | 'manual'>('info');
@@ -430,100 +432,106 @@ export default function DashPage() {
     }
   };
 
-  const handleDownloadSocialCard = async () => {
-    if (!selectedTestimonialForCard) return;
-    setIsGeneratingCard(true);
+  const generateSocialCardCanvas = async () => {
+    if (!selectedTestimonialForCard) return null;
     
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    canvas.width = 1080;
+    canvas.height = 1080;
+
+    // Background Gradient
+    const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
+    gradient.addColorStop(0, '#f97316');
+    gradient.addColorStop(1, '#ea580c');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // White Card
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(80, 80, 920, 920, 60);
+    ctx.fill();
+
+    // Shadow effect
+    ctx.shadowColor = 'rgba(0,0,0,0.1)';
+    ctx.shadowBlur = 40;
+    ctx.shadowOffsetY = 20;
+
+    // Draw Logo Text
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.fillStyle = '#f97316';
+    ctx.font = 'bold 32px Inter, sans-serif';
+    ctx.fillText('PROOVA', 140, 150);
+
+    // Quotation Mark
+    ctx.font = '900 160px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(249, 115, 22, 0.1)';
+    ctx.fillText('“', 140, 320);
+
+    // Stars
+    const starY = 380;
+    const starSize = 45;
+    const starGap = 15;
+    const startX = 140;
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = i < (selectedTestimonialForCard.rating || 5) ? '#facc15' : '#e5e7eb';
+      ctx.font = `${starSize}px serif`;
+      ctx.fillText('★', startX + (starSize + starGap) * i, starY);
+    }
+
+    // Testimonial Text
+    ctx.fillStyle = '#1f2937';
+    ctx.font = 'italic 500 48px Inter, sans-serif';
+    
+    const text = `"${selectedTestimonialForCard.text}"`;
+    const maxWidth = 800;
+    const words = text.split(' ');
+    let line = '';
+    let y = 480;
+    const lineHeight = 65;
+
+    for (let n = 0; words[n]; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(line, 140, y);
+        line = words[n] + ' ';
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, 140, y);
+
+    // User Name
+    ctx.fillStyle = '#f97316';
+    ctx.font = 'bold 42px Inter, sans-serif';
+    ctx.fillText(selectedTestimonialForCard.userName, 140, y + 100);
+
+    // Company Name
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = 'bold 24px Inter, sans-serif';
+    ctx.fillText(userData?.companyName?.toUpperCase() || 'AVALIAÇÃO OFICIAL', 140, y + 140);
+
+    // Footer branding
+    ctx.fillStyle = '#e5e7eb';
+    ctx.font = '900 20px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('POWERED BY PROOVA.PRO', 540, 960);
+
+    return canvas;
+  };
+
+  const handleDownloadSocialCard = async () => {
+    setIsGeneratingCard(true);
     try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      canvas.width = 1080;
-      canvas.height = 1080;
-
-      // Background Gradient
-      const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
-      gradient.addColorStop(0, '#f97316');
-      gradient.addColorStop(1, '#ea580c');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1080, 1080);
-
-      // White Card
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.roundRect(80, 80, 920, 920, 60);
-      ctx.fill();
-
-      // Shadow effect
-      ctx.shadowColor = 'rgba(0,0,0,0.1)';
-      ctx.shadowBlur = 40;
-      ctx.shadowOffsetY = 20;
-
-      // Draw Logo Text
-      ctx.shadowBlur = 0;
-      ctx.shadowOffsetY = 0;
-      ctx.fillStyle = '#f97316';
-      ctx.font = 'bold 32px Inter, sans-serif';
-      ctx.fillText('PROOVA', 140, 150);
-
-      // Quotation Mark
-      ctx.font = '900 160px Inter, sans-serif';
-      ctx.fillStyle = 'rgba(249, 115, 22, 0.1)';
-      ctx.fillText('“', 140, 320);
-
-      // Stars
-      const starY = 380;
-      const starSize = 45;
-      const starGap = 15;
-      const startX = 140;
-      for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = i < (selectedTestimonialForCard.rating || 5) ? '#facc15' : '#e5e7eb';
-        // Simple star shape drawing or emoji approach for speed in this implementation
-        ctx.font = `${starSize}px serif`;
-        ctx.fillText('★', startX + (starSize + starGap) * i, starY);
-      }
-
-      // Testimonial Text
-      ctx.fillStyle = '#1f2937';
-      ctx.font = 'italic 500 48px Inter, sans-serif';
-      
-      const text = `"${selectedTestimonialForCard.text}"`;
-      const maxWidth = 800;
-      const words = text.split(' ');
-      let line = '';
-      let y = 480;
-      const lineHeight = 65;
-
-      for (let n = 0; words[n]; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, 140, y);
-          line = words[n] + ' ';
-          y += lineHeight;
-        } else {
-          line = testLine;
-        }
-      }
-      ctx.fillText(line, 140, y);
-
-      // User Name
-      ctx.fillStyle = '#f97316';
-      ctx.font = 'bold 42px Inter, sans-serif';
-      ctx.fillText(selectedTestimonialForCard.userName, 140, y + 100);
-
-      // Company Name
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = 'bold 24px Inter, sans-serif';
-      ctx.fillText(userData?.companyName?.toUpperCase() || 'AVALIAÇÃO OFICIAL', 140, y + 140);
-
-      // Footer branding
-      ctx.fillStyle = '#e5e7eb';
-      ctx.font = '900 20px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('POWERED BY PROOVA.PRO', 540, 960);
+      const canvas = await generateSocialCardCanvas();
+      if (!canvas) return;
 
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -532,12 +540,41 @@ export default function DashPage() {
       link.click();
       
       toast({ title: "Card Gerado!", description: "A imagem já está na sua pasta de downloads." });
-      setIsSocialCardDialogOpen(false);
     } catch (err) {
       console.error(err);
       toast({ variant: "destructive", title: "Erro ao gerar Card" });
     } finally {
       setIsGeneratingCard(false);
+    }
+  };
+
+  const handleShareSocialCard = async () => {
+    setIsSharingCard(true);
+    try {
+      const canvas = await generateSocialCardCanvas();
+      if (!canvas) return;
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `proova-card-${selectedTestimonialForCard.userName.toLowerCase()}.png`, { type: 'image/png' });
+        
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Depoimento Verificado',
+            text: `Olha o que o cliente ${selectedTestimonialForCard.userName} disse sobre nós!`,
+          });
+        } else {
+          // Fallback if not supported
+          handleDownloadSocialCard();
+          toast({ title: "Modo Download", description: "Seu navegador não suporta compartilhamento direto. Baixando imagem..." });
+        }
+      }, 'image/png');
+    } catch (err) {
+      console.error(err);
+      toast({ variant: "destructive", title: "Erro ao compartilhar" });
+    } finally {
+      setIsSharingCard(false);
     }
   };
 
@@ -802,7 +839,7 @@ export default function DashPage() {
                   <Button 
                     variant="outline" 
                     className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4 rounded-xl"
-                    onClick={() => setIsQrDialogOpen(true)}
+                    onClick={() => setIsQrDialogOpenManual(true)}
                   >
                     <QrCode className="h-4 w-4" />
                     <span className="whitespace-nowrap">Gerar Cartaz</span>
@@ -1143,7 +1180,7 @@ export default function DashPage() {
       </Dialog>
       
       {/* QR Code Dialog */}
-      <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+      <Dialog open={isQrDialogOpenManual} onOpenChange={setIsQrDialogOpenManual}>
         <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0">
           <DialogHeader className="p-8 pt-10 pb-4 bg-background">
             <DialogTitle className="text-2xl font-black font-headline text-center">Cartaz de Balcão</DialogTitle>
@@ -1236,14 +1273,26 @@ export default function DashPage() {
           </div>
 
           <DialogFooter className="p-8 pt-0 pb-10 bg-background flex flex-col gap-3">
-            <Button 
-              className="w-full h-14 rounded-2xl text-lg font-black shadow-xl gap-2" 
-              onClick={handleDownloadSocialCard}
-              disabled={isGeneratingCard}
-            >
-              {isGeneratingCard ? <Loader2 className="animate-spin" /> : <ImageIcon className="w-5 h-5" />}
-              Baixar para Instagram
-            </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+              <Button 
+                variant="outline"
+                className="h-14 rounded-2xl text-sm font-black shadow-sm gap-2 border-primary/20 text-primary hover:bg-primary/5" 
+                onClick={handleDownloadSocialCard}
+                disabled={isGeneratingCard}
+              >
+                {isGeneratingCard ? <Loader2 className="animate-spin" /> : <Download className="w-4 h-4" />}
+                Baixar PNG
+              </Button>
+              
+              <Button 
+                className="h-14 rounded-2xl text-sm font-black shadow-xl gap-2" 
+                onClick={handleShareSocialCard}
+                disabled={isSharingCard}
+              >
+                {isSharingCard ? <Loader2 className="animate-spin" /> : <Share className="w-4 h-4" />}
+                Compartilhar Arte
+              </Button>
+            </div>
             <p className="text-[9px] text-center text-muted-foreground uppercase font-bold">Resolução 1080x1080 (Feed & Stories)</p>
           </DialogFooter>
         </DialogContent>
