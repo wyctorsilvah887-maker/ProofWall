@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Compliance Jurídico - [FINALIZADO]:** Implementada captura automática de endereço IP e timestamp no momento do cadastro. O sistema agora vincula o "Proof of Acceptance" (prova de aceite) aos Termos de Uso diretamente no documento do usuário, garantindo segurança jurídica para a plataforma.
 - **Segurança & Rate Limiting - [FINALIZADO]:** Implementada proteção global de 10 requisições por minuto (Rate Limit) baseada em IP via Firestore. O sistema agora protege a API do Google Maps contra abusos e o formulário de coleta contra SPAM. Migrada a lógica de submissão para Server Actions para maior controle de backend.
 - **Consultor Proativo & UX Marketing - [FINALIZADO]:** Implementada seção de alertas inteligentes no Dashboard que sugere ações baseadas em dados (ex: configurar Google Maps, responder feedbacks privados). Otimizado o fluxo de geração de Kit de Marketing (Cartaz) para ser mais ágil e intuitivo.
 - **Social Cards (Compartilhamento VIP) - [FINALIZADO]:** Implementada ferramenta de geração de artes para redes sociais. O sistema agora permite transformar depoimentos 5 estrelas em imagens de alta resolução (1080x1080) otimizadas para o Instagram, com um clique. Adicionada funcionalidade de compartilhamento nativo (Web Share API) e download direto em PNG.
@@ -12,7 +13,6 @@
 - **SEO Local Automático:** Implementada injeção dinâmica de JSON-LD nas Páginas Públicas para exibição de estrelas no Google.
 - **Fluxo de Cópia para Clipboard:** Adicionada funcionalidade de cópia automática do depoimento ao escolher "Enviar Público", facilitando a postagem no Google Maps.
 - **Proteção Anti-Bot:** Implementado campo Honeypot e verificação de tempo de submissão (Minimum Load Time) para prevenir ataques de spam e bots automáticos.
-- **Compliance Jurídico:** Integração de captura de IP e Timestamp no aceite de Termos de Uso e Privacidade durante o cadastro.
 - **Estratégia Documentada:** Criado `docs/strategy.md` com o roteiro de inovações futuras (AI Smart Pick, Genkit Shield, etc).
 
 ## 🚀 Próximos Marcos Técnicos

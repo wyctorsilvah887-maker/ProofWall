@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from "react";
@@ -96,7 +97,7 @@ export default function SignupPage() {
         .then(() => {
           toast({
             title: "Conta Criada!",
-            description: "Seu cadastro foi validado e os termos foram registrados.",
+            description: "Seu cadastro foi validado e o aceite dos termos foi registrado com seu IP.",
           });
           router.push('/dash');
         })
