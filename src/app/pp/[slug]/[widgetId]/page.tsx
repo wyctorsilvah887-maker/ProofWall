@@ -129,6 +129,42 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
     return allTestimonials.filter(t => selectedIds.includes(t.id));
   }, [widgetData, allTestimonials]);
 
+  // SEO LOCAL - JSON-LD Calculation
+  const seoJsonLd = useMemo(() => {
+    if (!companyData || filteredTestimonials.length === 0) return null;
+
+    const avgRating = filteredTestimonials.reduce((acc, t) => acc + (t.rating || 5), 0) / filteredTestimonials.length;
+
+    return {
+      "@context": "https://schema.org/",
+      "@type": "LocalBusiness",
+      "name": companyData.companyName,
+      "image": widgetData?.logoUrl || "",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": avgRating.toFixed(1),
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": filteredTestimonials.length,
+        "reviewCount": filteredTestimonials.length
+      },
+      "review": filteredTestimonials.slice(0, 10).map(t => ({
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": t.rating || 5,
+          "bestRating": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": t.userName
+        },
+        "reviewBody": t.text,
+        "datePublished": t.createdAt?.toDate ? t.createdAt.toDate().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+      }))
+    };
+  }, [companyData, widgetData, filteredTestimonials]);
+
   const layout = widgetData?.layout || 'mural';
   const themeColor = widgetData?.themeColor || '#f97316';
   const secondaryColor = widgetData?.secondaryColor || '#ffffff';
@@ -223,6 +259,14 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
 
   return (
     <div className="min-h-screen bg-background font-body flex flex-col relative overflow-x-hidden text-foreground">
+      {/* Dynamic SEO JSON-LD Script */}
+      {seoJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(seoJsonLd) }}
+        />
+      )}
+
       <nav className="h-16 border-b flex items-center px-6 justify-between bg-background/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-3">
           {showProovaBranding && (
