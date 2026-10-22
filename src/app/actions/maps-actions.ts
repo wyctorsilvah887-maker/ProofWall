@@ -7,12 +7,12 @@
  */
 
 export async function searchGooglePlaces(query: string, city: string, state: string) {
-  // Acesso direto à variável de ambiente do servidor
+  // Acesso direto à variável de ambiente do servidor para segurança total
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
     console.warn("Atenção: GOOGLE_MAPS_API_KEY não encontrada no servidor. Usando modo de simulação.");
-    // Simulação para desenvolvimento sem chave
+    // Simulação para desenvolvimento sem chave ou erro de config
     return [
       { 
         name: `${query}`, 
@@ -30,10 +30,11 @@ export async function searchGooglePlaces(query: string, city: string, state: str
   }
 
   try {
+    // Construção da busca refinada por Cidade e Estado para evitar ambiguidades
     const fullQuery = `${query} em ${city} ${state}`;
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(fullQuery)}&key=${apiKey}&language=pt-BR`;
 
-    const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache de 1 hora para economizar API
+    const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache de 1 hora para economizar cota de API
     const data = await res.json();
 
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {

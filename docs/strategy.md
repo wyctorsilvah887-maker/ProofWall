@@ -26,7 +26,7 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 ## 📊 5. Evolução do Dashboard (Simplicidade & Automação)
 **Tese:** Reduzir a carga cognitiva do usuário e tornar o Dash proativo.
 
-### 5.1 Configuração "Zero-Click" do Google Maps
+### 5.1 Configuração "Zero-Click" do Google Maps - [IMPLEMENTADO]
 - **O que é:** Busca inteligente pelo nome da empresa para capturar o `place_id`.
 - **Fluxo:** 
     1. Usuário clica em "Configurar Link".
