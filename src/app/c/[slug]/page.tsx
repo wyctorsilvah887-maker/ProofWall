@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin } from 'lucide-react';
+import { Star, CheckCircle2, MessageSquare, Loader2, Send, Video, Search, MapPin, Shield, ArrowLeft, Globe } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, limit, doc, updateDoc, increment } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
@@ -25,11 +25,13 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
   const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [selectionPending, setSelectionPending] = useState(false);
   const [targetUserId, setTargetUserId] = useState<string | null>(null);
   const [isLoadingCompany, setIsLoadingCompany] = useState(true);
   const [googleMapsUrl, setGoogleMapsUrl] = useState<string | null>(null);
   const [companyNameDisplay, setCompanyNameDisplay] = useState('');
   const [membershipStatus, setMembershipStatus] = useState<string | null>(null);
+  const [finalDest, setFinalDest] = useState<'public' | 'private' | null>(null);
 
   useEffect(() => {
     async function findCompany() {
@@ -38,7 +40,6 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       try {
         setIsLoadingCompany(true);
         const decodedSlug = decodeURIComponent(rawSlug);
-        
         const normalizedSlug = decodedSlug.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
         const usersRef = collection(db, 'users');
         
@@ -127,11 +128,12 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     setText('');
     setIsSubmitting(false);
     setSubmitted(false);
+    setSelectionPending(false);
+    setFinalDest(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitInitial = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (rating === 0) {
       toast({
         variant: "destructive",
@@ -140,10 +142,14 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       });
       return;
     }
+    if (!userName.trim() || !text.trim()) return;
+    setSelectionPending(true);
+  };
 
-    if (!userName.trim() || !text.trim() || !db || !targetUserId) return;
-
+  const handleFinalSubmit = async (destination: 'public' | 'private') => {
+    if (!db || !targetUserId) return;
     setIsSubmitting(true);
+    setFinalDest(destination);
 
     const testimonialData = {
       userName: userName.trim(),
@@ -154,7 +160,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
       createdAt: serverTimestamp(),
     };
 
-    const collectionName = rating < 4 ? 'private_feedbacks' : 'testimonials';
+    const collectionName = destination === 'public' ? 'testimonials' : 'private_feedbacks';
     const feedbacksRef = collection(db, 'users', targetUserId, collectionName);
 
     addDoc(feedbacksRef, testimonialData)
@@ -170,9 +176,11 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
 
         setSubmitted(true);
         setIsSubmitting(false);
+        setSelectionPending(false);
+        
         toast({
-          title: "Depoimento Enviado!",
-          description: "Obrigado por compartilhar sua experiência.",
+          title: destination === 'public' ? "Publicado com Sucesso!" : "Feedback Enviado Privado",
+          description: destination === 'public' ? "Seu elogio agora brilha no nosso site." : "A gerência recebeu seu feedback sigiloso.",
         });
       })
       .catch(async (err) => {
@@ -231,7 +239,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {companyNameDisplay}.</p>
             </div>
 
-            {googleMapsUrl && rating >= 4 && isRedirectAllowed && (
+            {googleMapsUrl && rating >= 4 && isRedirectAllowed && finalDest === 'public' && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
@@ -278,105 +286,146 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
             <CardDescription>Sua experiência é fundamental para nós.</CardDescription>
           </CardHeader>
           <CardContent className="px-6 md:px-10 pb-10">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-3 text-center">
-                <label className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sua Nota</label>
-                <div className="flex justify-center gap-1 sm:gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const isActive = star <= (hoverRating || rating);
-                    const isSelected = star <= rating;
-                    
-                    return (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setRating(star)}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        className={cn(
-                          "relative transition-all duration-300 focus:outline-none p-1",
-                          isActive ? "scale-110" : "scale-100 opacity-40",
-                          isSelected ? "scale-110 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" : "hover:scale-125",
-                          "active:scale-150 transition-transform cubic-bezier(0.34, 1.56, 0.64, 1)"
-                        )}
-                      >
-                        <Star 
-                          className={cn(
-                            "w-10 h-10 transition-colors duration-300",
-                            isActive ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/40'
-                          )} 
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-                {rating === 0 && (
-                  <p className="text-[10px] text-destructive font-bold uppercase animate-pulse">Clique em uma estrela para avaliar</p>
-                )}
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Seu Nome</label>
-                  <Input 
-                    placeholder="Ex: João Silva" 
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    required
-                    className="h-11 bg-background"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">E-mail (opcional)</label>
-                  <Input 
-                    type="email"
-                    placeholder="Ex: joao@email.com" 
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    className="h-11 bg-background"
-                  />
-                  <p className="text-[10px] text-muted-foreground mt-1 px-1">
-                    Usado apenas para identificação e contato se necessário.
+            {selectionPending ? (
+              <div className="space-y-8 animate-in fade-in zoom-in duration-500 py-4">
+                <div className="text-center space-y-2">
+                  <h3 className="text-xl font-black font-headline">Como deseja prosseguir?</h3>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed px-4">
+                    Para garantir a legitimidade da nossa marca, escolha como quer compartilhar sua experiência.
                   </p>
                 </div>
+                
+                <div className="grid gap-4">
+                  <Button 
+                    disabled={isSubmitting}
+                    onClick={() => handleFinalSubmit('public')}
+                    className="h-20 rounded-2xl flex flex-col items-center justify-center gap-1 bg-[#4285F4] hover:bg-[#357ae8] shadow-xl transition-all hover:scale-[1.02] active:scale-95 border-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Globe className="w-5 h-5" />
+                      <span className="font-bold text-lg">Público no Google & Site</span>
+                    </div>
+                    <span className="text-[9px] opacity-70 uppercase font-black tracking-widest">Aumenta nossa visibilidade para o mundo</span>
+                  </Button>
+                  
+                  <Button 
+                    disabled={isSubmitting}
+                    variant="outline"
+                    onClick={() => handleFinalSubmit('private')}
+                    className="h-20 rounded-2xl flex flex-col items-center justify-center gap-1 border-primary/20 text-primary hover:bg-primary/5 shadow-md transition-all hover:scale-[1.02] active:scale-95"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-5 h-5" />
+                      <span className="font-bold text-lg">Privado para a Empresa</span>
+                    </div>
+                    <span className="text-[9px] opacity-70 uppercase font-black tracking-widest">Sugestão sigilosa direta para a gerência</span>
+                  </Button>
+                </div>
+
+                <div className="flex flex-col items-center gap-4">
+                  {isSubmitting && <Loader2 className="animate-spin text-primary h-6 w-6" />}
+                  <Button variant="ghost" onClick={() => setSelectionPending(false)} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground gap-2">
+                    <ArrowLeft className="w-3 h-3" /> Voltar e Editar Mensagem
+                  </Button>
+                </div>
               </div>
+            ) : (
+              <form onSubmit={handleSubmitInitial} className="space-y-6">
+                <div className="space-y-3 text-center">
+                  <label className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Sua Nota</label>
+                  <div className="flex justify-center gap-1 sm:gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const isActive = star <= (hoverRating || rating);
+                      const isSelected = star <= rating;
+                      
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className={cn(
+                            "relative transition-all duration-300 focus:outline-none p-1",
+                            isActive ? "scale-110" : "scale-100 opacity-40",
+                            isSelected ? "scale-110 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]" : "hover:scale-125",
+                            "active:scale-150 transition-transform cubic-bezier(0.34, 1.56, 0.64, 1)"
+                          )}
+                        >
+                          <Star 
+                            className={cn(
+                              "w-10 h-10 transition-colors duration-300",
+                              isActive ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground/40'
+                            )} 
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {rating === 0 && (
+                    <p className="text-[10px] text-destructive font-bold uppercase animate-pulse">Clique em uma estrela para avaliar</p>
+                  )}
+                </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Sua Mensagem</label>
-                <Textarea 
-                  placeholder="Conte-nos o que achou da nossa empresa..."
-                  className="min-h-[120px] resize-none bg-background"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  required
-                />
-              </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Seu Nome</label>
+                    <Input 
+                      placeholder="Ex: João Silva" 
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      required
+                      className="h-11 bg-background"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">E-mail (opcional)</label>
+                    <Input 
+                      type="email"
+                      placeholder="Ex: joao@email.com" 
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="h-11 bg-background"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1 px-1">
+                      Usado apenas para identificação e contato se necessário.
+                    </p>
+                  </div>
+                </div>
 
-              <div className="p-4 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 text-center space-y-2 cursor-pointer hover:bg-primary/10 transition-colors group">
-                <Video className="w-6 h-6 text-primary mx-auto group-hover:scale-110 transition-transform" />
-                <p className="text-xs font-semibold text-primary">Gravar Depoimento em Vídeo</p>
-                <p className="text-[10px] text-muted-foreground">(Funcionalidade VIP - Em breve)</p>
-              </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Sua Mensagem</label>
+                  <Textarea 
+                    placeholder="Conte-nos o que achou da nossa empresa..."
+                    className="min-h-[120px] resize-none bg-background"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-14 text-lg font-bold shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-0"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <><Loader2 className="animate-spin mr-2" /> Enviando...</>
-                ) : (
-                  <><Send className="mr-2 w-5 h-5" /> Enviar Agora</>
-                )}
-              </Button>
+                <div className="p-4 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5 text-center space-y-2 cursor-pointer hover:bg-primary/10 transition-colors group">
+                  <Video className="w-6 h-6 text-primary mx-auto group-hover:scale-110 transition-transform" />
+                  <p className="text-xs font-semibold text-primary">Gravar Depoimento em Vídeo</p>
+                  <p className="text-[10px] text-muted-foreground">(Funcionalidade VIP - Em breve)</p>
+                </div>
 
-              <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest">
-                🔒 Seus dados estão protegidos
-              </p>
-            </form>
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 text-lg font-bold shadow-xl transition-all hover:translate-y-[-2px] active:translate-y-0"
+                >
+                  <><Send className="mr-2 w-5 h-5" /> Revisar e Enviar</>
+                </Button>
+
+                <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
+                  🔒 Conexão Segura Proova
+                </p>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
+
