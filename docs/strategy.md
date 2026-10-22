@@ -38,12 +38,12 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 
 ### 5.2 Kit de Marketing One-Click (Geração Expressa)
 - **O que é:** Botão de download rápido do Cartaz de Balcão.
-- **Objetivo:** O sistema detecta a logo e as cores da marca e gera o PDF pronto para impressão sem abrir diálogos de configuração.
+- **Objetivo:** O sistema detecta a logo e las cores da marca e gera o PDF pronto para impressão sem abrir diálogos de configuração.
 
 ### 5.3 Sugestões de Ação Proativas (O "Consultor")
 - **O que é:** Alertas baseados em comportamento de dados.
 - **Exemplo:** "Sua coleta esfriou há 7 dias. Clique aqui para enviar o link para seus clientes via WhatsApp."
 
-### 5.4 Atalhos de Compartilhamento Dinâmico (Social Cards)
+### 5.4 Atalhos de Compartilhamento Dinâmico (Social Cards) - [IMPLEMENTADO]
 - **O que é:** Geração automática de cards para Instagram/Stories.
 - **Objetivo:** Transformar depoimentos 5 estrelas em conteúdo visual para redes sociais em um clique.

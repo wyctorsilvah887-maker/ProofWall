@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
@@ -42,7 +42,10 @@ import {
   Search,
   Building2,
   Navigation,
-  AlertCircle
+  AlertCircle,
+  Instagram,
+  ImageIcon,
+  Quote
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -89,12 +92,15 @@ export default function DashPage() {
   const [isGoogleMapsDialogOpen, setIsGoogleMapsDialogOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isSlugDialogOpen, setIsSlugDialogOpen] = useState(false);
+  const [isSocialCardDialogOpen, setIsSocialCardDialogOpen] = useState(false);
   
   // Feature States
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfTheme, setPdfTheme] = useState<'light' | 'dark'>('light');
+  const [selectedTestimonialForCard, setSelectedTestimonialForCard] = useState<any>(null);
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 
   // Zero-Click Google Search States
   const [googleStep, setGoogleStep] = useState<'info' | 'location' | 'search' | 'manual'>('info');
@@ -276,7 +282,7 @@ export default function DashPage() {
     
     const normalizedSlug = tempSlug.trim().toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/[^a-z0-9-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
 
@@ -421,6 +427,117 @@ export default function DashPage() {
       toast({ variant: "destructive", title: "Erro no PDF", description: "Não foi possível gerar o arquivo agora." });
     } finally {
       setIsGeneratingPdf(false);
+    }
+  };
+
+  const handleDownloadSocialCard = async () => {
+    if (!selectedTestimonialForCard) return;
+    setIsGeneratingCard(true);
+    
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = 1080;
+      canvas.height = 1080;
+
+      // Background Gradient
+      const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
+      gradient.addColorStop(0, '#f97316');
+      gradient.addColorStop(1, '#ea580c');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1080);
+
+      // White Card
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.roundRect(80, 80, 920, 920, 60);
+      ctx.fill();
+
+      // Shadow effect
+      ctx.shadowColor = 'rgba(0,0,0,0.1)';
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 20;
+
+      // Draw Logo Text
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.fillStyle = '#f97316';
+      ctx.font = 'bold 32px Inter, sans-serif';
+      ctx.fillText('PROOVA', 140, 150);
+
+      // Quotation Mark
+      ctx.font = '900 160px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(249, 115, 22, 0.1)';
+      ctx.fillText('“', 140, 320);
+
+      // Stars
+      const starY = 380;
+      const starSize = 45;
+      const starGap = 15;
+      const startX = 140;
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = i < (selectedTestimonialForCard.rating || 5) ? '#facc15' : '#e5e7eb';
+        // Simple star shape drawing or emoji approach for speed in this implementation
+        ctx.font = `${starSize}px serif`;
+        ctx.fillText('★', startX + (starSize + starGap) * i, starY);
+      }
+
+      // Testimonial Text
+      ctx.fillStyle = '#1f2937';
+      ctx.font = 'italic 500 48px Inter, sans-serif';
+      
+      const text = `"${selectedTestimonialForCard.text}"`;
+      const maxWidth = 800;
+      const words = text.split(' ');
+      let line = '';
+      let y = 480;
+      const lineHeight = 65;
+
+      for (let n = 0; words[n]; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line, 140, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, 140, y);
+
+      // User Name
+      ctx.fillStyle = '#f97316';
+      ctx.font = 'bold 42px Inter, sans-serif';
+      ctx.fillText(selectedTestimonialForCard.userName, 140, y + 100);
+
+      // Company Name
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = 'bold 24px Inter, sans-serif';
+      ctx.fillText(userData?.companyName?.toUpperCase() || 'AVALIAÇÃO OFICIAL', 140, y + 140);
+
+      // Footer branding
+      ctx.fillStyle = '#e5e7eb';
+      ctx.font = '900 20px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('POWERED BY PROOVA.PRO', 540, 960);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `social-card-${selectedTestimonialForCard.userName.toLowerCase()}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      toast({ title: "Card Gerado!", description: "A imagem já está na sua pasta de downloads." });
+      setIsSocialCardDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast({ variant: "destructive", title: "Erro ao gerar Card" });
+    } finally {
+      setIsGeneratingCard(false);
     }
   };
 
@@ -716,7 +833,7 @@ export default function DashPage() {
               </div>
             ) : displayTestimonials && displayTestimonials.length > 0 ? (
               displayTestimonials.map((t: any) => (
-                <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-2xl">
+                <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-2xl group transition-all hover:shadow-md">
                   <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
                       <div className="bg-primary/10 p-2 rounded-xl hidden sm:block">
@@ -737,9 +854,22 @@ export default function DashPage() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
-                        <Clock className="w-3 h-3" />
-                        {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 text-[10px] font-black uppercase tracking-widest gap-1.5 text-primary hover:bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => {
+                            setSelectedTestimonialForCard(t);
+                            setIsSocialCardDialogOpen(true);
+                          }}
+                        >
+                          <ImageIcon className="w-3 h-3" /> Gerar Card
+                        </Button>
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
+                          <Clock className="w-3 h-3" />
+                          {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -1062,6 +1192,59 @@ export default function DashPage() {
               {isGeneratingPdf ? <Loader2 className="animate-spin" /> : <Download className="w-5 h-5" />}
               Baixar Cartaz PDF
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Social Card Dialog */}
+      <Dialog open={isSocialCardDialogOpen} onOpenChange={setIsSocialCardDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md border-none shadow-2xl overflow-hidden p-0">
+          <DialogHeader className="p-8 pt-10 pb-4 bg-background">
+            <DialogTitle className="text-2xl font-black font-headline text-center">Social Card VIP</DialogTitle>
+            <DialogDescription className="text-center">Transforme este depoimento em uma arte para seu Instagram.</DialogDescription>
+          </DialogHeader>
+
+          <div className="p-6 flex flex-col items-center">
+            {selectedTestimonialForCard && (
+              <div className="w-full aspect-square bg-gradient-to-br from-primary to-orange-600 rounded-[2rem] p-8 shadow-xl flex flex-col relative overflow-hidden">
+                <div className="bg-white rounded-[1.5rem] p-6 h-full flex flex-col shadow-inner">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-black text-primary tracking-widest">PROOVA</span>
+                    <Quote className="w-8 h-8 text-primary/10" />
+                  </div>
+                  
+                  <div className="flex gap-1 mb-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={cn("w-4 h-4", i < selectedTestimonialForCard.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/20")} />
+                    ))}
+                  </div>
+
+                  <p className="text-lg md:text-xl font-medium italic text-gray-800 leading-relaxed mb-6 flex-1 line-clamp-6">
+                    "{selectedTestimonialForCard.text}"
+                  </p>
+
+                  <div className="border-t pt-4">
+                    <p className="font-bold text-primary text-base">{selectedTestimonialForCard.userName}</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Avaliação Verificada</p>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-0 right-0 text-center">
+                   <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.3em]">Gerado via proova.pro</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="p-8 pt-0 pb-10 bg-background flex flex-col gap-3">
+            <Button 
+              className="w-full h-14 rounded-2xl text-lg font-black shadow-xl gap-2" 
+              onClick={handleDownloadSocialCard}
+              disabled={isGeneratingCard}
+            >
+              {isGeneratingCard ? <Loader2 className="animate-spin" /> : <ImageIcon className="w-5 h-5" />}
+              Baixar para Instagram
+            </Button>
+            <p className="text-[9px] text-center text-muted-foreground uppercase font-bold">Resolução 1080x1080 (Feed & Stories)</p>
           </DialogFooter>
         </DialogContent>
       </Dialog>
