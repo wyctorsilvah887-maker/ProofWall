@@ -38,7 +38,8 @@ import {
   ArrowRight,
   Settings,
   MoreVertical,
-  Lock
+  Lock,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -145,7 +146,6 @@ const PublicPageSettings = ({
   secondaryColor, setSecondaryColor,
   whatsappEnabled, setWhatsappEnabled,
   whatsappNumber, setWhatsappNumber,
-  googleMapsUrl, setGoogleMapsUrl,
   externalSiteUrl, setExternalSiteUrl,
   layout, setLayout,
   logoUrl, setLogoUrl,
@@ -448,9 +448,14 @@ const PublicPageSettings = ({
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">URL do Site Oficial</Label>
                 <Input value={externalSiteUrl} onChange={(e) => setExternalSiteUrl(e.target.value)} placeholder="https://seusite.com.br" />
               </div>
-              <div className="space-y-3 pt-4 border-t">
-                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Google Business URL</Label>
-                <Input value={googleMapsUrl} onChange={(e) => setGoogleMapsUrl(e.target.value)} placeholder="Link do Perfil Google" />
+              <div className="space-y-3 pt-4 border-t opacity-60">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-3 h-3 text-primary" />
+                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Google Maps</Label>
+                </div>
+                <div className="bg-muted/30 p-3 rounded-lg border border-dashed text-[10px] text-muted-foreground">
+                  O link do Google Maps é global e deve ser configurado diretamente no <strong>Dashboard Principal</strong> para refletir em todas as suas páginas.
+                </div>
               </div>
             </TabsContent>
           </div>
@@ -504,7 +509,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [logoUrl, setLogoUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
-  const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [externalSiteUrl, setExternalSiteUrl] = useState('');
   
   const [heroTitle, setHeroTitle] = useState('');
@@ -543,7 +547,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       setLogoUrl(widgetData.logoUrl || '');
       setWhatsappEnabled(widgetData.whatsappEnabled || false);
       setWhatsappNumber(widgetData.whatsappNumber || '');
-      setGoogleMapsUrl(widgetData.googleMapsUrl || '');
       setExternalSiteUrl(widgetData.externalSiteUrl || '');
       
       setHeroTitle(widgetData.heroTitle || '');
@@ -662,7 +665,6 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       logoUrl: logoUrl || '',
       whatsappEnabled: !!whatsappEnabled,
       whatsappNumber: whatsappNumber || '',
-      googleMapsUrl: googleMapsUrl || '',
       externalSiteUrl: externalSiteUrl || '',
       heroTitle: heroTitle || '',
       heroSubtitle: heroSubtitle || '',
@@ -704,7 +706,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const sidebarProps = { 
     widgetName, setWidgetName, themeColor, setThemeColor, secondaryColor, setSecondaryColor,
     whatsappEnabled, setWhatsappEnabled, whatsappNumber, setWhatsappNumber,
-    googleMapsUrl, setGoogleMapsUrl, externalSiteUrl, setExternalSiteUrl,
+    externalSiteUrl, setExternalSiteUrl,
     layout, setLayout, logoUrl, setLogoUrl,
     heroTitle, setHeroTitle, heroSubtitle, setHeroSubtitle,
     testimonialsTitle, setTestimonialsTitle, footerText, setFooterText,

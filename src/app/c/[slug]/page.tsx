@@ -155,7 +155,8 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     // Processar Redirecionamento e Cópia SINCRONAMENTE ao clique (crítico para mobile/popups)
     if (destination === 'public') {
       // 1. Abre a janela primeiro (contexto de clique puro)
-      if (googleMapsUrl && rating >= 4 && isRedirectAllowed) {
+      // Removida a restrição de nota >= 4 conforme solicitação
+      if (googleMapsUrl && isRedirectAllowed) {
         handleGoogleRedirect(googleMapsUrl);
       }
 
@@ -256,10 +257,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {companyNameDisplay}.</p>
             </div>
 
-            {googleMapsUrl && rating >= 4 && isRedirectAllowed && finalDest === 'public' && (
+            {googleMapsUrl && isRedirectAllowed && finalDest === 'public' && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
-                  <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
+                  <p className="text-sm font-bold">Ficamos muito felizes com seu feedback!</p>
                   <p className="text-xs text-muted-foreground">Se a janela do Google não abriu, você pode tentar pelo botão abaixo:</p>
                 </div>
                 <Button 

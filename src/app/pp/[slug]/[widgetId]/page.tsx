@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use } from 'react';
@@ -173,6 +172,9 @@ export default function PublicPage({ params }: { params: Promise<{ slug: string,
   const externalSiteUrl = widgetData?.externalSiteUrl || '';
   const logoUrl = widgetData?.logoUrl || '';
   const customSections = widgetData?.customSections || [];
+  
+  // Link do Google Maps centralizado no perfil da empresa
+  const googleMapsUrl = companyData?.googleMapsUrl || null;
   
   const heroTitle = widgetData?.heroTitle || `O que dizem sobre ${companyData?.companyName || 'nós'}`;
   const heroSubtitle = widgetData?.heroSubtitle || '';
