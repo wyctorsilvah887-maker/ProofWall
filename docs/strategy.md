@@ -41,3 +41,24 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 ### 5.4 Atalhos de Compartilhamento Dinâmico (Social Cards) - [IMPLEMENTADO]
 - **O que é:** Geração automática de cards para Instagram/Stories.
 - **Objetivo:** Transformar depoimentos 5 estrelas em conteúdo visual para redes sociais em um clique.
+
+## ⚙️ 6. Estratégias de Automação de Fluxo (No-AI)
+**Tese:** Criar uma experiência "hands-free" para o usuário final através de gatilhos técnicos.
+
+### 6.1 Automação de E-mails (Pós-Venda e Alerta)
+- **Agradecimento Automático:** Disparo de e-mail via Resend para o cliente final após submissão de nota 5 estrelas (possibilidade de incluir cupom).
+- **Alerta de Notificação:** Notificação imediata para o dono do negócio quando um feedback crítico (1-3 estrelas) é recebido no Inbox Privado.
+
+### 6.2 Sincronização Inteligente (Auto-Publish)
+- **Regras de Exibição:** Opção para publicar automaticamente todo depoimento 5 estrelas em widgets selecionados, eliminando a curadoria manual constante.
+
+### 6.3 Business Intelligence (BI) e Exportação
+- **Exportação de Leads:** Ferramenta para baixar lista de contatos (nome/email) em CSV/Excel para uso em tráfego pago ou CRM.
+- **Relatório de Performance Semanal:** E-mail de resumo automático comparando métricas da semana atual vs. anterior.
+
+### 6.4 SEO e Indexação Turbo
+- **Sitemap Dinâmico:** Geração de sitemap.xml automático para indexação imediata de novas Páginas Públicas no Google Search Console.
+- **Canonical Tags:** Gestão automatizada de autoridade de domínio entre murais e landing pages.
+
+### 6.5 Gestão Técnica de Vídeos
+- **Pipeline de Processamento:** Automação de compressão e geração de thumbnails para depoimentos em vídeo, mantendo a performance da página.
