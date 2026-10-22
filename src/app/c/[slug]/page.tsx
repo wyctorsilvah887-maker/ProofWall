@@ -262,7 +262,7 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com sua nota!</p>
-                  <p className="text-xs text-muted-foreground">O seu elogio foi copiado. Clique no botão abaixo, cole (Ctrl+V) e envie no Google!</p>
+                  <p className="text-xs text-muted-foreground">O seu elogio foi copiado. Clique no botão abaixo, cole o texto e envie no Google!</p>
                 </div>
                 <Button 
                   onClick={handleGoogleRedirect}
