@@ -252,11 +252,15 @@ export default function DashPage() {
   const handleSearchPlaces = async () => {
     if (!searchQuery.trim()) return;
     setIsSearchingPlaces(true);
+    setPlaceResults([]); // Limpa resultados anteriores
     try {
       const results = await searchGooglePlaces(searchQuery, userData?.city || userCity, userData?.state || userState);
       setPlaceResults(results);
+      if (results.length === 0) {
+        toast({ title: "Nenhum resultado", description: "Tente um nome mais específico ou verifique sua cidade." });
+      }
     } catch (e) {
-      toast({ variant: "destructive", title: "Erro na busca", description: "Tente novamente mais tarde." });
+      toast({ variant: "destructive", title: "Erro na busca", description: "Verifique sua chave de API ou conexão." });
     } finally {
       setIsSearchingPlaces(false);
     }

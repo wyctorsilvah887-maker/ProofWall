@@ -2,49 +2,76 @@
 
 /**
  * @fileOverview Server Actions para integração com Google Maps API.
- * As variáveis de ambiente (GOOGLE_MAPS_API_KEY) devem ser configuradas 
- * diretamente no painel da hospedagem (ex: Vercel/Firebase) para segurança.
+ * Atualizado para usar a Places API (New) v1 para maior precisão.
  */
 
 export async function searchGooglePlaces(query: string, city: string, state: string) {
-  // Acesso direto à variável de ambiente do servidor para segurança total
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey) {
     console.warn("Atenção: GOOGLE_MAPS_API_KEY não encontrada no servidor. Usando modo de simulação.");
-    // Simulação para desenvolvimento sem chave ou erro de config
     return [
       { 
         name: `${query}`, 
-        address: `Endereço Simulado em ${city}, ${state}`, 
+        address: `Exemplo: Rua das Flores, 123 - ${city || 'Cidade'}, ${state || 'UF'}`, 
         place_id: "ChIJN1t_tDeuEmsRUsoyG83frY4",
-        isMock: true 
-      },
-      { 
-        name: `${query} Filial`, 
-        address: `Outro ponto em ${city}`, 
-        place_id: "ChIJ2eUgeClu5ZQR9s2L9R6nU0Y",
         isMock: true 
       }
     ];
   }
 
   try {
-    // Construção da busca refinada por Cidade e Estado para evitar ambiguidades
-    const fullQuery = `${query} em ${city} ${state}`;
-    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(fullQuery)}&key=${apiKey}&language=pt-BR`;
-
-    const res = await fetch(url, { next: { revalidate: 3600 } }); // Cache de 1 hora para economizar cota de API
-    const data = await res.json();
-
-    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-      throw new Error(`Google API Error: ${data.status}`);
+    // Tenta primeiro uma busca refinada por localização
+    let textQuery = query;
+    if (city && state) {
+      textQuery = `${query} em ${city} ${state}`;
+    } else if (city) {
+      textQuery = `${query} em ${city}`;
     }
 
-    return (data.results || []).map((p: any) => ({
-      name: p.name,
-      address: p.formatted_address,
-      place_id: p.place_id,
+    const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress',
+      },
+      body: JSON.stringify({
+        textQuery: textQuery,
+        languageCode: 'pt-BR',
+      }),
+      next: { revalidate: 0 } // Desativa cache para garantir resultados frescos durante a config
+    });
+
+    const data = await response.json();
+
+    // Se a busca refinada falhar, tenta uma busca bruta apenas pelo nome
+    if ((!data.places || data.places.length === 0) && textQuery !== query) {
+      const fallbackRes = await fetch('https://places.googleapis.com/v1/places:searchText', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': apiKey,
+          'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress',
+        },
+        body: JSON.stringify({
+          textQuery: query,
+          languageCode: 'pt-BR',
+        }),
+      });
+      const fallbackData = await fallbackRes.json();
+      return (fallbackData.places || []).map((p: any) => ({
+        name: p.displayName?.text || 'Nome não disponível',
+        address: p.formattedAddress,
+        place_id: p.id,
+        isMock: false
+      }));
+    }
+
+    return (data.places || []).map((p: any) => ({
+      name: p.displayName?.text || 'Nome não disponível',
+      address: p.formattedAddress,
+      place_id: p.id,
       isMock: false
     }));
   } catch (err) {
