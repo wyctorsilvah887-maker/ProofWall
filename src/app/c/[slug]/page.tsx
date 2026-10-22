@@ -82,14 +82,10 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     findCompany();
   }, [db, rawSlug]);
 
-  const isRedirectAllowed = useMemo(() => {
-    return membershipStatus === 'trial' || membershipStatus === 'gold' || membershipStatus === 'enterprise';
-  }, [membershipStatus]);
-
   const handleGoogleRedirect = (url: string) => {
     if (!url) return;
     
-    // Rastreio em background (não aguarda para não bloquear o popup)
+    // Rastreio em background
     if (db && targetUserId) {
       const userRef = doc(db, 'users', targetUserId);
       updateDoc(userRef, {
@@ -107,7 +103,13 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     }
 
     const secureUrl = finalUrl.startsWith('http') ? finalUrl : `https://${finalUrl}`;
-    window.open(secureUrl, '_blank');
+    
+    // Tenta abrir. Se falhar (bloqueador), o usuário terá o botão de fallback na tela de sucesso.
+    try {
+      window.open(secureUrl, '_blank');
+    } catch (e) {
+      console.warn("Redirecionamento bloqueado pelo navegador.");
+    }
   };
 
   const handleResetForm = () => {
@@ -152,15 +154,14 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
     setIsSubmitting(true);
     setFinalDest(destination);
 
-    // Processar Redirecionamento e Cópia SINCRONAMENTE ao clique (crítico para mobile/popups)
+    // Processar Redirecionamento e Cópia IMEDIATAMENTE ao clique (crítico para mobile/popups)
     if (destination === 'public') {
-      // 1. Abre a janela primeiro (contexto de clique puro)
-      // Removida a restrição de nota >= 4 conforme solicitação
-      if (googleMapsUrl && isRedirectAllowed) {
+      // 1. Redirecionamento (disparado antes de await para manter contexto de clique)
+      if (googleMapsUrl) {
         handleGoogleRedirect(googleMapsUrl);
       }
 
-      // 2. Copia para o clipboard logo em seguida
+      // 2. Copia para o clipboard
       try {
         await navigator.clipboard.writeText(text.trim());
         toast({
@@ -257,11 +258,11 @@ export default function CollectionPage({ params }: { params: Promise<{ slug: str
               <p className="text-muted-foreground">Sua avaliação foi enviada com sucesso para {companyNameDisplay}.</p>
             </div>
 
-            {googleMapsUrl && isRedirectAllowed && finalDest === 'public' && (
+            {googleMapsUrl && finalDest === 'public' && (
               <div className="pt-6 border-t space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Ficamos muito felizes com seu feedback!</p>
-                  <p className="text-xs text-muted-foreground">Se a janela do Google não abriu, você pode tentar pelo botão abaixo:</p>
+                  <p className="text-xs text-muted-foreground">Se a janela do Google não abriu automaticamente, use o botão abaixo:</p>
                 </div>
                 <Button 
                   onClick={() => handleGoogleRedirect(googleMapsUrl)}
