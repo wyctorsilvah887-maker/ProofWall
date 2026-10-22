@@ -22,3 +22,22 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 **Tese:** Transformar críticas em consultoria de negócios automática.
 - **Implementação:** Resumo executivo no Inbox Privado.
 - **Lógica:** A IA lê todos os feedbacks de 1-3 estrelas e gera um relatório: "40% dos clientes reclamam da demora no checkout. Sugestão: Rever fluxo de pagamento."
+
+## 📊 5. Evolução do Dashboard (Simplicidade & Automação)
+**Tese:** Reduzir a carga cognitiva do usuário e tornar o Dash proativo.
+
+### 5.1 Configuração "Zero-Click" do Google Maps
+- **O que é:** Busca inteligente pelo nome da empresa para capturar o `place_id`.
+- **Objetivo:** Eliminar a necessidade do usuário "caçar" links técnicos do Google Business.
+
+### 5.2 Kit de Marketing One-Click (Geração Expressa)
+- **O que é:** Botão de download rápido do Cartaz de Balcão.
+- **Objetivo:** O sistema detecta a logo e as cores da marca e gera o PDF pronto para impressão sem abrir diálogos de configuração.
+
+### 5.3 Sugestões de Ação Proativas (O "Consultor")
+- **O que é:** Alertas baseados em comportamento de dados.
+- **Exemplo:** "Sua coleta esfriou há 7 dias. Clique aqui para enviar o link para seus clientes via WhatsApp."
+
+### 5.4 Atalhos de Compartilhamento Dinâmico (Social Cards)
+- **O que é:** Geração automática de cards para Instagram/Stories.
+- **Objetivo:** Transformar depoimentos 5 estrelas em conteúdo visual para redes sociais em um clique.
