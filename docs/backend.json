@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -27,9 +28,21 @@
           "enum": ["local", "digital"],
           "description": "Tipo de operação do negócio (Local ou Digital/SaaS)."
         },
+        "city": {
+          "type": "string",
+          "description": "Cidade da empresa."
+        },
+        "state": {
+          "type": "string",
+          "description": "Estado (UF) da empresa."
+        },
         "googleMapsUrl": {
           "type": "string",
           "description": "Link global do Google Maps da empresa."
+        },
+        "googlePlaceId": {
+          "type": "string",
+          "description": "ID oficial do Google Places para a empresa."
         },
         "isAdmin": {
           "type": "boolean",
@@ -121,7 +134,6 @@
           "type": "string",
           "format": "email",
           "description": "Endereço de e-mail do cliente."
-"
         },
         "rating": {
           "type": "number",
@@ -154,7 +166,7 @@
           "description": "Nome identificador do widget."
         },
         "selectedTestimonialIds": {
-          "type": "array",
+          "array": "array",
           "items": { "type": "string" },
           "description": "Lista de IDs de depoimentos selecionados para este widget."
         },
