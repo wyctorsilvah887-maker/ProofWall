@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -11,7 +10,6 @@ import {
   User,
   Loader2,
   ArrowRight,
-  ArrowDown,
   Share2,
   Copy,
   Link2,
@@ -27,7 +25,6 @@ import {
   Edit3,
   ChevronRight,
   ArrowLeft,
-  FileDown,
   Sun,
   Moon,
   TrendingDown,
@@ -44,7 +41,8 @@ import {
   Megaphone,
   Search,
   Building2,
-  Navigation
+  Navigation,
+  AlertCircle
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -76,7 +74,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useTheme } from 'next-themes';
 import { jsPDF } from 'jspdf';
 import { cn } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { searchGooglePlaces } from '@/app/actions/maps-actions';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -93,7 +91,6 @@ export default function DashPage() {
   const [isSlugDialogOpen, setIsSlugDialogOpen] = useState(false);
   
   // Feature States
-  const [selectedWidgetForLink, setSelectedWidgetForLink] = useState<any>(null);
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
   const [isUpdatingUrl, setIsUpdatingUrl] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
@@ -166,27 +163,6 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  useEffect(() => {
-    if (userData?.membershipStatus === 'trial' && userData?.trialStartedAt && db && user) {
-      const startedAt = userData.trialStartedAt.toDate?.() || new Date(userData.trialStartedAt);
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - startedAt.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffDays > 14) {
-        updateDoc(doc(db, 'users', user.uid), {
-          membershipStatus: 'expired'
-        });
-        toast({
-          variant: "destructive",
-          title: "Período Trial Expirado",
-          description: "Escolha um plano profissional para continuar usando o Proova.",
-        });
-        router.push('/pricing');
-      }
-    }
-  }, [userData, db, user, router]);
-
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
     const last = userData?.lastMonthCount || 0;
@@ -232,7 +208,7 @@ export default function DashPage() {
     });
   };
 
-  const handleUpdateGoogleMapsUrl = async (customUrl?: string) => {
+  const handleUpdateGoogleMapsUrl = async (customUrl?: string, placeId?: string) => {
     if (!db || !user || isUpdatingUrl) return;
     
     setIsUpdatingUrl(true);
@@ -240,7 +216,8 @@ export default function DashPage() {
     const finalUrl = customUrl || newGoogleMapsUrl;
     
     updateDoc(userRef, {
-      googleMapsUrl: finalUrl.trim()
+      googleMapsUrl: finalUrl.trim(),
+      googlePlaceId: placeId || userData?.googlePlaceId || ''
     })
       .then(() => {
         toast({ title: "Link Atualizado", description: `Configuração salva com sucesso.` });
@@ -275,26 +252,19 @@ export default function DashPage() {
   const handleSearchPlaces = async () => {
     if (!searchQuery.trim()) return;
     setIsSearchingPlaces(true);
-    
-    // Simulação de busca - No futuro integrado com Google Places API
-    // Por enquanto, criamos um fallback inteligente para demonstrar o fluxo
-    setTimeout(() => {
-      const mockResult = [
-        { 
-          name: searchQuery, 
-          address: `${userCity}, ${userState}`, 
-          id: `place_${Math.random().toString(36).substr(2, 9)}`,
-          place_id: "ChIJN1t_tDeuEmsRUsoyG83frY4" // Exemplo real do Google (Opera House)
-        }
-      ];
-      setPlaceResults(mockResult);
+    try {
+      const results = await searchGooglePlaces(searchQuery, userData?.city || userCity, userData?.state || userState);
+      setPlaceResults(results);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro na busca", description: "Tente novamente mais tarde." });
+    } finally {
       setIsSearchingPlaces(false);
-    }, 1500);
+    }
   };
 
   const handleSelectPlace = (place: any) => {
     const reviewUrl = `https://search.google.com/local/writereview?placeid=${place.place_id}`;
-    handleUpdateGoogleMapsUrl(reviewUrl);
+    handleUpdateGoogleMapsUrl(reviewUrl, place.place_id);
   };
 
   const handleUpdateSlug = async () => {
@@ -979,7 +949,7 @@ export default function DashPage() {
                 <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
                   {placeResults.map((place) => (
                     <div 
-                      key={place.id} 
+                      key={place.place_id} 
                       onClick={() => handleSelectPlace(place)}
                       className="p-3 border rounded-xl hover:border-primary hover:bg-primary/5 cursor-pointer transition-all flex items-center gap-3 group"
                     >
@@ -989,12 +959,22 @@ export default function DashPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold truncate">{place.name}</p>
                         <p className="text-[10px] text-muted-foreground truncate">{place.address}</p>
+                        {place.isMock && <Badge variant="outline" className="text-[8px] h-4 mt-1 opacity-50">Simulação</Badge>}
                       </div>
                       <ChevronRight className="w-3.5 h-3.5 opacity-30 group-hover:opacity-100" />
                     </div>
                   ))}
                   {placeResults.length === 0 && !isSearchingPlaces && (
-                    <p className="text-[10px] text-center text-muted-foreground py-4 italic">Digite o nome e clique na lupa para buscar.</p>
+                    <div className="py-8 text-center space-y-2 border-2 border-dashed rounded-xl">
+                      <AlertCircle className="w-8 h-8 text-muted-foreground/30 mx-auto" />
+                      <p className="text-[10px] text-muted-foreground px-4 italic">Digite o nome oficial e clique na lupa para buscar nos registros do Google.</p>
+                    </div>
+                  )}
+                  {isSearchingPlaces && (
+                    <div className="py-12 text-center space-y-3">
+                      <Loader2 className="animate-spin w-6 h-6 text-primary mx-auto" />
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Consultando Google Maps...</p>
+                    </div>
                   )}
                 </div>
                 
