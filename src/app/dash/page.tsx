@@ -49,7 +49,9 @@ import {
   Sparkles,
   Lightbulb,
   Zap,
-  MessageCircle
+  MessageCircle,
+  Circle,
+  Check
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -63,6 +65,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -123,6 +126,13 @@ export default function DashPage() {
   const userDocRef = useMemo(() => (db && user ? doc(db, 'users', user.uid) : null), [db, user]);
   const { data: userData, loading: userDataLoading } = useDoc(userDocRef);
 
+  // Fetch Widgets for Progress calculation
+  const widgetsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return collection(db, 'users', user.uid, 'widgets');
+  }, [db, user]);
+  const { data: widgetsList } = useCollection(widgetsQuery);
+
   // Fetch Announcements
   const announcementsQuery = useMemo(() => {
     if (!db) return null;
@@ -174,6 +184,20 @@ export default function DashPage() {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  // Setup Progress Calculation
+  const setupSteps = useMemo(() => {
+    return [
+      { id: 'google', label: 'Conectar Google Maps', completed: !!userData?.googleMapsUrl, action: () => setIsGoogleMapsDialogOpen(true) },
+      { id: 'location', label: 'Definir Localização', completed: !!userData?.city, action: () => { setGoogleStep('location'); setIsGoogleMapsDialogOpen(true); } },
+      { id: 'widget', label: 'Criar Primeiro Mural', completed: widgetsList && widgetsList.length > 0, action: () => router.push('/widgets') },
+      { id: 'collect', label: 'Coletar 1ª Avaliação', completed: (userData?.testimonialsCount || 0) > 0, action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta") },
+    ];
+  }, [userData, widgetsList, baseUrl, router]);
+
+  const completedStepsCount = setupSteps.filter(s => s.completed).length;
+  const progressPercentage = (completedStepsCount / setupSteps.length) * 100;
+  const isSetupComplete = completedStepsCount === setupSteps.length;
 
   // Consultant Logic
   const consultantAlerts = useMemo(() => {
@@ -768,6 +792,68 @@ export default function DashPage() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
+        
+        {/* SETUP PROGRESS SECTION (Onboarding) */}
+        {!isSetupComplete && (
+          <section className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <Card className="border-none shadow-xl overflow-hidden rounded-[2rem] bg-card">
+              <div className="flex flex-col lg:flex-row">
+                <div className="flex-1 p-6 md:p-8 space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-primary" /> Progresso da sua Máquina
+                      </h2>
+                      <span className="text-sm font-black text-primary">{Math.round(progressPercentage)}%</span>
+                    </div>
+                    <Progress value={progressPercentage} className="h-2.5 bg-muted rounded-full" />
+                    <p className="text-xs text-muted-foreground font-medium pt-1">
+                      Complete os passos abaixo para maximizar sua conversão com prova social.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {setupSteps.map((step) => (
+                      <div 
+                        key={step.id} 
+                        onClick={!step.completed ? step.action : undefined}
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-2xl border transition-all cursor-pointer group",
+                          step.completed ? "bg-green-500/5 border-green-500/20 opacity-80" : "bg-muted/10 border-border hover:border-primary/30 hover:bg-primary/5"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                          step.completed ? "bg-green-500 text-white shadow-lg shadow-green-500/20" : "bg-muted border border-border group-hover:bg-primary/20 group-hover:text-primary"
+                        )}>
+                          {step.completed ? <Check className="w-4 h-4 stroke-[3]" /> : <Circle className="w-3 h-3 text-muted-foreground/30" />}
+                        </div>
+                        <span className={cn(
+                          "text-[11px] font-bold uppercase tracking-tight leading-tight",
+                          step.completed ? "text-green-600 line-through opacity-60" : "text-foreground"
+                        )}>
+                          {step.label}
+                        </span>
+                        {!step.completed && <ChevronRight className="w-3 h-3 ml-auto text-muted-foreground/30 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="bg-primary/5 lg:w-72 p-8 flex flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
+                  <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10">
+                    <QRCodeSVG value={collectionLink} size={100} level="H" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Seu QR Code</p>
+                    <p className="text-[9px] text-muted-foreground font-medium leading-relaxed">Exiba este código no seu balcão para coletas rápidas.</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </section>
+        )}
+
         {/* CONSULTANT SECTION */}
         {consultantAlerts.length > 0 && (
           <section className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
