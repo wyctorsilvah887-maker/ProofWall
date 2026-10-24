@@ -49,7 +49,9 @@ import {
   MessageCircle,
   Circle,
   Check,
-  Calendar
+  Calendar,
+  Trophy,
+  PartyPopper
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -75,7 +77,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, updateDoc, orderBy, limit, where, getDocs, Timestamp } from 'firebase/firestore';
+import { doc, collection, query, updateDoc, orderBy, limit, where, getDocs, Timestamp, serverTimestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -93,8 +95,8 @@ export default function DashPage() {
   const { theme, setTheme } = useTheme();
   const [baseUrl, setBaseUrl] = useState('');
   
-  // Period Filtering State
-  const [period, setPeriod] = useState<'7' | '30' | 'all'>('all');
+  // Period Filtering State (Default 7 days as requested)
+  const [period, setPeriod] = useState<'7' | '30' | 'all'>('7');
   
   // Dialog States
   const [isQrDialogOpenManual, setIsQrDialogOpenManual] = useState(false);
@@ -102,6 +104,7 @@ export default function DashPage() {
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
   const [isSlugDialogOpen, setIsSlugDialogOpen] = useState(false);
   const [isSocialCardDialogOpen, setIsSocialCardDialogOpen] = useState(false);
+  const [isRewardDialogOpen, setIsRewardDialogOpen] = useState(false);
   
   // Feature States
   const [newGoogleMapsUrl, setNewGoogleMapsUrl] = useState('');
@@ -187,19 +190,72 @@ export default function DashPage() {
     }
   }, [user, authLoading, router]);
 
-  // Setup Progress Calculation
+  // Sequential Unlock Logic (Quest System)
   const setupSteps = useMemo(() => {
-    return [
-      { id: 'google', label: 'Google Maps', completed: !!userData?.googleMapsUrl, action: () => setIsGoogleMapsDialogOpen(true) },
-      { id: 'location', label: 'Localização', completed: !!userData?.city, action: () => { setGoogleStep('location'); setIsGoogleMapsDialogOpen(true); } },
-      { id: 'widget', label: 'Primeiro Mural', completed: widgetsList && widgetsList.length > 0, action: () => router.push('/widgets') },
-      { id: 'collect', label: 'Coleta Ativa', completed: (userData?.testimonialsCount || 0) > 0, action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta") },
-    ];
+    const s0 = { 
+      id: 'location', 
+      label: 'Localização', 
+      completed: !!userData?.city, 
+      unlocked: true,
+      action: () => { setGoogleStep('location'); setIsGoogleMapsDialogOpen(true); } 
+    };
+    
+    const s1 = { 
+      id: 'google', 
+      label: 'Google Maps', 
+      completed: !!userData?.googleMapsUrl, 
+      unlocked: s0.completed,
+      action: () => setIsGoogleMapsDialogOpen(true) 
+    };
+    
+    const s2 = { 
+      id: 'collect', 
+      label: 'Coleta Ativa', 
+      completed: (userData?.testimonialsCount || 0) > 0, 
+      unlocked: s1.completed,
+      action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta") 
+    };
+    
+    const s3 = { 
+      id: 'widget', 
+      label: 'Primeiro Mural', 
+      completed: !!(widgetsList && widgetsList.length > 0), 
+      unlocked: s2.completed,
+      action: () => router.push('/widgets') 
+    };
+
+    return [s0, s1, s2, s3];
   }, [userData, widgetsList, baseUrl, router]);
 
   const completedStepsCount = setupSteps.filter(s => s.completed).length;
   const progressPercentage = (completedStepsCount / setupSteps.length) * 100;
   const isSetupComplete = completedStepsCount === setupSteps.length;
+
+  // Trigger reward dialog if complete and not yet used trial
+  useEffect(() => {
+    if (isSetupComplete && userData && userData.membershipStatus === 'base' && !userData.trialUsed) {
+      setIsRewardDialogOpen(true);
+    }
+  }, [isSetupComplete, userData]);
+
+  const handleClaimReward = async () => {
+    if (!db || !user || !userData) return;
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        membershipStatus: 'trial',
+        trialUsed: true,
+        trialStartedAt: serverTimestamp()
+      });
+      toast({
+        title: "Recompensa Ativada!",
+        description: "Você agora é membro GOLD por 14 dias. Aproveite os recursos premium!",
+      });
+      setIsRewardDialogOpen(false);
+    } catch (e) {
+      console.error(e);
+      toast({ variant: "destructive", title: "Erro ao ativar prêmio" });
+    }
+  };
 
   // Consultant Logic
   const consultantAlerts = useMemo(() => {
@@ -803,7 +859,7 @@ export default function DashPage() {
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-10 max-w-7xl mx-auto w-full overflow-x-hidden">
         
-        {/* SETUP PROGRESS SECTION (Onboarding) */}
+        {/* SETUP PROGRESS SECTION (Gamified Quest System) */}
         {!isSetupComplete && (
           <section className="animate-in fade-in slide-in-from-top-4 duration-1000">
             <Card className="border-none shadow-xl overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-card">
@@ -812,51 +868,79 @@ export default function DashPage() {
                   <div className="space-y-1 md:space-y-2">
                     <div className="flex items-center justify-between">
                       <h2 className="text-sm md:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
-                        <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" /> Máquina de Conversão
+                        <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" /> Missões de Sucesso
                       </h2>
                       <span className="text-xs md:text-sm font-black text-primary">{Math.round(progressPercentage)}%</span>
                     </div>
                     <Progress value={progressPercentage} className="h-2 md:h-2.5 bg-muted rounded-full" />
                     <p className="text-[10px] md:text-xs text-muted-foreground font-medium pt-0.5">
-                      Configure os pilares da sua autoridade digital.
+                      {isSetupComplete ? "Todas as missões concluídas!" : "Complete as missões para desbloquear seu prêmio."}
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                    {setupSteps.map((step) => (
-                      <div 
-                        key={step.id} 
-                        onClick={!step.completed ? step.action : undefined}
-                        className={cn(
-                          "flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl md:rounded-2xl border transition-all cursor-pointer group",
-                          step.completed ? "bg-green-500/5 border-green-500/20 opacity-80" : "bg-muted/10 border-border hover:border-primary/30 hover:bg-primary/5"
-                        )}
-                      >
-                        <div className={cn(
-                          "w-6 h-6 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                          step.completed ? "bg-green-500 text-white shadow-lg" : "bg-muted border border-border group-hover:bg-primary/20 group-hover:text-primary"
-                        )}>
-                          {step.completed ? <Check className="w-3 h-3 md:w-4 md:h-4 stroke-[3]" /> : <Circle className="w-2.5 h-2.5 md:w-3 md:h-3 text-muted-foreground/30" />}
+                    {setupSteps.map((step) => {
+                      const isUnlocked = step.unlocked;
+                      
+                      return (
+                        <div 
+                          key={step.id} 
+                          onClick={isUnlocked && !step.completed ? step.action : undefined}
+                          className={cn(
+                            "flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl md:rounded-2xl border transition-all relative group",
+                            step.completed ? "bg-green-500/5 border-green-500/20 opacity-80" : 
+                            isUnlocked ? "bg-background border-primary/20 hover:border-primary shadow-sm cursor-pointer" : 
+                            "bg-muted/30 border-muted opacity-40 grayscale cursor-not-allowed"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-6 h-6 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                            step.completed ? "bg-green-500 text-white shadow-lg" : 
+                            isUnlocked ? "bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white" : 
+                            "bg-muted border border-border"
+                          )}>
+                            {step.completed ? (
+                              <Check className="w-3 h-3 md:w-4 md:h-4 stroke-[3]" />
+                            ) : !isUnlocked ? (
+                              <Lock className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                            ) : (
+                              <Circle className="w-2.5 h-2.5 md:w-3 md:h-3 animate-pulse" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span className={cn(
+                              "text-[10px] md:text-[11px] font-bold uppercase tracking-tight leading-tight block truncate",
+                              step.completed ? "text-green-600 line-through opacity-60" : "text-foreground"
+                            )}>
+                              {step.label}
+                            </span>
+                            {!step.completed && isUnlocked && (
+                              <span className="text-[8px] md:text-[9px] text-primary font-black animate-in fade-in">DESBLOQUEADO</span>
+                            )}
+                          </div>
+                          {isUnlocked && !step.completed && <ChevronRight className="w-3 h-3 ml-auto text-primary transition-transform group-hover:translate-x-0.5" />}
                         </div>
-                        <span className={cn(
-                          "text-[10px] md:text-[11px] font-bold uppercase tracking-tight leading-tight",
-                          step.completed ? "text-green-600 line-through opacity-60" : "text-foreground"
-                        )}>
-                          {step.label}
-                        </span>
-                        {!step.completed && <ChevronRight className="w-3 h-3 ml-auto text-muted-foreground/30 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
                 
                 <div className="hidden lg:flex bg-primary/5 lg:w-72 p-8 flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
-                  <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10">
+                  <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10 relative group">
                     <QRCodeSVG value={collectionLink} size={100} level="H" />
+                    {!setupSteps.find(s => s.id === 'google')?.completed && (
+                      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-inherit p-4">
+                        <Lock className="w-6 h-6 text-muted-foreground mb-1" />
+                        <span className="text-[8px] font-black uppercase text-center leading-tight">Libere conectando o Google</span>
+                      </div>
+                    )}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Seu QR Code</p>
-                    <p className="text-[9px] text-muted-foreground font-medium leading-relaxed">Exiba este código no seu balcão.</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Prêmio Final</p>
+                    <div className="flex items-center gap-1.5 justify-center">
+                      <Trophy className="w-4 h-4 text-primary" />
+                      <p className="text-[9px] text-muted-foreground font-medium">14 Dias de Conta Gold</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -993,7 +1077,7 @@ export default function DashPage() {
           </div>
         </div>
 
-        {/* QUICK ACTIONS SECTION */}
+        {/* QUICK ACTIONS SECTION (Respecting Unlocked State) */}
         <section className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="flex items-center gap-2">
             <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Ações Rápidas</h2>
@@ -1001,28 +1085,31 @@ export default function DashPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button 
               variant="outline" 
+              disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
               onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              <Link2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              {!setupSteps.find(s => s.id === 'collect')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <Link2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Copiar Link</span>
             </Button>
             
             <Button 
               variant="outline" 
+              disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
               onClick={() => setIsQrDialogOpenManual(true)}
-              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              <QrCode className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              {!setupSteps.find(s => s.id === 'collect')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <QrCode className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Ver Cartaz</span>
             </Button>
 
             <Button 
               variant="outline" 
+              disabled={!setupSteps.find(s => s.id === 'widget')?.unlocked}
               onClick={() => router.push('/widgets')}
-              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              <Layout className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              {!setupSteps.find(s => s.id === 'widget')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <Layout className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Meus Murais</span>
             </Button>
 
@@ -1068,10 +1155,17 @@ export default function DashPage() {
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                 <div className="bg-muted/30 font-mono text-[9px] md:text-xs h-9 md:h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
+                  {!setupSteps.find(s => s.id === 'collect')?.unlocked && (
+                    <div className="absolute inset-0 bg-muted/80 backdrop-blur-sm flex items-center justify-center">
+                      <Lock className="w-3 h-3 mr-2 text-muted-foreground" />
+                      <span className="text-[8px] font-black uppercase text-muted-foreground">Desbloqueie conectando o Google Maps</span>
+                    </div>
+                  )}
                 </div>
                 <Button 
                   variant="secondary" 
                   className="h-9 md:h-10 px-4 rounded-xl font-bold"
+                  disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
                   onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                 >
                   <Copy className="h-3.5 w-3.5 mr-2" />
@@ -1529,6 +1623,41 @@ export default function DashPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reward / Celebration Dialog */}
+      <Dialog open={isRewardDialogOpen} onOpenChange={setIsRewardDialogOpen}>
+        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 text-center">
+          <div className="h-2 bg-primary w-full" />
+          <div className="p-10 space-y-6">
+            <div className="mx-auto bg-primary/10 p-5 rounded-full w-fit animate-bounce">
+              <PartyPopper className="w-12 h-12 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <DialogTitle className="text-3xl font-black font-headline">Setup Concluído!</DialogTitle>
+              <DialogDescription className="text-base text-muted-foreground font-medium">
+                Parabéns! Você concluiu todas as missões e sua máquina de prova social está 100% pronta.
+              </DialogDescription>
+            </div>
+            
+            <div className="bg-primary/5 p-6 rounded-3xl border border-primary/20 space-y-4">
+              <div className="flex items-center justify-center gap-2 text-primary font-black uppercase tracking-widest text-xs">
+                <Trophy className="w-4 h-4" /> Sua Recompensa
+              </div>
+              <p className="text-sm font-bold leading-relaxed">
+                Você acaba de ganhar <span className="text-primary">14 DIAS DE CONTA GOLD</span> para experimentar todos os nossos recursos premium!
+              </p>
+            </div>
+
+            <Button 
+              className="w-full h-16 rounded-2xl text-lg font-black shadow-xl gap-2 transition-all hover:scale-105"
+              onClick={handleClaimReward}
+            >
+              Resgatar Meu Prêmio <Gem className="w-5 h-5" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
