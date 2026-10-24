@@ -187,6 +187,16 @@ export default function DashPage() {
     }
   }, []);
 
+  // Display domain for examples (Tutorial)
+  const displayDomain = useMemo(() => {
+    if (!baseUrl) return 'proova.pro';
+    try {
+      return new URL(baseUrl).hostname;
+    } catch (e) {
+      return 'proova.pro';
+    }
+  }, [baseUrl]);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace('/login');
@@ -233,6 +243,8 @@ export default function DashPage() {
   const completedStepsCount = setupSteps.filter(s => s.completed).length;
   const progressPercentage = (completedStepsCount / setupSteps.length) * 100;
   const isSetupComplete = completedStepsCount === setupSteps.length;
+  const isCollectDone = setupSteps.find(s => s.id === 'collect')?.completed;
+  const isGoogleDone = setupSteps.find(s => s.id === 'google')?.completed;
 
   // Trigger reward dialog if complete and not yet used trial
   useEffect(() => {
@@ -730,7 +742,7 @@ export default function DashPage() {
           currentAnnouncement.type === 'destructive' && "bg-red-600 text-white"
         )}>
           <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
-          <div className="flex-1 overflow-hidden flex items-center relative z-10">
+          <div className="flex-1-overflow-hidden flex items-center relative z-10">
             <div className="flex animate-marquee whitespace-nowrap gap-16 items-center min-w-full">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex items-center gap-4 px-4 shrink-0">
@@ -795,14 +807,53 @@ export default function DashPage() {
                 <TrendingUp className="mr-2 h-4 w-4 text-primary" />
                 <span>Dash</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/widgets')} className="rounded-xl cursor-pointer font-bold py-2.5">
-                <Layout className="mr-2 h-4 w-4 text-primary" />
-                <span>Meus Widgets</span>
+              
+              <DropdownMenuItem 
+                disabled={!isCollectDone}
+                onClick={() => {
+                  if (isCollectDone) {
+                    router.push('/widgets');
+                  } else {
+                    toast({ title: "Acesso Bloqueado", description: "Complete a missão de Coleta Ativa para liberar seus murais." });
+                  }
+                }} 
+                className={cn(
+                  "rounded-xl cursor-pointer font-bold py-2.5",
+                  !isCollectDone && "opacity-50 grayscale cursor-not-allowed"
+                )}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    <Layout className="mr-2 h-4 w-4 text-primary" />
+                    <span>Meus Widgets</span>
+                  </div>
+                  {!isCollectDone && <Lock className="w-3 h-3 ml-2 opacity-50" />}
+                </div>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/private')} className="rounded-xl cursor-pointer font-bold py-2.5">
-                <Inbox className="mr-2 h-4 w-4 text-primary" />
-                <span>Inbox Privado</span>
+
+              <DropdownMenuItem 
+                disabled={!isSetupComplete}
+                onClick={() => {
+                  if (isSetupComplete) {
+                    router.push('/private');
+                  } else {
+                    toast({ title: "Acesso Bloqueado", description: "Conclua todo o checklist para liberar o Inbox Privado." });
+                  }
+                }}
+                className={cn(
+                  "rounded-xl cursor-pointer font-bold py-2.5",
+                  !isSetupComplete && "opacity-50 grayscale cursor-not-allowed"
+                )}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    <Inbox className="mr-2 h-4 w-4 text-primary" />
+                    <span>Inbox Privado</span>
+                  </div>
+                  {!isSetupComplete && <Lock className="w-3 h-3 ml-2 opacity-50" />}
+                </div>
               </DropdownMenuItem>
+
               <DropdownMenuItem onClick={() => router.push('/pricing')} className="rounded-xl cursor-pointer font-bold py-2.5">
                 <Gem className="mr-2 h-4 w-4 text-primary" />
                 <span>Planos de Upgrade</span>
@@ -912,7 +963,7 @@ export default function DashPage() {
                 <div className="hidden lg:flex bg-primary/5 lg:w-72 p-8 flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
                   <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10 relative group">
                     <QRCodeSVG value={collectionLink} size={100} level="H" />
-                    {!setupSteps.find(s => s.id === 'google')?.completed && (
+                    {!isGoogleDone && (
                       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-inherit p-4">
                         <Lock className="w-6 h-6 text-muted-foreground mb-1" />
                         <span className="text-[8px] font-black uppercase text-center leading-tight">Libere conectando o Google</span>
@@ -992,8 +1043,13 @@ export default function DashPage() {
                 </SelectContent>
               </Select>
             </div>
-            <Link href="/widgets" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all h-11 rounded-xl" size="lg">
+            <Link href={isCollectDone ? "/widgets" : "#"} onClick={(e) => !isCollectDone && e.preventDefault()}>
+              <Button 
+                disabled={!isCollectDone}
+                className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all h-11 rounded-xl" 
+                size="lg"
+              >
+                {!isCollectDone && <Lock className="w-3.5 h-3.5 mr-2" />}
                 Meus Murais
               </Button>
             </Link>
@@ -1067,31 +1123,31 @@ export default function DashPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'google')?.completed}
+              disabled={!isGoogleDone}
               onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'google')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Link2 className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              {!isGoogleDone ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Link2 className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Copiar Link</span>
             </Button>
             
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'google')?.completed}
+              disabled={!isGoogleDone}
               onClick={() => setIsQrDialogOpenManual(true)}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'google')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <QrCode className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              {!isGoogleDone ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <QrCode className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Ver Cartaz</span>
             </Button>
 
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'collect')?.completed}
+              disabled={!isCollectDone}
               onClick={() => router.push('/widgets')}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'collect')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Layout className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              {!isCollectDone ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Layout className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
               <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Meus Murais</span>
             </Button>
 
@@ -1138,7 +1194,7 @@ export default function DashPage() {
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                 <div className="bg-muted/30 font-mono text-[9px] md:text-xs h-9 md:h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
-                  {!setupSteps.find(s => s.id === 'google')?.completed && (
+                  {!isGoogleDone && (
                     <div className="absolute inset-0 bg-muted/80 backdrop-blur-sm flex items-center justify-center">
                       <Lock className="w-3 h-3 mr-2 text-muted-foreground" />
                       <span className="text-[8px] font-black uppercase text-muted-foreground">Libere conectando o Google Maps</span>
@@ -1148,7 +1204,7 @@ export default function DashPage() {
                 <Button 
                   variant="secondary" 
                   className="h-9 md:h-10 px-4 rounded-xl font-bold"
-                  disabled={!setupSteps.find(s => s.id === 'google')?.completed}
+                  disabled={!isGoogleDone}
                   onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                 >
                   <Copy className="h-3.5 w-3.5 mr-2" />
@@ -1165,8 +1221,14 @@ export default function DashPage() {
               <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-primary" />
               <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Depoimentos {period !== 'all' ? `(${period}d)` : ''}</h2>
             </div>
-            <Link href="/private">
-              <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] h-7 border-primary/20 text-primary hover:bg-primary/5">
+            <Link href={isSetupComplete ? "/private" : "#"} onClick={(e) => !isSetupComplete && e.preventDefault()}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                disabled={!isSetupComplete}
+                className="rounded-full gap-2 text-[10px] h-7 border-primary/20 text-primary hover:bg-primary/5"
+              >
+                {!isSetupComplete && <Lock className="w-3 h-3" />}
                 <Inbox className="w-3 h-3" /> Inbox Privado
               </Button>
             </Link>
@@ -1259,7 +1321,7 @@ export default function DashPage() {
                 <div className="space-y-2">
                   <Label htmlFor="slug-input" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nova URL de Coleta</Label>
                   <div className="relative group">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted-foreground/60 pointer-events-none select-none">proova.../c/</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-muted-foreground/60 pointer-events-none select-none">{displayDomain}/c/</span>
                     <Input 
                       id="slug-input"
                       placeholder="minha-loja"
@@ -1270,6 +1332,7 @@ export default function DashPage() {
                         setSlugError(null);
                       }}
                       className="h-14 pl-28 rounded-2xl border-2 focus:ring-primary/20 text-sm font-bold"
+                      style={{ paddingLeft: `${(displayDomain.length * 7) + 30}px` }}
                     />
                   </div>
                   {slugError && <p className="text-[10px] text-destructive font-bold flex items-center gap-1 animate-in slide-in-from-top-1"><AlertTriangle className="w-3 h-3" /> {slugError}</p>}
@@ -1361,7 +1424,7 @@ export default function DashPage() {
                 <div>
                   <p className="text-sm font-bold">Link e Personalização</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Copie sua URL de coleta. Membros Gold/Enterprise podem criar links curtos e profissionais como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">proova.pro/c/sua-marca</code>.
+                    Copie sua URL de coleta. Membros Gold/Enterprise podem criar links curtos e profissionais como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">{displayDomain}/c/sua-marca</code>.
                   </p>
                 </div>
               </div>
@@ -1615,7 +1678,7 @@ export default function DashPage() {
                   </div>
                 </div>
                 <div className="absolute bottom-2 left-0 right-0 text-center">
-                   <p className="text-[7px] md:text-[8px] font-black text-white/40 uppercase tracking-[0.3em]">Gerado via proova.pro</p>
+                   <p className="text-[7px] md:text-[8px] font-black text-white/40 uppercase tracking-[0.3em]">Gerado via {displayDomain}</p>
                 </div>
               </div>
             )}
