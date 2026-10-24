@@ -1374,10 +1374,10 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Tutorial Dialog - Otimizado para Mobile sem clipping */}
+      {/* Tutorial Dialog - Otimizado para Mobile sem clipping lateral */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-[2rem] md:rounded-[2.5rem] w-[92vw] sm:w-full sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
-          <DialogHeader className="p-6 md:p-10 pt-10 md:pt-14 pb-4 bg-background shrink-0">
+          <DialogHeader className="p-5 md:p-10 pt-10 md:pt-14 pb-4 bg-background shrink-0">
             <DialogTitle className="text-xl md:text-2xl font-black font-headline flex items-center gap-2">
               <Info className="w-6 h-6 text-primary" /> Guia do Dashboard
             </DialogTitle>
@@ -1386,7 +1386,7 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
-            <div className="space-y-8 md:space-y-10 py-6 px-6 md:px-10 overflow-x-hidden">
+            <div className="space-y-8 md:space-y-10 py-6 px-5 md:px-10 overflow-x-hidden">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Calendar className="w-5 h-5" />
@@ -1450,7 +1450,7 @@ export default function DashPage() {
               </div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-6 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
+          <DialogFooter className="p-5 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
