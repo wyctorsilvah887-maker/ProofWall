@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useEffect, useState, useRef } from 'react';
@@ -86,7 +87,7 @@ import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTheme } from 'next-themes';
-import { jsPDF } from 'jspdf';
+import { jsPDF } from 'jsPDF';
 import { cn } from '@/lib/utils';
 import { searchGooglePlaces } from '@/app/actions/maps-actions';
 
@@ -1374,19 +1375,19 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Tutorial Dialog - Renovado com Scroll */}
+      {/* Tutorial Dialog - Renovado com Scroll e largura responsiva */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-[2.5rem] sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
-          <DialogHeader className="p-8 pt-12 pb-4 bg-background shrink-0">
-            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
+        <DialogContent className="rounded-[2rem] md:rounded-[2.5rem] w-[92vw] sm:w-full sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
+          <DialogHeader className="p-6 md:p-8 pt-10 md:pt-12 pb-4 bg-background shrink-0">
+            <DialogTitle className="text-xl md:text-2xl font-black font-headline flex items-center gap-2">
               <Info className="w-6 h-6 text-primary" /> Guia do Dashboard
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs md:text-sm">
               Entenda como dominar sua máquina de prova social.
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
-            <div className="space-y-8 py-6 px-8">
+            <div className="space-y-6 md:space-y-8 py-4 md:py-6 px-6 md:px-8">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Calendar className="w-5 h-5" />
@@ -1450,7 +1451,7 @@ export default function DashPage() {
               </div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-8 pt-4 pb-8 bg-background border-t shrink-0">
+          <DialogFooter className="p-6 md:p-8 pt-4 pb-6 md:pb-8 bg-background border-t shrink-0">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
