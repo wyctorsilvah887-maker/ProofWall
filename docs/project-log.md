@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Otimização de Dash Mobile - [FINALIZADO]:** Redesenhada a barra de progresso e o checklist de onboarding para telas menores. Agora o layout é mais compacto, reduzindo o scroll vertical e focando nas ações essenciais sem poluir a interface.
 - **Alerta de Feedback Crítico - [FINALIZADO]:** Implementado sistema de notificação automática via e-mail (Resend). Agora, sempre que um feedback de 1-3 estrelas é recebido no Inbox Privado, o dono do negócio recebe um e-mail em tempo real para agir prontamente na recuperação do cliente.
 - **Compliance Jurídico - [FINALIZADO]:** Implementada captura automática de endereço IP e timestamp no momento do cadastro. O sistema agora vincula o "Proof of Acceptance" (prova de aceite) aos Termos de Uso diretamente no documento do usuário, garantindo segurança jurídica para a plataforma.
 - **Segurança & Rate Limiting - [FINALIZADO]:** Implementada proteção global de 10 requisições por minuto (Rate Limit) baseada em IP via Firestore. O sistema agora protege a API do Google Maps contra abusos e o formulário de coleta contra SPAM. Migrada a lógica de submissão para Server Actions para maior controle de backend.

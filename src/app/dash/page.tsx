@@ -188,10 +188,10 @@ export default function DashPage() {
   // Setup Progress Calculation
   const setupSteps = useMemo(() => {
     return [
-      { id: 'google', label: 'Conectar Google Maps', completed: !!userData?.googleMapsUrl, action: () => setIsGoogleMapsDialogOpen(true) },
-      { id: 'location', label: 'Definir Localização', completed: !!userData?.city, action: () => { setGoogleStep('location'); setIsGoogleMapsDialogOpen(true); } },
-      { id: 'widget', label: 'Criar Primeiro Mural', completed: widgetsList && widgetsList.length > 0, action: () => router.push('/widgets') },
-      { id: 'collect', label: 'Coletar 1ª Avaliação', completed: (userData?.testimonialsCount || 0) > 0, action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta") },
+      { id: 'google', label: 'Google Maps', completed: !!userData?.googleMapsUrl, action: () => setIsGoogleMapsDialogOpen(true) },
+      { id: 'location', label: 'Localização', completed: !!userData?.city, action: () => { setGoogleStep('location'); setIsGoogleMapsDialogOpen(true); } },
+      { id: 'widget', label: 'Primeiro Mural', completed: widgetsList && widgetsList.length > 0, action: () => router.push('/widgets') },
+      { id: 'collect', label: 'Coleta Ativa', completed: (userData?.testimonialsCount || 0) > 0, action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta") },
     ];
   }, [userData, widgetsList, baseUrl, router]);
 
@@ -209,7 +209,7 @@ export default function DashPage() {
         type: 'warning',
         icon: MapPin,
         title: 'Google Maps pendente',
-        description: 'Sua empresa ainda não redireciona elogios para o Google. Configure agora.',
+        description: 'Configure o redirecionamento agora.',
         action: () => setIsGoogleMapsDialogOpen(true),
         label: 'Configurar'
       });
@@ -221,7 +221,7 @@ export default function DashPage() {
         type: 'info',
         icon: Inbox,
         title: 'Inbox Privado Ativo',
-        description: 'Você recebeu feedbacks críticos. Resolva-os antes que virem reclamações públicas.',
+        description: 'Você recebeu feedbacks críticos.',
         action: () => router.push('/private'),
         label: 'Ver Inbox'
       });
@@ -233,21 +233,9 @@ export default function DashPage() {
         type: 'success',
         icon: MessageCircle,
         title: 'Inicie sua coleta',
-        description: 'Envie seu link exclusivo para seus melhores clientes via WhatsApp agora.',
+        description: 'Envie seu link via WhatsApp.',
         action: () => copyToClipboard(`${baseUrl}/c/${userData?.companySlug}`, "Link de coleta"),
         label: 'Copiar Link'
-      });
-    }
-
-    if (!userData?.googlePlaceId && userData?.googleMapsUrl) {
-      alerts.push({
-        id: 'precision-maps',
-        type: 'warning',
-        icon: Zap,
-        title: 'Melhore a precisão',
-        description: 'Use a busca "Zero-Click" para garantir que o link do Google nunca falhe.',
-        action: () => setIsGoogleMapsDialogOpen(true),
-        label: 'Otimizar'
       });
     }
 
@@ -791,45 +779,45 @@ export default function DashPage() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-8 space-y-8 md:space-y-12 max-w-7xl mx-auto w-full overflow-x-hidden">
+      <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-10 max-w-7xl mx-auto w-full overflow-x-hidden">
         
-        {/* SETUP PROGRESS SECTION (Onboarding) */}
+        {/* SETUP PROGRESS SECTION (Onboarding) - Mobile Optimized */}
         {!isSetupComplete && (
-          <section className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
-            <Card className="border-none shadow-xl overflow-hidden rounded-[2rem] bg-card">
+          <section className="animate-in fade-in slide-in-from-top-4 duration-1000">
+            <Card className="border-none shadow-xl overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-card">
               <div className="flex flex-col lg:flex-row">
-                <div className="flex-1 p-6 md:p-8 space-y-6">
-                  <div className="space-y-2">
+                <div className="flex-1 p-5 md:p-8 space-y-4 md:space-y-6">
+                  <div className="space-y-1 md:space-y-2">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
-                        <Zap className="w-5 h-5 text-primary" /> Progresso da sua Máquina
+                      <h2 className="text-sm md:text-lg font-black font-headline uppercase tracking-tight flex items-center gap-2">
+                        <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary" /> Máquina de Conversão
                       </h2>
-                      <span className="text-sm font-black text-primary">{Math.round(progressPercentage)}%</span>
+                      <span className="text-xs md:text-sm font-black text-primary">{Math.round(progressPercentage)}%</span>
                     </div>
-                    <Progress value={progressPercentage} className="h-2.5 bg-muted rounded-full" />
-                    <p className="text-xs text-muted-foreground font-medium pt-1">
-                      Complete os passos abaixo para maximizar sua conversão com prova social.
+                    <Progress value={progressPercentage} className="h-2 md:h-2.5 bg-muted rounded-full" />
+                    <p className="text-[10px] md:text-xs text-muted-foreground font-medium pt-0.5">
+                      Configure os pilares da sua autoridade digital.
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     {setupSteps.map((step) => (
                       <div 
                         key={step.id} 
                         onClick={!step.completed ? step.action : undefined}
                         className={cn(
-                          "flex items-center gap-3 p-3 rounded-2xl border transition-all cursor-pointer group",
+                          "flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl md:rounded-2xl border transition-all cursor-pointer group",
                           step.completed ? "bg-green-500/5 border-green-500/20 opacity-80" : "bg-muted/10 border-border hover:border-primary/30 hover:bg-primary/5"
                         )}
                       >
                         <div className={cn(
-                          "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors",
-                          step.completed ? "bg-green-500 text-white shadow-lg shadow-green-500/20" : "bg-muted border border-border group-hover:bg-primary/20 group-hover:text-primary"
+                          "w-6 h-6 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center shrink-0 transition-colors",
+                          step.completed ? "bg-green-500 text-white shadow-lg" : "bg-muted border border-border group-hover:bg-primary/20 group-hover:text-primary"
                         )}>
-                          {step.completed ? <Check className="w-4 h-4 stroke-[3]" /> : <Circle className="w-3 h-3 text-muted-foreground/30" />}
+                          {step.completed ? <Check className="w-3 h-3 md:w-4 md:h-4 stroke-[3]" /> : <Circle className="w-2.5 h-2.5 md:w-3 md:h-3 text-muted-foreground/30" />}
                         </div>
                         <span className={cn(
-                          "text-[11px] font-bold uppercase tracking-tight leading-tight",
+                          "text-[10px] md:text-[11px] font-bold uppercase tracking-tight leading-tight",
                           step.completed ? "text-green-600 line-through opacity-60" : "text-foreground"
                         )}>
                           {step.label}
@@ -840,13 +828,14 @@ export default function DashPage() {
                   </div>
                 </div>
                 
-                <div className="bg-primary/5 lg:w-72 p-8 flex flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
+                {/* Desktop only sidebar for QR Code to reduce clutter on mobile */}
+                <div className="hidden lg:flex bg-primary/5 lg:w-72 p-8 flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
                   <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10">
                     <QRCodeSVG value={collectionLink} size={100} level="H" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">Seu QR Code</p>
-                    <p className="text-[9px] text-muted-foreground font-medium leading-relaxed">Exiba este código no seu balcão para coletas rápidas.</p>
+                    <p className="text-[9px] text-muted-foreground font-medium leading-relaxed">Exiba este código no seu balcão.</p>
                   </div>
                 </div>
               </div>
@@ -854,51 +843,43 @@ export default function DashPage() {
           </section>
         )}
 
-        {/* CONSULTANT SECTION */}
+        {/* CONSULTANT SECTION - More Compact */}
         {consultantAlerts.length > 0 && (
-          <section className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-700">
+          <section className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-              <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova</h2>
+              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+              <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova</h2>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {consultantAlerts.map((alert) => (
-                <Card key={alert.id} className={cn(
-                  "border-none shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all",
-                  alert.type === 'warning' ? "bg-orange-500/5 ring-1 ring-orange-500/10" : "bg-primary/5 ring-1 ring-primary/10"
-                )}>
-                  <CardContent className="p-4 flex flex-col h-full justify-between gap-4">
-                    <div className="flex gap-3">
-                      <div className={cn(
-                        "p-2 rounded-xl h-fit",
-                        alert.type === 'warning' ? "bg-orange-500/20 text-orange-600" : "bg-primary/20 text-primary"
-                      )}>
-                        <alert.icon className="w-4 h-4" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-xs font-black uppercase tracking-tight leading-tight">{alert.title}</p>
-                        <p className="text-[10px] text-muted-foreground leading-snug font-medium">{alert.description}</p>
-                      </div>
+                <div 
+                  key={alert.id} 
+                  onClick={alert.action}
+                  className={cn(
+                    "p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]",
+                    alert.type === 'warning' ? "bg-orange-500/5 border-orange-500/20" : "bg-primary/5 border-primary/20"
+                  )}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={cn(
+                      "p-1.5 rounded-lg",
+                      alert.type === 'warning' ? "bg-orange-500/20 text-orange-600" : "bg-primary/20 text-primary"
+                    )}>
+                      <alert.icon className="w-4 h-4" />
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant={alert.type === 'warning' ? 'default' : 'outline'}
-                      onClick={alert.action}
-                      className={cn(
-                        "h-8 text-[10px] font-black uppercase tracking-widest rounded-lg",
-                        alert.type === 'warning' ? "bg-orange-600 hover:bg-orange-700" : "border-primary/20 text-primary hover:bg-primary/5"
-                      )}
-                    >
-                      {alert.label} <ChevronRight className="w-3 h-3 ml-1" />
-                    </Button>
-                  </CardContent>
-                </Card>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-black uppercase truncate">{alert.title}</p>
+                      <p className="text-[9px] text-muted-foreground truncate">{alert.description}</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-3 h-3 text-muted-foreground/30 shrink-0" />
+                </div>
               ))}
             </div>
           </section>
         )}
 
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl md:text-3xl font-bold font-headline tracking-tight">Painel de Controle</h1>
@@ -906,41 +887,41 @@ export default function DashPage() {
                 <Info className="w-3 h-3" /> Tutorial
               </Button>
             </div>
-            <p className="text-sm md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
+            <p className="text-xs md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
           </div>
           <Link href="/widgets" className="w-full md:w-auto">
-            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all h-12 rounded-xl" size="lg">
+            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all h-11 md:h-12 rounded-xl" size="lg">
               Meus Murais
             </Button>
           </Link>
         </header>
 
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 relative">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Resumo</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
+              <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo</CardTitle>
               {trendMetrics.isPositive ? (
                 <TrendingUp className="h-4 w-4 text-green-500" />
               ) : (
                 <TrendingDown className="h-4 w-4 text-destructive" />
               )}
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 md:p-6 pt-0">
               <div className="space-y-1">
-                <div className="text-2xl md:text-3xl font-bold">
-                  {userData?.testimonialsCount || 0} <span className="text-lg font-medium text-muted-foreground">avaliações</span>
+                <div className="text-xl md:text-3xl font-bold">
+                  {userData?.testimonialsCount || 0} <span className="text-sm md:text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
                   <Badge 
                     variant="secondary" 
                     className={cn(
-                      "border-none text-[10px] h-5 px-1.5 font-black",
+                      "border-none text-[8px] md:text-[10px] h-4 md:h-5 px-1.5 font-black",
                       trendMetrics.isPositive ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"
                     )}
                   >
                     {trendMetrics.label}
                   </Badge>
-                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
+                  <span className="text-[8px] md:text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
                 </div>
               </div>
             </CardContent>
@@ -953,23 +934,23 @@ export default function DashPage() {
                 setGoogleStep(userData?.googleMapsUrl ? 'manual' : 'info');
                 setIsGoogleMapsDialogOpen(true);
               }}
-              className="absolute -top-3 right-4 z-40 bg-primary text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
+              className="absolute -top-2 right-4 z-40 bg-primary text-white text-[7px] md:text-[8px] font-black uppercase tracking-widest px-2 py-0.5 md:px-2.5 md:py-1 rounded-full shadow-lg cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 ring-2 ring-white"
             >
-              <span className="flex items-center gap-1.5"><Edit3 className="w-2.5 h-2.5" /> {userData?.googleMapsUrl ? 'Editar Google' : 'Configurar Google'}</span>
+              <span className="flex items-center gap-1"><Edit3 className="w-2 h-2" /> {userData?.googleMapsUrl ? 'Editar' : 'Configurar'}</span>
             </div>
             <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl h-full">
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">Redirecionados Google</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
+                <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Cliques Google</CardTitle>
                 <MapPin className="h-4 w-4 text-primary" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 md:p-6 pt-0">
                 <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold">{totalGoogleRedirects}</div>
-                  <Badge variant="secondary" className="text-[10px] h-5 bg-primary/10 text-primary border-none">
+                  <div className="text-xl md:text-2xl font-bold">{totalGoogleRedirects}</div>
+                  <Badge variant="secondary" className="text-[8px] md:text-[10px] h-4 md:h-5 bg-primary/10 text-primary border-none">
                     Ativo
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Total de cliques para o seu Google Business.</p>
+                <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Visitantes redirecionados.</p>
               </CardContent>
             </Card>
           </div>
@@ -977,14 +958,14 @@ export default function DashPage() {
 
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Share2 className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
+            <Share2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+            <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
           </div>
           <Card className="border-none shadow-sm overflow-hidden group rounded-2xl">
             <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 p-4 md:p-6">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
                   <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
                 </CardTitle>
                 <Button 
@@ -995,35 +976,34 @@ export default function DashPage() {
                     setSlugError(null);
                     setIsSlugDialogOpen(true);
                   }}
-                  className="h-7 text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                  className="h-6 md:h-7 text-[8px] md:text-[10px] font-black uppercase tracking-widest gap-1 text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {isProPlan ? <Fingerprint className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                  Personalizar Link
+                  {isProPlan ? <Fingerprint className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
+                  Personalizar
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="bg-muted/30 font-mono text-[10px] md:text-xs h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
+            <CardContent className="p-4 md:p-6 pt-0 space-y-4">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+                <div className="bg-muted/30 font-mono text-[9px] md:text-xs h-9 md:h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm px-1.5 py-0.5 rounded border border-primary/20 text-[8px] font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">Ativo</div>
                 </div>
                 <div className="flex gap-2">
                   <Button 
                     variant="secondary" 
-                    className="h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0 rounded-xl"
+                    className="h-9 md:h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0 rounded-xl"
                     onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                   >
-                    <Copy className="h-4 w-4 sm:mr-0 mr-2" />
-                    <span className="sm:hidden font-bold">Copiar</span>
+                    <Copy className="h-3.5 w-3.5 sm:mr-0 mr-2" />
+                    <span className="sm:hidden text-xs font-bold">Copiar Link</span>
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4 rounded-xl"
+                    className="h-9 md:h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4 rounded-xl"
                     onClick={() => setIsQrDialogOpenManual(true)}
                   >
-                    <QrCode className="h-4 w-4" />
-                    <span className="whitespace-nowrap">Gerar Cartaz</span>
+                    <QrCode className="h-3.5 w-3.5" />
+                    <span className="whitespace-nowrap text-xs">Baixar Cartaz</span>
                   </Button>
                 </div>
               </div>
@@ -1034,84 +1014,82 @@ export default function DashPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+              <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
             </div>
             <Link href="/private">
-              <Button variant="outline" size="sm" className="rounded-full gap-2 text-xs border-primary/20 text-primary hover:bg-primary/5">
-                <Inbox className="w-3.5 h-3.5" /> Inbox Privado
+              <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] h-7 border-primary/20 text-primary hover:bg-primary/5">
+                <Inbox className="w-3 h-3" /> Inbox Privado
               </Button>
             </Link>
           </div>
           
-          <div className="grid gap-4">
+          <div className="grid gap-3 md:gap-4">
             {testimonialsLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
+                <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-primary/50" />
               </div>
             ) : displayTestimonials && displayTestimonials.length > 0 ? (
               displayTestimonials.map((t: any) => (
-                <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-2xl group transition-all hover:shadow-md">
-                  <CardContent className="p-3 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-primary/10 p-2 rounded-xl hidden sm:block">
-                        <User className="w-4 h-4 text-primary" />
+                <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-xl md:rounded-2xl group transition-all hover:shadow-md">
+                  <CardContent className="p-3 md:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <div className="bg-primary/10 p-2 rounded-lg md:rounded-xl hidden sm:block">
+                        <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-w-0">
                         <div className="flex flex-col space-y-0.5 mb-1">
-                          <span className="font-bold text-xs">{t.userName}</span>
+                          <span className="font-bold text-[11px] md:text-xs truncate">{t.userName}</span>
                           <div className="flex gap-0.5">
                             {Array.from({ length: t.rating || 5 }).map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-primary text-primary" />
+                              <Star key={i} className="w-2.5 h-2.5 md:w-3 md:h-3 fill-primary text-primary" />
                             ))}
                           </div>
                         </div>
-                        <p className="text-xs text-foreground italic line-clamp-2 md:line-clamp-none">
+                        <p className="text-[10px] md:text-xs text-foreground italic line-clamp-2 md:line-clamp-none">
                           "{t.text}"
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between md:justify-end gap-4 shrink-0 border-t md:border-t-0 pt-3 md:pt-0">
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 text-[10px] font-black uppercase tracking-widest gap-1.5 text-primary hover:bg-primary/5 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                          onClick={() => {
-                            setSelectedTestimonialForCard(t);
-                            setIsSocialCardDialogOpen(true);
-                          }}
-                        >
-                          <ImageIcon className="w-3 h-3" /> Gerar Card
-                        </Button>
-                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
-                          <Clock className="w-3 h-3" />
-                          {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
-                        </div>
+                    <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4 shrink-0 border-t md:border-t-0 pt-2 md:pt-0">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 md:h-8 text-[8px] md:text-[10px] font-black uppercase tracking-widest gap-1.5 text-primary hover:bg-primary/5 px-2"
+                        onClick={() => {
+                          setSelectedTestimonialForCard(t);
+                          setIsSocialCardDialogOpen(true);
+                        }}
+                      >
+                        <ImageIcon className="w-2.5 h-2.5 md:w-3 md:h-3" /> Gerar Card
+                      </Button>
+                      <div className="flex items-center gap-1 text-[8px] md:text-[10px] text-muted-foreground font-medium">
+                        <Clock className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                        {t.createdAt?.toDate ? t.createdAt.toDate().toLocaleDateString('pt-BR') : 'Hoje'}
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))
             ) : (
-              <div className="text-center py-12 border-2 border-dashed rounded-2xl bg-muted/10">
-                <MessageSquare className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Nenhum depoimento ainda.</p>
+              <div className="text-center py-10 md:py-16 border-2 border-dashed rounded-2xl bg-muted/10">
+                <MessageSquare className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-xs md:text-sm text-muted-foreground">Nenhum depoimento recebido.</p>
               </div>
             )}
           </div>
         </div>
       </main>
 
-      <footer className="py-8 md:py-16 border-t flex flex-col items-center gap-8 mt-auto">
-        <div className="flex items-center gap-2 relative w-[200px] h-[65px] md:w-[320px] md:h-[105px] -mb-4">
+      <footer className="py-8 md:py-16 border-t flex flex-col items-center gap-6 md:gap-8 mt-auto">
+        <div className="flex items-center gap-2 relative w-[180px] h-[60px] md:w-[320px] md:h-[105px] -mb-2">
           <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Footer" fill className="object-contain dark:hidden" />
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="object-contain hidden dark:block" />
         </div>
-        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-4 text-center">
-          <p className="text-xs md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
-            Feito Pelo Grupo Synapse | Synapse Group
+        <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-3 text-center">
+          <p className="text-[10px] md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
+          <p className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black opacity-40">
+            Synapse Group Technology
           </p>
         </div>
       </footer>
