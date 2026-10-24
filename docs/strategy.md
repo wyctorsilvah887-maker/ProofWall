@@ -45,8 +45,8 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 ## ⚙️ 6. Estratégias de Automação de Fluxo (No-AI)
 **Tese:** Criar uma experiência "hands-free" para o usuário final através de gatilhos técnicos.
 
-### 6.1 Automação de E-mails (Pós-Venda e Alerta)
-- **Agradecimento Automático:** Disparo de e-mail via Resend para o cliente final após submissão de nota 5 estrelas (possibilidade de incluir cupom).
+### 6.1 Automação de E-mails (Pós-Venda e Alerta) - [IMPLEMENTADO]
+- **Agradecimento Automático:** Disparo de e-mail via Resend para o cliente final após submissão de nota 5 estrelas.
 - **Alerta de Notificação:** Notificação imediata para o dono do negócio quando um feedback crítico (1-3 estrelas) é recebido no Inbox Privado.
 
 ### 6.2 Sincronização Inteligente (Auto-Publish)
@@ -56,9 +56,25 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 - **Exportação de Leads:** Ferramenta para baixar lista de contatos (nome/email) em CSV/Excel para uso em tráfego pago ou CRM.
 - **Relatório de Performance Semanal:** E-mail de resumo automático comparando métricas da semana atual vs. anterior.
 
-### 6.4 SEO e Indexação Turbo
-- **Sitemap Dinâmico:** Geração de sitemap.xml automático para indexação imediata de novas Páginas Públicas no Google Search Console.
-- **Canonical Tags:** Gestão automatizada de autoridade de domínio entre murais e landing pages.
+## 📈 7. Evolução da Inteligência e Dados (Próximos Passos)
+**Tese:** Transformar o Proova em um consultor de vendas indispensável.
 
-### 6.5 Gestão Técnica de Vídeos
-- **Pipeline de Processamento:** Automação de compressão e geração de thumbnails para depoimentos em vídeo, mantendo a performance da página.
+### 7.1 Insights de Sentimento (IA Actionable)
+- **O que é:** IA analisa o volume de feedbacks e detecta padrões de reclamação ou elogio.
+- **Objetivo:** Dar conselhos práticos de gestão baseados em dados reais.
+
+### 7.2 ROI da Confiança (Estimativa de Valor)
+- **O que é:** Um algoritmo que estima o valor financeiro economizado ou gerado através da prova social exibida.
+- **Objetivo:** Provar o valor da assinatura Enterprise através de métricas de negócio.
+
+### 7.3 Daily Pick (O Card do Dia)
+- **O que é:** Curadoria automática diária do melhor depoimento, já formatado como Social Card.
+- **Objetivo:** Estimular o compartilhamento diário em redes sociais sem esforço do usuário.
+
+### 7.4 Heatmap de Satisfação e Benchmarking
+- **O que é:** Visualização de picos de satisfação por horário e comparativo com períodos anteriores.
+- **Objetivo:** Mostrar o progresso real e identificar gargalos operacionais no tempo.
+
+### 7.5 Central de Metas (Gamificação 2.0)
+- **O que é:** Sistema de objetivos definidos pelo usuário (ex: "Chegar a 50 avaliações no Maps").
+- **Objetivo:** Aumentar o LTV (Lifetime Value) mantendo o usuário engajado com conquistas de longo prazo.
