@@ -39,7 +39,8 @@ import {
   Settings,
   MoreVertical,
   Lock,
-  MapPin
+  MapPin,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -163,8 +164,22 @@ const PublicPageSettings = ({
   isGoldPlan
 }: any) => {
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
+
+  const presets = [
+    { name: 'Classic', primary: '#f97316', secondary: '#ffffff' },
+    { name: 'Midnight', primary: '#D4AF37', secondary: '#000000' },
+    { name: 'Ocean', primary: '#3b82f6', secondary: '#f8fafc' },
+    { name: 'Forest', primary: '#10b981', secondary: '#064e3b' },
+  ];
+
+  const applyPreset = (p: any) => {
+    setThemeColor(p.primary);
+    if (isGoldPlan) {
+      setSecondaryColor(p.secondary);
+    }
+    toast({ title: `Tema ${p.name} aplicado!` });
+  };
 
   const addSection = () => {
     const newSection: CustomSection = {
@@ -235,6 +250,29 @@ const PublicPageSettings = ({
                 <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'logo')} />
               </div>
 
+              {/* PRESETS SECTION */}
+              <div className="space-y-4 pt-4 border-t">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                  <Sparkles className="w-3 h-3 text-primary" /> Estilos Rápidos (Presets)
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {presets.map((p) => (
+                    <Button 
+                      key={p.name}
+                      variant="outline"
+                      className="h-10 text-[10px] font-black uppercase tracking-widest rounded-xl border-muted-foreground/10 hover:border-primary transition-all p-0 overflow-hidden relative group"
+                      onClick={() => applyPreset(p)}
+                    >
+                      <div className="absolute inset-0 flex">
+                        <div className="flex-1" style={{ backgroundColor: p.primary }} />
+                        <div className="flex-1" style={{ backgroundColor: p.secondary }} />
+                      </div>
+                      <span className="relative z-10 bg-background/80 px-2 py-0.5 rounded-full shadow-sm border border-border group-hover:bg-background transition-colors">{p.name}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-6 pt-4 border-t">
                 <div className="space-y-4">
                   <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -296,7 +334,7 @@ const PublicPageSettings = ({
                                    <span className="text-[10px] font-black uppercase truncate pr-2">{section.title || `Seção ${idx + 1}`}</span>
                                  </AccordionTrigger>
                                  <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0" onClick={() => removeSection(section.id)}>
-                                   <Trash2 className="w-3 h-3" />
+                                   <Trash2 className="w-3.5 h-3.5" />
                                  </Button>
                               </div>
                               <AccordionContent className="p-3 space-y-3 pb-4">
@@ -495,17 +533,11 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
 
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
-  const allWidgetsQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return collection(db, 'users', user.uid, 'widgets');
-  }, [db, user]);
-  const { data: allWidgets } = useCollection(allWidgetsQuery);
-
   const [widgetName, setWidgetName] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
-  const [layout, setLayout] = useState<LayoutType>('grid');
+  const [layout, setLayout] = useState<LayoutType>('grid'); // Padronizado para 'grid'
   const [logoUrl, setLogoUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');

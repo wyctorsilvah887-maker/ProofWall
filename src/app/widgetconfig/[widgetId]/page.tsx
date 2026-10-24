@@ -325,7 +325,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [layout, setLayout] = useState<LayoutType>('grid');
+  const [layout, setLayout] = useState<LayoutType>('grid'); // Padronizado para 'grid'
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [autoPublishEnabled, setAutoPublishEnabled] = useState(false);

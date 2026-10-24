@@ -138,12 +138,13 @@ export default function WidgetsPage() {
         name: newWidgetName.trim(),
         selectedTestimonialIds: [],
         createdAt: serverTimestamp(),
-        layout: 'mural',
+        layout: 'grid', // Padronizado para 'grid' como padrão
         themeColor: '#f97316',
         whatsappEnabled: false,
         whatsappNumber: '',
         externalSiteUrl: '',
         coverImageUrl: '',
+        showLogo: true,
       };
 
       await setDoc(finalWidgetRef, widgetData);
@@ -338,7 +339,7 @@ export default function WidgetsPage() {
                             {w.selectedTestimonialIds?.length || 0} AVALIAÇÕES
                           </Badge>
                           <Badge variant="outline" className="text-[9px] h-5 uppercase tracking-widest font-black px-2 opacity-60">
-                            {w.layout || 'Mural'}
+                            {w.layout || 'grid'}
                           </Badge>
                         </div>
                       </div>
