@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Otimização de Tutorial Mobile - [FINALIZADO]:** Implementada correção crítica no sistema de rolagem do Tutorial no Dashboard. Agora o diálogo possui altura limitada (`max-h-[90vh]`) e utiliza `flex-1` no `ScrollArea`, garantindo que o conteúdo nunca seja cortado e que o botão "Começar Agora" esteja sempre acessível em telas pequenas.
 - **Filtros de Período (Métricas Dinâmicas) - [FINALIZADO]:** Implementada funcionalidade de filtragem temporal no Dashboard. Agora o usuário pode alternar a visualização de métricas e depoimentos entre "Últimos 7 dias", "Últimos 30 dias" ou "Total". O sistema recalcula o engajamento instantaneamente, oferecendo uma visão clara do crescimento recente.
 - **Ações Rápidas (Quick Access) - [FINALIZADO]:** Implementada seção de atalhos táteis no Dashboard. Agora o usuário tem acesso a 1-clique para as funções mais vitais: Copiar Link, Ver Cartaz, Gerenciar Murais e Inbox Privado. Layout adaptativo para mobile (2x2) e desktop (4x1).
 - **Consultor Proativo & Alertas Sem Estrela - [FINALIZADO]:** Removido ícone decorativo do Consultor para um visual mais limpo. Seção compactada para melhor aproveitamento de espaço no mobile.

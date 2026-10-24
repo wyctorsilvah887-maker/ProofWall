@@ -1313,7 +1313,7 @@ export default function DashPage() {
 
       {/* Tutorial Dialog - Renovado com Scroll */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-[2.5rem] sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+        <DialogContent className="rounded-[2.5rem] sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
           <DialogHeader className="p-8 pt-12 pb-4 bg-background shrink-0">
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
               <Info className="w-6 h-6 text-primary" /> Guia do Dashboard
@@ -1322,7 +1322,7 @@ export default function DashPage() {
               Entenda como dominar sua máquina de prova social.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[60vh] md:max-h-[500px]">
+          <ScrollArea className="flex-1 overflow-y-auto">
             <div className="space-y-8 py-6 px-8">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
@@ -1387,7 +1387,7 @@ export default function DashPage() {
               </div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-8 pt-4 pb-8 bg-background border-t">
+          <DialogFooter className="p-8 pt-4 pb-8 bg-background border-t shrink-0">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
@@ -1401,7 +1401,7 @@ export default function DashPage() {
               <MapPin className="w-6 h-6 text-primary" /> Google Business
             </DialogTitle>
             <DialogDescription>
-              Turbine seu SEO Local conectando sua conta oficial do Google.
+              Turbine seu SEO Local conectando sua account oficial do Google.
             </DialogDescription>
           </DialogHeader>
 
