@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -29,7 +30,9 @@ import {
   Shield,
   Sun,
   Moon,
-  Lock
+  Lock,
+  Zap,
+  Settings2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +45,7 @@ import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -116,11 +120,13 @@ const EmbedSettings = ({
   layout, setLayout, 
   themeColor, setThemeColor,
   secondaryColor, setSecondaryColor,
+  autoPublishEnabled, setAutoPublishEnabled,
+  autoPublishMinRating, setAutoPublishMinRating,
+  autoPublishMinChars, setAutoPublishMinChars,
   handleSave, isSaving,
   isGoldPlan
 }: any) => {
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
-  const router = useRouter();
   
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
@@ -139,7 +145,55 @@ const EmbedSettings = ({
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-8 pb-10">
+          {/* AUTOMAÇÃO SECTION */}
           <div className="space-y-4">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+              <Zap className="w-3 h-3" /> Automação Inteligente
+            </Label>
+            
+            <div className="p-4 rounded-2xl border bg-primary/5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-bold">Auto-Publish</Label>
+                  <p className="text-[9px] text-muted-foreground">Publicar novos elogios sem aprovação manual</p>
+                </div>
+                <Switch checked={autoPublishEnabled} onCheckedChange={setAutoPublishEnabled} />
+              </div>
+
+              {autoPublishEnabled && (
+                <div className="space-y-3 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] font-bold uppercase opacity-60">Nota Mínima</Label>
+                    <div className="flex gap-1">
+                      {[3, 4, 5].map((val) => (
+                        <Button 
+                          key={val} 
+                          variant={autoPublishMinRating === val ? 'default' : 'outline'} 
+                          size="sm" 
+                          className="flex-1 h-7 text-[10px] font-bold rounded-lg"
+                          onClick={() => setAutoPublishMinRating(val)}
+                        >
+                          {val} Estrelas
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[9px] font-bold uppercase opacity-60">Caracteres Mínimos ({autoPublishMinChars})</Label>
+                    <Input 
+                      type="number" 
+                      value={autoPublishMinChars} 
+                      onChange={(e) => setAutoPublishMinChars(parseInt(e.target.value) || 0)}
+                      className="h-8 text-xs rounded-lg"
+                      min={0}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t">
             <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Formato do Mural</Label>
             <div className="grid grid-cols-1 gap-2">
               {[
@@ -169,11 +223,6 @@ const EmbedSettings = ({
                 );
               })}
             </div>
-            {!isGoldPlan && (
-              <p className="text-[10px] text-primary font-bold text-center bg-primary/5 p-2 rounded-lg border border-primary/10">
-                🚀 Ative o Trial ou Gold para usar layouts avançados
-              </p>
-            )}
           </div>
 
           <div className="space-y-6 pt-4 border-t">
@@ -241,6 +290,10 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const [layout, setLayout] = useState<LayoutType>('grid');
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
+  const [autoPublishEnabled, setAutoPublishEnabled] = useState(false);
+  const [autoPublishMinRating, setAutoPublishMinRating] = useState(5);
+  const [autoPublishMinChars, setAutoPublishMinChars] = useState(0);
+
   const [isSaving, setIsSaving] = useState(false);
   const [isCodeDialogOpen, setIsCodeDialogOpen] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -258,6 +311,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       setLayout(widgetData.layout || 'grid');
       setThemeColor(widgetData.themeColor || '#f97316');
       setSecondaryColor(widgetData.secondaryColor || '#ffffff');
+      setAutoPublishEnabled(widgetData.autoPublishEnabled || false);
+      setAutoPublishMinRating(widgetData.autoPublishMinRating || 5);
+      setAutoPublishMinChars(widgetData.autoPublishMinChars || 0);
     }
   }, [widgetData]);
 
@@ -300,6 +356,9 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
       layout,
       themeColor,
       secondaryColor,
+      autoPublishEnabled,
+      autoPublishMinRating,
+      autoPublishMinChars
     }).then(() => {
       setIsSaving(false);
       setIsCodeDialogOpen(true);
@@ -327,7 +386,11 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
     return <div className="flex h-screen items-center justify-center bg-muted/30"><Loader2 className="animate-spin h-10 w-10 text-primary" /></div>;
   }
 
-  const sidebarProps = { layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, handleSave, isSaving, isGoldPlan };
+  const sidebarProps = { 
+    layout, setLayout, themeColor, setThemeColor, secondaryColor, setSecondaryColor, 
+    autoPublishEnabled, setAutoPublishEnabled, autoPublishMinRating, setAutoPublishMinRating, autoPublishMinChars, setAutoPublishMinChars,
+    handleSave, isSaving, isGoldPlan 
+  };
 
   const membershipLabel = isEnterprise ? 'Membro Enterprise' : (isGold ? 'Membro Gold' : (isTrial ? 'Período Trial' : 'Plano Base'));
 
@@ -465,7 +528,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
                     )}
                   </div>
                 ) : (
-                  <div className="text-center opacity-30 italic text-sm">Selecione depoimentos abaixo para ativar o mural.</div>
+                  <div className="text-center opacity-30 italic text-sm">Selecione depoimentos abaixo ou ative o Auto-Publish.</div>
                 )}
               </div>
             </div>
@@ -553,15 +616,15 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
               <div>
-                <p className="text-sm font-bold">Defina o Visual</p>
-                <p className="text-xs text-muted-foreground">Clique no ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> para escolher o layout e as cores da sua marca.</p>
+                <p className="text-sm font-bold">Defina o Visual e Automação</p>
+                <p className="text-xs text-muted-foreground">Escolha o layout e ative o <strong>Auto-Publish</strong> para que o mural se atualize sozinho sem seu trabalho manual.</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
               <div>
                 <p className="text-sm font-bold">Selecione os Depoimentos</p>
-                <p className="text-xs text-muted-foreground">Marque os feedbacks aprovados que você deseja exibir nesta configuração específica.</p>
+                <p className="text-xs text-muted-foreground">Marque os feedbacks que você já tem. Se o Auto-Publish estiver ativo, os futuros entrarão sozinhos.</p>
               </div>
             </div>
             <div className="flex gap-4">

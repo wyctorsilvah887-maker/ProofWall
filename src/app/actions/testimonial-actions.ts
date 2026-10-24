@@ -3,7 +3,7 @@
 
 import { headers } from 'next/headers';
 import { initializeFirebase } from '@/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment, getDoc, arrayUnion } from 'firebase/firestore';
 import { Resend } from 'resend';
 
 /**
@@ -62,7 +62,7 @@ async function sendCriticalFeedbackAlert(ownerEmail: string, feedbackData: any, 
               <p style="margin: 0; font-style: italic;">"${feedbackData.text}"</p>
               <p style="margin-top: 15px; font-size: 13px; color: #6b7280;">— ${feedbackData.userName} (${feedbackData.userEmail || 'E-mail não informado'})</p>
             </div>
-            <p>Recomendamos entrar em contato com o cliente para resolver a situação antes que ela se torne uma reclamação pública.</p>
+            <p>Recomendamos entrar em contato com o cliente para resolver a situation antes que ela se torne uma reclamação pública.</p>
             <div style="text-align: center; margin-top: 30px;">
               <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://proova.wsstudioscompany.com.br'}/private" style="background-color: #1f2937; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Ver no Painel Proova</a>
             </div>
@@ -76,7 +76,7 @@ async function sendCriticalFeedbackAlert(ownerEmail: string, feedbackData: any, 
 }
 
 /**
- * Salva um depoimento com Rate Limit de 10 por minuto.
+ * Salva um depoimento com Rate Limit de 10 por minuto e executa Sincronização Automática em Widgets.
  */
 export async function submitTestimonialAction(data: {
   targetUserId: string;
@@ -103,7 +103,8 @@ export async function submitTestimonialAction(data: {
     const collectionName = data.destination === 'public' ? 'testimonials' : 'private_feedbacks';
     const feedbacksRef = collection(firestore, 'users', data.targetUserId, collectionName);
 
-    await addDoc(feedbacksRef, testimonialData);
+    const docRef = await addDoc(feedbacksRef, testimonialData);
+    const testimonialId = docRef.id;
     
     // Incrementa o contador do usuário
     const userRef = doc(firestore, 'users', data.targetUserId);
@@ -118,6 +119,27 @@ export async function submitTestimonialAction(data: {
         const userData = userSnap.data();
         await sendCriticalFeedbackAlert(userData.email, testimonialData, userData.companyName);
       }
+    }
+
+    // --- LÓGICA DE SINCRONIZAÇÃO AUTOMÁTICA (AUTO-PUBLISH) ---
+    if (data.destination === 'public') {
+      const widgetsRef = collection(firestore, 'users', data.targetUserId, 'widgets');
+      const q = query(widgetsRef, where('autoPublishEnabled', '==', true));
+      const widgetsSnap = await getDocs(q);
+
+      const updatePromises = widgetsSnap.docs.map(async (wDoc) => {
+        const widget = wDoc.data();
+        const minRating = widget.autoPublishMinRating || 5;
+        const minChars = widget.autoPublishMinChars || 0;
+
+        if (testimonialData.rating >= minRating && testimonialData.text.length >= minChars) {
+          await updateDoc(wDoc.ref, {
+            selectedTestimonialIds: arrayUnion(testimonialId)
+          });
+        }
+      });
+
+      await Promise.all(updatePromises);
     }
 
     return { success: true };

@@ -178,6 +178,18 @@
           "type": "string",
           "description": "Cor secundária ou de fundo do widget."
         },
+        "autoPublishEnabled": {
+          "type": "boolean",
+          "description": "Publica automaticamente novos depoimentos que atendem às regras."
+        },
+        "autoPublishMinRating": {
+          "type": "number",
+          "description": "Nota mínima para publicação automática (Ex: 5)."
+        },
+        "autoPublishMinChars": {
+          "type": "number",
+          "description": "Tamanho mínimo do texto para publicação automática."
+        },
         "coverImageUrl": {
           "type": "string",
           "description": "URL da imagem de capa da página pública."

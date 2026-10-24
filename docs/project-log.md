@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Sincronização Inteligente (Auto-Publish) - [FINALIZADO]:** Implementada lógica de publicação automática em widgets baseada em regras de nota e texto, permitindo uma gestão "mãos-livres" da prova social.
 - **Automação de Performance (Analytics Mail) - [FINALIZADO]:** Implementada geração de relatórios semanais comparativos enviando métricas de crescimento e depoimento destaque via Resend.
 - **Gamificação do Onboarding (Quest System) - [FINALIZADO]:** Implementada jornada de desbloqueio sequencial. Agora ferramentas como o Google Maps e o Kit de Marketing são liberados como recompensas de missões, tornando o aprendizado do produto muito mais fluido.
 - **Otimização de Tutorial Mobile - [FINALIZADO]:** Implementada correção crítica no sistema de rolagem do Tutorial no Dashboard com `ScrollArea` e layout flexível.
