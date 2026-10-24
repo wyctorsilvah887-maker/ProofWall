@@ -68,6 +68,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -894,7 +895,7 @@ export default function DashPage() {
                             "flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl md:rounded-2xl border transition-all relative group",
                             step.completed ? "bg-green-500/5 border-green-500/20 opacity-80" : 
                             isUnlocked ? "bg-background border-primary/20 hover:border-primary shadow-sm cursor-pointer" : 
-                            "bg-muted/30 border-muted opacity-40 grayscale cursor-not-allowed"
+                            "bg-muted/30 border-muted opacity-40 grayscale cursor-not-allowed bg-muted/20"
                           )}
                         >
                           <div className={cn(
