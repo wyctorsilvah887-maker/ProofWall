@@ -40,7 +40,8 @@ import {
   MoreVertical,
   Lock,
   MapPin,
-  Sparkles
+  Sparkles,
+  Settings2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -250,7 +251,6 @@ const PublicPageSettings = ({
                 <input type="file" ref={logoInputRef} className="hidden" accept="image/*" onChange={(e) => onFileSelect(e, 'logo')} />
               </div>
 
-              {/* PRESETS SECTION */}
               <div className="space-y-4 pt-4 border-t">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Sparkles className="w-3 h-3 text-primary" /> Estilos Rápidos (Presets)
@@ -537,7 +537,7 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
-  const [layout, setLayout] = useState<LayoutType>('grid'); // Padronizado para 'grid'
+  const [layout, setLayout] = useState<LayoutType>('grid'); 
   const [logoUrl, setLogoUrl] = useState('');
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('');
@@ -1070,42 +1070,70 @@ export default function PublicPageEditorPage({ params }: { params: Promise<{ wid
       </main>
 
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
-              <HelpCircle className="w-6 h-6 text-primary" /> Como configurar sua Página Pública
+        <DialogContent className="rounded-[2rem] md:rounded-[2.5rem] w-[92vw] sm:w-full sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
+          <DialogHeader className="p-6 md:p-10 pt-10 md:pt-14 pb-4 bg-background shrink-0">
+            <DialogTitle className="text-xl md:text-2xl font-black font-headline flex items-center gap-2">
+              <Settings2 className="w-6 h-6 text-primary" /> Página Pública VIP
             </DialogTitle>
-            <DialogDescription>
-              Crie um destino VIP para sua marca em 3 passos rápidos.
+            <DialogDescription className="text-xs md:text-sm pl-8">
+              Transforme seu link da bio em um canal de alta conversão.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="flex gap-4 group">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
-              <div>
-                <p className="text-sm font-bold">Acesse as Configurações</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Clique no ícone de <strong>Monitor</strong> <Monitor className="w-3 h-3 inline-block mb-0.5" /> no topo para abrir o painel lateral e customizar o visual, textos e cores da sua página.
-                </p>
+          
+          <ScrollArea className="flex-1 overflow-y-auto">
+            <div className="space-y-8 md:space-y-10 py-6 px-5 md:px-10 overflow-x-hidden">
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Palette className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Identidade e Estilo</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Clique no ícone de monitor para abrir o painel lateral. Use os <strong>Estilos Rápidos</strong> para aplicar um tema profissional instantaneamente. Envie seu logo para personalizar a cabeceira.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Type className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Conteúdo Persuasivo</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Edite o <strong>Título Principal (Hero)</strong> para algo impactante. Membros Enterprise podem adicionar seções no-code ilimitadas com botões de chamada para ação (CTA).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Curadoria de Elogios</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Selecione manualmente os melhores depoimentos no painel abaixo do preview. O sistema fará um rodízio dinâmico dos seus top 5 selecionados.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Link2 className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Publicação e Bio</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Salve as alterações e copie a URL da página no topo. Este é o link ideal para o seu <strong>Instagram, TikTok ou WhatsApp</strong> para provar autoridade 24h por dia.
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex gap-4 group">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
-              <div>
-                <p className="text-sm font-bold">Curadoria de Conteúdo</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Personalize o <strong>Título (Hero)</strong> e selecione abaixo os depoimentos que deseja destacar (máx. 5 visíveis rotativos).</p>
-              </div>
-            </div>
-            <div className="flex gap-4 group">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">3</div>
-              <div>
-                <p className="text-sm font-bold">Interação e Redes Sociais</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Ative o botão de <strong>WhatsApp</strong> e configure o <strong>Site Oficial</strong> na aba Social. Use o link gerado na sua bio das redes sociais!</p>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
+          </ScrollArea>
+
+          <DialogFooter className="p-6 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Customização</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
