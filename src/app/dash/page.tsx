@@ -87,7 +87,7 @@ import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import { useTheme } from 'next-themes';
-import { jsPDF } from 'jsPDF';
+import { jsPDF } from 'jspdf';
 import { cn } from '@/lib/utils';
 import { searchGooglePlaces } from '@/app/actions/maps-actions';
 
@@ -190,11 +190,11 @@ export default function DashPage() {
 
   // Display domain for examples (Tutorial)
   const displayDomain = useMemo(() => {
-    if (!baseUrl) return 'proova.pro';
+    if (!baseUrl) return 'proova.wsstudioscompany.com.br';
     try {
       return new URL(baseUrl).hostname;
     } catch (e) {
-      return 'proova.pro';
+      return 'proova.wsstudioscompany.com.br';
     }
   }, [baseUrl]);
 
@@ -945,7 +945,7 @@ export default function DashPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <span className={cn(
-                              "text-[10px] md:text-[11px] font-bold uppercase tracking-tight leading-tight block truncate",
+                              "text-[10px] md:text-[11px] font-bold uppercase tracking-tight block truncate",
                               step.completed ? "text-green-600 line-through opacity-60" : "text-foreground"
                             )}>
                               {step.label}
@@ -1730,7 +1730,7 @@ export default function DashPage() {
             
             <div className="bg-primary/5 p-6 rounded-3xl border border-primary/20 space-y-4">
               <div className="flex items-center justify-center gap-2 text-primary font-black uppercase tracking-widest text-xs">
-                <Trophy className="w-4 h-4" /> Sua Recompensa
+                <Trophy className="w-4 h-4 text-primary" /> Sua Recompensa
               </div>
               <p className="text-sm font-bold leading-relaxed">
                 Você acaba de ganhar <span className="text-primary">14 DIAS DE CONTA GOLD</span> para experimentar todos os nossos recursos premium!
