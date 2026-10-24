@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -138,7 +139,7 @@ export default function WidgetsPage() {
         name: newWidgetName.trim(),
         selectedTestimonialIds: [],
         createdAt: serverTimestamp(),
-        layout: 'grid', // Padronizado para 'grid' como padrão
+        layout: 'grid', 
         themeColor: '#f97316',
         whatsappEnabled: false,
         whatsappNumber: '',
@@ -154,9 +155,10 @@ export default function WidgetsPage() {
       setIsCreateDialogOpen(false);
       toast({
         title: "Mural Criado!",
-        description: "Configurando o novo link amigável...",
+        description: "Configurando sua página pública...",
       });
-      router.push(`/widgetconfig/${slug}`);
+      // Redireciona para o editor da Página Pública conforme solicitado
+      router.push(`/widgets/${slug}`);
       
     } catch (error: any) {
       console.error("Erro ao criar widget:", error);
@@ -471,7 +473,7 @@ export default function WidgetsPage() {
                 size="icon" 
                 variant="secondary" 
                 className="absolute top-2 right-2 h-9 w-9 rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all" 
-                onClick={() => copyToClipboard(getWidgetCode(selectedWidget.id))}
+                onClick={() => { navigator.clipboard.writeText(getWidgetCode(selectedWidget.id)); toast({ title: "Copiado!" }); }}
               >
                 <Copy className="h-4 w-4" />
               </Button>
