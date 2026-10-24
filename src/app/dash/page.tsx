@@ -51,7 +51,9 @@ import {
   Check,
   Calendar,
   Trophy,
-  PartyPopper
+  PartyPopper,
+  MousePointer2,
+  BarChart3
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -95,7 +97,7 @@ export default function DashPage() {
   const { theme, setTheme } = useTheme();
   const [baseUrl, setBaseUrl] = useState('');
   
-  // Period Filtering State (Default 7 days as requested)
+  // Period Filtering State (Default 7 days)
   const [period, setPeriod] = useState<'7' | '30' | 'all'>('7');
   
   // Dialog States
@@ -257,8 +259,10 @@ export default function DashPage() {
     }
   };
 
-  // Consultant Logic
+  // Consultant Logic - Only unlocked after setup
   const consultantAlerts = useMemo(() => {
+    if (!isSetupComplete) return [];
+    
     const alerts = [];
 
     if (!userData?.googleMapsUrl) {
@@ -298,7 +302,7 @@ export default function DashPage() {
     }
 
     return alerts;
-  }, [userData, hasPrivateFeedbacks, baseUrl, router]);
+  }, [userData, hasPrivateFeedbacks, baseUrl, router, isSetupComplete]);
 
   const companySlug = useMemo(() => {
     return userData?.companySlug || '';
@@ -874,7 +878,7 @@ export default function DashPage() {
                     </div>
                     <Progress value={progressPercentage} className="h-2 md:h-2.5 bg-muted rounded-full" />
                     <p className="text-[10px] md:text-xs text-muted-foreground font-medium pt-0.5">
-                      {isSetupComplete ? "Todas as missões concluídas!" : "Complete as missões para desbloquear seu prêmio."}
+                      {isSetupComplete ? "Todas as missões concluídas!" : "Complete as missões para desbloquear seu prêmio e o Consultor."}
                     </p>
                   </div>
 
@@ -948,11 +952,11 @@ export default function DashPage() {
           </section>
         )}
 
-        {/* CONSULTANT SECTION */}
-        {consultantAlerts.length > 0 && (
+        {/* CONSULTANT SECTION - Only visible after setup is complete */}
+        {isSetupComplete && consultantAlerts.length > 0 && (
           <section className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="flex items-center gap-2">
-              <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova</h2>
+              <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova (Estratégico)</h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {consultantAlerts.map((alert) => (
@@ -1021,11 +1025,7 @@ export default function DashPage() {
           <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
               <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo {period !== 'all' ? `(${period}d)` : ''}</CardTitle>
-              {trendMetrics.isPositive ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
-              ) : (
-                <TrendingDown className="h-4 w-4 text-destructive" />
-              )}
+              <BarChart3 className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent className="p-4 md:p-6 pt-0">
               <div className="space-y-1">
@@ -1035,14 +1035,10 @@ export default function DashPage() {
                 <div className="flex items-center gap-1.5 mt-2">
                   <Badge 
                     variant="secondary" 
-                    className={cn(
-                      "border-none text-[8px] md:text-[10px] h-4 md:h-5 px-1.5 font-black",
-                      trendMetrics.isPositive ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"
-                    )}
+                    className="border-none text-[8px] md:text-[10px] h-4 md:h-5 px-1.5 font-black bg-primary/10 text-primary"
                   >
                     {filteredMetrics.trendLabel}
                   </Badge>
-                  {period === 'all' && <span className="text-[8px] md:text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>}
                 </div>
               </div>
             </CardContent>
@@ -1062,16 +1058,16 @@ export default function DashPage() {
             <Card className="border-none shadow-sm relative overflow-hidden rounded-2xl h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
                 <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Cliques Google</CardTitle>
-                <MapPin className="h-4 w-4 text-primary" />
+                <MousePointer2 className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent className="p-4 md:p-6 pt-0">
                 <div className="flex items-center gap-2">
                   <div className="text-xl md:text-2xl font-bold">{totalGoogleRedirects}</div>
                   <Badge variant="secondary" className="text-[8px] md:text-[10px] h-4 md:h-5 bg-primary/10 text-primary border-none">
-                    Ativo
+                    G-Boost Ativo
                   </Badge>
                 </div>
-                <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Visitantes redirecionados.</p>
+                <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Visitantes redirecionados ao Maps.</p>
               </CardContent>
             </Card>
           </div>
@@ -1085,41 +1081,42 @@ export default function DashPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
+              disabled={!setupSteps.find(s => s.id === 'google')?.completed}
               onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'collect')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <Link2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Copiar Link</span>
+              {!setupSteps.find(s => s.id === 'google')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Link2 className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Copiar Link</span>
             </Button>
             
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
+              disabled={!setupSteps.find(s => s.id === 'google')?.completed}
               onClick={() => setIsQrDialogOpenManual(true)}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'collect')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <QrCode className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Ver Cartaz</span>
+              {!setupSteps.find(s => s.id === 'google')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <QrCode className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Ver Cartaz</span>
             </Button>
 
             <Button 
               variant="outline" 
-              disabled={!setupSteps.find(s => s.id === 'widget')?.unlocked}
+              disabled={!setupSteps.find(s => s.id === 'collect')?.completed}
               onClick={() => router.push('/widgets')}
               className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              {!setupSteps.find(s => s.id === 'widget')?.unlocked ? <Lock className="w-6 h-6 text-muted-foreground/30" /> : <Layout className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />}
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Meus Murais</span>
+              {!setupSteps.find(s => s.id === 'collect')?.completed ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Layout className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Meus Murais</span>
             </Button>
 
             <Button 
               variant="outline" 
+              disabled={!isSetupComplete}
               onClick={() => router.push('/private')}
-              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm disabled:opacity-50"
             >
-              <Inbox className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Ver Inbox</span>
+              {!isSetupComplete ? <Lock className="w-5 h-5 text-muted-foreground/30" /> : <Inbox className="w-5 h-5 text-primary group-hover:scale-110 transition-transform" />}
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center px-2">Ver Inbox</span>
             </Button>
           </div>
         </section>
@@ -1147,7 +1144,7 @@ export default function DashPage() {
                   className="h-6 md:h-7 text-[8px] md:text-[10px] font-black uppercase tracking-widest gap-1 text-muted-foreground hover:text-primary transition-colors"
                 >
                   {isProPlan ? <Fingerprint className="w-2.5 h-2.5" /> : <Lock className="w-2.5 h-2.5" />}
-                  Personalizar
+                  Personalizar Link
                 </Button>
               </div>
             </CardHeader>
@@ -1155,17 +1152,17 @@ export default function DashPage() {
               <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                 <div className="bg-muted/30 font-mono text-[9px] md:text-xs h-9 md:h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
-                  {!setupSteps.find(s => s.id === 'collect')?.unlocked && (
+                  {!setupSteps.find(s => s.id === 'google')?.completed && (
                     <div className="absolute inset-0 bg-muted/80 backdrop-blur-sm flex items-center justify-center">
                       <Lock className="w-3 h-3 mr-2 text-muted-foreground" />
-                      <span className="text-[8px] font-black uppercase text-muted-foreground">Desbloqueie conectando o Google Maps</span>
+                      <span className="text-[8px] font-black uppercase text-muted-foreground">Libere conectando o Google Maps</span>
                     </div>
                   )}
                 </div>
                 <Button 
                   variant="secondary" 
                   className="h-9 md:h-10 px-4 rounded-xl font-bold"
-                  disabled={!setupSteps.find(s => s.id === 'collect')?.unlocked}
+                  disabled={!setupSteps.find(s => s.id === 'google')?.completed}
                   onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
                 >
                   <Copy className="h-3.5 w-3.5 mr-2" />
@@ -1328,42 +1325,82 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Tutorial Dialog */}
+      {/* Tutorial Dialog - Renovado */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-[2.5rem] sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col">
-          <DialogHeader className="p-8 pt-16 pb-4 shrink-0 bg-background">
+        <DialogContent className="rounded-[2.5rem] sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col">
+          <DialogHeader className="p-8 pt-12 pb-4 bg-background shrink-0">
             <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
-              <Info className="w-6 h-6 text-primary" /> Bem-vindo ao Proova
+              <Info className="w-6 h-6 text-primary" /> Guia do Dashboard
             </DialogTitle>
             <DialogDescription>
-              Aprenda a dominar seu painel de prova social em 3 passos.
+              Entenda como dominar sua máquina de prova social.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-6 px-8 overflow-y-auto">
-            <div className="flex gap-4 group">
-              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">1</div>
-              <div>
-                <p className="text-sm font-bold">Acompanhe sua Performance</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Monitore o crescimento dos seus depoimentos e cliques no Google em tempo real através dos cards de métricas inteligentes.</p>
+          <ScrollArea className="max-h-[60vh]">
+            <div className="space-y-8 py-6 px-8">
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Filtro de Resumo</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">No topo, alterne entre "Últimos 7 dias", "30 dias" ou "Total" para ver como seu engajamento está crescendo no tempo.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <MousePointer2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Cliques Google</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps após deixarem um elogio no Proova.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Ações Rápidas</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique: Copiar Link, Imprimir Cartaz, Gerenciar Murais e o seu Inbox Privado.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Fingerprint className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Link e Personalização</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Copie sua URL de coleta. Se você for Gold/Enterprise, clique em "Personalizar" para ter um link curto (ex: proova.pro/c/sua-marca).</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Depoimentos e Inbox</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Veja os elogios públicos no feed. Críticas (1-3 estrelas) ficam salvas apenas no seu Inbox Privado para sua gestão interna.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Navigation className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold">Consultor Proova</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Após concluir o setup, um aliado estratégico aparecerá para avisar sobre pendências no Maps ou feedbacks críticos pendentes.</p>
+                </div>
               </div>
             </div>
-            <div className="flex gap-4 group">
-              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">2</div>
-              <div>
-                <p className="text-sm font-bold">Crie e Customize Murais</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Clique no ícone de <Monitor className="w-3 h-3 inline-block mb-0.5" /> nos editores para subir sua logo e definir as cores da sua marca.</p>
-              </div>
-            </div>
-            <div className="flex gap-4 group">
-              <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0 transition-colors group-hover:bg-primary group-hover:text-white">3</div>
-              <div>
-                <p className="text-sm font-bold">Capture e Compartilhe</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Copie seu link exclusivo ou gere o <strong>Cartaz de Balcão</strong> em PDF para coletar novos elogios no seu estabelecimento físico.</p>
-              </div>
-            </div>
-          </div>
+          </ScrollArea>
           <DialogFooter className="p-8 pt-4 pb-8 bg-background">
-            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Vamos Começar!</Button>
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1660,4 +1697,3 @@ export default function DashPage() {
     </div>
   );
 }
-
