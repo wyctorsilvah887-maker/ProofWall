@@ -120,7 +120,7 @@ export default function WidgetsPage() {
     
     let slug = newWidgetName.trim().toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/[^a-z0-9-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
 
@@ -406,7 +406,7 @@ export default function WidgetsPage() {
         <div className="container px-4 md:px-6 mx-auto text-center space-y-2">
           <p className="text-xs md:text-sm text-muted-foreground font-medium">© 2026 Proova - Prova Social de Verdade.</p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-30">
-            Feito Pelo Grupo Synapse | Synapse Group
+            Feito por Proova
           </p>
         </div>
       </footer>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from "react";
@@ -303,7 +302,7 @@ export default function SignupPage() {
         
         <div className="flex flex-col items-center gap-4 opacity-40 pb-8 md:pb-0">
            <p className="text-[8px] md:text-[10px] text-center uppercase tracking-[0.2em] md:tracking-[0.3em] font-black flex items-center gap-2">
-             <ShieldCheck className="w-3 h-3 md:w-4 md:h-4" /> Compliance e Auditoria Synapse Group
+             <ShieldCheck className="w-3 h-3 md:w-4 md:h-4" /> Compliance e Auditoria Proova
            </p>
         </div>
       </div>

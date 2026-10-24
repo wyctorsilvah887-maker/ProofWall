@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -119,7 +118,7 @@ export default function ForgotPasswordPage() {
                 ) : 'Enviar Link de Recuperação'}
               </Button>
               <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold opacity-40">
-                🚀 Powered by Synapse Group
+                🚀 Powered by Proova
               </p>
             </form>
           )}

@@ -384,7 +384,7 @@ export default function PricingPage() {
           <div className="space-y-2">
             <p className="text-xs md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
             <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-40">
-              © 2026 BY SYNAPSE GROUP | SYNP GROUP TECHNOLOGY
+              © 2026 PROOVA TECHNOLOGY
             </p>
           </div>
         </div>

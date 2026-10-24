@@ -341,7 +341,7 @@ export default function Home() {
             </div>
             <p className="text-[10px] md:text-sm text-muted-foreground font-bold italic">"Onde a confiança vira conversão."</p>
             <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-[0.2em] md:tracking-[0.3em] font-black opacity-40">
-              © 2026 BY SYNAPSE GROUP | PROOVA TECHNOLOGY
+              © 2026 PROOVA TECHNOLOGY
             </p>
           </div>
         </div>

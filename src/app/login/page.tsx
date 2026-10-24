@@ -166,7 +166,7 @@ export default function LoginPage() {
         
         <div className="flex flex-col items-center gap-4 opacity-40 pb-8 md:pb-0">
            <p className="text-[8px] md:text-[10px] text-center uppercase tracking-[0.2em] md:tracking-[0.3em] font-black">
-             🔒 Autenticação Segura Synapse Group
+             🔒 Autenticação Segura
            </p>
         </div>
       </div>

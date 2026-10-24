@@ -491,7 +491,7 @@ export default function DashPage() {
       pdf.setFontSize(10);
       pdf.text('Tecnologia Proova', 105, 275, { align: 'center' });
       pdf.setFont('helvetica', 'bold');
-      pdf.text('BY SYNAPSE GROUP', 105, 282, { align: 'center' });
+      pdf.text('BY PROOVA TECHNOLOGY', 105, 282, { align: 'center' });
 
       pdf.save(`cartaz-proova-${companySlug}-${pdfTheme}.pdf`);
       toast({ title: "PDF Gerado!", description: `O seu cartaz (${pdfTheme === 'light' ? 'Claro' : 'Escuro'}) foi baixado.` });
@@ -1123,7 +1123,7 @@ export default function DashPage() {
         <div className="container px-4 md:px-6 mx-auto flex flex-col justify-center items-center gap-3 text-center">
           <p className="text-[10px] md:text-sm text-muted-foreground">© 2026 Proova - Prova Social de Verdade.</p>
           <p className="text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-widest font-black opacity-40">
-            Synapse Group Technology
+            Proova Technology
           </p>
         </div>
       </footer>
@@ -1495,4 +1495,3 @@ export default function DashPage() {
     </div>
   );
 }
-

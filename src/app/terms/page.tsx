@@ -40,7 +40,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-bold font-headline text-foreground flex items-center gap-2">
               <Gavel className="w-5 h-5 text-primary" /> 1. DO OBJETO E ACEITAÇÃO
             </h2>
-            <p>O presente instrumento regula o licenciamento de uso da plataforma tecnológica <strong>PROOVA</strong>, de propriedade intelectual exclusiva da <strong>SYNAPSE GROUP TECHNOLOGY</strong> (doravante "CONTRATADA"). A utilização da plataforma por parte do <strong>CONTRATANTE</strong> (seja pessoa física ou jurídica) implica na aceitação plena, irrevogável e irretratável de todos os termos aqui dispostos, operando como contrato de adesão imediato nos termos da legislação civil brasileira.</p>
+            <p>O presente instrumento regula o licenciamento de uso da plataforma tecnológica <strong>PROOVA</strong>, de propriedade intelectual exclusiva da <strong>PROOVA TECHNOLOGY</strong> (doravante "CONTRATADA"). A utilização da plataforma por parte do <strong>CONTRATANTE</strong> (seja pessoa física ou jurídica) implica na aceitação plena, irrevogável e irretratável de todos os termos aqui dispostos, operando como contrato de adesão imediato nos termos da legislação civil brasileira.</p>
           </section>
 
           {/* CLÁUSULA 2 - REPUTATION SHIELD E ANTI-GATING */}
@@ -114,7 +114,7 @@ export default function TermsPage() {
           <div className="bg-muted/50 p-8 rounded-3xl border border-dashed text-[10px] text-center space-y-3">
             <p className="font-bold text-foreground opacity-70 uppercase tracking-widest">Aviso de Compliance Legal:</p>
             <p>Este documento possui validade de contrato digital e sua aceitação é registrada via log de IP e TIMESTAMP no momento do cadastro. O uso continuado da plataforma após revisões destes termos constitui aceitação tácita das novas cláusulas.</p>
-            <p className="font-bold">Synapse Group Technology | Departamento de Compliance e Risco Digital</p>
+            <p className="font-bold">Proova Technology | Departamento de Compliance e Risco Digital</p>
           </div>
         </div>
       </main>

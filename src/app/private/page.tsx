@@ -269,7 +269,7 @@ export default function PrivateInboxPage() {
         <div className="container px-4 md:px-6 mx-auto text-center space-y-4">
           <p className="text-xs text-muted-foreground">© 2026 Proova - Inbox Privado de Feedback.</p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
-            Synapse Group Professional
+            Proova Professional
           </p>
         </div>
       </footer>

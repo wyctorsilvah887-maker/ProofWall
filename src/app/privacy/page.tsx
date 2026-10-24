@@ -44,10 +44,10 @@ export default function PrivacyPage() {
               <FileText className="w-6 h-6 text-primary" /> 1. DO PREÂMBULO E ESCOPO DE APLICAÇÃO
             </h2>
             <div className="space-y-4 text-justify">
-              <p>A <strong>SYNAPSE GROUP TECHNOLOGY</strong>, na qualidade de proprietária da plataforma <strong>PROOVA</strong>, reafirma seu compromisso inabalável com a privacidade e a segurança dos dados pessoais. Este documento estabelece, de forma exaustiva e transparente, como os dados são coletados, processados e armazenados, operando como parte integrante do contrato de licenciamento de software (SaaS).</p>
+              <p>A <strong>PROOVA TECHNOLOGY</strong> reafirma seu compromisso inabalável com a privacidade e a segurança dos dados pessoais. Este documento estabelece, de forma exaustiva e transparente, como os dados são coletados, processados e armazenados, operando como parte integrante do contrato de licenciamento de software (SaaS).</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/50 p-6 rounded-3xl border border-dashed">
                 <p className="text-xs italic"><strong className="text-foreground">Controlador:</strong> O Contratante (Cliente Proova) que define as finalidades de uso.</p>
-                <p className="text-xs italic"><strong className="text-foreground">Operador:</strong> O Proova/Synapse Group, que realiza o tratamento em nome do Controlador.</p>
+                <p className="text-xs italic"><strong className="text-foreground">Operador:</strong> O Proova, que realiza o tratamento em nome do Controlador.</p>
                 <p className="text-xs italic"><strong className="text-foreground">Titular:</strong> O Consumidor Final que insere voluntariamente seu depoimento.</p>
                 <p className="text-xs italic"><strong className="text-foreground">Dado Pessoal:</strong> Informação relacionada a pessoa natural identificada ou identificável.</p>
               </div>
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
 
           <div className="pt-12 text-center">
             <p className="text-[9px] md:text-[10px] text-muted-foreground uppercase tracking-[0.4em] font-black opacity-40">
-              © 2026 PROOVA TECHNOLOGY | SYNAPSE GROUP PROFESSIONAL SERVICES
+              © 2026 PROOVA TECHNOLOGY
             </p>
           </div>
         </div>
@@ -131,8 +131,8 @@ export default function PrivacyPage() {
 
       <footer className="py-12 border-t mt-auto text-center flex flex-col items-center gap-6">
         <div className="relative w-[180px] h-[60px] opacity-30 grayscale">
-          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Gray" fill className="object-contain dark:hidden" />
-          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Gray" fill className="object-contain hidden dark:block" />
+          <Image src="/Logotipo%20PROOVA%20white%20mode%201.png" alt="Logo Gray" fill className="object-contain dark:hidden" priority />
+          <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Gray" fill className="object-contain hidden dark:block" priority />
         </div>
         <p className="text-[9px] font-bold text-muted-foreground/50 uppercase tracking-widest">Proteção Ativa contra Vazamentos e Uso Indevido</p>
       </footer>

@@ -189,7 +189,7 @@ export default function AdminPage() {
   if (!isCodeCorrect && !user) {
     return (
       <div className="flex h-screen items-center justify-center bg-muted/30 px-4">
-        <Card className="w-full max-w-md shadow-xl border-t-4 border-primary">
+        <Card className="w-full max-md shadow-xl border-t-4 border-primary">
           <CardHeader className="text-center">
             <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-4">
               <Lock className="w-6 h-6 text-primary" />
@@ -575,7 +575,7 @@ export default function AdminPage() {
           <Image src="/Logotipo%20PROOVA%20dark%20mode%201.png" alt="Logo Footer" fill className="hidden dark:block object-contain" />
         </div>
         <div className="container px-4 text-center">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">© 2026 Proova - Gestão Segura Synapse Group</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">© 2026 Proova - Gestão Segura</p>
         </div>
       </footer>
 
