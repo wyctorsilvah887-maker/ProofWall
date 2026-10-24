@@ -1064,9 +1064,15 @@ export default function DashPage() {
               <CardContent className="p-4 md:p-6 pt-0">
                 <div className="flex items-center gap-2">
                   <div className="text-xl md:text-2xl font-bold">{totalGoogleRedirects}</div>
-                  <Badge variant="secondary" className="text-[8px] md:text-[10px] h-4 md:h-5 bg-primary/10 text-primary border-none">
-                    G-Boost Ativo
-                  </Badge>
+                  {userData?.googleMapsUrl ? (
+                    <Badge variant="secondary" className="text-[8px] md:text-[10px] h-4 md:h-5 bg-primary/10 text-primary border-none">
+                      G-Boost Ativo
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-[8px] md:text-[10px] h-4 md:h-5 opacity-50 uppercase font-black">
+                      Pendente
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-[10px] md:text-xs text-muted-foreground mt-1">Visitantes redirecionados ao Maps.</p>
               </CardContent>
@@ -1326,7 +1332,7 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Tutorial Dialog - Renovado */}
+      {/* Tutorial Dialog - Renovado com Scroll */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-[2.5rem] sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col">
           <DialogHeader className="p-8 pt-12 pb-4 bg-background shrink-0">
@@ -1337,7 +1343,7 @@ export default function DashPage() {
               Entenda como dominar sua máquina de prova social.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="max-h-[60vh]">
+          <ScrollArea className="max-h-[60vh] md:max-h-[500px]">
             <div className="space-y-8 py-6 px-8">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
@@ -1355,7 +1361,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Cliques Google</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps após deixarem um elogio no Proova.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps. O selo <strong>G-Boost Ativo</strong> só aparecerá após você configurar seu link oficial.</p>
                 </div>
               </div>
 
@@ -1365,7 +1371,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Ações Rápidas</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique: Copiar Link, Imprimir Cartaz, Gerenciar Murais e o seu Inbox Privado.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique. Estes botões são desbloqueados conforme você avança no checklist de missões.</p>
                 </div>
               </div>
 
@@ -1375,7 +1381,9 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Link e Personalização</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Copie sua URL de coleta. Se você for Gold/Enterprise, clique em "Personalizar" para ter um link curto (ex: proova.pro/c/sua-marca).</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Copie sua URL de coleta. Membros Gold/Enterprise podem criar links curtos e profissionais como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">proova.pro/c/sua-marca</code>.
+                  </p>
                 </div>
               </div>
 
@@ -1395,12 +1403,12 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Consultor Proova</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Após concluir o setup, um aliado estratégico aparecerá para avisar sobre pendências no Maps ou feedbacks críticos pendentes.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Um aliado estratégico que aparece após você concluir o setup para avisar sobre pendências no Maps ou novos feedbacks críticos.</p>
                 </div>
               </div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-8 pt-4 pb-8 bg-background">
+          <DialogFooter className="p-8 pt-4 pb-8 bg-background border-t">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
