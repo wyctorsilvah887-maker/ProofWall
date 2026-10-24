@@ -895,6 +895,7 @@ export default function DashPage() {
           </Link>
         </header>
 
+        {/* METRICS CARDS */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
@@ -955,17 +956,61 @@ export default function DashPage() {
           </div>
         </div>
 
+        {/* QUICK ACTIONS SECTION */}
+        <section className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex items-center gap-2">
+            <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Ações Rápidas</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+            >
+              <Link2 className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Copiar Link</span>
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => setIsQrDialogOpenManual(true)}
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+            >
+              <QrCode className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Ver Cartaz</span>
+            </Button>
+
+            <Button 
+              variant="outline" 
+              onClick={() => router.push('/widgets')}
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+            >
+              <Layout className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Meus Murais</span>
+            </Button>
+
+            <Button 
+              variant="outline" 
+              onClick={() => router.push('/private')}
+              className="h-24 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 border-primary/20 bg-background hover:bg-primary/5 group transition-all active:scale-95 shadow-sm"
+            >
+              <Inbox className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.1em] text-center">Ver Inbox</span>
+            </Button>
+          </div>
+        </section>
+
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Share2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-            <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Compartilhar / Coletar</h2>
+            <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Link de Coleta Ativo</h2>
           </div>
           <Card className="border-none shadow-sm overflow-hidden group rounded-2xl">
             <div className="h-1 w-full bg-primary/20 group-hover:bg-primary transition-colors" />
             <CardHeader className="pb-2 p-4 md:p-6">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm md:text-base font-semibold flex items-center gap-2">
-                  <Link2 className="w-4 h-4 text-primary" /> Link de Coleta & QR Code
+                  <Link2 className="w-4 h-4 text-primary" /> Endereço Público
                 </CardTitle>
                 <Button 
                   variant="ghost" 
@@ -987,24 +1032,14 @@ export default function DashPage() {
                 <div className="bg-muted/30 font-mono text-[9px] md:text-xs h-9 md:h-10 border flex items-center px-3 flex-1 rounded-xl overflow-x-auto whitespace-nowrap scrollbar-hide select-all relative group">
                   {collectionLink}
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="secondary" 
-                    className="h-9 md:h-10 flex-1 sm:w-10 sm:flex-none justify-center px-4 sm:px-0 rounded-xl"
-                    onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
-                  >
-                    <Copy className="h-3.5 w-3.5 sm:mr-0 mr-2" />
-                    <span className="sm:hidden text-xs font-bold">Copiar Link</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="h-9 md:h-10 border-primary/20 text-primary hover:bg-primary/5 flex-1 sm:flex-none gap-2 font-bold justify-center px-4 rounded-xl"
-                    onClick={() => setIsQrDialogOpenManual(true)}
-                  >
-                    <QrCode className="h-3.5 w-3.5" />
-                    <span className="whitespace-nowrap text-xs">Baixar Cartaz</span>
-                  </Button>
-                </div>
+                <Button 
+                  variant="secondary" 
+                  className="h-9 md:h-10 px-4 rounded-xl font-bold"
+                  onClick={() => copyToClipboard(collectionLink, "Link de coleta")}
+                >
+                  <Copy className="h-3.5 w-3.5 mr-2" />
+                  <span className="text-xs">Copiar</span>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -1246,7 +1281,7 @@ export default function DashPage() {
                     <Input placeholder="Ex: São Paulo" value={userCity} onChange={(e) => setUserCity(e.target.value)} className="h-12 rounded-xl" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px) font-black uppercase tracking-widest text-muted-foreground ml-1">Estado (UF)</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Estado (UF)</Label>
                     <Input placeholder="Ex: SP" value={userState} onChange={(e) => setUserState(e.target.value.toUpperCase())} maxLength={2} className="h-12 rounded-xl" />
                   </div>
                 </div>
@@ -1460,3 +1495,4 @@ export default function DashPage() {
     </div>
   );
 }
+
