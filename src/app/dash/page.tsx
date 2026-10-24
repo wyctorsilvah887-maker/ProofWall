@@ -742,7 +742,7 @@ export default function DashPage() {
           currentAnnouncement.type === 'destructive' && "bg-red-600 text-white"
         )}>
           <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
-          <div className="flex-1-overflow-hidden flex items-center relative z-10">
+          <div className="flex-1 overflow-hidden flex items-center relative z-10">
             <div className="flex animate-marquee whitespace-nowrap gap-16 items-center min-w-full">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex items-center gap-4 px-4 shrink-0">
@@ -761,7 +761,7 @@ export default function DashPage() {
           </div>
           <button 
             onClick={() => setIsAnnouncementDismissed(true)}
-            className="p-2.5 mr-2 rounded-full hover:bg-white/10 transition-colors shrink-0 z-20 relative"
+            className="p-2.5 mr-2 rounded-full hover:bg-white/10 transition-colors shrink-0 z-[110] relative"
           >
             <X className="w-4 h-4" />
           </button>
