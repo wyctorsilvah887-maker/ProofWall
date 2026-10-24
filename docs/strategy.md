@@ -56,25 +56,39 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 - **Exportação de Leads:** Ferramenta para baixar lista de contatos (nome/email) em CSV/Excel para uso em tráfego pago ou CRM.
 - **Relatório de Performance Semanal:** E-mail de resumo automático comparando métricas da semana atual vs. anterior.
 
-## 📈 7. Evolução da Inteligência e Dados (Próximos Passos)
+## 🎨 7. Automação de Design (Estética Imediata)
+**Tese:** Garantir que o mural fique bonito sem exigir conhecimento de design do usuário.
+
+### 7.1 Presets de Estilo (One-Click Themes) - [IMPLEMENTADO]
+- **O que é:** Combinações de cores primárias e secundárias testadas e pré-configuradas.
+- **Exemplo:** Temas "Classic Proova", "Midnight Gold", "Clean Ocean".
+- **Objetivo:** Permitir que o usuário profissionalize o visual do mural em menos de 1 segundo.
+
+## 🚀 8. Próximas Automações de UX (No-AI)
+**Tese:** Reduzir cliques e aumentar a percepção de valor técnico.
+
+### 8.1 Seleção em Massa (Bulk Actions)
+- **O que é:** Botão "Selecionar todos os 5 estrelas" no editor de widgets.
+- **Objetivo:** Agilizar a curadoria para usuários que já possuem dezenas de avaliações.
+
+### 8.2 Ordenação Lógica (Auto-Sort)
+- **O que é:** Opção de ordenar depoimentos no mural por "Mais Recentes", "Melhores Notas" ou "Texto Mais Longo".
+- **Objetivo:** Garantir que os depoimentos mais persuasivos apareçam primeiro automaticamente.
+
+### 8.3 Verificador de Instalação (Uplink Check)
+- **O que é:** Sistema que detecta se o script do Proova foi colado corretamente no site do cliente.
+- **Objetivo:** Mostrar um selo de "Conectado" no painel, dando segurança técnica ao usuário.
+
+### 8.4 Layout Adaptativo (Smart Layout)
+- **O que é:** Sugestão automática de mudança de layout baseada no volume de dados.
+- **Exemplo:** Se o usuário seleciona mais de 10 depoimentos, o sistema sugere mudar de "Grade" para "Carrossel".
+- **Objetivo:** Evitar que o site do cliente fique com blocos de texto muito longos e cansativos.
+
+## 📈 9. Evolução da Inteligência e Dados (Próximos Passos AI)
 **Tese:** Transformar o Proova em um consultor de vendas indispensável.
 
-### 7.1 Insights de Sentimento (IA Actionable)
-- **O que é:** IA analisa o volume de feedbacks e detecta padrões de reclamação ou elogio.
-- **Objetivo:** Dar conselhos práticos de gestão baseados em dados reais.
-
-### 7.2 ROI da Confiança (Estimativa de Valor)
-- **O que é:** Um algoritmo que estima o valor financeiro economizado ou gerado através da prova social exibida.
-- **Objetivo:** Provar o valor da assinatura Enterprise através de métricas de negócio.
-
-### 7.3 Daily Pick (O Card do Dia)
-- **O que é:** Curadoria automática diária do melhor depoimento, já formatado como Social Card.
-- **Objetivo:** Estimular o compartilhamento diário em redes sociais sem esforço do usuário.
-
-### 7.4 Heatmap de Satisfação e Benchmarking
-- **O que é:** Visualização de picos de satisfação por horário e comparativo com períodos anteriores.
-- **Objetivo:** Mostrar o progresso real e identificar gargalos operacionais no tempo.
-
-### 7.5 Central de Metas (Gamificação 2.0)
-- **O que é:** Sistema de objetivos definidos pelo usuário (ex: "Chegar a 50 avaliações no Maps").
-- **Objetivo:** Aumentar o LTV (Lifetime Value) mantendo o usuário engajado com conquistas de longo prazo.
+### 9.1 Insights de Sentimento (IA Actionable)
+### 9.2 ROI da Confiança (Estimativa de Valor)
+### 9.3 Daily Pick (O Card do Dia)
+### 9.4 Heatmap de Satisfação e Benchmarking
+### 9.5 Central de Metas (Gamificação 2.0)

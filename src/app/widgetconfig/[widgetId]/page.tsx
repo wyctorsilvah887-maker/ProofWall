@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, use, useRef } from 'react';
@@ -32,7 +31,8 @@ import {
   Moon,
   Lock,
   Zap,
-  Settings2
+  Settings2,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,6 +128,21 @@ const EmbedSettings = ({
 }: any) => {
   const colors = ['#f97316', '#D4AF37', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#e11d48', '#0d9488', '#7c3aed', '#475569', '#000000', '#ffffff'];
   
+  const presets = [
+    { name: 'Classic', primary: '#f97316', secondary: '#ffffff' },
+    { name: 'Midnight', primary: '#D4AF37', secondary: '#000000' },
+    { name: 'Ocean', primary: '#3b82f6', secondary: '#f8fafc' },
+    { name: 'Forest', primary: '#10b981', secondary: '#064e3b' },
+  ];
+
+  const applyPreset = (p: any) => {
+    setThemeColor(p.primary);
+    if (isGoldPlan) {
+      setSecondaryColor(p.secondary);
+    }
+    toast({ title: `Tema ${p.name} aplicado!` });
+  };
+
   return (
     <div className="flex flex-col w-full h-full overflow-hidden bg-background">
       <div className="p-4 border-b bg-muted/10 shrink-0 space-y-4">
@@ -190,6 +205,29 @@ const EmbedSettings = ({
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* PRESETS SECTION */}
+          <div className="space-y-4 pt-4 border-t">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Sparkles className="w-3 h-3 text-primary" /> Estilos Rápidos (Presets)
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              {presets.map((p) => (
+                <Button 
+                  key={p.name}
+                  variant="outline"
+                  className="h-10 text-[10px] font-black uppercase tracking-widest rounded-xl border-muted-foreground/10 hover:border-primary transition-all p-0 overflow-hidden relative group"
+                  onClick={() => applyPreset(p)}
+                >
+                  <div className="absolute inset-0 flex">
+                    <div className="flex-1" style={{ backgroundColor: p.primary }} />
+                    <div className="flex-1" style={{ backgroundColor: p.secondary }} />
+                  </div>
+                  <span className="relative z-10 bg-background/80 px-2 py-0.5 rounded-full shadow-sm border border-border group-hover:bg-background transition-colors">{p.name}</span>
+                </Button>
+              ))}
             </div>
           </div>
 
