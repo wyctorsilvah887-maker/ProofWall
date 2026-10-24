@@ -53,7 +53,8 @@ import {
   Trophy,
   PartyPopper,
   MousePointer2,
-  BarChart3
+  BarChart3,
+  Mail
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -89,6 +90,7 @@ import { useTheme } from 'next-themes';
 import { jsPDF } from 'jspdf';
 import { cn } from '@/lib/utils';
 import { searchGooglePlaces } from '@/app/actions/maps-actions';
+import { sendWeeklyPerformanceReport } from '@/app/actions/report-actions';
 
 export default function DashPage() {
   const { user, loading: authLoading } = useUser();
@@ -117,6 +119,7 @@ export default function DashPage() {
   const [selectedTestimonialForCard, setSelectedTestimonialForCard] = useState<any>(null);
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
   const [isSharingCard, setIsSharingCard] = useState(false);
+  const [isSendingReport, setIsSendingReport] = useState(false);
 
   // Zero-Click Google Search States
   const [googleStep, setGoogleStep] = useState<'info' | 'location' | 'search' | 'manual'>('info');
@@ -715,6 +718,23 @@ export default function DashPage() {
     }
   };
 
+  const handleSendWeeklyReport = async () => {
+    if (!user) return;
+    setIsSendingReport(true);
+    try {
+      const result = await sendWeeklyPerformanceReport(user.uid);
+      if (result.success) {
+        toast({ title: "Relatório Enviado!", description: "Confira sua caixa de entrada agora." });
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erro no envio", description: e.message });
+    } finally {
+      setIsSendingReport(false);
+    }
+  };
+
   const collectionLink = `${baseUrl}/c/${companySlug}`;
 
   if (authLoading || userDataLoading || (user && !userData)) {
@@ -1060,7 +1080,17 @@ export default function DashPage() {
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
-              <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo {period !== 'all' ? `(${period}d)` : ''}</CardTitle>
+              <div className="space-y-0.5">
+                <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo {period !== 'all' ? `(${period}d)` : ''}</CardTitle>
+                <button 
+                  onClick={handleSendWeeklyReport}
+                  disabled={isSendingReport}
+                  className="text-[9px] font-black text-primary uppercase tracking-widest flex items-center gap-1 hover:underline disabled:opacity-50"
+                >
+                  {isSendingReport ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Mail className="w-2.5 h-2.5" />}
+                  Enviar Relatório por E-mail
+                </button>
+              </div>
               <BarChart3 className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent className="p-4 md:p-6 pt-0">
@@ -1386,7 +1416,7 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
-            <div className="space-y-8 md:space-y-10 py-6 pl-6 pr-10 md:px-10 overflow-x-hidden">
+            <div className="space-y-8 md:space-y-10 py-6 px-5 md:px-10 overflow-x-hidden">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Calendar className="w-5 h-5" />

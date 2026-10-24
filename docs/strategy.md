@@ -52,7 +52,7 @@ Este documento detalha as teses de evolução do produto para transformar prova 
 ### 6.2 Sincronização Inteligente (Auto-Publish)
 - **Regras de Exibição:** Opção para publicar automaticamente todo depoimento 5 estrelas em widgets selecionados, eliminando a curadoria manual constante.
 
-### 6.3 Business Intelligence (BI) e Exportação
+### 6.3 Business Intelligence (BI) e Exportação - [IMPLEMENTADO]
 - **Exportação de Leads:** Ferramenta para baixar lista de contatos (nome/email) em CSV/Excel para uso em tráfego pago ou CRM.
 - **Relatório de Performance Semanal:** E-mail de resumo automático comparando métricas da semana atual vs. anterior.
 
