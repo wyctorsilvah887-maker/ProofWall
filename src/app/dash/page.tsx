@@ -349,27 +349,6 @@ export default function DashPage() {
     };
   }, [allFetchedTestimonials, period, userData]);
 
-  const trendMetrics = useMemo(() => {
-    const current = userData?.testimonialsCount || 0;
-    const last = userData?.lastMonthCount || 0;
-    
-    if (last === 0) {
-      return { 
-        percentage: current > 0 ? 100 : 0, 
-        isPositive: true,
-        label: current > 0 ? `+${current} novos` : 'Sem dados'
-      };
-    }
-    
-    const diff = current - last;
-    const percent = Math.round((diff / last) * 100);
-    return { 
-      percentage: Math.abs(percent), 
-      isPositive: percent >= 0,
-      label: `${percent >= 0 ? '+' : ''}${percent}%`
-    };
-  }, [userData]);
-
   const copyToClipboard = (text: string, description: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -864,7 +843,7 @@ export default function DashPage() {
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-10 max-w-7xl mx-auto w-full overflow-x-hidden">
         
-        {/* SETUP PROGRESS SECTION (Gamified Quest System) */}
+        {/* SETUP PROGRESS SECTION (Gamified Quest System) - Hides when complete */}
         {!isSetupComplete && (
           <section className="animate-in fade-in slide-in-from-top-4 duration-1000">
             <Card className="border-none shadow-xl overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-card">
@@ -879,7 +858,7 @@ export default function DashPage() {
                     </div>
                     <Progress value={progressPercentage} className="h-2 md:h-2.5 bg-muted rounded-full" />
                     <p className="text-[10px] md:text-xs text-muted-foreground font-medium pt-0.5">
-                      {isSetupComplete ? "Todas as missões concluídas!" : "Complete as missões para desbloquear seu prêmio e o Consultor."}
+                      Complete as missões para desbloquear seu prêmio e o Consultor.
                     </p>
                   </div>
 
@@ -1361,7 +1340,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Cliques Google</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps. O selo <strong>G-Boost Ativo</strong> só aparecerá após você configurar seu link oficial.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps. O selo <strong>G-Boost Ativo</strong> confirma sua configuração oficial.</p>
                 </div>
               </div>
 
