@@ -3,7 +3,8 @@
 
 import { headers } from 'next/headers';
 import { initializeFirebase } from '@/firebase';
-import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, serverTimestamp, Timestamp, doc, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { Resend } from 'resend';
 
 /**
  * Verifica o limite de requisições no Firestore.
@@ -34,6 +35,44 @@ async function checkRateLimit(actionName: string) {
     action: actionName,
     createdAt: serverTimestamp()
   });
+}
+
+/**
+ * Envia um alerta de feedback crítico para o dono do negócio.
+ */
+async function sendCriticalFeedbackAlert(ownerEmail: string, feedbackData: any, companyName: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || !ownerEmail) return;
+
+  try {
+    const resend = new Resend(apiKey);
+    await resend.emails.send({
+      from: 'Proova Alerts <proova@proova.wsstudioscompany.com.br>',
+      to: [ownerEmail],
+      subject: `⚠️ Feedback Crítico Recebido - ${companyName}`,
+      html: `
+        <div style="font-family: sans-serif; color: #1f2937; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="background-color: #ef4444; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 20px;">Alerta de Reputação</h1>
+          </div>
+          <div style="padding: 30px;">
+            <p>Olá,</p>
+            <p>Você recebeu um novo feedback de <strong>${feedbackData.rating} estrelas</strong> no seu Inbox Privado.</p>
+            <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444; margin: 20px 0;">
+              <p style="margin: 0; font-style: italic;">"${feedbackData.text}"</p>
+              <p style="margin-top: 15px; font-size: 13px; color: #6b7280;">— ${feedbackData.userName} (${feedbackData.userEmail || 'E-mail não informado'})</p>
+            </div>
+            <p>Recomendamos entrar em contato com o cliente para resolver a situação antes que ela se torne uma reclamação pública.</p>
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'https://proova.wsstudioscompany.com.br'}/private" style="background-color: #1f2937; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Ver no Painel Proova</a>
+            </div>
+          </div>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error("Erro ao enviar e-mail de alerta:", err);
+  }
 }
 
 /**
@@ -71,6 +110,15 @@ export async function submitTestimonialAction(data: {
     await updateDoc(userRef, {
       testimonialsCount: increment(1)
     });
+
+    // Se for um feedback privado (crítico), envia alerta por e-mail para o dono
+    if (data.destination === 'private' || data.rating <= 3) {
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        await sendCriticalFeedbackAlert(userData.email, testimonialData, userData.companyName);
+      }
+    }
 
     return { success: true };
   } catch (error: any) {
