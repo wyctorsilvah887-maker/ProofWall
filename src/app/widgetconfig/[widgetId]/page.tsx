@@ -325,7 +325,7 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
   const { data: approvedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [layout, setLayout] = useState<LayoutType>('grid'); // Padronizado para 'grid'
+  const [layout, setLayout] = useState<LayoutType>('grid'); 
   const [themeColor, setThemeColor] = useState('#f97316');
   const [secondaryColor, setSecondaryColor] = useState('#ffffff');
   const [autoPublishEnabled, setAutoPublishEnabled] = useState(false);
@@ -639,42 +639,72 @@ export default function EmbedEditorPage({ params }: { params: Promise<{ widgetId
         </div>
       </main>
 
-      {/* Tutorial Dialog */}
+      {/* Tutorial Dialog - Otimizado para Mobile sem cortes */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black font-headline flex items-center gap-2">
-              <HelpCircle className="w-6 h-6 text-primary" /> Como configurar seu Mural
+        <DialogContent className="rounded-[2rem] md:rounded-[2.5rem] w-[92vw] sm:w-full sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
+          <DialogHeader className="p-6 md:p-10 pt-10 md:pt-14 pb-4 bg-background shrink-0">
+            <DialogTitle className="text-xl md:text-2xl font-black font-headline flex items-center gap-2">
+              <Settings2 className="w-6 h-6 text-primary" /> Guia de Configuração
             </DialogTitle>
-            <DialogDescription>
-              Siga estes 3 passos simples para turbinar seu site com prova social.
+            <DialogDescription className="text-xs md:text-sm pl-8">
+              Siga os passos para ativar sua prova social no site.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">1</div>
-              <div>
-                <p className="text-sm font-bold">Defina o Visual e Automação</p>
-                <p className="text-xs text-muted-foreground">Escolha o layout e ative o <strong>Auto-Publish</strong> para que o mural se atualize sozinho sem seu trabalho manual.</p>
+          
+          <ScrollArea className="flex-1 overflow-y-auto">
+            <div className="space-y-8 md:space-y-10 py-6 px-5 md:px-10 overflow-x-hidden">
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Palette className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Estilo e Presets</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Clique no ícone de monitor para abrir o painel lateral. Use os <strong>Estilos Rápidos</strong> para aplicar combinações de cores profissionais com um clique.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Automação Inteligente</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Ative o <strong>Auto-Publish</strong> na aba de automação. Defina uma nota mínima (ex: 5 estrelas) para que novos elogios entrem no seu site sem sua intervenção manual.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Curadoria Manual</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Abaixo do preview, você pode selecionar manualmente os depoimentos que já possui. Membros Gold podem ativar até <strong>50 depoimentos</strong> simultâneos.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
+                  <Terminal className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold">Salvar e Instalar</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Sempre clique em <strong>Salvar Alterações</strong> antes de sair. Copie o snippet gerado e cole no HTML do seu site para ver a mágica acontecer.
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">2</div>
-              <div>
-                <p className="text-sm font-bold">Selecione os Depoimentos</p>
-                <p className="text-xs text-muted-foreground">Marque os feedbacks que você já tem. Se o Auto-Publish estiver ativo, os futuros entrarão sozinhos.</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0">3</div>
-              <div>
-                <p className="text-sm font-bold">Salve e Publique</p>
-                <p className="text-xs text-muted-foreground">Clique em <strong>Salvar Alterações</strong> e copie o código para colar no HTML do seu site.</p>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button className="w-full font-black h-12" onClick={() => setIsTutorialOpen(false)}>Entendi, vamos lá!</Button>
+          </ScrollArea>
+
+          <DialogFooter className="p-6 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
+            <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Configuração</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
