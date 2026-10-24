@@ -11,7 +11,7 @@ export async function sendWeeklyPerformanceReport(userId: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.error("RESEND_API_KEY não configurada.");
-    return { success: false, error: "Serviço de e-mail indisponível no momento." };
+    return { success: false, error: "O serviço de e-mail não foi configurado (Falta a RESEND_API_KEY)." };
   }
 
   const { firestore } = initializeFirebase();
@@ -20,7 +20,7 @@ export async function sendWeeklyPerformanceReport(userId: string) {
   try {
     // 1. Buscar Dados do Usuário
     const userSnap = await getDoc(doc(firestore, 'users', userId));
-    if (!userSnap.exists()) return { success: false, error: "Usuário não localizado." };
+    if (!userSnap.exists()) return { success: false, error: "Sua conta não foi localizada no banco de dados." };
     const userData = userSnap.data();
 
     // 2. Definir Períodos (Semana Atual vs Anterior)
@@ -54,18 +54,25 @@ export async function sendWeeklyPerformanceReport(userId: string) {
       growth = 100; // Crescimento de zero para algo
     }
 
-    // 6. Identificar o Melhor Depoimento (Destaque)
-    const qTop = query(
-      testimonialsRef, 
-      where('createdAt', '>=', Timestamp.fromDate(sevenDaysAgo)), 
-      orderBy('rating', 'desc'), 
-      orderBy('createdAt', 'desc'),
-      limit(1)
-    );
-    const topSnap = await getDocs(qTop);
-    const topT = !topSnap.empty ? topSnap.docs[0].data() : null;
+    // 6. Identificar o Melhor Depoimento (Destaque) - Otimizado para evitar erro de índice composto
+    let topT = null;
+    if (!currentSnap.empty) {
+      // Processamos a ordenação em memória para garantir que funcione sem exigir criação manual de índices no console do Firebase
+      const testimonialsList = currentSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      testimonialsList.sort((a: any, b: any) => {
+        // Primeiro por nota (desc)
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        // Depois por data (desc)
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+      topT = testimonialsList[0];
+    }
 
     // 7. Enviar E-mail via Resend
+    const userFirstName = userData.name ? userData.name.split(' ')[0] : 'Parceiro';
+    
     const { data, error } = await resend.emails.send({
       from: 'Proova Reports <proova@proova.wsstudioscompany.com.br>',
       to: [userData.email],
@@ -78,7 +85,7 @@ export async function sendWeeklyPerformanceReport(userId: string) {
           </div>
           
           <div style="padding: 40px 32px;">
-            <p style="font-size: 18px; color: #111827; font-weight: 700; margin-bottom: 8px;">Olá, ${userData.name.split(' ')[0]}!</p>
+            <p style="font-size: 18px; color: #111827; font-weight: 700; margin-bottom: 8px;">Olá, ${userFirstName}!</p>
             <p style="line-height: 1.6; color: #4b5563; margin-bottom: 32px;">Seus clientes continuam espalhando confiança. Veja como foi o desempenho da <strong>${userData.companyName}</strong> nos últimos 7 dias:</p>
             
             <div style="background-color: #f9fafb; border-radius: 20px; padding: 32px; text-align: center; border: 1px solid #f3f4f6; margin-bottom: 32px;">
@@ -118,6 +125,6 @@ export async function sendWeeklyPerformanceReport(userId: string) {
     return { success: true };
   } catch (err: any) {
     console.error("Falha ao gerar relatório:", err);
-    return { success: false, error: "Erro interno ao processar relatório." };
+    return { success: false, error: err.message || "Erro desconhecido ao processar relatório." };
   }
 }
