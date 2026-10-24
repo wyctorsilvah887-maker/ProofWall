@@ -847,7 +847,6 @@ export default function DashPage() {
         {consultantAlerts.length > 0 && (
           <section className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
               <h2 className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Consultor Proova</h2>
             </div>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
