@@ -2,6 +2,7 @@
 # Proova - Log de Desenvolvimento
 
 ## 📝 Histórico de Alterações Recentes
+- **Filtros de Período (Métricas Dinâmicas) - [FINALIZADO]:** Implementada funcionalidade de filtragem temporal no Dashboard. Agora o usuário pode alternar a visualização de métricas e depoimentos entre "Últimos 7 dias", "Últimos 30 dias" ou "Total". O sistema recalcula o engajamento instantaneamente, oferecendo uma visão clara do crescimento recente.
 - **Ações Rápidas (Quick Access) - [FINALIZADO]:** Implementada seção de atalhos táteis no Dashboard. Agora o usuário tem acesso a 1-clique para as funções mais vitais: Copiar Link, Ver Cartaz, Gerenciar Murais e Inbox Privado. Layout adaptativo para mobile (2x2) e desktop (4x1).
 - **Consultor Proativo & Alertas Sem Estrela - [FINALIZADO]:** Removido ícone decorativo do Consultor para um visual mais limpo. Seção compactada para melhor aproveitamento de espaço no mobile.
 - **Otimização de Dash Mobile - [FINALIZADO]:** Redesenhada a barra de progresso e o checklist de onboarding para telas menores. Agora o layout é mais compacto, reduzindo o scroll vertical e focando nas ações essenciais sem poluir a interface.

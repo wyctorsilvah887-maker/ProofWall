@@ -42,16 +42,14 @@ import {
   Building2,
   Navigation,
   AlertCircle,
-  Instagram,
   ImageIcon,
   Quote,
   Share,
-  Sparkles,
-  Lightbulb,
   Zap,
   MessageCircle,
   Circle,
-  Check
+  Check,
+  Calendar
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -75,8 +73,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUser, useFirestore, useDoc, useAuth, useCollection } from '@/firebase';
-import { doc, collection, query, updateDoc, orderBy, limit, where, getDocs } from 'firebase/firestore';
+import { doc, collection, query, updateDoc, orderBy, limit, where, getDocs, Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import { signOut } from 'firebase/auth';
 import { toast } from '@/hooks/use-toast';
@@ -93,6 +92,9 @@ export default function DashPage() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [baseUrl, setBaseUrl] = useState('');
+  
+  // Period Filtering State
+  const [period, setPeriod] = useState<'7' | '30' | 'all'>('all');
   
   // Dialog States
   const [isQrDialogOpenManual, setIsQrDialogOpenManual] = useState(false);
@@ -242,6 +244,50 @@ export default function DashPage() {
     return alerts;
   }, [userData, hasPrivateFeedbacks, baseUrl, router]);
 
+  const companySlug = useMemo(() => {
+    return userData?.companySlug || '';
+  }, [userData]);
+
+  // Main Testimonials Query (increased limit for period calculations)
+  const testimonialsQuery = useMemo(() => {
+    if (!db || !user) return null;
+    return query(
+      collection(db, 'users', user.uid, 'testimonials'),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+  }, [db, user]);
+
+  const { data: allFetchedTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
+
+  // Period Filtering Logic
+  const filteredMetrics = useMemo(() => {
+    const testimonials = allFetchedTestimonials || [];
+    const now = new Date();
+    
+    if (period === 'all') {
+      return {
+        count: userData?.testimonialsCount || 0,
+        displayList: testimonials.slice(0, 5),
+        trendLabel: 'Total acumulado'
+      };
+    }
+
+    const days = parseInt(period);
+    const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    
+    const periodTestimonials = testimonials.filter(t => {
+      if (!t.createdAt?.toDate) return false;
+      return t.createdAt.toDate() >= cutoff;
+    });
+
+    return {
+      count: periodTestimonials.length,
+      displayList: periodTestimonials.slice(0, 5),
+      trendLabel: `Recebidos nos últimos ${days} dias`
+    };
+  }, [allFetchedTestimonials, period, userData]);
+
   const trendMetrics = useMemo(() => {
     const current = userData?.testimonialsCount || 0;
     const last = userData?.lastMonthCount || 0;
@@ -262,21 +308,6 @@ export default function DashPage() {
       label: `${percent >= 0 ? '+' : ''}${percent}%`
     };
   }, [userData]);
-
-  const companySlug = useMemo(() => {
-    return userData?.companySlug || '';
-  }, [userData]);
-
-  const testimonialsQuery = useMemo(() => {
-    if (!db || !user) return null;
-    return query(
-      collection(db, 'users', user.uid, 'testimonials'),
-      orderBy('createdAt', 'desc'),
-      limit(5)
-    );
-  }, [db, user]);
-
-  const { data: displayTestimonials, loading: testimonialsLoading } = useCollection(testimonialsQuery);
 
   const copyToClipboard = (text: string, description: string) => {
     if (!text) return;
@@ -513,30 +544,25 @@ export default function DashPage() {
     canvas.width = 1080;
     canvas.height = 1080;
 
-    // Background Gradient
     const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
     gradient.addColorStop(0, '#f97316');
     gradient.addColorStop(1, '#ea580c');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 1080, 1080);
 
-    // White Card
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
     ctx.roundRect(80, 80, 920, 920, 60);
     ctx.fill();
 
-    // Draw Logo Text
     ctx.fillStyle = '#f97316';
     ctx.font = 'bold 32px Inter, sans-serif';
     ctx.fillText('PROOVA', 140, 160);
 
-    // Quotation Mark
     ctx.font = '900 160px Inter, sans-serif';
     ctx.fillStyle = 'rgba(249, 115, 22, 0.1)';
     ctx.fillText('“', 140, 320);
 
-    // Stars
     const starY = 380;
     const starSize = 45;
     const starGap = 15;
@@ -547,7 +573,6 @@ export default function DashPage() {
       ctx.fillText('★', startX + (starSize + starGap) * i, starY);
     }
 
-    // Testimonial Text
     ctx.fillStyle = '#1f2937';
     ctx.font = 'italic 500 44px Inter, sans-serif';
     
@@ -572,17 +597,14 @@ export default function DashPage() {
     }
     ctx.fillText(line, 140, y);
 
-    // User Name
     ctx.fillStyle = '#f97316';
     ctx.font = 'bold 42px Inter, sans-serif';
     ctx.fillText(selectedTestimonialForCard.userName, 140, y + 100);
 
-    // Company Name
     ctx.fillStyle = '#9ca3af';
     ctx.font = 'bold 24px Inter, sans-serif';
     ctx.fillText(userData?.companyName?.toUpperCase() || 'AVALIAÇÃO OFICIAL', 140, y + 140);
 
-    // Footer branding
     ctx.fillStyle = '#e5e7eb';
     ctx.font = '900 20px Inter, sans-serif';
     ctx.textAlign = 'center';
@@ -781,7 +803,7 @@ export default function DashPage() {
 
       <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-10 max-w-7xl mx-auto w-full overflow-x-hidden">
         
-        {/* SETUP PROGRESS SECTION (Onboarding) - Mobile Optimized */}
+        {/* SETUP PROGRESS SECTION (Onboarding) */}
         {!isSetupComplete && (
           <section className="animate-in fade-in slide-in-from-top-4 duration-1000">
             <Card className="border-none shadow-xl overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-card">
@@ -828,7 +850,6 @@ export default function DashPage() {
                   </div>
                 </div>
                 
-                {/* Desktop only sidebar for QR Code to reduce clutter on mobile */}
                 <div className="hidden lg:flex bg-primary/5 lg:w-72 p-8 flex-col items-center justify-center text-center gap-4 border-l border-primary/10">
                   <div className="bg-white dark:bg-black p-4 rounded-3xl shadow-xl ring-1 ring-primary/10">
                     <QRCodeSVG value={collectionLink} size={100} level="H" />
@@ -843,7 +864,7 @@ export default function DashPage() {
           </section>
         )}
 
-        {/* CONSULTANT SECTION - More Compact */}
+        {/* CONSULTANT SECTION */}
         {consultantAlerts.length > 0 && (
           <section className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="flex items-center gap-2">
@@ -888,18 +909,34 @@ export default function DashPage() {
             </div>
             <p className="text-xs md:text-base text-muted-foreground">Gestão de prova social dinâmica</p>
           </div>
-          <Link href="/widgets" className="w-full md:w-auto">
-            <Button className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all h-11 md:h-12 rounded-xl" size="lg">
-              Meus Murais
-            </Button>
-          </Link>
+          
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative group w-full sm:w-48">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-primary pointer-events-none z-10" />
+              <Select value={period} onValueChange={(val: any) => setPeriod(val)}>
+                <SelectTrigger className="h-11 rounded-xl bg-background border-primary/20 text-[11px] font-bold uppercase tracking-wider pl-9 focus:ring-primary/20">
+                  <SelectValue placeholder="Período" />
+                </SelectTrigger>
+                <SelectContent align="end" className="rounded-xl border-primary/10">
+                  <SelectItem value="7" className="text-xs font-medium">Últimos 7 dias</SelectItem>
+                  <SelectItem value="30" className="text-xs font-medium">Últimos 30 dias</SelectItem>
+                  <SelectItem value="all" className="text-xs font-medium">Todo o período</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Link href="/widgets" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto shadow-lg hover:shadow-xl transition-all h-11 rounded-xl" size="lg">
+                Meus Murais
+              </Button>
+            </Link>
+          </div>
         </header>
 
         {/* METRICS CARDS */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 relative">
           <Card className="border-none shadow-sm group cursor-default relative overflow-hidden rounded-2xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 md:p-6">
-              <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo</CardTitle>
+              <CardTitle className="text-xs font-bold uppercase text-muted-foreground tracking-widest">Resumo {period !== 'all' ? `(${period}d)` : ''}</CardTitle>
               {trendMetrics.isPositive ? (
                 <TrendingUp className="h-4 w-4 text-green-500" />
               ) : (
@@ -909,7 +946,7 @@ export default function DashPage() {
             <CardContent className="p-4 md:p-6 pt-0">
               <div className="space-y-1">
                 <div className="text-xl md:text-3xl font-bold">
-                  {userData?.testimonialsCount || 0} <span className="text-sm md:text-lg font-medium text-muted-foreground">avaliações</span>
+                  {filteredMetrics.count} <span className="text-sm md:text-lg font-medium text-muted-foreground">avaliações</span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-2">
                   <Badge 
@@ -919,9 +956,9 @@ export default function DashPage() {
                       trendMetrics.isPositive ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"
                     )}
                   >
-                    {trendMetrics.label}
+                    {filteredMetrics.trendLabel}
                   </Badge>
-                  <span className="text-[8px] md:text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>
+                  {period === 'all' && <span className="text-[8px] md:text-[10px] text-muted-foreground font-medium uppercase tracking-tight">vs mês anterior</span>}
                 </div>
               </div>
             </CardContent>
@@ -1049,7 +1086,7 @@ export default function DashPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-              <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Últimos Depoimentos</h2>
+              <h2 className="text-lg md:text-xl font-bold font-headline tracking-tight">Depoimentos {period !== 'all' ? `(${period}d)` : ''}</h2>
             </div>
             <Link href="/private">
               <Button variant="outline" size="sm" className="rounded-full gap-2 text-[10px] h-7 border-primary/20 text-primary hover:bg-primary/5">
@@ -1063,8 +1100,8 @@ export default function DashPage() {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-6 w-6 md:h-8 md:w-8 animate-spin text-primary/50" />
               </div>
-            ) : displayTestimonials && displayTestimonials.length > 0 ? (
-              displayTestimonials.map((t: any) => (
+            ) : filteredMetrics.displayList && filteredMetrics.displayList.length > 0 ? (
+              filteredMetrics.displayList.map((t: any) => (
                 <Card key={t.id} className="border-none shadow-sm overflow-hidden rounded-xl md:rounded-2xl group transition-all hover:shadow-md">
                   <CardContent className="p-3 md:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
                     <div className="flex items-start gap-3 md:gap-4">
@@ -1108,7 +1145,7 @@ export default function DashPage() {
             ) : (
               <div className="text-center py-10 md:py-16 border-2 border-dashed rounded-2xl bg-muted/10">
                 <MessageSquare className="w-8 h-8 md:w-10 md:h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-xs md:text-sm text-muted-foreground">Nenhum depoimento recebido.</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Nenhum depoimento encontrado para este período.</p>
               </div>
             )}
           </div>
@@ -1426,7 +1463,7 @@ export default function DashPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Social Card Dialog - Optimized for Mobile */}
+      {/* Social Card Dialog */}
       <Dialog open={isSocialCardDialogOpen} onOpenChange={setIsSocialCardDialogOpen}>
         <DialogContent className="rounded-[2rem] sm:rounded-3xl sm:max-w-md border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
           <DialogHeader className="p-6 pt-10 pb-4 bg-background shrink-0">
