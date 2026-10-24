@@ -574,7 +574,7 @@ export default function DashPage() {
       pdf.setFontSize(10);
       pdf.text('Tecnologia Proova', 105, 275, { align: 'center' });
       pdf.setFont('helvetica', 'bold');
-      text('BY PROOVA TECHNOLOGY', 105, 282, { align: 'center' });
+      pdf.text('BY PROOVA TECHNOLOGY', 105, 282, { align: 'center' });
 
       pdf.save(`cartaz-proova-${companySlug}-${pdfTheme}.pdf`);
       toast({ title: "PDF Gerado!", description: `O seu cartaz (${pdfTheme === 'light' ? 'Claro' : 'Escuro'}) foi baixado.` });
@@ -1377,23 +1377,23 @@ export default function DashPage() {
       {/* Tutorial Dialog - Otimizado para Mobile sem clipping */}
       <Dialog open={isTutorialOpen} onOpenChange={setIsTutorialOpen}>
         <DialogContent className="rounded-[2rem] md:rounded-[2.5rem] w-[92vw] sm:w-full sm:max-w-lg border-none shadow-2xl overflow-hidden p-0 flex flex-col max-h-[90vh]">
-          <DialogHeader className="p-8 md:p-10 pt-12 md:pt-14 pb-4 bg-background shrink-0">
+          <DialogHeader className="p-6 md:p-10 pt-10 md:pt-14 pb-4 bg-background shrink-0">
             <DialogTitle className="text-xl md:text-2xl font-black font-headline flex items-center gap-2">
               <Info className="w-6 h-6 text-primary" /> Guia do Dashboard
             </DialogTitle>
             <DialogDescription className="text-xs md:text-sm pl-8">
-              Entenda como dominar sua máquina de prova social.
+              Aprenda a dominar sua central estratégica.
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
-            <div className="space-y-8 md:space-y-10 py-6 px-8 md:px-10">
+            <div className="space-y-8 md:space-y-10 py-6 px-6 md:px-10 overflow-x-hidden">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-sm font-bold">Filtro de Resumo</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">No topo, alterne entre "Últimos 7 dias", "30 dias" ou "Total" para ver como seu engajamento está crescendo no tempo.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Alterne entre "7 dias", "30 dias" ou "Total" para acompanhar o crescimento do seu engajamento.</p>
                 </div>
               </div>
 
@@ -1403,7 +1403,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Cliques Google</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe quantas pessoas foram redirecionadas para o seu Google Maps. O selo <strong>G-Boost Ativo</strong> confirma sua configuração oficial.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe redirecionamentos para o Maps. O selo <strong>G-Boost Ativo</strong> confirma sua configuração.</p>
                 </div>
               </div>
 
@@ -1413,7 +1413,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Ações Rápidas</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique. Estes botões são desbloqueados conforme você avança no checklist de missões.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique. Estes botões são desbloqueados conforme você avança nas missões.</p>
                 </div>
               </div>
 
@@ -1424,7 +1424,7 @@ export default function DashPage() {
                 <div>
                   <p className="text-sm font-bold">Link e Personalização</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Copie sua URL de coleta. Membros Gold/Enterprise podem criar links curtos e profissionais como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">{displayDomain}/c/sua-marca</code>.
+                    Copie sua URL de coleta. Membros Gold podem criar links memoráveis como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">{displayDomain}/c/sua-marca</code>.
                   </p>
                 </div>
               </div>
@@ -1435,7 +1435,7 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Depoimentos e Inbox</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Veja os elogios públicos no feed. Críticas (1-3 estrelas) ficam salvas apenas no seu Inbox Privado para sua gestão interna.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Veja elogios no feed público. Críticas (1-3 estrelas) ficam salvas apenas no seu Inbox Privado.</p>
                 </div>
               </div>
 
@@ -1445,12 +1445,12 @@ export default function DashPage() {
                 </div>
                 <div>
                   <p className="text-sm font-bold">Consultor Proova</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Um aliado estratégico que aparece após você concluir o setup para avisar sobre pendências no Maps ou novos feedbacks críticos.</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">Um aliado estratégico que aparece após o setup para avisar sobre pendências ou novos feedbacks críticos.</p>
                 </div>
               </div>
             </div>
           </ScrollArea>
-          <DialogFooter className="p-8 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
+          <DialogFooter className="p-6 md:p-10 pt-4 pb-8 md:pb-10 bg-background border-t shrink-0">
             <Button className="w-full font-black h-12 rounded-2xl shadow-xl" onClick={() => setIsTutorialOpen(false)}>Começar Agora</Button>
           </DialogFooter>
         </DialogContent>
