@@ -1386,12 +1386,12 @@ export default function DashPage() {
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
-            <div className="space-y-8 md:space-y-10 py-6 px-5 md:px-10 overflow-x-hidden">
+            <div className="space-y-8 md:space-y-10 py-6 pl-6 pr-10 md:px-10 overflow-x-hidden">
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Calendar className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Filtro de Resumo</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">Alterne entre "7 dias", "30 dias" ou "Total" para acompanhar o crescimento do seu engajamento.</p>
                 </div>
@@ -1401,7 +1401,7 @@ export default function DashPage() {
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <MousePointer2 className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Cliques Google</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">Acompanhe redirecionamentos para o Maps. O selo <strong>G-Boost Ativo</strong> confirma sua configuração.</p>
                 </div>
@@ -1411,7 +1411,7 @@ export default function DashPage() {
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Zap className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Ações Rápidas</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">Acesse os 4 pilares com um clique. Estes botões são desbloqueados conforme você avança nas missões.</p>
                 </div>
@@ -1421,10 +1421,10 @@ export default function DashPage() {
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Fingerprint className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Link e Personalização</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Copie sua URL de coleta. Membros Gold podem criar links memoráveis como: <code className="bg-primary/10 text-primary px-1 rounded font-bold">{displayDomain}/c/sua-marca</code>.
+                    Copie sua URL de coleta. Membros Gold podem criar links memoráveis como: <code className="bg-primary/10 text-primary px-1 rounded font-bold break-all">{displayDomain}/c/sua-marca</code>.
                   </p>
                 </div>
               </div>
@@ -1433,7 +1433,7 @@ export default function DashPage() {
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Shield className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Depoimentos e Inbox</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">Veja elogios no feed público. Críticas (1-3 estrelas) ficam salvas apenas no seu Inbox Privado.</p>
                 </div>
@@ -1443,7 +1443,7 @@ export default function DashPage() {
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black shrink-0">
                   <Navigation className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold">Consultor Proova</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">Um aliado estratégico que aparece após o setup para avisar sobre pendências ou novos feedbacks críticos.</p>
                 </div>
